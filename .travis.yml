@@ -1,3 +1,8 @@
+addons:
+  sonarcloud:
+    organization: "enib-internships"
+    token:
+      secure: "2b0f2c712104117023c26c2be56229f9dadb3918" # encrypted value of your token
 language: node_js
 sudo: false
 node_js:
@@ -7,28 +12,15 @@ node_js:
 
 services:
   - mysql
-
-addons:
-  sonarcloud:
-    organization: "enib-internships"
-    token:
-      secure: "2b0f2c712104117023c26c2be56229f9dadb3918" # encrypted value of your token
-
 env:
   - MYSQL_HOST="127.0.0.1"
   - MYSQL_USER=travis
   - MYSQL_DATABASE=test
-  - MYSQL_PASSWORD=
-
-  # Set true to drop database on server start
+  - MYSQL_PASSWORD=""
   - ORM_DROP_DB_ON_START=true
   - ORM_LOGGING=false
-
-  # Put lots of randomness in these
   - SESSION_SECRET=ashdfjhasdlkjfhalksdjhflak
   - HASH_KEY=gLgk8Nt7ograVzCsgQz1JM05QJtpzDbk
-
-  # API Version
   - INTERNSHIP_ENIB_API_VERSION=v1
   - INTERNSHIP_ENIB_API_PORT=4000
 
