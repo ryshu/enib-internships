@@ -25,6 +25,8 @@ env:
   - INTERNSHIP_ENIB_API_VERSION=v1
   - INTERNSHIP_ENIB_API_PORT=4000
 
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
 install:
   - npm install
 
