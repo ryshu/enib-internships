@@ -1,8 +1,3 @@
-addons:
-  sonarcloud:
-    organization: "enib-internships"
-    token:
-      secure: "2b0f2c712104117023c26c2be56229f9dadb3918" # encrypted value of your token
 language: node_js
 sudo: false
 node_js:
@@ -12,7 +7,13 @@ node_js:
 
 services:
   - mysql
+addons:
+  sonarcloud:
+    organization: "enib-internships"
+    token:
+      secure: "2b0f2c712104117023c26c2be56229f9dadb3918"
 env:
+  global:
   - MYSQL_HOST="127.0.0.1"
   - MYSQL_USER=travis
   - MYSQL_DATABASE=test
