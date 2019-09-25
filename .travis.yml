@@ -39,5 +39,10 @@ script:
   - npm run lint:services
   - npm run test:unit:services
 
-  # Scan
+  # Codecov
+  - npm install codecov -g
+
+
+after_success:
   - sonar-scanner
+  - codecov
