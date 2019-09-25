@@ -72,13 +72,11 @@ import { Form as ElForm, Input } from 'element-ui';
 import { UserModule } from '../../store/modules/user';
 import { isValidUsername } from '../../utils/validate';
 import LangSelect from '../../components/LangSelect/index.vue';
-import SocialSign from './components/SocialSignin.vue';
 
 @Component({
   name: 'Login',
   components: {
     LangSelect,
-    SocialSign,
   },
 })
 export default class extends Vue {
