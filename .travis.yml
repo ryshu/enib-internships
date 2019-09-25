@@ -35,20 +35,6 @@ env:
 install:
   - npm install
 
-jobs:
-  include:
-    - stage: "Lints"
-      name: "Lint webapp"
-      script: 'npm run lint:app'
-    - script: 'npm run lint:services'
-      name: "Lint services"
-
-    - stage: "Tests"                # naming the Tests stage
-      name: "Unit Tests webapp"            # names the first Tests stage job
-      script: npm run test:unit:app
-    - script: npm run test:unit:services
-    name: "Unit Tests webapp"            # names the first Tests stage job
-
 script:
   # Webapp
   - npm run lint:app
