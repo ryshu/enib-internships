@@ -1,0 +1,28 @@
+{
+  "name": "enib-internships",
+  "version": "1.0.0",
+  "description": "ENIB internships interfaces",
+  "author": "Oscar Marie--Taillefer",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "npm run install:app && npm run install:services",
+    "install:app": "cd app && npm i",
+    "install:services": "cd services && npm i",
+    "serve": "concurrently -k -p \"[{name}]\" -n \"App,Services\" -c \"cyan.bold,green.bold\" \"npm run serve:app\" \"npm run serve:services\"",
+    "serve:app": "cd app && npm run serve",
+    "serve:services": "cd services && npm run build && npm run serve",
+    "lint": "npm run lint:app && npm run lint:services",
+    "lint:app": "cd app && npm run lint",
+    "lint:services": "cd services && npm run lint",
+    "test": "npm run test:unit",
+    "test:unit": "npm run test:unit:app && npm run test:unit:services",
+    "test:unit:app": "cd app && npm run test:unit",
+    "test:unit:services": "cd services && npm run test"
+  },
+  "keywords": [
+    "internships"
+  ],
+  "devDependencies": {
+    "concurrently": "^4.1.2"
+  }
+}

@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "watch": false,
+        "outDir": "dist",
+        "rootDir": "./src",
+        "strict": false,
+        "esModuleInterop": true,
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "baseUrl": ".",
+        "paths": {
+            "api/*": ["./src/api/*"]
+        }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["**/node_modules/**/*", "__tests__/**/*"]
+}
