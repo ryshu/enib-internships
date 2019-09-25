@@ -13,6 +13,21 @@ addons:
 
 install:
   - npm install
-script:
-  - npm run lint
-  - sonar-scanner
+
+jobs:
+  include:
+    - stage: "Lints"
+      name: "Lint webapp"
+      script: 'npm run lint:app'
+    - script: 'npm run lint:services'
+      name: "Lint services"
+
+    - stage: "Tests"
+      name: "Unit Tests webapp"
+      script: npm run test:unit:app
+    - script: npm run test:unit:services
+      name: "Unit Tests services"
+
+    - stage: "Sonar scan"
+      name: "Sonar scan"
+      script: sonar-scanner

@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BAD_REQUEST_VALIDATOR BAD_REQUEST_VALIDATOR_MockedExpressValidatorError 1`] = `[BAD REQUEST: BAD REQUEST]`;

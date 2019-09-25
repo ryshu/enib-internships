@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GET /businesses Businesses_200 1`] = `
+Object {
+  "additional": null,
+  "address": "TEST",
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "id": 1,
+  "name": "test",
+  "postalCode": "29200",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`GET /businesses/:id Businesses_200 1`] = `
+Object {
+  "additional": null,
+  "address": "TEST",
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "name": "test",
+  "postalCode": "29200",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /businesses ValidBusinesses_200 1`] = `
+Object {
+  "address": "TEST",
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "name": "test",
+  "postalCode": "29200",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /businesses/:id Businesses_200_NotAnyDataUpdated 1`] = `
+Object {
+  "additional": null,
+  "address": "TEST",
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "name": "test",
+  "postalCode": "29200",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /businesses/:id Businesses_200_UpdateAllData 1`] = `
+Object {
+  "additional": "additional data",
+  "address": "TEST",
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "name": "test",
+  "postalCode": "29200",
+  "updatedAt": Any<String>,
+}
+`;
