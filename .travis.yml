@@ -5,11 +5,32 @@ node_js:
   - 11
   - 10
 
+services:
+  - mysql
+
 addons:
   sonarcloud:
     organization: "enib-internships"
     token:
       secure: "2b0f2c712104117023c26c2be56229f9dadb3918" # encrypted value of your token
+
+env:
+  - MYSQL_HOST="127.0.0.1"
+  - MYSQL_USER=travis
+  - MYSQL_DATABASE=test
+  - MYSQL_PASSWORD=
+
+  # Set true to drop database on server start
+  - ORM_DROP_DB_ON_START=true
+  - ORM_LOGGING=false
+
+  # Put lots of randomness in these
+  - SESSION_SECRET=ashdfjhasdlkjfhalksdjhflak
+  - HASH_KEY=gLgk8Nt7ograVzCsgQz1JM05QJtpzDbk
+
+  # API Version
+  - INTERNSHIP_ENIB_API_VERSION=v1
+  - INTERNSHIP_ENIB_API_PORT=4000
 
 install:
   - npm install
@@ -22,12 +43,20 @@ jobs:
     - script: 'npm run lint:services'
       name: "Lint services"
 
-    - stage: "Tests"
-      name: "Unit Tests webapp"
+    - stage: "Tests"                # naming the Tests stage
+      name: "Unit Tests webapp"            # names the first Tests stage job
       script: npm run test:unit:app
     - script: npm run test:unit:services
-      name: "Unit Tests services"
+    name: "Unit Tests webapp"            # names the first Tests stage job
 
-    - stage: "Sonar scan"
-      name: "Sonar scan"
-      script: sonar-scanner
+script:
+  # Webapp
+  - npm run lint:app
+  - npm run test:unit:app
+
+  # Services
+  - npm run lint:services
+  - npm run test:unit:services
+
+  # Scan
+  - sonar-scanner
