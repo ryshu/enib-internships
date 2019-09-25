@@ -2,7 +2,6 @@
 var path = require('path');
 var fs = require('fs');
 var chalk = require('chalk');
-var shelljs = require('shelljs');
 
 var src, dest;
 
@@ -32,12 +31,6 @@ function copyFolderSync(source, target) {
                 copyFileSync(curSource, targetFolder);
             }
         });
-    }
-}
-
-function createIfNotExist(target) {
-    if (!fs.existsSync(target)) {
-        fs.mkdirSync(target);
     }
 }
 

@@ -5,10 +5,10 @@ import { Component, Vue } from 'vue-property-decorator';
   name: 'ServiceWorkerUpdatePopup',
 })
 export default class extends Vue {
-  private refreshing = false
-  private notificationText = 'New content is available!'
-  private refreshButtonText = 'Refresh'
-  private registration: ServiceWorkerRegistration | null = null
+  private refreshing = false;
+  private notificationText = 'New content is available!';
+  private refreshButtonText = 'Refresh';
+  private registration: ServiceWorkerRegistration | null = null;
 
   created() {
     // Listen for swUpdated event and display refresh notification as required.
@@ -37,14 +37,18 @@ export default class extends Vue {
       message: h('div', { class: 'sw-update-popup' }, [
         this.notificationText,
         h('br'),
-        h('button', {
-          on: {
-            click: (e: Event) => {
-              e.preventDefault();
-              this.refreshApp();
+        h(
+          'button',
+          {
+            on: {
+              click: (e: Event) => {
+                e.preventDefault();
+                this.refreshApp();
+              },
             },
           },
-        }, this.refreshButtonText),
+          this.refreshButtonText
+        ),
       ]),
       position: 'bottom-right',
       duration: 0,

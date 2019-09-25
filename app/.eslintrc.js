@@ -40,13 +40,5 @@ module.exports = {
     '@vue/standard',
     '@vue/typescript',
     'prettier',
-  ],
-
-  'extends': [
-    'eslint:recommended',
-    'plugin:vue/essential',
-    '@vue/standard',
-    '@vue/typescript',
-    'prettier'
   ]
 };
