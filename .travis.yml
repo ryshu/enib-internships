@@ -5,14 +5,44 @@ node_js:
   - 11
   - 10
 
+services:
+  - mysql
 addons:
   sonarcloud:
     organization: "enib-internships"
     token:
-      secure: "2b0f2c712104117023c26c2be56229f9dadb3918" # encrypted value of your token
+      secure: "2b0f2c712104117023c26c2be56229f9dadb3918"
+env:
+  global:
+  - MYSQL_HOST="127.0.0.1"
+  - MYSQL_USER=travis
+  - MYSQL_DATABASE=test
+  - MYSQL_PASSWORD=""
+  - ORM_DROP_DB_ON_START=true
+  - ORM_LOGGING=false
+  - SESSION_SECRET=ashdfjhasdlkjfhalksdjhflak
+  - HASH_KEY=gLgk8Nt7ograVzCsgQz1JM05QJtpzDbk
+  - INTERNSHIP_ENIB_API_VERSION=v1
+  - INTERNSHIP_ENIB_API_PORT=4000
 
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
 install:
   - npm install
+
 script:
-  - npm run lint
+  # Webapp
+  - npm run lint:app
+  - npm run test:unit:app
+
+  # Services
+  - npm run lint:services
+  - npm run test:unit:services
+
+  # Codecov
+  - npm install codecov -g
+
+
+after_success:
   - sonar-scanner
+  - codecov
