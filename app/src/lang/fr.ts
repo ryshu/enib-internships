@@ -2,7 +2,7 @@ export default {
   title: 'Gestionnaire de stage',
   route: {
     dashboard: 'Tableau de bord',
-    businesses: 'Entreprise',
+    businesses: 'Entreprises',
     internships: 'Stages',
     students: 'Etudiants',
     page401: '401',

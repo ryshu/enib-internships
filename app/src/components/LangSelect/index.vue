@@ -1,11 +1,28 @@
 <template>
-  <el-dropdown trigger="click" class="international" @command="handleSetLanguage">
+  <el-dropdown
+    trigger="click"
+    class="international"
+    @command="handleSetLanguage"
+  >
     <div>
-      <svg-icon name="language" class="international-icon" />
+      <svg-icon
+        name="language"
+        class="international-icon"
+      />
     </div>
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item :disabled="language==='en'" command="en">English</el-dropdown-item>
-      <el-dropdown-item :disabled="language==='fr'" command="fr">Français</el-dropdown-item>
+      <el-dropdown-item
+        :disabled="language==='en'"
+        command="en"
+      >
+        English
+      </el-dropdown-item>
+      <el-dropdown-item
+        :disabled="language==='fr'"
+        command="fr"
+      >
+        Français
+      </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
 </template>
