@@ -1,0 +1,1266 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Setup mentors · Internships manager</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="In this tutorial, will see every steps to setup the default mentor view."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Setup mentors · Internships manager"/><meta property="og:type" content="website"/><meta property="og:url" content="https://ryshu.github.io/enib-internships/"/><meta property="og:description" content="In this tutorial, will see every steps to setup the default mentor view."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/enib-internships/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/enib-internships/js/scrollSpy.js"></script><link rel="stylesheet" href="/enib-internships/css/main.css"/><script src="/enib-internships/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/enib-internships/"><img class="logo" src="/enib-internships/img/favicon.ico" alt="Internships manager"/><h2 class="headerTitleWithLogo">Internships manager</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/enib-internships/docs/docs-install" target="_self">Docs</a></li><li class=""><a href="/enib-internships/docs/api-index" target="_self">API</a></li><li class="siteNavGroupActive siteNavItemActive"><a href="/enib-internships/docs/tuto-mentors" target="_self">Tuto</a></li><li class=""><a href="/enib-internships/help" target="_self">Help</a></li><li class=""><a href="https://github.com/ryshu/enib-internships" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Setup data</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Setup data</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/enib-internships/docs/tuto-mentors">Setup mentors</a></li><li class="navListItem"><a class="navItem" href="/enib-internships/docs/tuto-mentoring-propositions">Setup mentoring propositions</a></li><li class="navListItem"><a class="navItem" href="/enib-internships/docs/tuto-students">Setup students</a></li><li class="navListItem"><a class="navItem" href="/enib-internships/docs/tuto-files">Setup mentors</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Setup mentors</h1></header><article><div><span><p>In this tutorial, will see every steps to setup the default mentor view.
+At the end, we will be able to:</p>
+<ul>
+<li>List mentors</li>
+<li>Create a new mentor</li>
+<li>Update mentor data</li>
+<li>Export the mentor list</li>
+<li>Filter mentors by name using a pattern</li>
+</ul>
+<p>We will use this interface throughout this tutorial</p>
+<pre><code class="hljs css language-javascript">declare interface IMentorEntity {
+    id?: <span class="hljs-built_in">Number</span>;
+
+    firstName: <span class="hljs-built_in">String</span>;
+    lastName: <span class="hljs-built_in">String</span>;
+    email: <span class="hljs-built_in">String</span>;
+
+    createdAt?: <span class="hljs-built_in">Date</span>;
+    updatedAt?: <span class="hljs-built_in">Date</span>;
+}
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="create-branch-on-github"></a><a href="#create-branch-on-github" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create branch on github</h2>
+<p>To name a branch, the best way is to use the name of the feature that you want to add, precede by the action that is performed.
+For example:</p>
+<ul>
+<li>If you want to fix mentors struct, call your branch <code>fix-mentors-struct</code></li>
+<li>If you want to add mentoring proposition, call your branch <code>add-mentoring-proposition</code></li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" id="using-command-line"></a><a href="#using-command-line" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using command line</h3>
+<pre><code class="hljs css language-sh">git branch add-mentors
+git checkout add-mentors
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="using-gitkraken"></a><a href="#using-gitkraken" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Using gitkraken</h3>
+<ol>
+<li>Click on branch</li>
+<li>Enter branch name <code>add-mentors</code></li>
+<li>Press enter</li>
+</ol>
+<p><img src="../img/tuto/gitkraken-add-branch.png" alt="gitkraken-add-branch"></p>
+<h2><a class="anchor" aria-hidden="true" id="create-data-and-road-in-back-end"></a><a href="#create-data-and-road-in-back-end" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create data and road in back-end</h2>
+<p>In this step of tutorial, we want to handle mentors data in the API.
+To do so, we will observe the different steps for the implementation of this data.</p>
+<h3><a class="anchor" aria-hidden="true" id="create-controller"></a><a href="#create-controller" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create controller</h3>
+<p>First of all, create the mentor controller under <code>services/src/api/controllers/mentors.ctrl.ts</code>.
+Before any implementation, we want to configure the 5 methods we will use in the API to manage mentors.</p>
+<p>Create the <code>mentors.ctrl.ts</code> files and add following implementations:</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> { Request, Response, NextFunction } <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span>;
+
+<span class="hljs-comment">/**
+ * GET /mentors
+ * Used to GET all mentors
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentors = (_req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> { };
+
+<span class="hljs-comment">/**
+ * POST /mentorss
+ * Used to create a new mentor entry
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> postMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> { };
+
+<span class="hljs-comment">/**
+ * GET /mentors/:id
+ * Used to select a mentor by ID
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> { };
+
+<span class="hljs-comment">/**
+ * PUT /mentors/:id
+ * Used to update mentor values
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> putMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> { };
+
+<span class="hljs-comment">/**
+ * DELETE /mentors/:id
+ * Used to remove a mentor from database
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> deleteMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> { };
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="create-validator"></a><a href="#create-validator" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create validator</h3>
+<p>The validators will be used to secure our application and be sure of the data we will receive.
+These validators relate to 2 paths of the API, creating a mentor and modifying a mentor.</p>
+<p>First of all, create the validator file under <code>services/src/api/validators/mentors.val.ts</code></p>
+<p>Then, we will add 2 schemas in this files to check mentors data:</p>
+<ul>
+<li>Import <code>Schema</code> from <a href="https://express-validator.github.io/docs/">express-validator</a> modules</li>
+</ul>
+<p>Schema is used in Typescript to know how to define a validation schema of express-validator</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> { Schema } <span class="hljs-keyword">from</span> <span class="hljs-string">'express-validator'</span>;
+</code></pre>
+<ul>
+<li>Create post validator handler</li>
+</ul>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> MentorCreate: Schema = {
+    firstName: {
+        <span class="hljs-keyword">in</span>: [<span class="hljs-string">'body'</span>],
+        isString: { errorMessage: <span class="hljs-string">'First name must be of type string'</span> },
+        exists: { errorMessage: <span class="hljs-string">'First name must be defined'</span> },
+        trim: <span class="hljs-literal">true</span>,
+        <span class="hljs-built_in">escape</span>: <span class="hljs-literal">true</span>,
+    },
+    lastName: {
+        <span class="hljs-keyword">in</span>: [<span class="hljs-string">'body'</span>],
+        isString: { errorMessage: <span class="hljs-string">'Last name must be of type string'</span> },
+        exists: { errorMessage: <span class="hljs-string">'Last name must be defined'</span> },
+        trim: <span class="hljs-literal">true</span>,
+        <span class="hljs-built_in">escape</span>: <span class="hljs-literal">true</span>,
+    },
+    email: {
+        <span class="hljs-keyword">in</span>: [<span class="hljs-string">'body'</span>],
+        isString: { errorMessage: <span class="hljs-string">'Email must be of type string'</span> },
+        isEmail: { errorMessage: <span class="hljs-string">'Email must complain to email struct'</span> }
+        exists: { errorMessage: <span class="hljs-string">'Email must be defined'</span> },
+        trim: <span class="hljs-literal">true</span>,
+        <span class="hljs-built_in">escape</span>: <span class="hljs-literal">true</span>,
+    },
+};
+</code></pre>
+<ul>
+<li>Create update validator handler</li>
+</ul>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> MentorUpdate: Schema = {
+    firstName: {
+        <span class="hljs-keyword">in</span>: [<span class="hljs-string">'body'</span>],
+        isString: { errorMessage: <span class="hljs-string">'First name must be of type string'</span> },
+        optional: <span class="hljs-literal">true</span>,
+        trim: <span class="hljs-literal">true</span>,
+        <span class="hljs-built_in">escape</span>: <span class="hljs-literal">true</span>,
+    },
+    lastName: {
+        <span class="hljs-keyword">in</span>: [<span class="hljs-string">'body'</span>],
+        isString: { errorMessage: <span class="hljs-string">'Last name must be of type string'</span> },
+        optional: <span class="hljs-literal">true</span>,
+        trim: <span class="hljs-literal">true</span>,
+        <span class="hljs-built_in">escape</span>: <span class="hljs-literal">true</span>,
+    },
+    email: {
+        <span class="hljs-keyword">in</span>: [<span class="hljs-string">'body'</span>],
+        isString: { errorMessage: <span class="hljs-string">'Email must be of type string'</span> },
+        isEmail: { errorMessage: <span class="hljs-string">'Email must complain to email struct'</span> },
+        optional: <span class="hljs-literal">true</span>,
+        trim: <span class="hljs-literal">true</span>,
+        <span class="hljs-built_in">escape</span>: <span class="hljs-literal">true</span>,
+    },
+};
+</code></pre>
+<p>Then, we need to receive and process validation errors in the controllers.
+To do this, you must load the method used by the express-validator module.</p>
+<p>Add at the head of the <code>mentors-ctrl.ts</code> file following code:</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> { Request, Response, NextFunction } <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span>;
+<span class="hljs-keyword">import</span> { validationResult } <span class="hljs-keyword">from</span> <span class="hljs-string">'express-validator'</span>;
+
+<span class="hljs-keyword">import</span> {
+    BAD_REQUEST_VALIDATOR,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'../helpers/global.helper'</span>;
+</code></pre>
+<ul>
+<li><strong>BAD_REQUEST_VALIDATOR</strong> is used to factorize errors handling</li>
+<li><strong>validationResult</strong> is used to recover errors in express request</li>
+</ul>
+<p>After adding import in hander, you migth add following code in:</p>
+<ul>
+<li>postMentor</li>
+<li>getMentor</li>
+<li>putMentor</li>
+<li>deleteMentor</li>
+</ul>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">// @see validator + router</span>
+<span class="hljs-keyword">const</span> errors = validationResult(req);
+<span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+    <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+}
+</code></pre>
+<p>You should have follwing code in your controller:</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> { Request, Response, NextFunction } <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span>;
+<span class="hljs-keyword">import</span> { validationResult } <span class="hljs-keyword">from</span> <span class="hljs-string">'express-validator'</span>;
+
+<span class="hljs-keyword">import</span> {
+    BAD_REQUEST_VALIDATOR,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'../helpers/global.helper'</span>;
+
+<span class="hljs-comment">/**
+ * GET /mentors
+ * Used to GET all mentors
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentors = (_req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> { };
+
+<span class="hljs-comment">/**
+ * POST /mentorss
+ * Used to create a new mentor entry
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> postMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+};
+
+<span class="hljs-comment">/**
+ * GET /mentors/:id
+ * Used to select a mentor by ID
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+};
+
+<span class="hljs-comment">/**
+ * PUT /mentors/:id
+ * Used to update mentor values
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> putMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+};
+
+<span class="hljs-comment">/**
+ * DELETE /mentors/:id
+ * Used to remove a mentor from database
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> deleteMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+};
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="add-controller-implementations"></a><a href="#add-controller-implementations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Add controller implementations</h3>
+<p>Now we need to add controller implementation.
+Before proceed every methods, we need to import methods that we will use:</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> { Request, Response, NextFunction } <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span>;
+<span class="hljs-keyword">import</span> { validationResult } <span class="hljs-keyword">from</span> <span class="hljs-string">'express-validator'</span>;
+
+<span class="hljs-comment">// Import mentors ORM class</span>
+<span class="hljs-keyword">import</span> Mentors <span class="hljs-keyword">from</span> <span class="hljs-string">'../../models/Mentors'</span>;
+<span class="hljs-keyword">import</span> httpStatus <span class="hljs-keyword">from</span> <span class="hljs-string">'http-status-codes'</span>;
+
+<span class="hljs-comment">// Factorization methods to handle errors</span>
+<span class="hljs-keyword">import</span> {
+    UNPROCESSABLE_ENTITY,
+    checkArrayContent,
+    BAD_REQUEST_VALIDATOR,
+    checkContent,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'../helpers/global.helper'</span>;
+</code></pre>
+<p>First, we need to handle methods to retrieve all mentors</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * GET /mentors
+ * Used to GET all mentors
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentors = (_req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// Retrieve all mentors from database</span>
+    Mentors.findAll()
+        .then(<span class="hljs-function">(<span class="hljs-params">mentors</span>) =&gt;</span> {
+            <span class="hljs-comment">// Check if we have mentor</span>
+            <span class="hljs-keyword">if</span> (checkArrayContent(mentors, next)) {
+                <span class="hljs-comment">// Return mentors list</span>
+                <span class="hljs-keyword">return</span> res.send(mentors);
+            }
+        })
+        <span class="hljs-comment">// If we have any error, return unprocessable entity</span>
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+</code></pre>
+<p>Then, we add methods to handle creation of mentors</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * POST /mentors
+ * Used to create a new mentor entry
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> postMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    <span class="hljs-comment">// Get all data, we aren't afraid of having wrong data because we validate them before</span>
+    <span class="hljs-keyword">const</span> mentor: IMentorEntity = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+    };
+
+    <span class="hljs-comment">// Insert mentor in database</span>
+    Mentors.create(mentor)
+        .then(<span class="hljs-function">(<span class="hljs-params">created</span>) =&gt;</span> {
+            <span class="hljs-comment">// Check if all is ok and return created mentor</span>
+            <span class="hljs-keyword">if</span> (checkContent(mentor, next)) {
+                <span class="hljs-keyword">return</span> res.send(created);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+</code></pre>
+<p>After this, we need to handle access to one mentor by ID</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * GET /mentors/:id
+ * Used to select a mentors by ID
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    <span class="hljs-comment">// Select mentor by ID into database</span>
+    Mentors.findByPk(req.params.id)
+        .then(<span class="hljs-function">(<span class="hljs-params">val</span>) =&gt;</span> {
+            <span class="hljs-comment">// Check if we have content, and if so return it</span>
+            <span class="hljs-keyword">if</span> (checkContent(val, next)) {
+                <span class="hljs-keyword">return</span> res.send(val);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+</code></pre>
+<p>Handling of mentor update</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * PUT /mentors/:id
+ * Used to update mentor values
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> putMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id)
+        .then(<span class="hljs-function">(<span class="hljs-params">mentor</span>) =&gt;</span> {
+            <span class="hljs-keyword">if</span> (!checkContent(mentor, next)) {
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">undefined</span>;
+            }
+
+            <span class="hljs-keyword">if</span> (req.body.firstName) {
+                mentor.set(<span class="hljs-string">'firstName'</span>, req.body.firstName);
+            }
+            <span class="hljs-keyword">if</span> (req.body.lastName) {
+                mentor.set(<span class="hljs-string">'lastName'</span>, req.body.lastName);
+            }
+            <span class="hljs-keyword">if</span> (req.body.email) {
+                mentor.set(<span class="hljs-string">'email'</span>, req.body.email);
+            }
+
+            <span class="hljs-keyword">return</span> mentor.save();
+        })
+        .then(<span class="hljs-function">(<span class="hljs-params">updated</span>) =&gt;</span> {
+            <span class="hljs-keyword">if</span> (updated) {
+                <span class="hljs-keyword">return</span> res.send(updated);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(e, next));
+};
+</code></pre>
+<p>And finally, we need to handle mentor remove</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * DELETE /mentors/:id
+ * Used to remove a mentor from database
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> deleteMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id)
+        .then(<span class="hljs-function">(<span class="hljs-params">val</span>) =&gt;</span> (val ? val.destroy() : <span class="hljs-literal">undefined</span>)) <span class="hljs-comment">// Call destroy on selected mentor</span>
+        .then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> res.sendStatus(httpStatus.OK)) <span class="hljs-comment">// Return OK status</span>
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(e, next));
+};
+</code></pre>
+<p>You should have following code at the end</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> { Request, Response, NextFunction } <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span>;
+<span class="hljs-keyword">import</span> { validationResult } <span class="hljs-keyword">from</span> <span class="hljs-string">'express-validator'</span>;
+
+<span class="hljs-keyword">import</span> Mentors <span class="hljs-keyword">from</span> <span class="hljs-string">'../../models/Mentors'</span>;
+<span class="hljs-keyword">import</span> httpStatus <span class="hljs-keyword">from</span> <span class="hljs-string">'http-status-codes'</span>;
+
+<span class="hljs-keyword">import</span> {
+    UNPROCESSABLE_ENTITY,
+    checkArrayContent,
+    BAD_REQUEST_VALIDATOR,
+    checkContent,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">'../helpers/global.helper'</span>;
+
+<span class="hljs-comment">/**
+ * GET /mentors
+ * Used to GET all mentors
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentors = (_req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    Mentors.findAll()
+        .then(<span class="hljs-function">(<span class="hljs-params">mentors</span>) =&gt;</span> {
+            <span class="hljs-keyword">if</span> (checkArrayContent(mentors, next)) {
+                <span class="hljs-keyword">return</span> res.send(mentors);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+
+<span class="hljs-comment">/**
+ * POST /mentorss
+ * Used to create a new mentor entry
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> postMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    <span class="hljs-keyword">const</span> mentor: IMentorEntity = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+    };
+
+    Mentors.create(mentor)
+        .then(<span class="hljs-function">(<span class="hljs-params">created</span>) =&gt;</span> {
+            <span class="hljs-keyword">if</span> (checkContent(mentor, next)) {
+                <span class="hljs-keyword">return</span> res.send(created);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+
+<span class="hljs-comment">/**
+ * GET /mentors/:id
+ * Used to select a mentor by ID
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id)
+        .then(<span class="hljs-function">(<span class="hljs-params">val</span>) =&gt;</span> {
+            <span class="hljs-keyword">if</span> (checkContent(val, next)) {
+                <span class="hljs-keyword">return</span> res.send(val);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+
+<span class="hljs-comment">/**
+ * PUT /mentors/:id
+ * Used to update mentor values
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> putMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id)
+        .then(<span class="hljs-function">(<span class="hljs-params">mentor</span>) =&gt;</span> {
+            <span class="hljs-keyword">if</span> (!checkContent(mentor, next)) {
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">undefined</span>;
+            }
+
+            <span class="hljs-keyword">if</span> (req.body.firstName) {
+                mentor.set(<span class="hljs-string">'firstName'</span>, req.body.firstName);
+            }
+            <span class="hljs-keyword">if</span> (req.body.lastName) {
+                mentor.set(<span class="hljs-string">'lastName'</span>, req.body.lastName);
+            }
+            <span class="hljs-keyword">if</span> (req.body.email) {
+                mentor.set(<span class="hljs-string">'email'</span>, req.body.email);
+            }
+
+            <span class="hljs-keyword">return</span> mentor.save();
+        })
+        .then(<span class="hljs-function">(<span class="hljs-params">updated</span>) =&gt;</span> {
+            <span class="hljs-keyword">if</span> (updated) {
+                <span class="hljs-keyword">return</span> res.send(updated);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(e, next));
+};
+
+<span class="hljs-comment">/**
+ * DELETE /mentors/:id
+ * Used to remove a mentor from database
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> deleteMentor = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id)
+        .then(<span class="hljs-function">(<span class="hljs-params">val</span>) =&gt;</span> (val ? val.destroy() : <span class="hljs-literal">undefined</span>))
+        .then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> res.sendStatus(httpStatus.OK))
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(e, next));
+};
+
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="add-routes-implementations"></a><a href="#add-routes-implementations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Add routes implementations</h3>
+<p>Now, we need to add routes implementations.
+Routes allow us to link every controllers and validators we previous create.</p>
+<p>First of all, create the route files under <code>services/src/api/routers/mentors.route.ts</code></p>
+<p>We now link every thing as following:</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> express <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span>;
+<span class="hljs-keyword">import</span> { checkSchema } <span class="hljs-keyword">from</span> <span class="hljs-string">'express-validator'</span>;
+
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> MentorsCtrl <span class="hljs-keyword">from</span> <span class="hljs-string">'../controllers/mentors.ctrl'</span>;
+
+<span class="hljs-keyword">import</span> { ID } <span class="hljs-keyword">from</span> <span class="hljs-string">'../validators/generic.val'</span>;
+<span class="hljs-keyword">import</span> { MentorUpdate, MentorCreate } <span class="hljs-keyword">from</span> <span class="hljs-string">'../validators/mentors.val'</span>;
+
+<span class="hljs-keyword">const</span> router = express.Router();
+
+router.get(<span class="hljs-string">''</span>, MentorsCtrl.getMentors);
+router.post(<span class="hljs-string">''</span>, checkSchema(MentorCreate), MentorsCtrl.postMentor);
+router.get(<span class="hljs-string">'/:id'</span>, checkSchema(ID), MentorsCtrl.getMentor);
+router.put(<span class="hljs-string">'/:id'</span>, checkSchema(<span class="hljs-built_in">Object</span>.assign({}, ID, MentorUpdate)), MentorsCtrl.putMentor);
+router.delete(<span class="hljs-string">'/:id'</span>, checkSchema(ID), MentorsCtrl.deleteMentor);
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> router;
+</code></pre>
+<p>Then, add our new router to API routers in <code>services/src/api/route.ts</code>:</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> express <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span>;
+
+<span class="hljs-keyword">import</span> mentorsRouter <span class="hljs-keyword">from</span> <span class="hljs-string">'./routers/mentors.route'</span>;
+<span class="hljs-keyword">import</span> mentorsRouter <span class="hljs-keyword">from</span> <span class="hljs-string">'./routers/mentors.route'</span>;
+<span class="hljs-keyword">import</span> mockUserSystem <span class="hljs-keyword">from</span> <span class="hljs-string">'../mock/route'</span>;
+
+<span class="hljs-keyword">const</span> router = express.Router();
+
+router.use(<span class="hljs-string">'/mentors'</span>, mentorsRouter);
+router.use(<span class="hljs-string">'/mentors'</span>, mentorsRouter);
+router.use(mockUserSystem);
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> router;
+</code></pre>
+<p>We have done. To test, run following command under <code>services</code> directory:</p>
+<ul>
+<li>npm run build</li>
+<li>npm run serve</li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" id="test-on-postman-on-documentation"></a><a href="#test-on-postman-on-documentation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Test on postman on documentation</h3>
+<p>Now, you can go to postman and add our requests into the documentation.</p>
+<p><a href="https://medium.com/@olotintemitope/how-to-generate-your-api-documentation-in-20-minutes-4e0072f08b94">Medium tutorial to generate an API documentation in postman</a></p>
+<p>You need to generate 5 requests in documentation as following:</p>
+<ul>
+<li>mentors/
+<ul>
+<li>Get all mentors (<code>GET /api/v1/mentors</code>)</li>
+<li>Create a new metnors (<code>POST /api/v1/mentors</code>)</li>
+<li>Get a mentor by ID (<code>GET /api/v1/mentors/:id</code>)</li>
+<li>Update a mentor (<code>UPDATE /api/v1/mentors/:id</code>)</li>
+<li>Remove a mentor (<code>DELETE /api/v1/mentors/:id</code>)</li>
+</ul></li>
+</ul>
+<p>If you need sample, look at mentors documentation.</p>
+<h3><a class="anchor" aria-hidden="true" id="conclusion-of-this-part"></a><a href="#conclusion-of-this-part" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Conclusion of this part</h3>
+<p>To summarize, we created in this part of the tutorial:</p>
+<ul>
+<li>5 controllers to handle routes</li>
+<li>2 validators to handle create and update structure validation</li>
+<li>5 routes in the express server</li>
+<li>the documentation of our new data</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="visualize-data-in-front-end"></a><a href="#visualize-data-in-front-end" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Visualize data in front-end</h2>
+<p>We have previously setup routes to handle <code>mentors</code> data in the API, but we now need to be able to acces this data in the front-end part.
+To do so, we will:</p>
+<ul>
+<li>Create mentor interface into <code>app/src/api/types.d.ts</code></li>
+<li>Add an API interfaces under the <code>app/src/api/</code> directory</li>
+<li>Add a view to show mentors list under the <code>app/src/views/</code> directory</li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" id="create-mentor-interfaces"></a><a href="#create-mentor-interfaces" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create mentor interfaces</h3>
+<p>Create mentor interfaces for typescript under <code>app/src/api/types.d.ts</code> files</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">declare</span> <span class="hljs-keyword">interface</span> IMentor {
+  id?: <span class="hljs-built_in">number</span>;
+
+  firstName: <span class="hljs-built_in">string</span>;
+  lastName: <span class="hljs-built_in">string</span>;
+  email: <span class="hljs-built_in">string</span>;
+
+  createdAt?: <span class="hljs-built_in">string</span>;
+  updatedAt?: <span class="hljs-built_in">string</span>;
+}
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="add-api-in-front-end-code"></a><a href="#add-api-in-front-end-code" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Add API in front-end code</h3>
+<p>We will not detail this part of tutoriel because register routes into front-end is quit simple using <code>request</code> method available in <code>app/src/utils</code>.</p>
+<p>Create the api file under <code>app/src/api/</code></p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> request <span class="hljs-keyword">from</span> <span class="hljs-string">'@/utils/request'</span>;
+<span class="hljs-keyword">import</span> { IMentor } <span class="hljs-keyword">from</span> <span class="hljs-string">'./types'</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> defaultMentorData: IMentor = {
+  firstName: <span class="hljs-string">''</span>,
+  lastName: <span class="hljs-string">''</span>,
+  email: <span class="hljs-string">''</span>,
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentores = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span>
+  request({
+    url: <span class="hljs-string">'/mentors'</span>,
+    method: <span class="hljs-string">'get'</span>,
+  });
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentor = <span class="hljs-function">(<span class="hljs-params">id: <span class="hljs-built_in">number</span>, params: <span class="hljs-built_in">any</span></span>) =&gt;</span>
+  request({
+    url: <span class="hljs-string">`/mentors/<span class="hljs-subst">${id}</span>`</span>,
+    method: <span class="hljs-string">'get'</span>,
+    params,
+  });
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> createMentor = <span class="hljs-function">(<span class="hljs-params">data: <span class="hljs-built_in">any</span></span>) =&gt;</span>
+  request({
+    url: <span class="hljs-string">'/mentors'</span>,
+    method: <span class="hljs-string">'post'</span>,
+    data,
+  });
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> updateMentor = <span class="hljs-function">(<span class="hljs-params">id: <span class="hljs-built_in">number</span>, data: <span class="hljs-built_in">any</span></span>) =&gt;</span>
+  request({
+    url: <span class="hljs-string">`/mentors/<span class="hljs-subst">${id}</span>`</span>,
+    method: <span class="hljs-string">'put'</span>,
+    data,
+  });
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> deleteMentor = <span class="hljs-function">(<span class="hljs-params">id: <span class="hljs-built_in">number</span></span>) =&gt;</span>
+  request({
+    url: <span class="hljs-string">`/mentors/<span class="hljs-subst">${id}</span>`</span>,
+    method: <span class="hljs-string">'delete'</span>,
+  });
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="create-the-view"></a><a href="#create-the-view" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create the view</h3>
+<p>This is the most import path to render our data.</p>
+<p>First of all, create <code>mentors</code> directory under <code>app/src/views</code> and add <code>index.vue</code></p>
+<p>The default struct of a view component is:</p>
+<pre><code class="hljs css language-typescript">&lt;template&gt;
+  &lt;div class="app-container"&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script lang="ts"&gt;
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component({
+  name: 'Mentors',
+})
+export default class extends Vue {
+}
+&lt;/script&gt;
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="add-table-to-our-view"></a><a href="#add-table-to-our-view" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Add table to our view</h3>
+<p>We know want to add a table with our data</p>
+<pre><code class="hljs css language-typescript">&lt;template&gt;
+  &lt;div class="app-container"&gt;
+    &lt;!-- Table --&gt;
+    &lt;el-table
+        :key="tableKey"
+        v-loading="listLoading"
+        :data="list"
+        border fit
+        highlight-current-row
+        style="width: 100%;"
+    &gt;
+      &lt;el-table-column :label="$t('table.mentors.firstName')" min-width="150px" &gt;
+        &lt;template slot-scope="{row}"&gt;
+          &lt;span&gt;{{ row.firstName }}&lt;/span&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+      &lt;el-table-column :label="$t('table.mentors.lastName')" min-width="150px" &gt;
+        &lt;template slot-scope="{row}"&gt;
+          &lt;span&gt;{{ row.lastName }}&lt;/span&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+      &lt;el-table-column :label="$t('table.mentors.email')" min-width="150px" &gt;
+        &lt;template slot-scope="{row}"&gt;
+          &lt;span&gt;{{ row.email }}&lt;/span&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+      &lt;el-table-column
+        :label="$t('table.actions')"
+        align="center"
+        width="330"
+        class-name="fixed-width"
+      &gt;
+        &lt;template slot-scope="{row}"&gt;
+          &lt;el-button
+            type="primary"
+            size="small"
+            icon="el-icon-edit"
+            @click="handleUpdate(row)"
+          &gt;
+            {{ $t('table.edit') }}
+          &lt;/el-button&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+    &lt;/el-table&gt;
+
+    &lt;pagination
+        v-show="total&gt;0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.limit"
+        @pagination="getList"
+    /&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script lang="ts"&gt;
+import { Component, Vue } from 'vue-property-decorator';
+import { Form } from 'element-ui';
+import { cloneDeep } from 'lodash';
+import {
+  getMentors,
+} from '../../api/mentors';
+import { IMentor } from '../../api/types';
+import Pagination from '../../components/Pagination/index.vue';
+
+@Component({
+  name: 'Mentors',
+  components: {
+    Pagination,
+  },
+})
+export default class extends Vue {
+  private tableKey = 0;
+  private list: IMentor[] = [];
+  private total = 0;
+  private listLoading = true;
+
+  // Filter for query, this will not be used until we add pagination
+  private listQuery = {
+    page: 1,
+    limit: 10,
+    title: undefined,
+  };
+  private dialogFormVisible = false;
+  private dialogStatus = '';
+
+  public created() {
+    this.getList();
+  }
+
+  private getList() {
+    this.listLoading = true;
+    getMentors().then(data =&gt; {
+      this.list = data;
+      this.total = data.length;
+      this.listLoading = false;
+    });
+  }
+}
+&lt;/script&gt;
+</code></pre>
+<p>In this code, we do a lot of thing:</p>
+<p>On template, we can read that we delare a table and 4 tables columns. The actions colums is used to let user done some actions in this line. We will see how to use the <code>update</code> button later.</p>
+<p>You can see a lot of sing in this code:</p>
+<ul>
+<li><em>$t('table.mentors.firstName')</em> is a reference in the translation array under <code>app/src/lang/</code> directory.</li>
+<li><em>pagination</em> is a component create to help us in pagination</li>
+</ul>
+<p>We also have declare a lot of new var in <code>script</code> balise, thoses variables are availabe in the component using <em>this.varName</em> or in <em>varName</em> in the <code>template</code> balise</p>
+<h3><a class="anchor" aria-hidden="true" id="add-edition-filter-and-excel-export"></a><a href="#add-edition-filter-and-excel-export" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Add edition, filter and excel export</h3>
+<p>I will know give you the code to handle update and filter in the mentors views.
+Take time and search in [vuejs] documentation to well understand every thing in this code. It will be usefull for next steps.</p>
+<pre><code class="hljs css language-typescript">&lt;template&gt;
+  &lt;div class="app-container"&gt;
+    &lt;!-- Filter --&gt;
+    &lt;div class="filter-container"&gt;
+      &lt;el-input
+        v-model="listQuery.title"
+        :placeholder="$t('table.mentors.name')"
+        style="width: 200px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      /&gt;
+      &lt;el-button
+        v-waves
+        style="margin-left: 10px;"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleFilter"
+      &gt;
+        {{ $t('table.search') }}
+      &lt;/el-button&gt;
+      &lt;el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      &gt;
+        {{ $t('table.add') }}
+      &lt;/el-button&gt;
+      &lt;el-button
+        v-waves
+        :loading="downloadLoading"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-download"
+        @click="handleDownload"
+      &gt;
+        {{ $t('table.export') }}
+      &lt;/el-button&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Table --&gt;
+    &lt;el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+    &gt;
+      &lt;el-table-column :label="$t('table.mentors.firstName')" min-width="150px" &gt;
+        &lt;template slot-scope="{row}"&gt;
+          &lt;span&gt;{{ row.firstName }}&lt;/span&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+      &lt;el-table-column :label="$t('table.mentors.lastName')" min-width="150px" &gt;
+        &lt;template slot-scope="{row}"&gt;
+          &lt;span&gt;{{ row.lastName }}&lt;/span&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+      &lt;el-table-column :label="$t('table.mentors.email')" min-width="150px" &gt;
+        &lt;template slot-scope="{row}"&gt;
+          &lt;span&gt;{{ row.email }}&lt;/span&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+      &lt;el-table-column
+        :label="$t('table.actions')"
+        align="center"
+        width="330"
+        class-name="fixed-width"
+      &gt;
+        &lt;template slot-scope="{row}"&gt;
+          &lt;el-button
+            type="primary"
+            size="small"
+            icon="el-icon-edit"
+            @click="handleUpdate(row)"
+          &gt;
+            {{ $t('table.edit') }}
+          &lt;/el-button&gt;
+        &lt;/template&gt;
+      &lt;/el-table-column&gt;
+    &lt;/el-table&gt;
+
+    &lt;pagination
+      v-show="total&gt;0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
+    /&gt;
+
+    &lt;el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" &gt;
+      &lt;el-form
+        ref="dataForm"
+        :rules="rules"
+        :model="tempMentorData"
+        label-position="left"
+        label-width="250px"
+        style="width: 100%; padding: 0 50px;"
+      &gt;
+        &lt;el-form-item :label="$t('table.mentors.firstName')" prop="firstName" &gt;
+          &lt;el-input v-model="tempMentorData.firstName" /&gt;
+        &lt;/el-form-item&gt;
+        &lt;el-form-item :label="$t('table.mentors.lastName')" prop="lastName" &gt;
+          &lt;el-input v-model="tempMentorData.lastName" /&gt;
+        &lt;/el-form-item&gt;
+        &lt;el-form-item :label="$t('table.mentors.email')" prop="email" &gt;
+          &lt;el-input v-model="tempMentorData.email" /&gt;
+        &lt;/el-form-item&gt;
+      &lt;/el-form&gt;
+      &lt;div
+        slot="footer"
+        class="dialog-footer"
+      &gt;
+        &lt;el-button @click="dialogFormVisible = false"&gt;
+          {{ $t('table.cancel') }}
+        &lt;/el-button&gt;
+        &lt;el-button
+          type="primary"
+          @click="dialogStatus==='create'?createData():updateData()"
+        &gt;
+          {{ $t('table.confirm') }}
+        &lt;/el-button&gt;
+      &lt;/div&gt;
+    &lt;/el-dialog&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script lang="ts"&gt;
+import { Component, Vue } from 'vue-property-decorator';
+import { Form } from 'element-ui';
+import { cloneDeep } from 'lodash';
+import {
+  getMentors,
+  createMentor,
+  updateMentor,
+  defaultMentorData,
+} from '../../api/mentors';
+import { IMentor } from '../../api/types';
+import { exportJson2Excel } from '../../utils/excel';
+import { formatJson } from '../../utils';
+import Pagination from '../../components/Pagination/index.vue';
+
+@Component({
+  name: 'Mentors',
+  components: {
+    Pagination,
+  },
+})
+export default class extends Vue {
+  private tableKey = 0;
+  private list: IMentor[] = [];
+  private total = 0;
+  private listLoading = true;
+
+  // Filter for query, this will not be used until we add pagination
+  private listQuery = {
+    page: 1,
+    limit: 10,
+    title: undefined,
+  };
+  private dialogFormVisible = false;
+  private dialogStatus = '';
+
+  // Available mode to print in edition dialog
+  private textMap = {
+    update: 'Edit',
+    create: 'Create',
+  };
+
+  // Validation rules for edit and update
+  private rules = {
+    firstName: [{ required: true, message: 'First name is required', trigger: 'change' }],
+    lastName: [{ required: true, message: 'Last name is required', trigger: 'change' }],
+    email: [{ required: true, message: 'Email is required', trigger: 'change' }],
+  };
+  private downloadLoading = false;
+  private tempMentorData = defaultMentorData;
+
+  public created() {
+    this.getList();
+  }
+
+  private getList() {
+    this.listLoading = true;
+    getMentors().then(data =&gt; {
+      this.list = data;
+      this.total = data.length;
+      this.listLoading = false;
+    });
+  }
+
+  private handleFilter() {
+    this.getList();
+  }
+
+  private resetTempMentorData() {
+    this.tempMentorData = cloneDeep(defaultMentorData);
+  }
+
+  private handleCreate() {
+    this.resetTempMentorData();
+    this.dialogStatus = 'create';
+    this.dialogFormVisible = true;
+    this.$nextTick(() =&gt; {
+      (this.$refs['dataForm'] as Form).clearValidate();
+    });
+  }
+
+  private createData() {
+    (this.$refs['dataForm'] as Form).validate(async valid =&gt; {
+      if (valid) {
+        const data = await createMentor(this.tempMentorData);
+        this.list.unshift(data);
+        this.dialogFormVisible = false;
+        this.$notify({
+          title: 'Mentor creation',
+          message: 'Mentor successfully created',
+          type: 'success',
+          duration: 2000,
+        });
+      }
+    });
+  }
+
+  private handleUpdate(row: any) {
+    this.tempMentorData = Object.assign({}, row);
+    this.dialogStatus = 'update';
+    this.dialogFormVisible = true;
+    this.$nextTick(() =&gt; {
+      (this.$refs['dataForm'] as Form).clearValidate();
+    });
+  }
+
+  private updateData() {
+    (this.$refs['dataForm'] as Form).validate(async valid =&gt; {
+      if (valid) {
+        const tempData = Object.assign({}, this.tempMentorData);
+        const { data } = await updateMentor(tempData.id!, tempData);
+        for (const v of this.list) {
+          if (v.id === data.article.id) {
+            const index = this.list.indexOf(v);
+            this.list.splice(index, 1, data.article);
+            break;
+          }
+        }
+        this.dialogFormVisible = false;
+        this.$notify({
+          title: 'Update a mentor',
+          message: 'Successfully update mentor data',
+          type: 'success',
+          duration: 2000,
+        });
+      }
+    });
+  }
+
+  private handleDownload() {
+    this.downloadLoading = true;
+    const tHeader = [
+      'firstName',
+      'lastName',
+      'email',
+    ];
+    const filterVal = [
+      'firstName',
+      'lastName',
+      'email',
+    ];
+    const data = formatJson(filterVal, this.list);
+    exportJson2Excel(tHeader, data, 'table-list');
+    this.downloadLoading = false;
+  }
+}
+&lt;/script&gt;
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="register-our-view-in-the-router"></a><a href="#register-our-view-in-the-router" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Register our view in the router</h3>
+<p>Go to the <code>app/src/router/index.ts</code> file to do so.</p>
+<pre><code class="hljs css language-typescript">  {
+    path: <span class="hljs-string">'/mentors'</span>,
+    component: Layout,
+    children: [
+      {
+        path: <span class="hljs-string">'mentors'</span>,
+        component: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span>
+          <span class="hljs-keyword">import</span>(
+            <span class="hljs-comment">/* webpackChunkName: "mentors" */</span> <span class="hljs-string">'@/views/mentors/index.vue'</span>
+          ),
+        name: <span class="hljs-string">'Mentors'</span>,
+        meta: { title: <span class="hljs-string">'mentors'</span>, icon: <span class="hljs-string">'shopping'</span>, affix: <span class="hljs-literal">true</span> },
+      },
+    ],
+  },
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="todo-list"></a><a href="#todo-list" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>TODO list</h3>
+<p>To be sure you well understand how internationalization, you might done following things to increase table quality:</p>
+<ul>
+<li>Change header in <code>handleDownload</code> to load internationalized headers.</li>
+<li>Change file name in <code>handleDownload</code> to load internationalized file name. (use slugify name for file)</li>
+<li>Change notification in <code>updateData</code> to load internationalized notification.</li>
+<li>Change notification in <code>createData</code> to load internationalized notification.</li>
+<li>Change <code>rules</code> to load internationalized errors message.</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="manage-pagination"></a><a href="#manage-pagination" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Manage pagination</h2>
+<p>Managing paging may seem trivial at first when an application needs to manage thirty or so mentors, but it becomes essential when it comes to having a very dynamic application that allows the user to manage very large samples.</p>
+<p>As you may have noticed, we have already planned the pagination in the code of the step 'Visualize data in front-end', and we need to have it to the back-end.</p>
+<p>To do this, we will:</p>
+<ul>
+<li>Create a new validation schema to receive and secure our pagination filter</li>
+<li>Edit mentor's route to use this validation schema</li>
+<li>Modify the mentor controller to use these filters</li>
+<li>Update the front-end API to send params.</li>
+</ul>
+<p>To handle pagination, we will use 2 params:</p>
+<ul>
+<li>The page number to know which page we need</li>
+<li>The limit to know how many entry we need to select</li>
+</ul>
+<p>This pagination is apply to the <code>GET /api/v1/businesses</code> routes.</p>
+<h3><a class="anchor" aria-hidden="true" id="create-the-new-validator"></a><a href="#create-the-new-validator" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create the new validator</h3>
+<p>Under validator directory <code>services/src/api/validators/businesses.val.ts</code>, we need to create a new schema</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> MentorList: Schema = {
+  page: {
+    <span class="hljs-keyword">in</span>: [<span class="hljs-string">'query'</span>],
+    isInt: { errorMessage: <span class="hljs-string">'Page need to be an integer'</span> },
+    optional: <span class="hljs-literal">true</span>,
+    toInt: <span class="hljs-literal">true</span>,
+  },
+  limit: {
+    <span class="hljs-keyword">in</span>: [<span class="hljs-string">'query'</span>],
+    isInt: { errorMessage: <span class="hljs-string">'Limit need to be an integer'</span> },
+    optional: <span class="hljs-literal">true</span>,
+    toInt: <span class="hljs-literal">true</span>,
+  },
+};
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="change-mentors-routes"></a><a href="#change-mentors-routes" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Change mentors routes</h3>
+<p>We now need to add this validators to our mentors routes in <code>services/src/api/routers</code>.</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">import</span> express <span class="hljs-keyword">from</span> <span class="hljs-string">'express'</span>;
+<span class="hljs-keyword">import</span> { checkSchema } <span class="hljs-keyword">from</span> <span class="hljs-string">'express-validator'</span>;
+
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> MentorsCtrl <span class="hljs-keyword">from</span> <span class="hljs-string">'../controllers/mentors.ctrl'</span>;
+
+<span class="hljs-keyword">import</span> { ID } <span class="hljs-keyword">from</span> <span class="hljs-string">'../validators/generic.val'</span>;
+<span class="hljs-keyword">import</span> { MentorUpdate, MentorCreate, MentorList } <span class="hljs-keyword">from</span> <span class="hljs-string">'../validators/mentors.val'</span>;
+
+<span class="hljs-keyword">const</span> router = express.Router();
+
+router.get(<span class="hljs-string">''</span>, checkSchema(MentorList), MentorsCtrl.getMentors);
+router.post(<span class="hljs-string">''</span>, checkSchema(MentorCreate), MentorsCtrl.postMentor);
+router.get(<span class="hljs-string">'/:id'</span>, checkSchema(ID), MentorsCtrl.getMentor);
+router.put(<span class="hljs-string">'/:id'</span>, checkSchema(<span class="hljs-built_in">Object</span>.assign({}, ID, MentorUpdate)), MentorsCtrl.putMentor);
+router.delete(<span class="hljs-string">'/:id'</span>, checkSchema(ID), MentorsCtrl.deleteMentor);
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> router;
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="update-mentor-controller"></a><a href="#update-mentor-controller" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Update mentor controller</h3>
+<p>We have 2 things to do:</p>
+<ul>
+<li>Change Sequelize query to get only part of entries</li>
+<li>Change handler response to let our user know the pagination status</li>
+</ul>
+<p>First, get the pagination parameters and apply them to the ORM queries</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * GET /mentors
+ * Used to GET all mentors
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentors = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+  <span class="hljs-comment">// Retrive query data</span>
+  <span class="hljs-keyword">const</span> { page = <span class="hljs-number">1</span>, limit = <span class="hljs-number">20</span> } = req.query;
+
+  <span class="hljs-comment">// Comput SQL table offset and limit</span>
+  <span class="hljs-keyword">const</span> offset = page * limit;
+  <span class="hljs-keyword">const</span> limitORM = offset + limit;
+
+  Mentors.findAll({ limit: limitORM, offset, where: {}})
+      .then(<span class="hljs-function">(<span class="hljs-params">mentors</span>) =&gt;</span> {
+          <span class="hljs-keyword">if</span> (checkArrayContent(mentors, next)) {
+              <span class="hljs-keyword">return</span> res.send(mentors);
+          }
+      })
+      .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+</code></pre>
+<p>Then, change the format of the response to inform users about the page and the number of data in the response.</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * GET /mentors
+ * Used to GET all mentors
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getMentors = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// Retrive query data</span>
+    <span class="hljs-keyword">const</span> { page = <span class="hljs-number">1</span>, limit = <span class="hljs-number">20</span> } = req.query;
+
+    <span class="hljs-comment">// Comput SQL table offset and limit</span>
+    <span class="hljs-keyword">const</span> offset = page * limit;
+    <span class="hljs-keyword">const</span> limitORM = offset + limit;
+
+    <span class="hljs-keyword">let</span> max: <span class="hljs-built_in">number</span>;
+    Mentors.count()
+        .then(<span class="hljs-function">(<span class="hljs-params">rowNbr</span>) =&gt;</span> {
+            max = rowNbr;
+            <span class="hljs-keyword">return</span> Mentors.findAll({ limit: limitORM, offset, where: {} });
+        })
+        .then(<span class="hljs-function">(<span class="hljs-params">mentors</span>) =&gt;</span> {
+            <span class="hljs-keyword">if</span> (checkArrayContent(mentors, next)) {
+                <span class="hljs-keyword">return</span> res.send({
+                    page,
+                    data: mentors,
+                    length: mentors.length,
+                    lastPage: offset &gt;= max,
+                    max,
+                });
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+</code></pre>
+<p>Everything is ready in the back-end part for our pagination.</p>
+<p>You may now need to:</p>
+<ul>
+<li>Edit the front-end mentors API <code>app/src/api/mentors.ts</code> to send query params</li>
+<li>Edit the front-end views <code>app/src/views/mentors/index.ts</code> to receive data using the new request format</li>
+<li>Update Postman documentation query and response.</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="publish-modifications"></a><a href="#publish-modifications" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Publish modifications</h2>
+<ul>
+<li><a href="https://support.gitkraken.com/working-with-commits/commits/">Commit your changes</a></li>
+<li><a href="https://support.gitkraken.com/working-with-repositories/pushing-and-pulling/">Publish your branch</a></li>
+<li><a href="https://help.github.com/en/articles/creating-a-pull-request">Create a pull request</a></li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="code-review"></a><a href="#code-review" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Code review</h2>
+<p><a href="https://github.com/features/code-review/">Github presentation</a></p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="/enib-internships/docs/tuto-mentoring-propositions"><span>Setup mentoring propositions</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#create-branch-on-github">Create branch on github</a><ul class="toc-headings"><li><a href="#using-command-line">Using command line</a></li><li><a href="#using-gitkraken">Using gitkraken</a></li></ul></li><li><a href="#create-data-and-road-in-back-end">Create data and road in back-end</a><ul class="toc-headings"><li><a href="#create-controller">Create controller</a></li><li><a href="#create-validator">Create validator</a></li><li><a href="#add-controller-implementations">Add controller implementations</a></li><li><a href="#add-routes-implementations">Add routes implementations</a></li><li><a href="#test-on-postman-on-documentation">Test on postman on documentation</a></li><li><a href="#conclusion-of-this-part">Conclusion of this part</a></li></ul></li><li><a href="#visualize-data-in-front-end">Visualize data in front-end</a><ul class="toc-headings"><li><a href="#create-mentor-interfaces">Create mentor interfaces</a></li><li><a href="#add-api-in-front-end-code">Add API in front-end code</a></li><li><a href="#create-the-view">Create the view</a></li><li><a href="#add-table-to-our-view">Add table to our view</a></li><li><a href="#add-edition-filter-and-excel-export">Add edition, filter and excel export</a></li><li><a href="#register-our-view-in-the-router">Register our view in the router</a></li><li><a href="#todo-list">TODO list</a></li></ul></li><li><a href="#manage-pagination">Manage pagination</a><ul class="toc-headings"><li><a href="#create-the-new-validator">Create the new validator</a></li><li><a href="#change-mentors-routes">Change mentors routes</a></li><li><a href="#update-mentor-controller">Update mentor controller</a></li></ul></li><li><a href="#publish-modifications">Publish modifications</a></li><li><a href="#code-review">Code review</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2019 ENIB</section></footer></div></body></html>
