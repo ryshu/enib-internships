@@ -4,7 +4,7 @@ import { checkSchema } from 'express-validator';
 import * as BusinessesCtrl from '../controllers/businesses.ctrl';
 
 import { ID } from '../validators/generic.val';
-import { BusinessUpdate, BusinessCreate } from '../validators/businneses.val';
+import { BusinessUpdate, BusinessCreate } from '../validators/businesses.val';
 
 const router = express.Router();
 
