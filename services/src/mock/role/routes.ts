@@ -438,15 +438,6 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: '401',
-        component: 'views/error-page/401',
-        name: 'Page401',
-        meta: {
-          title: 'page401',
-          noCache: true,
-        },
-      },
-      {
         path: '404',
         component: 'views/error-page/404',
         name: 'Page404',

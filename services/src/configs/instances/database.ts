@@ -13,6 +13,6 @@ export default new Sequelize(
             min: 0,
             idle: 10000,
         },
-        logging: process.env.ORM_LOGGING === 'true' ? true : false,
+        logging: process.env.ORM_LOGGING === 'true',
     },
 );
