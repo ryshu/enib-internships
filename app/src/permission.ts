@@ -20,7 +20,7 @@ const getPageTitle = (key: string) => {
   return i18n.t('title').toString();
 };
 
-router.beforeEach(async (to: Route, _: Route, next: any) => {
+router.beforeEach(async(to: Route, _: Route, next: any) => {
   // Start progress bar
   NProgress.start();
 

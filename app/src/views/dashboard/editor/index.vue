@@ -1,27 +1,21 @@
 <template>
   <div class="dashboard-editor-container">
     <div class="clearfix">
-      <pan-thumb
-        :image="avatar"
-        style="float: left"
-      >
+      <pan-thumb :image="avatar" style="float: left">
         Your roles:
-        <span
-          v-for="item in roles"
-          :key="item"
-          class="info-roles"
-        >{{ item }}</span>
+        <span v-for="item in roles" :key="item" class="info-roles">{{
+          item
+        }}</span>
       </pan-thumb>
       <div class="info-container">
         <span class="display_name">{{ name }}</span>
-        <span style="font-size:20px;padding-top:20px;display:inline-block;">Editor's Dashboard</span>
+        <span
+          style="font-size:20px;padding-top:20px;display:inline-block;"
+        >Editor's Dashboard</span>
       </div>
     </div>
     <div>
-      <img
-        :src="emptyGif"
-        class="emptyGif"
-      >
+      <img alt="empty gif" :src="emptyGif" class="emptyGif" />
     </div>
   </div>
 </template>
@@ -40,7 +34,7 @@ import PanThumb from '../../../components/PanThumb/index.vue';
 })
 export default class extends Vue {
   private emptyGif =
-    'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3';
+    'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
 
   get name() {
     return UserModule.name;

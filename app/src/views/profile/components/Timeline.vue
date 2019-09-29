@@ -44,6 +44,6 @@ export default class extends Vue {
       title: 'Release New Version',
       content: 'Armour committed 2019/4/23 20:46',
     },
-  ];
+  ]
 }
 </script>

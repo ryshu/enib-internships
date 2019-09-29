@@ -7,29 +7,17 @@
     </el-row>
 
     <el-row :gutter="32">
-      <el-col
-        :xs="24"
-        :sm="24"
-        :lg="8"
-      >
+      <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
           <radar-chart />
         </div>
       </el-col>
-      <el-col
-        :xs="24"
-        :sm="24"
-        :lg="8"
-      >
+      <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
           <pie-chart />
         </div>
       </el-col>
-      <el-col
-        :xs="24"
-        :sm="24"
-        :lg="8"
-      >
+      <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
           <bar-chart />
         </div>
@@ -45,7 +33,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { UserModule } from '../../../store/modules/user';
 
 import BarChart from './components/BarChart.vue';
-import BoxCard from './components/BoxCard.vue';
 import LineChart, { ILineChartData } from './components/LineChart.vue';
 import PanelGroup from './components/PanelGroup.vue';
 import PieChart from './components/PieChart.vue';
@@ -74,7 +61,6 @@ const lineChartData: { [type: string]: ILineChartData } = {
   name: 'DashboardAdmin',
   components: {
     BarChart,
-    BoxCard,
     LineChart,
     PanelGroup,
     PieChart,
@@ -82,7 +68,7 @@ const lineChartData: { [type: string]: ILineChartData } = {
   },
 })
 export default class extends Vue {
-  private lineChartData = lineChartData.newVisitis;
+  private lineChartData = lineChartData.newVisitis
 
   private handleSetLineChartData(type: string) {
     this.lineChartData = lineChartData[type];

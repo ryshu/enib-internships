@@ -5,7 +5,6 @@ export default {
     businesses: 'Businesses',
     internships: 'Internships',
     students: 'Students',
-    page401: '401',
     page404: '404',
     errorLog: 'Error Log',
     excel: 'Excel',

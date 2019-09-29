@@ -1,23 +1,17 @@
 <template>
-  <div
-    :class="{active: isActive}"
-    class="share-dropdown-menu"
-  >
+  <div :class="{ active: isActive }" class="share-dropdown-menu">
     <div class="share-dropdown-menu-wrapper">
-      <span
-        class="share-dropdown-menu-title"
-        @click.self="clickTitle"
-      >{{ title }}</span>
+      <span class="share-dropdown-menu-title" @click.self="clickTitle">{{
+        title
+      }}</span>
       <div
         v-for="(item, index) of items"
         :key="index"
         class="share-dropdown-menu-item"
       >
-        <a
-          v-if="item.href"
-          :href="item.href"
-          target="_blank"
-        >{{ item.title }}</a>
+        <a v-if="item.href" :href="item.href" target="_blank">{{
+          item.title
+        }}</a>
         <span v-else>{{ item.title }}</span>
       </div>
     </div>
@@ -44,7 +38,7 @@ export default class extends Vue {
 
 <style lang="scss" scoped>
 $item-length: 10; // Should be no less than items.length
-$transition-time: .1s;
+$transition-time: 0.1s;
 
 .share-dropdown-menu {
   width: 250px;
@@ -62,7 +56,7 @@ $transition-time: .1s;
     font-size: 20px;
     text-align: center;
     z-index: 2;
-    transform: translate3d(0,0,0);
+    transform: translate3d(0, 0, 0);
   }
 
   &-wrapper {
@@ -89,7 +83,7 @@ $transition-time: .1s;
     @for $i from 1 through $item-length {
       &:nth-of-type(#{$i}) {
         z-index: -1;
-        transition-delay: $i*$transition-time;
+        transition-delay: $i * $transition-time;
         transform: translate3d(0, -60px, 0);
       }
     }
@@ -103,8 +97,8 @@ $transition-time: .1s;
     .share-dropdown-menu-item {
       @for $i from 1 through $item-length {
         &:nth-of-type(#{$i}) {
-         transition-delay: ($item-length - $i)*$transition-time;
-          transform: translate3d(0, ($i - 1)*60px, 0);
+          transition-delay: ($item-length - $i) * $transition-time;
+          transform: translate3d(0, ($i - 1) * 60px, 0);
         }
       }
     }
