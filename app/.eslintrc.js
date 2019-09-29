@@ -40,5 +40,5 @@ module.exports = {
     '@vue/standard',
     '@vue/typescript',
     'prettier',
-  ]
+  ],
 };

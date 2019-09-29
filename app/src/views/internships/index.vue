@@ -15,14 +15,18 @@
         type="primary"
         icon="el-icon-search"
         @click="handleFilter"
-      >{{ $t('table.search') }}</el-button>
+      >
+        {{ $t('table.search') }}
+      </el-button>
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
         type="primary"
         icon="el-icon-edit"
         @click="handleCreate"
-      >{{ $t('table.add') }}</el-button>
+      >
+        {{ $t('table.add') }}
+      </el-button>
       <el-button
         v-waves
         :loading="downloadLoading"
@@ -30,7 +34,9 @@
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
-      >{{ $t('table.export') }}</el-button>
+      >
+        {{ $t('table.export') }}
+      </el-button>
     </div>
 
     <el-table
@@ -42,22 +48,37 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.businesses.name')" min-width="150px">
+      <el-table-column
+        :label="$t('table.businesses.name')"
+        min-width="150px"
+      >
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
+          <span
+            class="link-type"
+            @click="handleUpdate(row)"
+          >{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.businesses.country')" min-width="150px">
+      <el-table-column
+        :label="$t('table.businesses.country')"
+        min-width="150px"
+      >
         <template slot-scope="{row}">
           <span>{{ row.country }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.businesses.city')" min-width="150px">
+      <el-table-column
+        :label="$t('table.businesses.city')"
+        min-width="150px"
+      >
         <template slot-scope="{row}">
           <span>{{ row.city }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.businesses.postalCode')" min-width="150px">
+      <el-table-column
+        :label="$t('table.businesses.postalCode')"
+        min-width="150px"
+      >
         <template slot-scope="{row}">
           <span>{{ row.postalCode }}</span>
         </template>
@@ -74,13 +95,17 @@
             size="small"
             icon="el-icon-edit"
             @click="handleUpdate(row)"
-          >{{ $t('table.edit') }}</el-button>
+          >
+            {{ $t('table.edit') }}
+          </el-button>
           <el-button
             size="small"
             type="danger"
             icon="el-icon-remove"
             @click="handleModifyStatus(row,'deleted')"
-          >{{ $t('table.delete') }}</el-button>
+          >
+            {{ $t('table.delete') }}
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -93,7 +118,10 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+    >
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -102,31 +130,56 @@
         label-width="250px"
         style="width: 100%; padding: 0 50px;"
       >
-        <el-form-item :label="$t('table.businesses.name')" prop="name">
+        <el-form-item
+          :label="$t('table.businesses.name')"
+          prop="name"
+        >
           <el-input v-model="tempBusinessData.name" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.country')" prop="country">
+        <el-form-item
+          :label="$t('table.businesses.country')"
+          prop="country"
+        >
           <el-input v-model="tempBusinessData.country" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.city')" prop="city">
+        <el-form-item
+          :label="$t('table.businesses.city')"
+          prop="city"
+        >
           <el-input v-model="tempBusinessData.city" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.postalCode')" prop="postalCode">
+        <el-form-item
+          :label="$t('table.businesses.postalCode')"
+          prop="postalCode"
+        >
           <el-input v-model="tempBusinessData.postalCode" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.address')" prop="address">
+        <el-form-item
+          :label="$t('table.businesses.address')"
+          prop="address"
+        >
           <el-input v-model="tempBusinessData.address" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.additional')" prop="additional">
+        <el-form-item
+          :label="$t('table.businesses.additional')"
+          prop="additional"
+        >
           <el-input v-model="tempBusinessData.additional" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="dialogFormVisible = false">
+          {{ $t('table.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           @click="dialogStatus==='create'?createData():updateData()"
-        >{{ $t('table.confirm') }}</el-button>
+        >
+          {{ $t('table.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
   </div>

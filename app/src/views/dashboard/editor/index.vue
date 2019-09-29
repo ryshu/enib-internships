@@ -1,9 +1,16 @@
 <template>
   <div class="dashboard-editor-container">
     <div class="clearfix">
-      <pan-thumb :image="avatar" style="float: left">
+      <pan-thumb
+        :image="avatar"
+        style="float: left"
+      >
         Your roles:
-        <span v-for="item in roles" :key="item" class="info-roles">{{ item }}</span>
+        <span
+          v-for="item in roles"
+          :key="item"
+          class="info-roles"
+        >{{ item }}</span>
       </pan-thumb>
       <div class="info-container">
         <span class="display_name">{{ name }}</span>
@@ -11,7 +18,10 @@
       </div>
     </div>
     <div>
-      <img :src="emptyGif" class="emptyGif" />
+      <img
+        :src="emptyGif"
+        class="emptyGif"
+      >
     </div>
   </div>
 </template>

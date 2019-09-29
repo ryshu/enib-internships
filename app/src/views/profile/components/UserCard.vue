@@ -1,19 +1,31 @@
 <template>
   <el-card style="margin-bottom:20px;">
-    <div slot="header" class="clearfix">
+    <div
+      slot="header"
+      class="clearfix"
+    >
       <span>About me</span>
     </div>
 
     <div class="user-profile">
       <div class="box-center">
-        <pan-thumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
+        <pan-thumb
+          :image="user.avatar"
+          :height="'100px'"
+          :width="'100px'"
+          :hoverable="false"
+        >
           <div>Hello</div>
           {{ user.roles }}
         </pan-thumb>
       </div>
       <div class="box-center">
-        <div class="user-name text-center">{{ user.name }}</div>
-        <div class="user-role text-center text-muted">{{ user.roles | uppercaseFirstChar }}</div>
+        <div class="user-name text-center">
+          {{ user.name }}
+        </div>
+        <div class="user-role text-center text-muted">
+          {{ user.roles | uppercaseFirstChar }}
+        </div>
       </div>
     </div>
 
@@ -24,7 +36,9 @@
           <span>Education</span>
         </div>
         <div class="user-bio-section-body">
-          <div class="text-muted">JS in Computer Science from the University of Technology</div>
+          <div class="text-muted">
+            JS in Computer Science from the University of Technology
+          </div>
         </div>
       </div>
 
@@ -48,7 +62,10 @@
           </div>
           <div class="progress-item">
             <span>ESLint</span>
-            <el-progress :percentage="100" status="success" />
+            <el-progress
+              :percentage="100"
+              status="success"
+            />
           </div>
         </div>
       </div>

@@ -1,12 +1,27 @@
 <template>
-  <el-card class="box-card-component" style="margin-left:8px;">
-    <div slot="header" class="box-card-header">
-      <img src="https://wpimg.wallstcn.com/e7d23d71-cf19-4b90-a1cc-f56af8c0903d.png" />
+  <el-card
+    class="box-card-component"
+    style="margin-left:8px;"
+  >
+    <div
+      slot="header"
+      class="box-card-header"
+    >
+      <img src="https://wpimg.wallstcn.com/e7d23d71-cf19-4b90-a1cc-f56af8c0903d.png">
     </div>
     <div style="position:relative;">
-      <pan-thumb :image="avatar" class="panThumb" />
-      <mallki class="mallki-text" text="vue-typescript-admin" />
-      <div style="padding-top:35px;" class="progress-item">
+      <pan-thumb
+        :image="avatar"
+        class="panThumb"
+      />
+      <mallki
+        class="mallki-text"
+        text="vue-typescript-admin"
+      />
+      <div
+        style="padding-top:35px;"
+        class="progress-item"
+      >
         <span>Vue</span>
         <el-progress :percentage="51" />
       </div>
@@ -20,7 +35,10 @@
       </div>
       <div class="progress-item">
         <span>ESLint</span>
-        <el-progress :percentage="100" status="success" />
+        <el-progress
+          :percentage="100"
+          status="success"
+        />
       </div>
     </div>
   </el-card>
