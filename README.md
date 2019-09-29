@@ -1,4 +1,4 @@
-# Internships manager
+# [Internships manager](https://ryshu.github.io/enib-internships/)
 
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/ryshu/enib-internships.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ryshu/enib-internships/alerts/) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/ryshu/enib-internships.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ryshu/enib-internships/context:javascript) [![Build Status](https://travis-ci.org/ryshu/enib-internships.svg?branch=master)](https://travis-ci.org/ryshu/enib-internships) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ryshu_enib-internships&metric=alert_status)](https://sonarcloud.io/dashboard?id=ryshu_enib-internships) [![Greenkeeper badge](https://badges.greenkeeper.io/ryshu/enib-internships.svg)](https://greenkeeper.io/)  [![codecov](https://codecov.io/gh/ryshu/enib-internships/branch/master/graph/badge.svg)](https://codecov.io/gh/ryshu/enib-internships)
 
@@ -129,7 +129,7 @@ Under the front-end directory `app`, you will be able to find the following code
 
 ## Documentation
 
-TODO
+Available [here](https://ryshu.github.io/enib-internships/)
 
 ## Contribution
 
