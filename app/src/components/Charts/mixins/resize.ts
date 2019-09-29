@@ -1,12 +1,12 @@
 import { ECharts } from 'echarts';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator'; // lgtm [js/useless-assignment-to-local]
 
 @Component({
   name: 'ResizeMixin',
 })
 export default class extends Vue {
-  protected chart!: ECharts | null
-  private sidebarElm?: Element
+  protected chart!: ECharts | null;
+  private sidebarElm?: Element;
 
   mounted() {
     this.initResizeEvent();
@@ -55,13 +55,15 @@ export default class extends Vue {
   private initSidebarResizeEvent() {
     this.sidebarElm = document.getElementsByClassName('sidebar-container')[0];
     if (this.sidebarElm) {
-      this.sidebarElm.addEventListener('transitionend', this.sidebarResizeHandler as EventListener);
+      this.sidebarElm.addEventListener('transitionend', this
+        .sidebarResizeHandler as EventListener);
     }
   }
 
   private destroySidebarResizeEvent() {
     if (this.sidebarElm) {
-      this.sidebarElm.removeEventListener('transitionend', this.sidebarResizeHandler as EventListener);
+      this.sidebarElm.removeEventListener('transitionend', this
+        .sidebarResizeHandler as EventListener);
     }
   }
 }

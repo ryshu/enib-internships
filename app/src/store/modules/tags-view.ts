@@ -93,7 +93,7 @@ class TagsView extends VuexModule implements ITagsViewState {
   private UPDATE_VISITED_VIEW(view: ITagView) {
     for (let v of this.visitedViews) {
       if (v.path === view.path) {
-        v = Object.assign(v, view);
+        v = Object.assign(v, view); // lgtm [js/useless-assignment-to-local]
         break;
       }
     }
