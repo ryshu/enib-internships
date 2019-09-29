@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" />
+  <div :id="id"></div>
 </template>
 
 <script lang="ts">
@@ -10,7 +10,8 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import defaultOptions from './default-options';
 import TuiEditor from 'tui-editor';
 
-const defaultId = () => 'markdown-editor-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '');
+const defaultId = () =>
+  'markdown-editor-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '');
 
 @Component({
   name: 'MarkdownEditor',
@@ -18,7 +19,8 @@ const defaultId = () => 'markdown-editor-' + +new Date() + ((Math.random() * 100
 export default class extends Vue {
   @Prop({ required: true }) private value!: string
   @Prop({ default: defaultId }) private id!: string
-  @Prop({ default: () => defaultOptions }) private options!: tuiEditor.IEditorOptions
+  @Prop({ default: () => defaultOptions })
+  private options!: tuiEditor.IEditorOptions
   @Prop({ default: 'markdown' }) private mode!: string
   @Prop({ default: '300px' }) private height!: string
   // https://github.com/nhnent/tui.editor/tree/master/src/js/langs

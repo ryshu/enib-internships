@@ -44,5 +44,6 @@ script:
 
 
 after_success:
-  - sonar-scanner
+  - sonar-scanner -Dproject.settings=./services/sonar-project.properties
+  - sonar-scanner -Dproject.settings=./app/sonar-project.properties
   - codecov

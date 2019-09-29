@@ -5,7 +5,6 @@ export default {
     businesses: 'Entreprises',
     internships: 'Stages',
     students: 'Etudiants',
-    page401: '401',
     page404: '404',
     profile: 'Profile',
   },

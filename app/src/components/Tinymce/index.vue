@@ -1,14 +1,10 @@
 <template>
   <div
-    :class="{fullscreen: fullscreen}"
+    :class="{ fullscreen: fullscreen }"
     class="tinymce-container"
-    :style="{width: containerWidth}"
+    :style="{ width: containerWidth }"
   >
-    <tinymce-editor
-      :id="id"
-      v-model="tinymceContent"
-      :init="initOptions"
-    />
+    <tinymce-editor :id="id" v-model="tinymceContent" :init="initOptions" />
     <div class="editor-custom-btn-container">
       <editor-image-upload
         :color="uploadButtonColor"
@@ -63,7 +59,8 @@ import { SettingsModule } from '@/store/modules/settings';
 import EditorImageUpload, { IUploadObject } from './components/EditorImage.vue';
 import { plugins, toolbar } from './config';
 
-const defaultId = () => 'vue-tinymce-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '');
+const defaultId = () =>
+  'vue-tinymce-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '');
 
 @Component({
   name: 'Tinymce',
@@ -76,7 +73,8 @@ export default class extends Vue {
   @Prop({ required: true }) private value!: string
   @Prop({ default: defaultId }) private id!: string
   @Prop({ default: () => [] }) private toolbar!: string[]
-  @Prop({ default: 'file edit insert view format table' }) private menubar!: string
+  @Prop({ default: 'file edit insert view format table' })
+  private menubar!: string
   @Prop({ default: '360px' }) private height!: string | number
   @Prop({ default: 'auto' }) private width!: string | number
 
@@ -86,10 +84,10 @@ export default class extends Vue {
   // https://www.tiny.cloud/docs/configure/localization/#language
   // and also see langs files under public/tinymce/langs folder
   private languageTypeList: { [key: string]: string } = {
-    'en': 'en',
-    'zh': 'zh_CN',
-    'es': 'es',
-    'ja': 'ja',
+    en: 'en',
+    zh: 'zh_CN',
+    es: 'es',
+    ja: 'ja',
   }
 
   get language() {
@@ -127,7 +125,10 @@ export default class extends Vue {
       menubar: this.menubar,
       plugins: plugins,
       language: this.language,
-      language_url: this.language === 'en' ? '' : `${process.env.BASE_URL}tinymce/langs/${this.language}.js`,
+      language_url:
+        this.language === 'en'
+          ? ''
+          : `${process.env.BASE_URL}tinymce/langs/${this.language}.js`,
       skin_url: `${process.env.BASE_URL}tinymce/skins/`,
       emoticons_database_url: `${process.env.BASE_URL}tinymce/emojis.min.js`,
       end_container_on_empty_block: true,

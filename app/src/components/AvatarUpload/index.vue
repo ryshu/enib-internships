@@ -30,21 +30,21 @@ import { AppModule } from '@/store/modules/app';
 })
 export default class extends Vue {
   // You can add more Prop, see: https://github.com/dai-siki/vue-image-crop-upload#usage
-  @Prop({ required: true }) private value!: boolean
-  @Prop({ required: true }) private url!: string
-  @Prop({ required: true }) private field!: string
-  @Prop({ default: 300 }) private width!: number
-  @Prop({ default: 300 }) private height!: number
-  @Prop({ default: () => {} }) private params!: object
-  @Prop({ default: () => {} }) private headers!: object
+  @Prop({ required: true }) private value!: boolean;
+  @Prop({ required: true }) private url!: string;
+  @Prop({ required: true }) private field!: string;
+  @Prop({ default: 300 }) private width!: number;
+  @Prop({ default: 300 }) private height!: number;
+  @Prop({ default: () => {} }) private params!: object;
+  @Prop({ default: () => {} }) private headers!: object;
 
   // https://github.com/dai-siki/vue-image-crop-upload#language-package
   private languageTypeList: { [key: string]: string } = {
-    'en': 'en',
-    'zh': 'zh',
-    'es': 'es-MX',
-    'ja': 'ja',
-  }
+    en: 'en',
+    zh: 'zh',
+    es: 'es-MX',
+    ja: 'ja',
+  };
 
   get show() {
     return this.value;

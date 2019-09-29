@@ -6,7 +6,7 @@
       type="file"
       accept=".xlsx, .xls"
       @change="handleClick"
-    >
+    />
     <div
       class="drop"
       @drop="handleDrop"
@@ -80,7 +80,7 @@ export default class extends Vue {
   }
 
   private handleUpload() {
-    (this.$refs['excel-upload-input'] as HTMLInputElement).click();
+    ;(this.$refs['excel-upload-input'] as HTMLInputElement).click();
   }
 
   private handleClick(e: MouseEvent) {
@@ -92,7 +92,7 @@ export default class extends Vue {
   }
 
   private upload(rawFile: File) {
-    (this.$refs['excel-upload-input'] as HTMLInputElement).value = ''; // Fixes can't select the same excel
+    ;(this.$refs['excel-upload-input'] as HTMLInputElement).value = ''; // Fixes can't select the same excel
     if (!this.beforeUpload) {
       this.readerData(rawFile);
       return;
@@ -119,12 +119,13 @@ export default class extends Vue {
     reader.readAsArrayBuffer(rawFile);
   }
 
-  private getHeaderRow(sheet: { [key: string ]: any }) {
+  private getHeaderRow(sheet: { [key: string]: any }) {
     const headers: string[] = [];
     const range = XLSX.utils.decode_range(sheet['!ref']);
     const R = range.s.r;
     // start in the first row
-    for (let C = range.s.c; C <= range.e.c; ++C) { // walk every column in the range
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      // walk every column in the range
       const cell = sheet[XLSX.utils.encode_cell({ c: C, r: R })];
       // find the cell in the first row
       let hdr: string = '';

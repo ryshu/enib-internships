@@ -1,9 +1,5 @@
 <template>
-  <div>
-    <!--error code-->
-    {{ a.a }}
-    <!--error code-->
-  </div>
+  <div>{{ a.a }}</div>
 </template>
 
 <script lang="ts">

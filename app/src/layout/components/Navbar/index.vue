@@ -6,12 +6,9 @@
       class="hamburger-container"
       @toggleClick="toggleSideBar"
     />
-    <breadcrumb
-      id="breadcrumb-container"
-      class="breadcrumb-container"
-    />
+    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
     <div class="right-menu">
-      <template v-if="device!=='mobile'">
+      <template v-if="device !== 'mobile'">
         <el-tooltip
           :content="$t('navbar.size')"
           effect="dark"
@@ -27,20 +24,20 @@
       >
         <div class="avatar-wrapper">
           <img
-            :src="avatar+'?imageView2/1/w/80/h/80'"
+            alt="User avatar"
+            :src="avatar + '?imageView2/1/w/80/h/80'"
             class="user-avatar"
-          >
-          <i class="el-icon-caret-bottom" />
+          />
+          <icon class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/profile/">
             <el-dropdown-item>{{ $t('navbar.profile') }}</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
-            <span
-              style="display:block;"
-              @click="logout"
-            >{{ $t('navbar.logOut') }}</span>
+            <span style="display:block;" @click="logout">{{
+              $t('navbar.logOut')
+            }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -50,13 +47,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { AppModule } from '@/store/modules/app';
-import { UserModule } from '@/store/modules/user';
-import Breadcrumb from '@/components/Breadcrumb/index.vue';
-import ErrorLog from '@/components/ErrorLog/index.vue';
-import Hamburger from '@/components/Hamburger/index.vue';
-import LangSelect from '@/components/LangSelect/index.vue';
-import SizeSelect from '@/components/SizeSelect/index.vue';
+import { AppModule } from '../../../store/modules/app';
+import { UserModule } from '../../../store/modules/user';
+import Breadcrumb from '../../../components/Breadcrumb/index.vue';
+import ErrorLog from '../../../components/ErrorLog/index.vue';
+import Hamburger from '../../../components/Hamburger/index.vue';
+import LangSelect from '../../../components/LangSelect/index.vue';
+import SizeSelect from '../../../components/SizeSelect/index.vue';
 
 @Component({
   name: 'Navbar',

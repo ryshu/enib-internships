@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="sidebar-logo-container"
-    :class="{'collapse': collapse}"
-  >
+  <div class="sidebar-logo-container" :class="{ collapse: collapse }">
     <transition name="sidebarLogoFade">
       <router-link
         v-if="collapse"
@@ -10,21 +7,10 @@
         class="sidebar-logo-link"
         to="/"
       >
-        <img
-          src="favicon.ico"
-          class="sidebar-logo"
-        >
+        <img alt="favicon" src="favicon.ico" class="sidebar-logo" />
       </router-link>
-      <router-link
-        v-else
-        key="expand"
-        class="sidebar-logo-link"
-        to="/"
-      >
-        <img
-          src="favicon.ico"
-          class="sidebar-logo"
-        >
+      <router-link v-else key="expand" class="sidebar-logo-link" to="/">
+        <img alt="favicon" src="favicon.ico" class="sidebar-logo" />
         <h1 class="sidebar-title">
           {{ $t('title') }}
         </h1>
@@ -40,9 +26,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
   name: 'SidebarLogo',
 })
 export default class extends Vue {
-  @Prop({ required: true }) private collapse!: boolean;
+  @Prop({ required: true }) private collapse!: boolean
 
-  private title = 'Vue Typescript Admin';
+  private title = 'Vue Typescript Admin'
 }
 </script>
 

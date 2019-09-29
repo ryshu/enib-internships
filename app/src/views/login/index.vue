@@ -9,9 +9,7 @@
       label-position="left"
     >
       <div class="title-container">
-        <h3 class="title">
-          {{ $t('login.title') }}
-        </h3>
+        <h3 class="title">{{ $t('login.title') }}</h3>
         <lang-select class="set-language" />
       </div>
 
@@ -43,10 +41,7 @@
           autocomplete="on"
           @keyup.enter.native="handleLogin"
         />
-        <span
-          class="show-pwd"
-          @click="showPwd"
-        >
+        <span class="show-pwd" @click="showPwd">
           <svg-icon :name="passwordType === 'password' ? 'eye-off' : 'eye-on'" />
         </span>
       </el-form-item>
@@ -56,19 +51,14 @@
         type="primary"
         style="width:100%; margin-bottom:30px;"
         @click.native.prevent="handleLogin"
-      >
-        {{ $t('login.logIn') }}
-      </el-button>
+      >{{ $t('login.logIn') }}</el-button>
     </el-form>
 
-    <el-dialog
-      :title="$t('login.thirdparty')"
-      :visible.sync="showDialog"
-    >
+    <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog">
       {{ $t('login.thirdpartyTips') }}
-      <br>
-      <br>
-      <br>
+      <br />
+      <br />
+      <br />
       <social-sign />
     </el-dialog>
   </div>
@@ -149,7 +139,7 @@ export default class extends Vue {
   }
 
   private handleLogin() {
-    (this.$refs.loginForm as ElForm).validate(async(valid: boolean) => {
+    (this.$refs.loginForm as ElForm).validate(async (valid: boolean) => {
       if (valid) {
         this.loading = true;
         await UserModule.Login(this.loginForm);

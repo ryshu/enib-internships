@@ -1,8 +1,8 @@
 <template>
   <div
     :class="className"
-    :style="{height: height, width: width}"
-  />
+    :style="{ height: height, width: width }"
+  ></div>
 </template>
 
 <script lang="ts">

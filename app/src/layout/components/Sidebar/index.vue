@@ -1,9 +1,6 @@
 <template>
-  <div :class="{'has-logo': showLogo}">
-    <sidebar-logo
-      v-if="showLogo"
-      :collapse="isCollapse"
-    />
+  <div :class="{ 'has-logo': showLogo }">
+    <sidebar-logo v-if="showLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :default-active="activeMenu"
@@ -29,12 +26,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { AppModule } from '@/store/modules/app';
-import { PermissionModule } from '@/store/modules/permission';
-import { SettingsModule } from '@/store/modules/settings';
+import { AppModule } from '../../../store/modules/app';
+import { PermissionModule } from '../../../store/modules/permission';
+import { SettingsModule } from '../../../store/modules/settings';
 import SidebarItem from './SidebarItem.vue';
 import SidebarLogo from './SidebarLogo.vue';
-import variables from '@/styles/_variables.scss';
+import variables from '../../../styles/_variables.scss';
 
 @Component({
   name: 'SideBar',
@@ -88,7 +85,8 @@ export default class extends Vue {
 .sidebar-container {
   // reset element-ui css
   .horizontal-collapse-transition {
-    transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
+    transition: 0s width ease-in-out, 0s padding-left ease-in-out,
+      0s padding-right ease-in-out;
   }
 
   .scrollbar-wrapper {
@@ -96,7 +94,7 @@ export default class extends Vue {
   }
 
   .el-scrollbar__view {
-    height: 100%
+    height: 100%;
   }
 
   .el-scrollbar__bar {
@@ -113,7 +111,7 @@ export default class extends Vue {
 
 <style lang="scss" scoped>
 .el-scrollbar {
-  height: 100%
+  height: 100%;
 }
 
 .has-logo {

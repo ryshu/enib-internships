@@ -1,12 +1,8 @@
 <template>
-  <a
-    :class="className"
-    class="link--mallki"
-    href="#"
-  >
+  <a :class="className" class="link--mallki" href="#">
     {{ text }}
-    <span :data-letters="text" />
-    <span :data-letters="text" />
+    <span :data-letters="text"></span>
+    <span :data-letters="text"></span>
   </a>
 </template>
 
@@ -17,8 +13,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
   name: 'Mallki',
 })
 export default class extends Vue {
-  @Prop({ default: '' }) private className!: string;
-  @Prop({ default: 'vue-typescript-admin' }) private text!: string;
+  @Prop({ default: '' }) private className!: string
+  @Prop({ default: 'vue-typescript-admin' }) private text!: string
 }
 </script>
 

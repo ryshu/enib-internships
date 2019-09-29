@@ -1,9 +1,6 @@
 <template>
   <el-card style="margin-bottom:20px;">
-    <div
-      slot="header"
-      class="clearfix"
-    >
+    <div slot="header" class="clearfix">
       <span>About me</span>
     </div>
 
@@ -62,10 +59,7 @@
           </div>
           <div class="progress-item">
             <span>ESLint</span>
-            <el-progress
-              :percentage="100"
-              status="success"
-            />
+            <el-progress :percentage="100" status="success" />
           </div>
         </div>
       </div>
@@ -87,7 +81,7 @@ import PanThumb from '../../../components/PanThumb/index.vue';
   },
 })
 export default class extends Vue {
-  @Prop({ required: true }) private user!: IProfile;
+  @Prop({ required: true }) private user!: IProfile
 }
 </script>
 

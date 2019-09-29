@@ -1,17 +1,14 @@
 <template>
   <div
-    :style="{zIndex: zIndex, height: height, width: width}"
+    :style="{ zIndex: zIndex, height: height, width: width }"
     class="pan-item"
   >
     <div class="pan-info">
       <div class="pan-info-roles-container">
-        <slot />
+        <slot></slot>
       </div>
     </div>
-    <div
-      :style="{backgroundImage: `url(${image})`}"
-      class="pan-thumb"
-    />
+    <div :style="{ backgroundImage: `url(${image})` }" class="pan-thumb"></div>
   </div>
 </template>
 
@@ -22,10 +19,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
   name: 'PanThumb',
 })
 export default class extends Vue {
-  @Prop({ required: true }) private image!: string;
-  @Prop({ default: '150px' }) private width!: string;
-  @Prop({ default: '150px' }) private height!: string;
-  @Prop({ default: 1 }) private zIndex!: number;
+  @Prop({ required: true }) private image!: string
+  @Prop({ default: '150px' }) private width!: string
+  @Prop({ default: '150px' }) private height!: string
+  @Prop({ default: 1 }) private zIndex!: number
 }
 </script>
 
