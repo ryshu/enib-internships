@@ -1,4 +1,4 @@
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator'; // lgtm [js/useless-assignment-to-local]
 import { AppModule, DeviceType } from '@/store/modules/app';
 
 const WIDTH = 992; // refer to Bootstrap's responsive design
