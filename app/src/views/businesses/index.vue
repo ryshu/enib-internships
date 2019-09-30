@@ -194,9 +194,9 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getBusinesses().then(data => {
-      this.list = data;
-      this.total = data.length;
+    getBusinesses(this.listQuery).then(res => {
+      this.list = res.data;
+      this.total = res.max;
       this.listLoading = false;
     });
   }

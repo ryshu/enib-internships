@@ -10,10 +10,11 @@ export const defaultBusinessData: IBusiness = {
   additional: '',
 };
 
-export const getBusinesses = () =>
+export const getBusinesses = (params: any) =>
   request({
     url: '/businesses',
     method: 'get',
+    params,
   });
 
 export const getBusiness = (id: number, params: any) =>
