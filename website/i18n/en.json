@@ -20,12 +20,6 @@
       "docs-install": {
         "title": "Installation"
       },
-      "tuto-files": {
-        "title": "Setup mentors"
-      },
-      "tuto-mentoring-propositions": {
-        "title": "Setup mentoring propositions"
-      },
       "tuto-mentors": {
         "title": "Setup mentors"
       },
@@ -45,7 +39,7 @@
       "Software architecture": "Software architecture",
       "Introduction": "Introduction",
       "REST API": "REST API",
-      "Setup data": "Setup data"
+      "Complete": "Complete"
     }
   },
   "pages-strings": {
