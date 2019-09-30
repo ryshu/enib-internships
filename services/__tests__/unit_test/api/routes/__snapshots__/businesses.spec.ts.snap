@@ -2,15 +2,22 @@
 
 exports[`GET /businesses Businesses_200 1`] = `
 Object {
-  "additional": null,
-  "address": "TEST",
-  "city": "Brest",
-  "country": "France",
-  "createdAt": Any<String>,
-  "id": 1,
-  "name": "test",
-  "postalCode": "29200",
-  "updatedAt": Any<String>,
+  "data": Array [
+    Object {
+      "additional": null,
+      "address": "TEST",
+      "city": "Brest",
+      "country": "France",
+      "createdAt": Any<String>,
+      "id": 1,
+      "name": "test",
+      "postalCode": "29200",
+      "updatedAt": Any<String>,
+    },
+  ],
+  "length": 1,
+  "max": 1,
+  "page": 1,
 }
 `;
 

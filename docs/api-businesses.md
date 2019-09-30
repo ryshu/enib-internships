@@ -11,22 +11,56 @@ Details of routes to handle **businesses**
 GET /api/v1/businesses
 ```
 
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**limit** | Number | *no* | Page expected (By default 1)
+**page** | Number | *no* | Number of row expected (By default 20)
+
 ### 200 - List of businesses
 
 ``` json
-[
-  {
-    "id": 1,
-    "name": "Thales Group",
-    "country": "France",
-    "city": "Courbevoie",
-    "postalCode": "92400",
-    "address": "31 Place des Corolles",
-    "additional": null,
-    "createdAt": "2019-09-19T22:21:24.000Z",
-    "updatedAt": "2019-09-19T22:21:24.000Z"
-  }
-]
+{
+    "page": "1",
+    "data": [
+        {
+            "id": 1,
+            "name": "Gusikowski Group",
+            "country": "Norfolk Island",
+            "city": "West Dashawnborough",
+            "postalCode": "63616-5509",
+            "address": "917 Lynch Fort",
+            "additional": "Suite 464",
+            "createdAt": "2019-09-30T11:24:50.000Z",
+            "updatedAt": "2019-09-30T11:24:50.000Z"
+        },
+        {
+            "id": 2,
+            "name": "Shanahan Group",
+            "country": "Azerbaijan",
+            "city": "Taylorbury",
+            "postalCode": "77677",
+            "address": "1629 Auer Stream",
+            "additional": "Suite 857",
+            "createdAt": "2019-09-30T11:24:50.000Z",
+            "updatedAt": "2019-09-30T11:24:50.000Z"
+        },
+        {
+            "id": 3,
+            "name": "Kuphal, Hessel and Veum",
+            "country": "Venezuela",
+            "city": "Koelpinhaven",
+            "postalCode": "68033",
+            "address": "16229 Labadie Dam",
+            "additional": "Suite 385",
+            "createdAt": "2019-09-30T11:24:50.000Z",
+            "updatedAt": "2019-09-30T11:24:50.000Z"
+        }
+    ],
+    "length": 3,
+    "max": 3
+}
 ```
 
 ### 204 - Not content

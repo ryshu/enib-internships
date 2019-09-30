@@ -9,13 +9,6 @@
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
     <div class="right-menu">
       <template v-if="device !== 'mobile'">
-        <el-tooltip
-          :content="$t('navbar.size')"
-          effect="dark"
-          placement="bottom"
-        >
-          <size-select class="right-menu-item hover-effect" />
-        </el-tooltip>
         <lang-select class="right-menu-item hover-effect" />
       </template>
       <el-dropdown
@@ -53,7 +46,6 @@ import Breadcrumb from '../../../components/Breadcrumb/index.vue';
 import ErrorLog from '../../../components/ErrorLog/index.vue';
 import Hamburger from '../../../components/Hamburger/index.vue';
 import LangSelect from '../../../components/LangSelect/index.vue';
-import SizeSelect from '../../../components/SizeSelect/index.vue';
 
 @Component({
   name: 'Navbar',
@@ -62,7 +54,6 @@ import SizeSelect from '../../../components/SizeSelect/index.vue';
     ErrorLog,
     Hamburger,
     LangSelect,
-    SizeSelect,
   },
 })
 export default class extends Vue {

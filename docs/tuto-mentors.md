@@ -10,7 +10,6 @@ At the end, we will be able to:
 * Create a new mentor
 * Update mentor data
 * Export the mentor list
-* Filter mentors by name using a pattern
 
 We will use this interface throughout this tutorial
 
@@ -134,7 +133,7 @@ export const MentorCreate: Schema = {
     email: {
         in: ['body'],
         isString: { errorMessage: 'Email must be of type string' },
-        isEmail: { errorMessage: 'Email must complain to email struct' }
+        isEmail: { errorMessage: 'Email must complain to email struct' },
         exists: { errorMessage: 'Email must be defined' },
         trim: true,
         escape: true,
@@ -335,12 +334,7 @@ export const postMentor = (req: Request, res: Response, next: NextFunction): voi
 
     // Insert mentor in database
     Mentors.create(mentor)
-        .then((created) => {
-            // Check if all is ok and return created mentor
-            if (checkContent(mentor, next)) {
-                return res.send(created);
-            }
-        })
+        .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 ```
@@ -481,11 +475,7 @@ export const postMentor = (req: Request, res: Response, next: NextFunction): voi
     };
 
     Mentors.create(mentor)
-        .then((created) => {
-            if (checkContent(mentor, next)) {
-                return res.send(created);
-            }
-        })
+        .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -599,15 +589,15 @@ Then, add our new router to API routers in `services/src/api/route.ts`:
 ``` typescript
 import express from 'express';
 
+...
 import mentorsRouter from './routers/mentors.route';
-import mentorsRouter from './routers/mentors.route';
-import mockUserSystem from '../mock/route';
+...
 
 const router = express.Router();
 
+...
 router.use('/mentors', mentorsRouter);
-router.use('/mentors', mentorsRouter);
-router.use(mockUserSystem);
+...
 
 export default router;
 ```
@@ -632,7 +622,7 @@ You need to generate 5 requests in documentation as following:
   * Update a mentor (`UPDATE /api/v1/mentors/:id`)
   * Remove a mentor (`DELETE /api/v1/mentors/:id`)
 
-If you need sample, look at mentors documentation.
+If you need sample, look at businesses documentation.
 
 ### Conclusion of this part
 
@@ -1198,11 +1188,11 @@ To handle pagination, we will use 2 params:
 * The page number to know which page we need
 * The limit to know how many entry we need to select
 
-This pagination is apply to the `GET /api/v1/businesses` routes.
+This pagination is apply to the `GET /api/v1/mentors` routes.
 
 ### Create the new validator
 
-Under validator directory `services/src/api/validators/businesses.val.ts`, we need to create a new schema
+Under validator directory `services/src/api/validators/mentors.val.ts`, we need to create a new schema
 
 ``` typescript
 export const MentorList: Schema = {
@@ -1252,7 +1242,11 @@ We have 2 things to do:
 * Change Sequelize query to get only part of entries
 * Change handler response to let our user know the pagination status
 
-First, get the pagination parameters and apply them to the ORM queries
+First, get the pagination parameters and apply them to the ORM queries.
+We will use a wrapper to do this to factorize this treatment.
+
+This wrapper is a function available under `services/src/api/helpers/pagination.helper.ts`
+Don't forget to import him to be able to use it.
 
 ``` typescript
 /**
@@ -1260,14 +1254,15 @@ First, get the pagination parameters and apply them to the ORM queries
  * Used to GET all mentors
  */
 export const getMentors = (req: Request, res: Response, next: NextFunction): void => {
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
+  
   // Retrive query data
   const { page = 1, limit = 20 } = req.query;
-
-  // Comput SQL table offset and limit
-  const offset = page * limit;
-  const limitORM = offset + limit;
-
-  Mentors.findAll({ limit: limitORM, offset, where: {}})
+  Mentors.findAll(paginate({ page, limit }))
       .then((mentors) => {
           if (checkArrayContent(mentors, next)) {
               return res.send(mentors);
@@ -1285,31 +1280,32 @@ Then, change the format of the response to inform users about the page and the n
  * Used to GET all mentors
  */
 export const getMentors = (req: Request, res: Response, next: NextFunction): void => {
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
 
-    // Comput SQL table offset and limit
-    const offset = page * limit;
-    const limitORM = offset + limit;
+  // Retrive query data
+  const { page = 1, limit = 20 } = req.query;
+  let max: number;
 
-    let max: number;
-    Mentors.count()
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Mentors.findAll({ limit: limitORM, offset, where: {} });
-        })
-        .then((mentors) => {
-            if (checkArrayContent(mentors, next)) {
-                return res.send({
-                    page,
-                    data: mentors,
-                    length: mentors.length,
-                    lastPage: offset >= max,
-                    max,
-                });
-            }
-        })
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+  Mentors.count()
+    .then((rowNbr) => {
+      max = rowNbr;
+      return Mentors.findAll(paginate({ page, limit }));
+    })
+    .then((mentors) => {
+      if (checkArrayContent(mentors, next)) {
+        return res.send({
+            page,
+            data: mentors,
+            length: mentors.length,
+            max,
+        });
+      }
+    })
+    .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 ```
 

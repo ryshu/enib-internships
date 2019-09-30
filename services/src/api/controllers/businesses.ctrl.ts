@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator';
 import Businesses from '../../models/Businesses';
 import httpStatus from 'http-status-codes';
 
+import { paginate } from '../helpers/pagination.helper';
 import {
     UNPROCESSABLE_ENTITY,
     checkArrayContent,
@@ -15,11 +16,29 @@ import {
  * GET /businesses
  * Used to GET all businesses
  */
-export const getBusinesses = (_req: Request, res: Response, next: NextFunction): void => {
-    Businesses.findAll()
-        .then((businesses) => {
-            if (checkArrayContent(businesses, next)) {
-                return res.send(businesses);
+export const getBusinesses = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    let max: number;
+    Businesses.count()
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Businesses.findAll(paginate({ page, limit }));
+        })
+        .then((mentors) => {
+            if (checkArrayContent(mentors, next)) {
+                return res.send({
+                    page,
+                    data: mentors,
+                    length: mentors.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -46,11 +65,7 @@ export const postBusiness = (req: Request, res: Response, next: NextFunction): v
     };
 
     Businesses.create(business)
-        .then((created) => {
-            if (checkContent(business, next)) {
-                return res.send(created);
-            }
-        })
+        .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 

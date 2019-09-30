@@ -1,5 +1,20 @@
 import { Schema } from 'express-validator';
 
+export const BusinessesList: Schema = {
+    page: {
+        in: ['query'],
+        isInt: { errorMessage: 'Page number must be an integer' },
+        optional: true,
+        toInt: true,
+    },
+    limit: {
+        in: ['query'],
+        isInt: { errorMessage: 'Limit of entries to provide must be an integer' },
+        optional: true,
+        toInt: true,
+    },
+};
+
 export const BusinessCreate: Schema = {
     name: {
         in: ['body'],

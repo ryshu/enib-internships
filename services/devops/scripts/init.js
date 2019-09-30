@@ -1,7 +1,7 @@
 // Init script
-var path = require('path');
-var fs = require('fs');
-var chalk = require('chalk');
+const path = require('path');
+const fs = require('fs');
+const chalk = require('chalk');
 
 var src, dest;
 
@@ -13,25 +13,6 @@ function copyFileSync(source, target) {
         }
     }
     fs.writeFileSync(targetFile, fs.readFileSync(source));
-}
-
-function copyFolderSync(source, target) {
-    var files = [];
-    var targetFolder = path.join(target, path.basename(source));
-    if (!fs.existsSync(targetFolder)) {
-        fs.mkdirSync(targetFolder);
-    }
-    if (fs.lstatSync(source).isDirectory()) {
-        files = fs.readdirSync(source);
-        files.forEach(function(file) {
-            var curSource = path.join(source, file);
-            if (fs.lstatSync(curSource).isDirectory()) {
-                copyFolderSync(curSource, targetFolder);
-            } else {
-                copyFileSync(curSource, targetFolder);
-            }
-        });
-    }
 }
 
 try {
