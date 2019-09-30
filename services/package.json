@@ -5,6 +5,7 @@
   "author": "Oscar Marie--Taillefer",
   "main": "index.js",
   "scripts": {
+    "load": "node dist/fake-load.js",
     "build": "npm run build-ts && npm run lint && npm run init",
     "serve": "node dist/server.js",
     "watch-node": "nodemon dist/server.js",
@@ -53,6 +54,7 @@
     "@types/express-flash": "0.0.1",
     "@types/express-session": "^1.15.12",
     "@types/express-validator": "^3.0.0",
+    "@types/faker": "^4.1.5",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.123",
     "@types/lusca": "^1.5.0",
@@ -63,6 +65,7 @@
     "@types/supertest": "^2.0.7",
     "chai": "^4.2.0",
     "concurrently": "^4.1.0",
+    "faker": "^4.1.0",
     "jest": "^24.7.1",
     "node-sass": "^4.11.0",
     "nodemon": "^1.18.11",
