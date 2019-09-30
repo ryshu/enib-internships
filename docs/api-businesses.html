@@ -58,20 +58,57 @@
 <h2><a class="anchor" aria-hidden="true" id="list-of-all-businesses"></a><a href="#list-of-all-businesses" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>List of all businesses</h2>
 <pre><code class="hljs css language-sh">GET /api/v1/businesses
 </code></pre>
+<h3><a class="anchor" aria-hidden="true" id="params"></a><a href="#params" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Params</h3>
+<table>
+<thead>
+<tr><th>Key</th><th>Type</th><th>Optional</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>limit</strong></td><td>Number</td><td><em>no</em></td><td>Page expected (By default 1)</td></tr>
+<tr><td><strong>page</strong></td><td>Number</td><td><em>no</em></td><td>Number of row expected (By default 20)</td></tr>
+</tbody>
+</table>
 <h3><a class="anchor" aria-hidden="true" id="200-list-of-businesses"></a><a href="#200-list-of-businesses" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>200 - List of businesses</h3>
-<pre><code class="hljs css language-json">[
-  {
-    <span class="hljs-attr">"id"</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Thales Group"</span>,
-    <span class="hljs-attr">"country"</span>: <span class="hljs-string">"France"</span>,
-    <span class="hljs-attr">"city"</span>: <span class="hljs-string">"Courbevoie"</span>,
-    <span class="hljs-attr">"postalCode"</span>: <span class="hljs-string">"92400"</span>,
-    <span class="hljs-attr">"address"</span>: <span class="hljs-string">"31 Place des Corolles"</span>,
-    <span class="hljs-attr">"additional"</span>: <span class="hljs-literal">null</span>,
-    <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2019-09-19T22:21:24.000Z"</span>,
-    <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2019-09-19T22:21:24.000Z"</span>
-  }
-]
+<pre><code class="hljs css language-json">{
+    <span class="hljs-attr">"page"</span>: <span class="hljs-string">"1"</span>,
+    <span class="hljs-attr">"data"</span>: [
+        {
+            <span class="hljs-attr">"id"</span>: <span class="hljs-number">1</span>,
+            <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Gusikowski Group"</span>,
+            <span class="hljs-attr">"country"</span>: <span class="hljs-string">"Norfolk Island"</span>,
+            <span class="hljs-attr">"city"</span>: <span class="hljs-string">"West Dashawnborough"</span>,
+            <span class="hljs-attr">"postalCode"</span>: <span class="hljs-string">"63616-5509"</span>,
+            <span class="hljs-attr">"address"</span>: <span class="hljs-string">"917 Lynch Fort"</span>,
+            <span class="hljs-attr">"additional"</span>: <span class="hljs-string">"Suite 464"</span>,
+            <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2019-09-30T11:24:50.000Z"</span>,
+            <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2019-09-30T11:24:50.000Z"</span>
+        },
+        {
+            <span class="hljs-attr">"id"</span>: <span class="hljs-number">2</span>,
+            <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Shanahan Group"</span>,
+            <span class="hljs-attr">"country"</span>: <span class="hljs-string">"Azerbaijan"</span>,
+            <span class="hljs-attr">"city"</span>: <span class="hljs-string">"Taylorbury"</span>,
+            <span class="hljs-attr">"postalCode"</span>: <span class="hljs-string">"77677"</span>,
+            <span class="hljs-attr">"address"</span>: <span class="hljs-string">"1629 Auer Stream"</span>,
+            <span class="hljs-attr">"additional"</span>: <span class="hljs-string">"Suite 857"</span>,
+            <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2019-09-30T11:24:50.000Z"</span>,
+            <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2019-09-30T11:24:50.000Z"</span>
+        },
+        {
+            <span class="hljs-attr">"id"</span>: <span class="hljs-number">3</span>,
+            <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Kuphal, Hessel and Veum"</span>,
+            <span class="hljs-attr">"country"</span>: <span class="hljs-string">"Venezuela"</span>,
+            <span class="hljs-attr">"city"</span>: <span class="hljs-string">"Koelpinhaven"</span>,
+            <span class="hljs-attr">"postalCode"</span>: <span class="hljs-string">"68033"</span>,
+            <span class="hljs-attr">"address"</span>: <span class="hljs-string">"16229 Labadie Dam"</span>,
+            <span class="hljs-attr">"additional"</span>: <span class="hljs-string">"Suite 385"</span>,
+            <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2019-09-30T11:24:50.000Z"</span>,
+            <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2019-09-30T11:24:50.000Z"</span>
+        }
+    ],
+    <span class="hljs-attr">"length"</span>: <span class="hljs-number">3</span>,
+    <span class="hljs-attr">"max"</span>: <span class="hljs-number">3</span>
+}
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="204-not-content"></a><a href="#204-not-content" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>204 - Not content</h3>
 <p>If the API doesn't have any business in his database, we return a status <strong>204 - No content</strong></p>
@@ -245,4 +282,4 @@
 <p>Return a status <strong>200</strong> without data when delete succeed</p>
 <h3><a class="anchor" aria-hidden="true" id="204-no-content-2"></a><a href="#204-no-content-2" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>204 - No content</h3>
 <p>If the API doesn't have any business in his database, we return a status <strong>204 - No content</strong></p>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/enib-internships/docs/api-index"><span class="arrow-prev">← </span><span>Internships manager API</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#list-of-all-businesses">List of all businesses</a><ul class="toc-headings"><li><a href="#200-list-of-businesses">200 - List of businesses</a></li><li><a href="#204-not-content">204 - Not content</a></li></ul></li><li><a href="#create-a-new-business">Create a new business</a><ul class="toc-headings"><li><a href="#headers">Headers</a></li><li><a href="#body">Body</a></li><li><a href="#200-created">200 - Created</a></li><li><a href="#400-bad-request">400 - Bad request</a></li></ul></li><li><a href="#get-a-business-by-identifier">Get a business by identifier</a><ul class="toc-headings"><li><a href="#paths-variables">Paths variables</a></li><li><a href="#200-business">200 - Business</a></li><li><a href="#204-no-content">204 - No content</a></li></ul></li><li><a href="#update-a-business-by-identifier">Update a business by identifier</a><ul class="toc-headings"><li><a href="#paths-variables-1">Paths variables</a></li><li><a href="#headers-1">Headers</a></li><li><a href="#body-1">Body</a></li><li><a href="#200-updated-business">200 - Updated business</a></li><li><a href="#204-no-content-1">204 - No content</a></li><li><a href="#400-bad-request-1">400 - Bad request</a></li></ul></li><li><a href="#remove-a-business-by-identifier">Remove a business by identifier</a><ul class="toc-headings"><li><a href="#paths-variables-2">Paths variables</a></li><li><a href="#200-removed">200 - Removed</a></li><li><a href="#204-no-content-2">204 - No content</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2019 ENIB</section></footer></div></body></html>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/enib-internships/docs/api-index"><span class="arrow-prev">← </span><span>Internships manager API</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#list-of-all-businesses">List of all businesses</a><ul class="toc-headings"><li><a href="#params">Params</a></li><li><a href="#200-list-of-businesses">200 - List of businesses</a></li><li><a href="#204-not-content">204 - Not content</a></li></ul></li><li><a href="#create-a-new-business">Create a new business</a><ul class="toc-headings"><li><a href="#headers">Headers</a></li><li><a href="#body">Body</a></li><li><a href="#200-created">200 - Created</a></li><li><a href="#400-bad-request">400 - Bad request</a></li></ul></li><li><a href="#get-a-business-by-identifier">Get a business by identifier</a><ul class="toc-headings"><li><a href="#paths-variables">Paths variables</a></li><li><a href="#200-business">200 - Business</a></li><li><a href="#204-no-content">204 - No content</a></li></ul></li><li><a href="#update-a-business-by-identifier">Update a business by identifier</a><ul class="toc-headings"><li><a href="#paths-variables-1">Paths variables</a></li><li><a href="#headers-1">Headers</a></li><li><a href="#body-1">Body</a></li><li><a href="#200-updated-business">200 - Updated business</a></li><li><a href="#204-no-content-1">204 - No content</a></li><li><a href="#400-bad-request-1">400 - Bad request</a></li></ul></li><li><a href="#remove-a-business-by-identifier">Remove a business by identifier</a><ul class="toc-headings"><li><a href="#paths-variables-2">Paths variables</a></li><li><a href="#200-removed">200 - Removed</a></li><li><a href="#204-no-content-2">204 - No content</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2019 ENIB</section></footer></div></body></html>
