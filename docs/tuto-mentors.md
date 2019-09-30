@@ -1260,6 +1260,12 @@ First, get the pagination parameters and apply them to the ORM queries
  * Used to GET all mentors
  */
 export const getMentors = (req: Request, res: Response, next: NextFunction): void => {
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
+  
   // Retrive query data
   const { page = 1, limit = 20 } = req.query;
 
@@ -1285,31 +1291,37 @@ Then, change the format of the response to inform users about the page and the n
  * Used to GET all mentors
  */
 export const getMentors = (req: Request, res: Response, next: NextFunction): void => {
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
 
-    // Comput SQL table offset and limit
-    const offset = page * limit;
-    const limitORM = offset + limit;
+  // Retrive query data
+  const { page = 1, limit = 20 } = req.query;
 
-    let max: number;
-    Mentors.count()
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Mentors.findAll({ limit: limitORM, offset, where: {} });
-        })
-        .then((mentors) => {
-            if (checkArrayContent(mentors, next)) {
-                return res.send({
-                    page,
-                    data: mentors,
-                    length: mentors.length,
-                    lastPage: offset >= max,
-                    max,
-                });
-            }
-        })
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+  // Comput SQL table offset and limit
+  const offset = page * limit;
+  const limitORM = offset + limit;
+
+  let max: number;
+  Mentors.count()
+    .then((rowNbr) => {
+      max = rowNbr;
+      return Mentors.findAll({ limit: limitORM, offset, where: {} });
+    })
+    .then((mentors) => {
+      if (checkArrayContent(mentors, next)) {
+        return res.send({
+            page,
+            data: mentors,
+            length: mentors.length,
+            lastPage: offset >= max,
+            max,
+        });
+      }
+    })
+    .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 ```
 
