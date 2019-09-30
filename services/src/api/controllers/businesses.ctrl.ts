@@ -65,11 +65,7 @@ export const postBusiness = (req: Request, res: Response, next: NextFunction): v
     };
 
     Businesses.create(business)
-        .then((created) => {
-            if (checkContent(business, next)) {
-                return res.send(created);
-            }
-        })
+        .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
