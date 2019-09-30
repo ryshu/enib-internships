@@ -1252,7 +1252,11 @@ We have 2 things to do:
 * Change Sequelize query to get only part of entries
 * Change handler response to let our user know the pagination status
 
-First, get the pagination parameters and apply them to the ORM queries
+First, get the pagination parameters and apply them to the ORM queries.
+We will use a wrapper to do this to factorize this treatment.
+
+This wrapper is a function available under `services/src/api/helpers/pagination.helper.ts`
+Don't forget to import him to be able to use it.
 
 ``` typescript
 /**
@@ -1268,12 +1272,7 @@ export const getMentors = (req: Request, res: Response, next: NextFunction): voi
   
   // Retrive query data
   const { page = 1, limit = 20 } = req.query;
-
-  // Comput SQL table offset and limit
-  const offset = page * limit;
-  const limitORM = offset + limit;
-
-  Mentors.findAll({ limit: limitORM, offset, where: {}})
+  Mentors.findAll(paginate({ page, limit }))
       .then((mentors) => {
           if (checkArrayContent(mentors, next)) {
               return res.send(mentors);
@@ -1299,16 +1298,12 @@ export const getMentors = (req: Request, res: Response, next: NextFunction): voi
 
   // Retrive query data
   const { page = 1, limit = 20 } = req.query;
-
-  // Comput SQL table offset and limit
-  const offset = page * limit;
-  const limitORM = offset + limit;
-
   let max: number;
+
   Mentors.count()
     .then((rowNbr) => {
       max = rowNbr;
-      return Mentors.findAll({ limit: limitORM, offset, where: {} });
+      return Mentors.findAll(paginate({ page, limit }));
     })
     .then((mentors) => {
       if (checkArrayContent(mentors, next)) {
@@ -1316,7 +1311,6 @@ export const getMentors = (req: Request, res: Response, next: NextFunction): voi
             page,
             data: mentors,
             length: mentors.length,
-            lastPage: offset >= max,
             max,
         });
       }
