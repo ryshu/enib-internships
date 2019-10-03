@@ -194,7 +194,7 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getBusinesses(this.listQuery).then(res => {
+    getBusinesses(this.listQuery).then((res: any) => {
       this.list = res.data;
       this.total = res.max;
       this.listLoading = false;
@@ -229,8 +229,8 @@ export default class extends Vue {
   private createData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
-        const data = await createBusiness(this.tempBusinessData);
-        this.list.unshift(data);
+        const res = await createBusiness(this.tempBusinessData);
+        this.list.unshift(res.data);
         this.dialogFormVisible = false;
         this.$notify({
           title: 'Business creation',

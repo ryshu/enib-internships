@@ -31,12 +31,12 @@ export const getBusinesses = (req: Request, res: Response, next: NextFunction): 
             max = rowNbr;
             return Businesses.findAll(paginate({ page, limit }));
         })
-        .then((mentors) => {
-            if (checkArrayContent(mentors, next)) {
+        .then((businesses) => {
+            if (checkArrayContent(businesses, next)) {
                 return res.send({
                     page,
-                    data: mentors,
-                    length: mentors.length,
+                    data: businesses,
+                    length: businesses.length,
                     max,
                 });
             }
@@ -45,7 +45,7 @@ export const getBusinesses = (req: Request, res: Response, next: NextFunction): 
 };
 
 /**
- * POST /businessess
+ * POST /businesses
  * Used to create a new business entry
  */
 export const postBusiness = (req: Request, res: Response, next: NextFunction): void => {

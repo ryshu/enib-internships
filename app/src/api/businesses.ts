@@ -1,4 +1,6 @@
 import request from '@/utils/request';
+
+import { AxiosPromise } from 'axios';
 import { IBusiness } from './types';
 
 export const defaultBusinessData: IBusiness = {
@@ -29,7 +31,7 @@ export const createBusiness = (data: any) =>
     url: '/businesses',
     method: 'post',
     data,
-  });
+  }) as AxiosPromise<IBusiness>;
 
 export const updateBusiness = (id: number, data: any) =>
   request({
