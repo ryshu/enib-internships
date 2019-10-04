@@ -18,6 +18,9 @@
     "test:unit": "npm run test:unit:app && npm run test:unit:services",
     "test:unit:app": "cd app && npm run test:unit",
     "test:unit:services": "cd services && npm run test",
+    "build": "npm run build:app && npm run build:services",
+    "build:app": "cd app && npm run build",
+    "build:services": "cd services && npm run build",
     "deploy:website": "cd website && ORGANIZATION_NAME=ryshu GIT_USER=ryshu CURRENT_BRANCH=master USE_SSH=true yarn run publish-gh-pages"
   },
   "keywords": [

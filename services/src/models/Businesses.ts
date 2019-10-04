@@ -53,7 +53,7 @@ Businesses.init(
         },
     },
     {
-        tableName: 'businessess',
+        tableName: 'businesses',
         sequelize: database,
     },
 );
