@@ -12,12 +12,6 @@ pids
 logs
 results
 
-# Configuration file, avoid leek on git of secrets
-.env
-.env.local
-.env.*.local
-docker-compose.yml
-
 # Dependency directory
 node_modules
 bower_components
