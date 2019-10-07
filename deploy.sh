@@ -33,9 +33,17 @@ else
     cp -RT services/dist deploy
     cp -RT app/dist deploy/app
 
+    # Commit build files
     git add deploy && git commit -m "$1"
-    git subtree push --prefix deploy origin production
 
+    # create a local production branch containing the splitted deploy folder
+    git subtree split --prefix deploy -b production
+
+    # force the push of the production branch to the remote production branch at origin
+    git push -f origin production:production
+
+    # delete the local production, deploy directory and reset to last commit
+    git branch -D production
     rm -rf deploy
     git reset --hard HEAD
 fi
