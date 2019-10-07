@@ -11,7 +11,7 @@ LOCAL=$(git rev-parse @)
 REMOTE=$(git rev-parse "master")
 
 # Check if we are on master branch
-if [ CURRENT_BRANCH != "master" ]; then
+if [ $CURRENT_BRANCH != "master" ]; then
     echo "Might be on master branch to deploy"
     echo "Current branch is '$CURRENT_BRANCH'"
     exit 1
