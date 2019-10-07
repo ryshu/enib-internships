@@ -27,6 +27,6 @@
     "internships"
   ],
   "devDependencies": {
-    "concurrently": "^4.1.2"
+    "concurrently": "^5.0.0"
   }
 }
