@@ -21,12 +21,15 @@
     "build": "npm run build:app && npm run build:services",
     "build:app": "cd app && npm run build",
     "build:services": "cd services && npm run build",
-    "deploy:website": "cd website && ORGANIZATION_NAME=ryshu GIT_USER=ryshu CURRENT_BRANCH=master USE_SSH=true yarn run publish-gh-pages"
+    "deploy:website": "cd website && ORGANIZATION_NAME=ryshu GIT_USER=ryshu CURRENT_BRANCH=master USE_SSH=true yarn run publish-gh-pages",
+    "deploy:production": "ORGANIZATION_NAME=ryshu GIT_USER=ryshu USE_SSH=true node devops/publish-production.js"
   },
   "keywords": [
     "internships"
   ],
   "devDependencies": {
-    "concurrently": "^5.0.0"
+    "concurrently": "^5.0.0",
+    "fs-extra": "^8.1.0",
+    "shelljs": "^0.8.3"
   }
 }
