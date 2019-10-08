@@ -99,7 +99,6 @@ Under the front-end directory `app`, you will be able to find the following code
   * **icons/** (Every icons used in application)
   * **lang/** (Languages files [@see Vue-i18n](https://kazupon.github.io/vue-i18n/))
   * **layout/** (Components to compose layout of application)
-  * **pwa/** (File link to progressive web application [@see Vue-pwa](https://medium.com/the-web-tub/creating-your-first-vue-js-pwa-project-22f7c552fb34))
   * **router/** (Router of application [@see Vue-router](https://router.vuejs.org/))
   * **store/** (Shared store of application [@see Vuex](https://vuex.vuejs.org/))
   * **styles/** (Every styles sheets)
