@@ -117,7 +117,7 @@ export const InternshipUpdate: Schema = {
     },
     isLanguageCourse: {
         in: ['body'],
-        isBoolean: { errorMessage: 'LanguageCourse must be of type boolean' },
+        isBoolean: { errorMessage: 'Language course must be of type boolean' },
         optional: true,
         escape: true,
     },
