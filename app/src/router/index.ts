@@ -101,6 +101,21 @@ export const constantRoutes: RouteConfig[] = [
     ],
   },
   {
+    path: '/campaigns',
+    component: Layout,
+    children: [
+      {
+        path: 'campaigns',
+        component: () =>
+          import(
+            /* webpackChunkName: "campaigns" */ '@/views/campaigns/index.vue'
+          ),
+        name: 'Campaigns',
+        meta: { title: 'campaigns', icon: 'list', affix: true },
+      },
+    ],
+  },
+  {
     path: '/students',
     component: Layout,
     children: [

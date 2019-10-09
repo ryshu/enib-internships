@@ -34,6 +34,13 @@ export default {
       address: 'Adresse',
       additional: 'Informations complémentaire',
     },
+    campaigns: {
+      name: "Nom de la campagne",
+      startAt: 'Début',
+      endAt: 'Fin',
+      semester: 'Semestre',
+      maxProposition: 'Nombre maximum de proposition par tuteur',
+    },
     title: 'Titre',
     search: 'Recherche',
     add: 'Ajouter',

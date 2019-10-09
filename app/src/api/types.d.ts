@@ -38,3 +38,16 @@ export interface IUserData {
   introduction: string;
   roles: string[];
 }
+
+export declare interface ICampaigns {
+  id?: number;
+
+  name: string;
+  startAt: number;
+  endAt: number;
+  semester: string;
+  maxProposition: number;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
