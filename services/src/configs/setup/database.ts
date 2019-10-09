@@ -1,6 +1,7 @@
 import database from '../instances/database';
 
 import '../../models/Businesses';
+import '../../models/Campaigns';
 import '../../models/Files';
 import '../../models/Internships';
 import '../../models/MentoringPropositions';
