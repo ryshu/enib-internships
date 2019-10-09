@@ -81,7 +81,7 @@
             size="small"
             type="danger"
             icon="el-icon-remove"
-            @click="handleModifyStatus(row, 'deleted')"
+            @click="handleDelete(row, 'deleted')"
           >{{ $t('table.delete') }}</el-button>
         </template>
       </el-table-column>
@@ -142,6 +142,7 @@ import {
   getBusinesses,
   createBusiness,
   updateBusiness,
+  deleteBusiness,
   defaultBusinessData,
 } from '../../api/businesses';
 import { IBusiness } from '../../api/types';
@@ -205,12 +206,15 @@ export default class extends Vue {
     this.getList();
   }
 
-  private handleModifyStatus(row: any, status: string) {
-    this.$message({
-      message: '操作成功',
+  private async handleDelete(row: any, status: string) {
+    await deleteBusiness(row.id!);
+    this.getList();
+    this.$notify({
+      title: 'Delete a Business',
+      message: 'Business deleted',
       type: 'success',
+      duration: 2000,
     });
-    row.status = status;
   }
 
   private resetTempBusinessData() {
@@ -229,8 +233,8 @@ export default class extends Vue {
   private createData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
-        const res = await createBusiness(this.tempBusinessData);
-        this.list.unshift(res.data);
+        await createBusiness(this.tempBusinessData);
+        this.getList();
         this.dialogFormVisible = false;
         this.$notify({
           title: 'Business creation',
@@ -256,13 +260,7 @@ export default class extends Vue {
       if (valid) {
         const tempData = Object.assign({}, this.tempBusinessData);
         const { data } = await updateBusiness(tempData.id!, tempData);
-        for (const v of this.list) {
-          if (v.id === data.article.id) {
-            const index = this.list.indexOf(v);
-            this.list.splice(index, 1, data.article);
-            break;
-          }
-        }
+        this.getList();
         this.dialogFormVisible = false;
         this.$notify({
           title: 'Update a business',
