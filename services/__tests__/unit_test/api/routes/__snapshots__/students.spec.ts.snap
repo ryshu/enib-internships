@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GET /students Students_200 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": Any<String>,
+      "email": "john.doe@enib.fr",
+      "firstName": "John",
+      "id": 1,
+      "lastName": "Doe",
+      "semester": "S10",
+      "updatedAt": Any<String>,
+    },
+  ],
+  "length": 1,
+  "max": 1,
+  "page": 1,
+}
+`;
+
+exports[`GET /students/:id Students_200 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": Any<Number>,
+  "lastName": "Doe",
+  "semester": "S10",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /students ValidStudents_200 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": Any<Number>,
+  "lastName": "Doe",
+  "semester": "S10",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /students/:id Students_200_NotAnyDataUpdated 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": Any<Number>,
+  "lastName": "Doe",
+  "semester": "S10",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /students/:id Students_200_UpdateAllData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": Any<Number>,
+  "lastName": "Done",
+  "semester": "S10",
+  "updatedAt": Any<String>,
+}
+`;

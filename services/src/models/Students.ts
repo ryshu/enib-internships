@@ -2,7 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 
 import database from '../configs/instances/database';
 
-class Studens extends Model implements IStudentEntity {
+class Students extends Model implements IStudentEntity {
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
 
     public firstName: string;
@@ -15,7 +15,7 @@ class Studens extends Model implements IStudentEntity {
     public readonly updatedAt!: Date;
 }
 
-Studens.init(
+Students.init(
     {
         id: {
             type: DataTypes.INTEGER.UNSIGNED,
@@ -30,7 +30,7 @@ Studens.init(
             type: new DataTypes.STRING(128),
             allowNull: false,
         },
-        emailName: {
+        email: {
             type: new DataTypes.STRING(128),
             allowNull: false,
         },
@@ -45,4 +45,4 @@ Studens.init(
     },
 );
 
-export default Studens;
+export default Students;

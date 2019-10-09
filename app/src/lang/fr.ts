@@ -34,6 +34,12 @@ export default {
       address: 'Adresse',
       additional: 'Informations complémentaire',
     },
+    students: {
+      firstName : "Prénom",
+      lastName : "Nom",
+      email : "Adresse mail", 
+      semester : 'Semester',
+    },
     title: 'Titre',
     search: 'Recherche',
     add: 'Ajouter',
