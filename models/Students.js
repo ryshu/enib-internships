@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../configs/instances/database"));
-class Studens extends sequelize_1.Model {
+class Students extends sequelize_1.Model {
 }
-Studens.init({
+Students.init({
     id: {
         type: sequelize_1.DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
@@ -21,7 +21,7 @@ Studens.init({
         type: new sequelize_1.DataTypes.STRING(128),
         allowNull: false,
     },
-    emailName: {
+    email: {
         type: new sequelize_1.DataTypes.STRING(128),
         allowNull: false,
     },
@@ -33,5 +33,5 @@ Studens.init({
     tableName: 'students',
     sequelize: database_1.default,
 });
-exports.default = Studens;
+exports.default = Students;
 //# sourceMappingURL=Students.js.map
