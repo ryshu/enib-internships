@@ -215,7 +215,7 @@ export default class extends Vue {
       this.list.splice(found, 1);
     }
     this.$notify({
-      title: 'Internship creation',
+      title: 'Delete a internship',
       message: 'Internship successfully deleted',
       type: 'success',
       duration: 2000,
