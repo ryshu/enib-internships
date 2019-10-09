@@ -52,11 +52,11 @@ export const InternshipCreate: Schema = {
         escape: true,
     },
     additional: {
-        in: ['body'],
-        isString: { errorMessage: 'Additional must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
+      in: ['body'],
+      isString: { errorMessage: 'Additional must be of type string' },
+      optional: true,
+      trim: true,
+      escape: true,
     },
     isLanguageCourse: {
         in: ['body'],
@@ -76,14 +76,14 @@ export const InternshipUpdate: Schema = {
     subject: {
       in: ['body'],
       isString: { errorMessage: 'Subject must be of type string' },
-      exists: { errorMessage: 'Subject must be defined' },
+      optional: true,
       trim: true,
       escape: true,
     },
     description: {
         in: ['body'],
         isString: { errorMessage: 'Description must be of type string' },
-        exists: { errorMessage: 'Description must be defined' },
+        optional: true,
         trim: true,
         escape: true,
     },
@@ -97,13 +97,6 @@ export const InternshipUpdate: Schema = {
     city: {
         in: ['body'],
         isString: { errorMessage: 'City must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    postalCode: {
-        in: ['body'],
-        isString: { errorMessage: 'Postal Code must be of type string' },
         optional: true,
         trim: true,
         escape: true,
@@ -123,15 +116,15 @@ export const InternshipUpdate: Schema = {
         escape: true,
     },
     isLanguageCourse: {
-      in: ['body'],
-      isBoolean: { errorMessage: 'LanguageCourse must be of type boolean' },
-      exists: { errorMessage: 'LanguageCourse must be defined' },
-      escape: true,
+        in: ['body'],
+        isBoolean: { errorMessage: 'LanguageCourse must be of type boolean' },
+        optional: true,
+        escape: true,
     },
     isValidated: {
         in: ['body'],
         isBoolean: { errorMessage: 'Validated must be of type boolean' },
-        exists: { errorMessage: 'Validated must be defined' },
+        optional: true,
         escape: true,
     },
 };

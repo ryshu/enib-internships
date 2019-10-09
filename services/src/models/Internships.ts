@@ -57,7 +57,7 @@ Internships.init(
         },
         additional: {
             type: new DataTypes.STRING(),
-            allowNull: false,
+            allowNull: true,
         },
 
         // State
