@@ -1,9 +1,10 @@
 <template>
   <div class="app-container">
+    <!-- Filter -->
     <div class="filter-container">
       <el-input
         v-model="listQuery.title"
-        :placeholder="$t('table.businesses.name')"
+        :placeholder="$t('table.internships.subject')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -33,6 +34,7 @@
       >{{ $t('table.export') }}</el-button>
     </div>
 
+    <!-- Table -->
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -42,24 +44,24 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.businesses.name')" min-width="150px">
+      <el-table-column :label="$t('table.internships.subject')" min-width="150px">
         <template slot-scope="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.businesses.country')" min-width="150px">
+      <el-table-column :label="$t('table.internships.description')" min-width="150px">
+        <template slot-scope="{ row }">
+          <span>{{ row.description }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.internships.country')" min-width="150px">
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.businesses.city')" min-width="150px">
+      <el-table-column :label="$t('table.internships.city')" min-width="150px">
         <template slot-scope="{ row }">
           <span>{{ row.city }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.businesses.postalCode')" min-width="150px">
-        <template slot-scope="{ row }">
-          <span>{{ row.postalCode }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -79,7 +81,7 @@
             size="small"
             type="danger"
             icon="el-icon-remove"
-            @click="handleModifyStatus(row, 'deleted')"
+            @click="handleDelete(row, 'deleted')"
           >{{ $t('table.delete') }}</el-button>
         </template>
       </el-table-column>
@@ -97,28 +99,28 @@
       <el-form
         ref="dataForm"
         :rules="rules"
-        :model="tempBusinessData"
+        :model="tempInternshipData"
         label-position="left"
         label-width="250px"
         style="width: 100%; padding: 0 50px;"
       >
-        <el-form-item :label="$t('table.businesses.name')" prop="name">
-          <el-input v-model="tempBusinessData.name" />
+        <el-form-item :label="$t('table.internships.subject')" prop="subject">
+          <el-input v-model="tempInternshipData.subject" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.country')" prop="country">
-          <el-input v-model="tempBusinessData.country" />
+        <el-form-item :label="$t('table.internships.description')" prop="description">
+          <el-input v-model="tempInternshipData.description" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.city')" prop="city">
-          <el-input v-model="tempBusinessData.city" />
+        <el-form-item :label="$t('table.internships.country')" prop="country">
+          <el-input v-model="tempInternshipData.country" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.postalCode')" prop="postalCode">
-          <el-input v-model="tempBusinessData.postalCode" />
+        <el-form-item :label="$t('table.internships.city')" prop="city">
+          <el-input v-model="tempInternshipData.city" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.address')" prop="address">
-          <el-input v-model="tempBusinessData.address" />
+        <el-form-item :label="$t('table.internships.address')" prop="address">
+          <el-input v-model="tempInternshipData.address" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.additional')" prop="additional">
-          <el-input v-model="tempBusinessData.additional" />
+        <el-form-item :label="$t('table.internships.additional')" prop="additional">
+          <el-input v-model="tempInternshipData.additional" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -136,17 +138,18 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
 import { cloneDeep } from 'lodash';
-
 import {
-  getBusinesses,
-  createBusiness,
-  updateBusiness,
-  defaultBusinessData,
-} from '../../api/businesses';
-import { IBusiness } from '../../api/types';
+  getInternships,
+  createInternship,
+  updateInternship,
+  deleteInternship,
+  defaultInternshipData,
+} from '../../api/internships';
+import { IInternship } from '../../api/types';
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
 import Pagination from '../../components/Pagination/index.vue';
+import { ID } from '../../../../services/src/api/validators/generic.val';
 
 @Component({
   name: 'Internships',
@@ -156,7 +159,7 @@ import Pagination from '../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IBusiness[] = [];
+  private list: IInternship[] = [];
   private total = 0;
   private listLoading = true;
   private listQuery = {
@@ -185,7 +188,7 @@ export default class extends Vue {
     title: [{ required: true, message: 'title is required', trigger: 'blur' }],
   };
   private downloadLoading = false;
-  private tempBusinessData = defaultBusinessData;
+  private tempInternshipData = defaultInternshipData;
 
   public created() {
     this.getList();
@@ -193,9 +196,9 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getBusinesses(this.listQuery).then((data: any) => {
-      this.list = data;
-      this.total = data.length;
+    getInternships(this.listQuery).then((res: any) => {
+      this.list = res.data;
+      this.total = res.max;
       this.listLoading = false;
     });
   }
@@ -204,20 +207,27 @@ export default class extends Vue {
     this.getList();
   }
 
-  private handleModifyStatus(row: any, status: string) {
-    this.$message({
-      message: '操作成功',
+  private async handleDelete(row: any, status: string) {
+    await deleteInternship(row.id!);
+    const found = this.list.findIndex(s => s.id === row.id);
+    if (found !== -1)
+    {
+      this.list.splice(found, 1);
+    }
+    this.$notify({
+      title: 'Internship creation',
+      message: 'Internship successfully deleted',
       type: 'success',
+      duration: 2000,
     });
-    row.status = status;
   }
 
-  private resetTempBusinessData() {
-    this.tempBusinessData = cloneDeep(defaultBusinessData);
+  private resetTempInternshipData() {
+    this.tempInternshipData = cloneDeep(defaultInternshipData);
   }
 
   private handleCreate() {
-    this.resetTempBusinessData();
+    this.resetTempInternshipData();
     this.dialogStatus = 'create';
     this.dialogFormVisible = true;
     this.$nextTick(() => {
@@ -228,21 +238,21 @@ export default class extends Vue {
   private createData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
-        const res = await createBusiness(this.tempBusinessData);
-        this.list.unshift(res.data);
+        const res = await createInternship(this.tempInternshipData);
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Business creation',
-          message: 'Business successfully created',
+          title: 'Internship creation',
+          message: 'Internship successfully created',
           type: 'success',
           duration: 2000,
         });
+        this.getList();
       }
     });
   }
 
   private handleUpdate(row: any) {
-    this.tempBusinessData = Object.assign({}, row);
+    this.tempInternshipData = Object.assign({}, row);
     this.dialogStatus = 'update';
     this.dialogFormVisible = true;
     this.$nextTick(() => {
@@ -253,19 +263,15 @@ export default class extends Vue {
   private updateData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
-        const tempData = Object.assign({}, this.tempBusinessData);
-        const { data } = await updateBusiness(tempData.id!, tempData);
-        for (const v of this.list) {
-          if (v.id === data.article.id) {
-            const index = this.list.indexOf(v);
-            this.list.splice(index, 1, data.article);
-            break;
-          }
-        }
+        const tempData = Object.assign({}, this.tempInternshipData);
+
+        // Wait update
+        await updateInternship(tempData.id!, tempData);
+        this.getList();
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Update a business',
-          message: 'Successfully update business data',
+          title: 'Update a internship',
+          message: 'Successfully update internship data',
           type: 'success',
           duration: 2000,
         });
@@ -277,21 +283,25 @@ export default class extends Vue {
     this.downloadLoading = true;
     const tHeader = [
       'id',
-      'name',
+      'subject',
+      'description',
       'country',
       'city',
-      'postalCode',
       'address',
       'additional',
+      'isLanguageCourse',
+      'isValidated',
     ];
     const filterVal = [
       'id',
-      'name',
+      'subject',
+      'description',
       'country',
       'city',
-      'postalCode',
       'address',
       'additional',
+      'isLanguageCourse',
+      'isValidated',
     ];
     const data = formatJson(filterVal, this.list);
     exportJson2Excel(tHeader, data, 'table-list');
