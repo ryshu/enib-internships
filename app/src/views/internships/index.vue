@@ -64,6 +64,16 @@
           <span>{{ row.city }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.internships.isLanguageCourse')" min-width="150px">
+        <template slot-scope="{ row }">
+          <span>{{ row.isLanguageCourse }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.internships.isValidated')" min-width="150px">
+        <template slot-scope="{ row }">
+          <span>{{ row.isValidated }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         :label="$t('table.actions')"
         align="center"
@@ -121,6 +131,12 @@
         </el-form-item>
         <el-form-item :label="$t('table.internships.additional')" prop="additional">
           <el-input v-model="tempInternshipData.additional" />
+        </el-form-item>
+        <el-form-item :label="$t('table.internships.isLanguageCourse')" prop="isLanguageCourse">
+          <input type='checkbox' v-model="tempInternshipData.isLanguageCourse" />
+        </el-form-item>
+        <el-form-item :label="$t('table.internships.isValidated')" prop="isValidated">
+          <input type='checkbox' v-model="tempInternshipData.isValidated" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -271,7 +287,7 @@ export default class extends Vue {
         this.dialogFormVisible = false;
         this.$notify({
           title: 'Update a internship',
-          message: 'Successfully update internship data',
+          message: 'Successfully updated internship data',
           type: 'success',
           duration: 2000,
         });
