@@ -11,6 +11,9 @@
       "api-index": {
         "title": "Internships manager API"
       },
+      "api-students": {
+        "title": "Students"
+      },
       "docs-backend": {
         "title": "Back end part"
       },

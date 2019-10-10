@@ -45,6 +45,12 @@ export default {
       isLanguageCourse: 'Cours de langue',
       isValidated: 'Validated',
     },
+    students: {
+      firstName : "Prénom",
+      lastName : "Nom",
+      email : "Adresse mail", 
+      semester : 'Semester',
+    },
     title: 'Titre',
     search: 'Recherche',
     add: 'Ajouter',

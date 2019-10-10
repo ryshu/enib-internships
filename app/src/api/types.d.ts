@@ -11,6 +11,7 @@ export declare interface IBusiness {
   createdAt?: string;
   updatedAt?: string;
 }
+
 export declare interface IInternship {
   id?: number;
 
@@ -27,6 +28,17 @@ export declare interface IInternship {
   updatedAt?: string;
 }
 
+export declare interface IStudent {
+  id?: number;
+
+  firstName: string;
+  lastName: string;
+  email: string;
+  semester: string;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
 export interface IRoleData {
   key: string;
   name: string;
