@@ -49,11 +49,7 @@
           <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.description')" min-width="150px">
-        <template slot-scope="{ row }">
-          <span>{{ row.description }}</span>
-        </template>
-      </el-table-column>
+
       <el-table-column :label="$t('table.internships.country')" min-width="150px">
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
@@ -64,14 +60,21 @@
           <span>{{ row.city }}</span>
         </template>
       </el-table-column>
+
       <el-table-column :label="$t('table.internships.isLanguageCourse')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.isLanguageCourse }}</span>
+          <el-tag
+            :type="row.isLanguageCourse ? 'success' : 'danger'"
+            effect="dark"
+          >{{ $t(row.isLanguageCourse ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.internships.isValidated')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.isValidated }}</span>
+          <el-tag
+            :type="row.isValidated ? 'success' : 'danger'"
+            effect="dark"
+          >{{ $t(row.isValidated ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -126,6 +129,9 @@
         <el-form-item :label="$t('table.internships.city')" prop="city">
           <el-input v-model="tempInternshipData.city" />
         </el-form-item>
+        <el-form-item :label="$t('table.internships.postalCode')" prop="postalCode">
+          <el-input v-model="tempInternshipData.postalCode" />
+        </el-form-item>
         <el-form-item :label="$t('table.internships.address')" prop="address">
           <el-input v-model="tempInternshipData.address" />
         </el-form-item>
@@ -133,10 +139,10 @@
           <el-input v-model="tempInternshipData.additional" />
         </el-form-item>
         <el-form-item :label="$t('table.internships.isLanguageCourse')" prop="isLanguageCourse">
-          <input type='checkbox' v-model="tempInternshipData.isLanguageCourse" />
+          <input v-model="tempInternshipData.isLanguageCourse" type="checkbox" />
         </el-form-item>
         <el-form-item :label="$t('table.internships.isValidated')" prop="isValidated">
-          <input type='checkbox' v-model="tempInternshipData.isValidated" />
+          <input v-model="tempInternshipData.isValidated" type="checkbox" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -165,7 +171,6 @@ import { IInternship } from '../../api/types';
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
 import Pagination from '../../components/Pagination/index.vue';
-import { ID } from '../../../../services/src/api/validators/generic.val';
 
 @Component({
   name: 'Internships',
@@ -186,35 +191,26 @@ export default class extends Vue {
   private showReviewer = false;
   private dialogFormVisible = false;
   private dialogStatus = '';
-  private textMap = {
-    update: 'Edit',
-    create: 'Create',
-  };
+  private textMap = {};
   private dialogPageviewsVisible = false;
   private pageviewsData = [];
-  private rules = {
-    type: [{ required: true, message: 'type is required', trigger: 'change' }],
-    timestamp: [
-      {
-        required: true,
-        message: 'timestamp is required',
-        trigger: 'change',
-      },
-    ],
-    title: [{ required: true, message: 'title is required', trigger: 'blur' }],
-  };
+  private rules = {};
   private downloadLoading = false;
   private tempInternshipData = defaultInternshipData;
 
   public created() {
+    this.textMap = {
+      update: this.$t('dialog.title.edit'),
+      create: this.$t('dialog.title.create'),
+    };
     this.getList();
   }
 
   private getList() {
     this.listLoading = true;
     getInternships(this.listQuery).then((res: any) => {
-      this.list = res.data;
-      this.total = res.max;
+      this.list = res ? res.data : [];
+      this.total = res ? res.max : 0;
       this.listLoading = false;
     });
   }
@@ -225,14 +221,10 @@ export default class extends Vue {
 
   private async handleDelete(row: any, status: string) {
     await deleteInternship(row.id!);
-    const found = this.list.findIndex(s => s.id === row.id);
-    if (found !== -1)
-    {
-      this.list.splice(found, 1);
-    }
+    this.getList();
     this.$notify({
-      title: 'Delete a internship',
-      message: 'Internship successfully deleted',
+      title: this.$t('notify.internships.delete.title') as string,
+      message: this.$t('notify.internships.delete.msg') as string,
       type: 'success',
       duration: 2000,
     });
@@ -257,8 +249,8 @@ export default class extends Vue {
         const res = await createInternship(this.tempInternshipData);
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Internship creation',
-          message: 'Internship successfully created',
+          title: this.$t('notify.internships.create.title') as string,
+          message: this.$t('notify.internships.create.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -286,8 +278,8 @@ export default class extends Vue {
         this.getList();
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Update a internship',
-          message: 'Successfully updated internship data',
+          title: this.$t('notify.internships.update.title') as string,
+          message: this.$t('notify.internships.update.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -298,15 +290,16 @@ export default class extends Vue {
   private handleDownload() {
     this.downloadLoading = true;
     const tHeader = [
-      'id',
-      'subject',
-      'description',
-      'country',
-      'city',
-      'address',
-      'additional',
-      'isLanguageCourse',
-      'isValidated',
+      this.$t('export.id') as string,
+      this.$t('export.subject') as string,
+      this.$t('export.description') as string,
+      this.$t('export.country') as string,
+      this.$t('export.city') as string,
+      this.$t('export.postalCode') as string,
+      this.$t('export.address') as string,
+      this.$t('export.additional') as string,
+      this.$t('export.internships.isLanguageCourse') as string,
+      this.$t('export.internships.isValidated') as string,
     ];
     const filterVal = [
       'id',
@@ -314,13 +307,16 @@ export default class extends Vue {
       'description',
       'country',
       'city',
+      'postalCode',
       'address',
       'additional',
       'isLanguageCourse',
       'isValidated',
     ];
     const data = formatJson(filterVal, this.list);
-    exportJson2Excel(tHeader, data, 'table-list');
+    exportJson2Excel(tHeader, data, this.$t(
+      'export.internships.fileName'
+    ) as string);
     this.downloadLoading = false;
   }
 }

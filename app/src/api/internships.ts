@@ -8,6 +8,7 @@ export const defaultInternshipData: IInternship = {
   description: 'Stage',
   country: 'France',
   city: '',
+  postalCode: '',
   address: '',
   additional: '',
   isLanguageCourse: false,

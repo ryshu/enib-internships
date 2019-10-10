@@ -169,35 +169,26 @@ export default class extends Vue {
   private showReviewer = false;
   private dialogFormVisible = false;
   private dialogStatus = '';
-  private textMap = {
-    update: 'Edit',
-    create: 'Create',
-  };
+  private textMap = {};
   private dialogPageviewsVisible = false;
   private pageviewsData = [];
-  private rules = {
-    type: [{ required: true, message: 'type is required', trigger: 'change' }],
-    timestamp: [
-      {
-        required: true,
-        message: 'timestamp is required',
-        trigger: 'change',
-      },
-    ],
-    title: [{ required: true, message: 'title is required', trigger: 'blur' }],
-  };
+  private rules = {};
   private downloadLoading = false;
   private tempBusinessData = defaultBusinessData;
 
   public created() {
+    this.textMap = {
+      update: this.$t('dialog.title.edit'),
+      create: this.$t('dialog.title.create'),
+    };
     this.getList();
   }
 
   private getList() {
     this.listLoading = true;
     getBusinesses(this.listQuery).then((res: any) => {
-      this.list = res.data;
-      this.total = res.max;
+      this.list = res ? res.data : [];
+      this.total = res ? res.max : 0;
       this.listLoading = false;
     });
   }
@@ -210,8 +201,8 @@ export default class extends Vue {
     await deleteBusiness(row.id!);
     this.getList();
     this.$notify({
-      title: 'Delete a Business',
-      message: 'Business deleted',
+      title: this.$t('notify.businesses.delete.title') as string,
+      message: this.$t('notify.businesses.delete.msg') as string,
       type: 'success',
       duration: 2000,
     });
@@ -237,8 +228,8 @@ export default class extends Vue {
         this.getList();
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Business creation',
-          message: 'Business successfully created',
+          title: this.$t('notify.businesses.create.title') as string,
+          message: this.$t('notify.businesses.create.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -263,8 +254,8 @@ export default class extends Vue {
         this.getList();
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Update a business',
-          message: 'Successfully update business data',
+          title: this.$t('notify.businesses.update.title') as string,
+          message: this.$t('notify.businesses.update.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -275,13 +266,13 @@ export default class extends Vue {
   private handleDownload() {
     this.downloadLoading = true;
     const tHeader = [
-      'id',
-      'name',
-      'country',
-      'city',
-      'postalCode',
-      'address',
-      'additional',
+      this.$t('export.id') as string,
+      this.$t('export.name') as string,
+      this.$t('export.country') as string,
+      this.$t('export.city') as string,
+      this.$t('export.postalCode') as string,
+      this.$t('export.address') as string,
+      this.$t('export.additional') as string,
     ];
     const filterVal = [
       'id',
@@ -293,7 +284,9 @@ export default class extends Vue {
       'additional',
     ];
     const data = formatJson(filterVal, this.list);
-    exportJson2Excel(tHeader, data, 'table-list');
+    exportJson2Excel(tHeader, data, this.$t(
+      'export.businesses.fileName'
+    ) as string);
     this.downloadLoading = false;
   }
 }

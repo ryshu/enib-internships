@@ -19,8 +19,10 @@ export declare interface IInternship {
   description: string;
   country: string;
   city: string;
+  postalCode: string;
   address: string;
   additional?: string;
+
   isLanguageCourse: boolean;
   isValidated: boolean;
 
@@ -39,6 +41,7 @@ export declare interface IStudent {
   createdAt?: string;
   updatedAt?: string;
 }
+
 export interface IRoleData {
   key: string;
   name: string;
