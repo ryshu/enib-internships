@@ -8,6 +8,7 @@ declare interface IInternshipEntity {
     // Localisation
     country: string;
     city: string;
+    postalCode: string;
     address: string;
     additional?: string;
 

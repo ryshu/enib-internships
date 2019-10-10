@@ -22,6 +22,7 @@ coverage
 
 # Configuration file, avoid leek on git of secrets
 .env
+services/__tests__/.tests.env
 .env.local
 .env.*.local
 docker-compose.yml

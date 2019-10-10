@@ -2,15 +2,22 @@ import { Schema } from 'express-validator';
 
 import { paginateValidator } from './generic.val';
 
-export const BusinessesList: Schema = {
+export const InternshipsList: Schema = {
     ...paginateValidator,
 };
 
-export const BusinessCreate: Schema = {
-    name: {
+export const InternshipCreate: Schema = {
+    subject: {
         in: ['body'],
-        isString: { errorMessage: 'Name must be of type string' },
-        exists: { errorMessage: 'Name must be defined' },
+        isString: { errorMessage: 'Subject must be of type string' },
+        exists: { errorMessage: 'Subject must be defined' },
+        trim: true,
+        escape: true,
+    },
+    description: {
+        in: ['body'],
+        isString: { errorMessage: 'Description must be of type string' },
+        exists: { errorMessage: 'Description must be defined' },
         trim: true,
         escape: true,
     },
@@ -49,12 +56,31 @@ export const BusinessCreate: Schema = {
         trim: true,
         escape: true,
     },
+    isLanguageCourse: {
+        in: ['body'],
+        isBoolean: { errorMessage: 'LanguageCourse must be of type boolean' },
+        optional: true,
+        toBoolean: true,
+    },
+    isValidated: {
+        in: ['body'],
+        isBoolean: { errorMessage: 'Validated must be of type boolean' },
+        optional: true,
+        toBoolean: true,
+    },
 };
 
-export const BusinessUpdate: Schema = {
-    name: {
+export const InternshipUpdate: Schema = {
+    subject: {
         in: ['body'],
-        isString: { errorMessage: 'Name must be of type string' },
+        isString: { errorMessage: 'Subject must be of type string' },
+        optional: true,
+        trim: true,
+        escape: true,
+    },
+    description: {
+        in: ['body'],
+        isString: { errorMessage: 'Description must be of type string' },
         optional: true,
         trim: true,
         escape: true,
@@ -75,7 +101,7 @@ export const BusinessUpdate: Schema = {
     },
     postalCode: {
         in: ['body'],
-        isString: { errorMessage: 'Postal Code must be of type string' },
+        isString: { errorMessage: 'Postal code must be of type string' },
         optional: true,
         trim: true,
         escape: true,
@@ -93,5 +119,17 @@ export const BusinessUpdate: Schema = {
         optional: true,
         trim: true,
         escape: true,
+    },
+    isLanguageCourse: {
+        in: ['body'],
+        isBoolean: { errorMessage: 'Language course must be of type boolean' },
+        optional: true,
+        toBoolean: true,
+    },
+    isValidated: {
+        in: ['body'],
+        isBoolean: { errorMessage: 'Validated must be of type boolean' },
+        optional: true,
+        toBoolean: true,
     },
 };
