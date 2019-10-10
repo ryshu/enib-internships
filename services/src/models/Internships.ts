@@ -12,6 +12,7 @@ class Internships extends Model implements IInternshipEntity {
     // Localisation
     public country: string;
     public city: string;
+    public postalCode: string;
     public address: string;
     public additional?: string;
 
@@ -34,7 +35,7 @@ Internships.init(
 
         // Data
         subject: {
-            type: new DataTypes.STRING(128),
+            type: new DataTypes.STRING(256),
             allowNull: false,
         },
         description: {
@@ -48,6 +49,10 @@ Internships.init(
             allowNull: false,
         },
         city: {
+            type: new DataTypes.STRING(128),
+            allowNull: false,
+        },
+        postalCode: {
             type: new DataTypes.STRING(128),
             allowNull: false,
         },

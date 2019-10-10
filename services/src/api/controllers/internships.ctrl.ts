@@ -60,10 +60,11 @@ export const postInternship = (req: Request, res: Response, next: NextFunction):
         description: req.body.description,
         country: req.body.country,
         city: req.body.city,
+        postalCode: req.body.postalCode,
         address: req.body.address,
         additional: req.body.additional,
-        isLanguageCourse: req.body.isLanguageCourse,
-        isValidated: req.body.isValidated,
+        isLanguageCourse: req.body.isLanguageCourse ? true : false,
+        isValidated: req.body.isValidated ? true : false,
     };
 
     Internships.create(internship)
@@ -120,18 +121,21 @@ export const putInternship = (req: Request, res: Response, next: NextFunction): 
             if (req.body.city) {
                 internships.set('city', req.body.city);
             }
+            if (req.body.postalCode) {
+                internships.set('postalCode', req.body.postalCode);
+            }
             if (req.body.address) {
                 internships.set('address', req.body.address);
             }
             if (req.body.additional) {
                 internships.set('additional', req.body.additional);
             }
-            if (req.body.isLanguageCourse) {
-                internships.set('isLanguageCourse', req.body.isLanguageCourse);
+            if (req.body.isLanguageCourse !== undefined) {
+                internships.set('isLanguageCourse', req.body.isLanguageCourse ? true : false);
             }
-            if (req.body.isValidated) {
-              internships.set('isValidated', req.body.isValidated);
-             }
+            if (req.body.isValidated !== undefined) {
+                internships.set('isValidated', req.body.isValidated ? true : false);
+            }
 
             return internships.save();
         })
