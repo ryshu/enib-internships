@@ -1,5 +1,10 @@
 import { Schema } from 'express-validator';
-import { isString } from 'util';
+
+import { paginateValidator } from './generic.val';
+
+export const StudentList: Schema = {
+    ...paginateValidator,
+};
 
 export const StudentCreate: Schema = {
     firstName: {
@@ -32,6 +37,7 @@ export const StudentCreate: Schema = {
         escape: true,
     },
 };
+
 export const StudentUpdate: Schema = {
     firstName: {
         in: ['body'],
@@ -61,19 +67,5 @@ export const StudentUpdate: Schema = {
         optional: true,
         trim: true,
         escape: true,
-    },
-};
-export const StudentList: Schema = {
-    page: {
-        in: ['query'],
-        isInt: { errorMessage: 'Page need to be an integer' },
-        optional: true,
-        toInt: true,
-    },
-    limit: {
-        in: ['query'],
-        isInt: { errorMessage: 'Limit need to be an integer' },
-        optional: true,
-        toInt: true,
     },
 };

@@ -1,18 +1,9 @@
 import { Schema } from 'express-validator';
 
+import { paginateValidator } from './generic.val';
+
 export const InternshipsList: Schema = {
-    page: {
-        in: ['query'],
-        isInt: { errorMessage: 'Page number must be an integer' },
-        optional: true,
-        toInt: true,
-    },
-    limit: {
-        in: ['query'],
-        isInt: { errorMessage: 'Limit of entries to provide must be an integer' },
-        optional: true,
-        toInt: true,
-    },
+    ...paginateValidator,
 };
 
 export const InternshipCreate: Schema = {
