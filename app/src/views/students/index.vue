@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.title"
-        :placeholder="$t('table.students.name')"
+        :placeholder="$t('table.students.lastName')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -162,27 +162,18 @@ export default class extends Vue {
   private showReviewer = false;
   private dialogFormVisible = false;
   private dialogStatus = '';
-  private textMap = {
-    update: 'Edit',
-    create: 'Create',
-  };
+  private textMap = {};
   private dialogPageviewsVisible = false;
   private pageviewsData = [];
-  private rules = {
-    type: [{ required: true, message: 'type is required', trigger: 'change' }],
-    timestamp: [
-      {
-        required: true,
-        message: 'timestamp is required',
-        trigger: 'change',
-      },
-    ],
-    title: [{ required: true, message: 'title is required', trigger: 'blur' }],
-  };
+  private rules = {};
   private downloadLoading = false;
   private tempStudentData = defaultStudentData;
 
   public created() {
+    this.textMap = {
+      update: this.$t('dialog.title.edit'),
+      create: this.$t('dialog.title.create'),
+    };
     this.getList();
   }
 
@@ -203,8 +194,8 @@ export default class extends Vue {
     await deleteStudent(row.id!);
     this.getList();
     this.$notify({
-      title: 'Delete a student',
-      message: 'Successfully Delete student data',
+      title: this.$t('notify.students.delete.title') as string,
+      message: this.$t('notify.students.delete.msg') as string,
       type: 'success',
       duration: 2000,
     });
@@ -226,8 +217,8 @@ export default class extends Vue {
         this.getList();
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Student creation',
-          message: 'Student successfully created',
+          title: this.$t('notify.students.create.title') as string,
+          message: this.$t('notify.students.create.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -253,8 +244,8 @@ export default class extends Vue {
 
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Update a student',
-          message: 'Successfully update student data',
+          title: this.$t('notify.students.update.title') as string,
+          message: this.$t('notify.students.update.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -265,13 +256,13 @@ export default class extends Vue {
   private handleDownload() {
     this.downloadLoading = true;
     const tHeader = [
-      'id',
-      'name',
-      'country',
-      'city',
-      'postalCode',
-      'address',
-      'additional',
+      this.$t('export.id') as string,
+      this.$t('export.name') as string,
+      this.$t('export.country') as string,
+      this.$t('export.city') as string,
+      this.$t('export.postalCode') as string,
+      this.$t('export.address') as string,
+      this.$t('export.additional') as string,
     ];
     const filterVal = [
       'id',
@@ -283,7 +274,9 @@ export default class extends Vue {
       'additional',
     ];
     const data = formatJson(filterVal, this.list);
-    exportJson2Excel(tHeader, data, 'table-list');
+    exportJson2Excel(tHeader, data, this.$t(
+      'export.students.fileName'
+    ) as string);
     this.downloadLoading = false;
   }
 }
