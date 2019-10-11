@@ -1,18 +1,9 @@
 import { Schema } from 'express-validator';
 
+import { paginateValidator } from './generic.val';
+
 export const FileList: Schema = {
-    page: {
-        in: ['query'],
-        isInt: { errorMessage: 'Page number must be an integer' },
-        optional: true,
-        toInt: true,
-    },
-    limit: {
-        in: ['query'],
-        isInt: { errorMessage: 'Limit of entries to provide must be an integer' },
-        optional: true,
-        toInt: true,
-    },
+    ...paginateValidator,
 };
 
 export const FileCreate: Schema = {
@@ -37,13 +28,19 @@ export const FileCreate: Schema = {
         trim: true,
         escape: true,
     },
+    path: {
+        in: ['body'],
+        isString: { errorMessage: 'Path must be of type string' },
+        exists: { errorMessage: 'Path must be defined' },
+        trim: true,
+        escape: true,
+    },
 };
 export const FileUpdate: Schema = {
     name: {
         in: ['body'],
         isString: { errorMessage: 'Name must be of type string' },
         optional: true,
-        exists: { errorMessage: 'Name must be defined' },
         trim: true,
         escape: true,
     },
@@ -51,7 +48,6 @@ export const FileUpdate: Schema = {
         in: ['body'],
         isInt: { errorMessage: 'Size must be of type integer' },
         optional: true,
-        exists: { errorMessage: 'Size must be defined' },
         trim: true,
         escape: true,
     },
@@ -59,7 +55,13 @@ export const FileUpdate: Schema = {
         in: ['body'],
         isString: { errorMessage: 'Type must be of type string' },
         optional: true,
-        exists: { errorMessage: 'Type must be defined' },
+        trim: true,
+        escape: true,
+    },
+    path: {
+        in: ['body'],
+        isString: { errorMessage: 'Path must be of type string' },
+        optional: true,
         trim: true,
         escape: true,
     },
