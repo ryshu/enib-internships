@@ -59,12 +59,10 @@ Key | Value | Description
 
 Key | Type | Optional | Description
 - | - | - | -
-**name** | String | *no* | Student name
-**country** | String | *no* | Student country
-**city** | String | *no* | Student city
-**postalCode** | String | *no* | Student postalCode
-**address** | String | *no* | Student address
-**additional** | String | *yes* | Address additional detail
+**firstName** | String | *no* | Student firstName
+**lastName** | String | *no* | Student lastName
+**email** | String | *no* | Student email
+**semester** | String | *no* | Student semester
 
 ### 200 - Created
 
@@ -158,12 +156,10 @@ Key | Value | Description
 
 Key | Type | Optional | Description
 - | - | - | -
-**name** | String | *yes* | Student name
-**country** | String | *yes* | Student country
-**city** | String | *yes* | Student city
-**postalCode** | String | *yes* | Student postalCode
-**address** | String | *yes* | Student address
-**additional** | String | *yes* | Address additional detail
+**firstName** | String | *yes* | Student firstName
+**lastName** | String | *yes* | Student lastName
+**email** | String | *yes* | Student email
+**semester** | String | *yes* | Student semester
 
 ### 200 - Updated student
 

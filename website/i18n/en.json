@@ -8,8 +8,14 @@
       "api-businesses": {
         "title": "Businesses"
       },
+      "api-files": {
+        "title": "Files"
+      },
       "api-index": {
         "title": "Internships manager API"
+      },
+      "api-internships": {
+        "title": "Internships"
       },
       "api-students": {
         "title": "Students"
