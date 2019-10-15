@@ -119,7 +119,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Get a internship by identifier
+## Get a internship by ID
 
 ``` sh
 GET /api/v1/internships/:id
@@ -129,7 +129,7 @@ GET /api/v1/internships/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | Internship identifier
+**id** | String | Internship ID
 
 ### 200 - Internship
 
@@ -154,7 +154,31 @@ Key | Type | Description
 
 If the API doesn't have any internship in his database, we return a status **204 - No content**
 
-## Update a internship by identifier
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Update a internship by ID
 
 ``` sh
 PUT /api/v1/internships/:id
@@ -164,7 +188,7 @@ PUT /api/v1/internships/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | Internship identifier
+**id** | String | Internship ID
 
 ### Headers
 
@@ -233,7 +257,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Remove a internship by identifier
+## Remove a internship by ID
 
 ``` sh
 DELETE /api/v1/internships/:id
@@ -243,7 +267,7 @@ DELETE /api/v1/internships/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | Internship identifier
+**id** | String | Internship ID
 
 ### 200 - Removed
 
@@ -252,3 +276,118 @@ Return a status **200** without data when delete succeed
 ### 204 - No content
 
 If the API doesn't have any internship in his database, we return a status **204 - No content**
+
+## Get businesses related to an internship by giving his ID
+
+``` sh
+GET /api/v1/internships/:id/businesses
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Internship ID
+
+### 200 - Internships list
+
+If a business is linked to given internship, return this struct
+
+``` json
+{
+  "id": 1,
+  "name": "Thales Group",
+  "country": "France",
+  "city": "Courbevoie",
+  "postalCode": "92400",
+  "address": "31 Place des Corolles",
+  "updatedAt": "2019-09-19T22:21:24.365Z",
+  "createdAt": "2019-09-19T22:21:24.365Z"
+},
+```
+
+If not any business is linked to given internship, return this struct
+
+``` json
+{}
+```
+
+### 204 - No content
+
+If the API doesn't have any internship in his database link to given ID, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Link business to internship
+
+``` sh
+GET /api/v1/internships/:id/businesses/:business_id/link
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Business ID
+**business_id** | String | Internship ID
+
+### 200 - OK
+
+Ok appears on two occasions
+
+* If entries have been linked
+* If internship haven't been found
+
+``` json
+OK
+```
+
+### 204 - No content
+
+If the API doesn't have any business in his database, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```

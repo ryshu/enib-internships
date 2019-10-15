@@ -95,7 +95,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Get a mentoring proposition by identifier
+## Get a mentoring proposition by ID
 
 ``` sh
 GET /api/v1/mentoringPropositions/:id
@@ -105,7 +105,7 @@ GET /api/v1/mentoringPropositions/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | Mentoring proposition identifier
+**id** | String | Mentoring proposition ID
 
 ### 200 - Mentoring proposition
 
@@ -122,17 +122,41 @@ Key | Type | Description
 
 If the API doesn't have any mentoring proposition in his database, we return a status **204 - No content**
 
-## Update a mentoring proposition by identifier
+## Update a mentoring proposition by ID
 
 ``` sh
 PUT /api/v1/mentoringPropositions/:id
+```
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
 ```
 
 ### Paths variables
 
 Key | Type | Description
 - | - | -
-**id** | String | Mentoring proposition identifier
+**id** | String | Mentoring proposition ID
 
 ### Headers
 
@@ -185,7 +209,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Remove a mentoring proposition by identifier
+## Remove a mentoring proposition by ID
 
 ``` sh
 DELETE /api/v1/mentoringPropositions/:id
@@ -195,7 +219,7 @@ DELETE /api/v1/mentoringPropositions/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | Mentoring proposition identifier
+**id** | String | Mentoring proposition ID
 
 ### 200 - Removed
 

@@ -104,7 +104,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Get a student by identifier
+## Get a student by ID
 
 ``` sh
 GET /api/v1/students/:id
@@ -114,7 +114,7 @@ GET /api/v1/students/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | Student identifier
+**id** | String | Student ID
 
 ### 200 - Student
 
@@ -134,7 +134,31 @@ Key | Type | Description
 
 If the API doesn't have any student in his database, we return a status **204 - No content**
 
-## Update a student by identifier
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Update a student by ID
 
 ``` sh
 PUT /api/v1/students/:id
@@ -144,7 +168,7 @@ PUT /api/v1/students/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | Student identifier
+**id** | String | Student ID
 
 ### Headers
 
@@ -203,7 +227,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Remove a student by identifier
+## Remove a student by ID
 
 ``` sh
 DELETE /api/v1/students/:id
@@ -213,7 +237,7 @@ DELETE /api/v1/students/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | Student identifier
+**id** | String | Student ID
 
 ### 200 - Removed
 

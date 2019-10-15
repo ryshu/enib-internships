@@ -43,6 +43,30 @@ Key | Type | Optional | Description
 
 If the API doesn't have any file in his database, we return a status **204 - No content**
 
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
 ## Create a new file
 
 ``` sh
@@ -104,7 +128,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Get a file by identifier
+## Get a file by ID
 
 ``` sh
 GET /api/v1/files/:id
@@ -114,7 +138,7 @@ GET /api/v1/files/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | File identifier
+**id** | String | File ID
 
 ### 200 - File
 
@@ -134,7 +158,7 @@ Key | Type | Description
 
 If the API doesn't have any file in his database, we return a status **204 - No content**
 
-## Update a file by identifier
+## Update a file by ID
 
 ``` sh
 PUT /api/v1/files/:id
@@ -144,7 +168,7 @@ PUT /api/v1/files/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | File identifier
+**id** | String | File ID
 
 ### Headers
 
@@ -203,7 +227,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Remove a file by identifier
+## Remove a file by ID
 
 ``` sh
 DELETE /api/v1/files/:id
@@ -213,7 +237,7 @@ DELETE /api/v1/files/:id
 
 Key | Type | Description
 - | - | -
-**id** | String | File identifier
+**id** | String | File ID
 
 ### 200 - Removed
 
