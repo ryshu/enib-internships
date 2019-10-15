@@ -1,8 +1,14 @@
-import { Model, DataTypes } from 'sequelize';
+import * as Sequelize from 'sequelize';
 
 import database from '../configs/instances/database';
 
-class Businesses extends Model implements IBusinessEntity {
+import Internships from './Internships';
+
+class Businesses extends Sequelize.Model implements IBusinessEntity {
+    public static associations: {
+        business: Sequelize.Association<Businesses, Internships>;
+    };
+
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
 
     public name: string;
@@ -15,40 +21,49 @@ class Businesses extends Model implements IBusinessEntity {
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+
+    public getInternships: Sequelize.HasManyGetAssociationsMixin<Internships>;
+    public addInternship: Sequelize.HasManyAddAssociationMixin<Internships, Internships['id']>;
+    public createInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
+    public hasInternship: Sequelize.HasManyHasAssociationMixin<Internships, Internships['id']>;
+    public countInternships: Sequelize.HasManyCountAssociationsMixin;
+
+    public readonly internships?: Internships[];
+    public internshipCount: number;
 }
 
 Businesses.init(
     {
         id: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true,
         },
         name: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
         },
         country: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
             defaultValue: 'France',
         },
         city: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
             defaultValue: 'Brest',
         },
         postalCode: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
             defaultValue: '29200',
         },
         address: {
-            type: new DataTypes.STRING(),
+            type: new Sequelize.DataTypes.STRING(),
             allowNull: false,
         },
         additional: {
-            type: new DataTypes.STRING(),
+            type: new Sequelize.DataTypes.STRING(),
             allowNull: true,
         },
     },
