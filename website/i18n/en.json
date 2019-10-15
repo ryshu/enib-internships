@@ -32,8 +32,14 @@
       "docs-install": {
         "title": "Installation"
       },
+      "docs-settings": {
+        "title": "Settings"
+      },
       "tuto-mentors": {
         "title": "Setup mentors"
+      },
+      "tuto-setup-associations": {
+        "title": "Setup associations"
       },
       "tuto-students": {
         "title": "Setup students"

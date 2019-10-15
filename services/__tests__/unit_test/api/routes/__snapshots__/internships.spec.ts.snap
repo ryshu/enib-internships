@@ -28,6 +28,7 @@ exports[`GET /internships/:id Internships_200 1`] = `
 Object {
   "additional": null,
   "address": "TEST",
+  "business": null,
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
@@ -37,6 +38,20 @@ Object {
   "isValidated": false,
   "postalCode": "29280",
   "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`GET /internships/:id/businesses Internships_200_WithLinkedData 1`] = `
+Object {
+  "additional": null,
+  "address": "TEST",
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "id": 1,
+  "name": "test",
+  "postalCode": "29200",
   "updatedAt": Any<String>,
 }
 `;
@@ -53,6 +68,20 @@ Object {
   "isValidated": false,
   "postalCode": "29280",
   "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/businesses/:business_id/link Internships_200_WithBusiness 1`] = `
+Object {
+  "additional": null,
+  "address": "TEST",
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "id": 2,
+  "name": "test",
+  "postalCode": "29200",
   "updatedAt": Any<String>,
 }
 `;

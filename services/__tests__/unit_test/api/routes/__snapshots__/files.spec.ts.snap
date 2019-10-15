@@ -23,7 +23,7 @@ exports[`GET /files/:id Files_200 1`] = `
 Object {
   "createdAt": Any<String>,
   "id": Any<Number>,
-  "name": "John",
+  "name": "fichier",
   "path": "S10",
   "size": 150,
   "type": "john.doe@enib.fr",
@@ -35,7 +35,7 @@ exports[`POST /files ValidFiles_200 1`] = `
 Object {
   "createdAt": Any<String>,
   "id": Any<Number>,
-  "name": "John",
+  "name": "fichier",
   "path": "S10",
   "size": "150",
   "type": "john.doe@enib.fr",
@@ -47,7 +47,7 @@ exports[`PUT /files/:id Files_200_NotAnyDataUpdated 1`] = `
 Object {
   "createdAt": Any<String>,
   "id": Any<Number>,
-  "name": "John",
+  "name": "fichier",
   "path": "S10",
   "size": 150,
   "type": "john.doe@enib.fr",
@@ -59,7 +59,7 @@ exports[`PUT /files/:id Files_200_UpdateAllData 1`] = `
 Object {
   "createdAt": Any<String>,
   "id": Any<Number>,
-  "name": "John",
+  "name": "fichier",
   "path": "S10",
   "size": "250",
   "type": "john.doe@enib.fr",

@@ -9,6 +9,8 @@ import dbSetup from '../../../../src/configs/setup/database';
 // Import model for pre-operation before asserting API methods
 import Files from '../../../../src/models/Files';
 
+import { defaultFiles } from '../../../../__mocks__/mockData';
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });
@@ -16,7 +18,7 @@ beforeAll((done) => {
 describe('GET /files', () => {
     beforeEach(async () => {
         // Remove all
-        await Files.destroy({ where: {}, truncate: true });
+        await Files.destroy({ where: {} });
     });
 
     it('NoFile_204', async () => {
@@ -34,14 +36,9 @@ describe('GET /files', () => {
     });
 
     it('Files_200', async () => {
-        const VALID_STUDENT: IFileEntity = {
-            name: 'fichier',
-            size: 150,
-            type: 'john.doe@enib.fr',
-            path: 'S10',
-        };
+        const VALID_FILE = defaultFiles();
 
-        await Files.create(VALID_STUDENT);
+        await Files.create(VALID_FILE);
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files`,
         );
@@ -67,16 +64,11 @@ describe('POST /files', () => {
     });
 
     it('ValidFiles_200', async () => {
-        const REQ: IFileEntity = {
-            name: 'John',
-            size: 150,
-            type: 'john.doe@enib.fr',
-            path: 'S10',
-        };
+        const VALID_FILE = defaultFiles();
 
         const RESPONSE = await request(app)
             .post(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files`)
-            .send(REQ);
+            .send(VALID_FILE);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -89,7 +81,7 @@ describe('POST /files', () => {
 describe('GET /files/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Files.destroy({ where: {}, truncate: true });
+        await Files.destroy({ where: {} });
     });
 
     it('NoFile_204', async () => {
@@ -107,14 +99,9 @@ describe('GET /files/:id', () => {
     });
 
     it('Files_200', async () => {
-        const VALID_STUDENT: IFileEntity = {
-            name: 'John',
-            size: 150,
-            type: 'john.doe@enib.fr',
-            path: 'S10',
-        };
+        const VALID_FILE = defaultFiles();
 
-        const CREATED = await Files.create(VALID_STUDENT);
+        const CREATED = await Files.create(VALID_FILE);
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}`,
         );
@@ -130,7 +117,7 @@ describe('GET /files/:id', () => {
 describe('PUT /files/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Files.destroy({ where: {}, truncate: true });
+        await Files.destroy({ where: {} });
     });
 
     it('NoFile_204', async () => {
@@ -148,21 +135,16 @@ describe('PUT /files/:id', () => {
     });
 
     it('Files_200_UpdateAllData', async () => {
-        const VALID_STUDENT: IFileEntity = {
-            name: 'John',
-            size: 150,
-            type: 'john.doe@enib.fr',
-            path: 'S10',
-        };
+        const VALID_FILE = defaultFiles();
 
-        const CREATED = await Files.create(VALID_STUDENT);
+        const CREATED = await Files.create(VALID_FILE);
 
-        // Change some data on VALID_STUDENT
-        VALID_STUDENT.size = 250;
+        // Change some data on VALID_FILE
+        VALID_FILE.size = 250;
 
         const RESPONSE = await request(app)
             .put(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}`)
-            .send(VALID_STUDENT);
+            .send(VALID_FILE);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -172,14 +154,9 @@ describe('PUT /files/:id', () => {
     });
 
     it('Files_200_NotAnyDataUpdated', async () => {
-        const VALID_STUDENT: IFileEntity = {
-            name: 'John',
-            size: 150,
-            type: 'john.doe@enib.fr',
-            path: 'S10',
-        };
+        const VALID_FILE = defaultFiles();
 
-        const CREATED = await Files.create(VALID_STUDENT);
+        const CREATED = await Files.create(VALID_FILE);
 
         const RESPONSE = await request(app)
             .put(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}`)
@@ -196,7 +173,7 @@ describe('PUT /files/:id', () => {
 describe('DELETE /files/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Files.destroy({ where: {}, truncate: true });
+        await Files.destroy({ where: {} });
     });
 
     it('NoFile_200', async () => {
@@ -214,14 +191,9 @@ describe('DELETE /files/:id', () => {
     });
 
     it('Files_200', async () => {
-        const VALID_STUDENT: IFileEntity = {
-            name: 'John',
-            size: 150,
-            type: 'john.doe@enib.fr',
-            path: 'S10',
-        };
+        const VALID_FILE = defaultFiles();
 
-        const CREATED = await Files.create(VALID_STUDENT);
+        const CREATED = await Files.create(VALID_FILE);
 
         const RESPONSE = await request(app).delete(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}`,

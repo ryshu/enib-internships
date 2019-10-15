@@ -9,6 +9,8 @@ import dbSetup from '../../../../src/configs/setup/database';
 // Import model for pre-operation before asserting API methods
 import MentoringPropositions from '../../../../src/models/MentoringPropositions';
 
+import { defaultMentoringPropositions } from '../../../../__mocks__/mockData';
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });
@@ -16,7 +18,7 @@ beforeAll((done) => {
 describe('GET /mentoringPropositions', () => {
     beforeEach(async () => {
         // Remove all
-        await MentoringPropositions.destroy({ where: {}, truncate: true });
+        await MentoringPropositions.destroy({ where: {} });
     });
 
     it('NoMentoringPropositions_204', async () => {
@@ -34,9 +36,7 @@ describe('GET /mentoringPropositions', () => {
     });
 
     it('MentoringPropositions_200', async () => {
-        const VALID_MENTORING_PROPOSITION: IMentoringPropositionEntity = {
-            comment: 'test',
-        };
+        const VALID_MENTORING_PROPOSITION = defaultMentoringPropositions();
 
         await MentoringPropositions.create(VALID_MENTORING_PROPOSITION);
         const RESPONSE = await request(app).get(
@@ -64,13 +64,11 @@ describe('POST /mentoringPropositions', () => {
     });
 
     it('ValidMentoringPropositions_200', async () => {
-        const REQ: IMentoringPropositionEntity = {
-            comment: 'test',
-        };
+        const VALID_MENTORING_PROPOSITION = defaultMentoringPropositions();
 
         const RESPONSE = await request(app)
             .post(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentoringPropositions`)
-            .send(REQ);
+            .send(VALID_MENTORING_PROPOSITION);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -83,7 +81,7 @@ describe('POST /mentoringPropositions', () => {
 describe('GET /mentoringPropositions/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await MentoringPropositions.destroy({ where: {}, truncate: true });
+        await MentoringPropositions.destroy({ where: {} });
     });
 
     it('NoMentoringPropositions_204', async () => {
@@ -101,9 +99,7 @@ describe('GET /mentoringPropositions/:id', () => {
     });
 
     it('MentoringPropositions_200', async () => {
-        const VALID_MENTORING_PROPOSITION: IMentoringPropositionEntity = {
-            comment: 'test',
-        };
+        const VALID_MENTORING_PROPOSITION = defaultMentoringPropositions();
 
         const CREATED = await MentoringPropositions.create(VALID_MENTORING_PROPOSITION);
         const RESPONSE = await request(app).get(
@@ -121,7 +117,7 @@ describe('GET /mentoringPropositions/:id', () => {
 describe('PUT /mentoringPropositions/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await MentoringPropositions.destroy({ where: {}, truncate: true });
+        await MentoringPropositions.destroy({ where: {} });
     });
 
     it('NoMentoringPropositions_204', async () => {
@@ -139,9 +135,7 @@ describe('PUT /mentoringPropositions/:id', () => {
     });
 
     it('MentoringPropositions_200_UpdateAllData', async () => {
-        const VALID_MENTORING_PROPOSITION: IMentoringPropositionEntity = {
-            comment: 'test',
-        };
+        const VALID_MENTORING_PROPOSITION = defaultMentoringPropositions();
 
         const CREATED = await MentoringPropositions.create(VALID_MENTORING_PROPOSITION);
 
@@ -162,9 +156,7 @@ describe('PUT /mentoringPropositions/:id', () => {
     });
 
     it('MentoringPropositions_200_NotAnyDataUpdated', async () => {
-        const VALID_MENTORING_PROPOSITION: IMentoringPropositionEntity = {
-            comment: 'test',
-        };
+        const VALID_MENTORING_PROPOSITION = defaultMentoringPropositions();
 
         const CREATED = await MentoringPropositions.create(VALID_MENTORING_PROPOSITION);
 
@@ -185,7 +177,7 @@ describe('PUT /mentoringPropositions/:id', () => {
 describe('DELETE /mentoringPropositions/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await MentoringPropositions.destroy({ where: {}, truncate: true });
+        await MentoringPropositions.destroy({ where: {} });
     });
 
     it('NoMentoringPropositions_200', async () => {
@@ -203,9 +195,7 @@ describe('DELETE /mentoringPropositions/:id', () => {
     });
 
     it('MentoringPropositions_200', async () => {
-        const VALID_MENTORING_PROPOSITION: IMentoringPropositionEntity = {
-            comment: 'test',
-        };
+        const VALID_MENTORING_PROPOSITION = defaultMentoringPropositions();
 
         const CREATED = await MentoringPropositions.create(VALID_MENTORING_PROPOSITION);
 
