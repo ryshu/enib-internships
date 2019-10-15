@@ -9,6 +9,8 @@ import dbSetup from '../../../../src/configs/setup/database';
 // Import model for pre-operation before asserting API methods
 import Students from '../../../../src/models/Students';
 
+import { defaultStudents } from '../../../../__mocks__/mockData';
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });
@@ -16,7 +18,7 @@ beforeAll((done) => {
 describe('GET /students', () => {
     beforeEach(async () => {
         // Remove all
-        await Students.destroy({ where: {}, truncate: true });
+        await Students.destroy({ where: {} });
     });
 
     it('NoStudent_204', async () => {
@@ -34,12 +36,7 @@ describe('GET /students', () => {
     });
 
     it('Students_200', async () => {
-        const VALID_STUDENT: IStudentEntity = {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@enib.fr',
-            semester: 'S10',
-        };
+        const VALID_STUDENT = defaultStudents();
 
         await Students.create(VALID_STUDENT);
         const RESPONSE = await request(app).get(
@@ -67,16 +64,11 @@ describe('POST /students', () => {
     });
 
     it('ValidStudents_200', async () => {
-        const REQ: IStudentEntity = {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@enib.fr',
-            semester: 'S10',
-        };
+        const VALID_STUDENT = defaultStudents();
 
         const RESPONSE = await request(app)
             .post(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/students`)
-            .send(REQ);
+            .send(VALID_STUDENT);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -89,7 +81,7 @@ describe('POST /students', () => {
 describe('GET /students/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Students.destroy({ where: {}, truncate: true });
+        await Students.destroy({ where: {} });
     });
 
     it('NoStudent_204', async () => {
@@ -107,12 +99,7 @@ describe('GET /students/:id', () => {
     });
 
     it('Students_200', async () => {
-        const VALID_STUDENT: IStudentEntity = {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@enib.fr',
-            semester: 'S10',
-        };
+        const VALID_STUDENT = defaultStudents();
 
         const CREATED = await Students.create(VALID_STUDENT);
         const RESPONSE = await request(app).get(
@@ -130,7 +117,7 @@ describe('GET /students/:id', () => {
 describe('PUT /students/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Students.destroy({ where: {}, truncate: true });
+        await Students.destroy({ where: {} });
     });
 
     it('NoStudent_204', async () => {
@@ -148,12 +135,7 @@ describe('PUT /students/:id', () => {
     });
 
     it('Students_200_UpdateAllData', async () => {
-        const VALID_STUDENT: IStudentEntity = {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@enib.fr',
-            semester: 'S10',
-        };
+        const VALID_STUDENT = defaultStudents();
 
         const CREATED = await Students.create(VALID_STUDENT);
 
@@ -172,12 +154,7 @@ describe('PUT /students/:id', () => {
     });
 
     it('Students_200_NotAnyDataUpdated', async () => {
-        const VALID_STUDENT: IStudentEntity = {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@enib.fr',
-            semester: 'S10',
-        };
+        const VALID_STUDENT = defaultStudents();
 
         const CREATED = await Students.create(VALID_STUDENT);
 
@@ -196,7 +173,7 @@ describe('PUT /students/:id', () => {
 describe('DELETE /students/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Students.destroy({ where: {}, truncate: true });
+        await Students.destroy({ where: {} });
     });
 
     it('NoStudent_200', async () => {
@@ -214,12 +191,7 @@ describe('DELETE /students/:id', () => {
     });
 
     it('Students_200', async () => {
-        const VALID_STUDENT: IStudentEntity = {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@enib.fr',
-            semester: 'S10',
-        };
+        const VALID_STUDENT = defaultStudents();
 
         const CREATED = await Students.create(VALID_STUDENT);
 

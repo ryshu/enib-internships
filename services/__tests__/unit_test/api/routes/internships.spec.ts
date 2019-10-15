@@ -9,6 +9,8 @@ import dbSetup from '../../../../src/configs/setup/database';
 // Import model for pre-operation before asserting API methods
 import Internships from '../../../../src/models/Internships';
 
+import { defaultInternships } from '../../../../__mocks__/mockData';
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });
@@ -16,7 +18,7 @@ beforeAll((done) => {
 describe('GET /internships', () => {
     beforeEach(async () => {
         // Remove all
-        await Internships.destroy({ where: {}, truncate: true });
+        await Internships.destroy({ where: {} });
     });
 
     it('NoInternships_204', async () => {
@@ -34,16 +36,7 @@ describe('GET /internships', () => {
     });
 
     it('Internships_200', async () => {
-        const VALID_INTERNSHIP: IInternshipEntity = {
-            subject: 'test',
-            description: 'Stage',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29280',
-            address: 'TEST',
-            isLanguageCourse: true,
-            isValidated: false,
-        };
+        const VALID_INTERNSHIP = defaultInternships();
 
         await Internships.create(VALID_INTERNSHIP);
         const RESPONSE = await request(app).get(
@@ -71,20 +64,11 @@ describe('POST /internships', () => {
     });
 
     it('ValidInternships_200', async () => {
-        const REQ: IInternshipEntity = {
-            subject: 'test',
-            description: 'Stage',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29280',
-            address: 'TEST',
-            isLanguageCourse: true,
-            isValidated: false,
-        };
+        const VALID_INTERNSHIP = defaultInternships();
 
         const RESPONSE = await request(app)
             .post(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships`)
-            .send(REQ);
+            .send(VALID_INTERNSHIP);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -97,7 +81,7 @@ describe('POST /internships', () => {
 describe('GET /internships/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Internships.destroy({ where: {}, truncate: true });
+        await Internships.destroy({ where: {} });
     });
 
     it('NoInternships_204', async () => {
@@ -115,16 +99,7 @@ describe('GET /internships/:id', () => {
     });
 
     it('Internships_200', async () => {
-        const VALID_INTERNSHIP: IInternshipEntity = {
-            subject: 'test',
-            description: 'Stage',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29280',
-            address: 'TEST',
-            isLanguageCourse: true,
-            isValidated: false,
-        };
+        const VALID_INTERNSHIP = defaultInternships();
 
         const CREATED = await Internships.create(VALID_INTERNSHIP);
         const RESPONSE = await request(app).get(
@@ -142,7 +117,7 @@ describe('GET /internships/:id', () => {
 describe('PUT /internships/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Internships.destroy({ where: {}, truncate: true });
+        await Internships.destroy({ where: {} });
     });
 
     it('NoInternships_204', async () => {
@@ -160,16 +135,7 @@ describe('PUT /internships/:id', () => {
     });
 
     it('Internships_200_UpdateAllData', async () => {
-        const VALID_INTERNSHIP: IInternshipEntity = {
-            subject: 'test',
-            description: 'Stage',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29280',
-            address: 'TEST',
-            isLanguageCourse: true,
-            isValidated: false,
-        };
+        const VALID_INTERNSHIP = defaultInternships();
 
         const CREATED = await Internships.create(VALID_INTERNSHIP);
 
@@ -188,16 +154,7 @@ describe('PUT /internships/:id', () => {
     });
 
     it('Internships_200_NotAnyDataUpdated', async () => {
-        const VALID_INTERNSHIP: IInternshipEntity = {
-            subject: 'test',
-            description: 'Stage',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29280',
-            address: 'TEST',
-            isLanguageCourse: true,
-            isValidated: false,
-        };
+        const VALID_INTERNSHIP = defaultInternships();
 
         const CREATED = await Internships.create(VALID_INTERNSHIP);
 
@@ -216,7 +173,7 @@ describe('PUT /internships/:id', () => {
 describe('DELETE /internships/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Internships.destroy({ where: {}, truncate: true });
+        await Internships.destroy({ where: {} });
     });
 
     it('NoInternships_200', async () => {
@@ -234,16 +191,7 @@ describe('DELETE /internships/:id', () => {
     });
 
     it('Internships_200', async () => {
-        const VALID_INTERNSHIP: IInternshipEntity = {
-            subject: 'test',
-            description: 'Stage',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29280',
-            address: 'TEST',
-            isLanguageCourse: true,
-            isValidated: false,
-        };
+        const VALID_INTERNSHIP = defaultInternships();
 
         const CREATED = await Internships.create(VALID_INTERNSHIP);
 

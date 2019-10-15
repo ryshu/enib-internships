@@ -9,6 +9,8 @@ import dbSetup from '../../../../src/configs/setup/database';
 // Import model for pre-operation before asserting API methods
 import Businesses from '../../../../src/models/Businesses';
 
+import { defaultBusiness, defaultInternships } from '../../../../__mocks__/mockData';
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });
@@ -16,7 +18,7 @@ beforeAll((done) => {
 describe('GET /businesses', () => {
     beforeEach(async () => {
         // Remove all
-        await Businesses.destroy({ where: {}, truncate: true });
+        await Businesses.destroy({ where: {} });
     });
 
     it('NoBusiness_204', async () => {
@@ -34,13 +36,7 @@ describe('GET /businesses', () => {
     });
 
     it('Businesses_200', async () => {
-        const VALID_BUSINESS: IBusinessEntity = {
-            name: 'test',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29200',
-            address: 'TEST',
-        };
+        const VALID_BUSINESS = defaultBusiness();
 
         await Businesses.create(VALID_BUSINESS);
         const RESPONSE = await request(app).get(
@@ -68,17 +64,11 @@ describe('POST /businesses', () => {
     });
 
     it('ValidBusinesses_200', async () => {
-        const REQ: IBusinessEntity = {
-            name: 'test',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29200',
-            address: 'TEST',
-        };
+        const VALID_BUSINESS = defaultBusiness();
 
         const RESPONSE = await request(app)
             .post(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses`)
-            .send(REQ);
+            .send(VALID_BUSINESS);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -91,7 +81,7 @@ describe('POST /businesses', () => {
 describe('GET /businesses/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Businesses.destroy({ where: {}, truncate: true });
+        await Businesses.destroy({ where: {} });
     });
 
     it('NoBusiness_204', async () => {
@@ -109,13 +99,7 @@ describe('GET /businesses/:id', () => {
     });
 
     it('Businesses_200', async () => {
-        const VALID_BUSINESS: IBusinessEntity = {
-            name: 'test',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29200',
-            address: 'TEST',
-        };
+        const VALID_BUSINESS = defaultBusiness();
 
         const CREATED = await Businesses.create(VALID_BUSINESS);
         const RESPONSE = await request(app).get(
@@ -133,7 +117,7 @@ describe('GET /businesses/:id', () => {
 describe('PUT /businesses/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Businesses.destroy({ where: {}, truncate: true });
+        await Businesses.destroy({ where: {} });
     });
 
     it('NoBusiness_204', async () => {
@@ -151,13 +135,7 @@ describe('PUT /businesses/:id', () => {
     });
 
     it('Businesses_200_UpdateAllData', async () => {
-        const VALID_BUSINESS: IBusinessEntity = {
-            name: 'test',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29200',
-            address: 'TEST',
-        };
+        const VALID_BUSINESS = defaultBusiness();
 
         const CREATED = await Businesses.create(VALID_BUSINESS);
 
@@ -176,13 +154,7 @@ describe('PUT /businesses/:id', () => {
     });
 
     it('Businesses_200_NotAnyDataUpdated', async () => {
-        const VALID_BUSINESS: IBusinessEntity = {
-            name: 'test',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29200',
-            address: 'TEST',
-        };
+        const VALID_BUSINESS = defaultBusiness();
 
         const CREATED = await Businesses.create(VALID_BUSINESS);
 
@@ -201,7 +173,7 @@ describe('PUT /businesses/:id', () => {
 describe('DELETE /businesses/:id', () => {
     beforeEach(async () => {
         // Remove all
-        await Businesses.destroy({ where: {}, truncate: true });
+        await Businesses.destroy({ where: {} });
     });
 
     it('NoBusiness_200', async () => {
@@ -219,13 +191,7 @@ describe('DELETE /businesses/:id', () => {
     });
 
     it('Businesses_200', async () => {
-        const VALID_BUSINESS: IBusinessEntity = {
-            name: 'test',
-            country: 'France',
-            city: 'Brest',
-            postalCode: '29200',
-            address: 'TEST',
-        };
+        const VALID_BUSINESS = defaultBusiness();
 
         const CREATED = await Businesses.create(VALID_BUSINESS);
 

@@ -4,6 +4,7 @@ exports[`GET /internships Internships_200 1`] = `
 Object {
   "data": Array [
     Object {
+      "BusinessId": null,
       "additional": null,
       "address": "TEST",
       "city": "Brest",
@@ -26,6 +27,7 @@ Object {
 
 exports[`GET /internships/:id Internships_200 1`] = `
 Object {
+  "BusinessId": null,
   "additional": null,
   "address": "TEST",
   "city": "Brest",
@@ -59,6 +61,7 @@ Object {
 
 exports[`PUT /internships/:id Internships_200_NotAnyDataUpdated 1`] = `
 Object {
+  "BusinessId": null,
   "additional": null,
   "address": "TEST",
   "city": "Brest",
@@ -76,6 +79,7 @@ Object {
 
 exports[`PUT /internships/:id Internships_200_UpdateAllData 1`] = `
 Object {
+  "BusinessId": null,
   "additional": "additional data",
   "address": "TEST",
   "city": "Brest",
