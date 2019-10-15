@@ -1,6 +1,6 @@
 {
   "docs": {
-    "Get started": ["docs-install"],
+    "Get started": ["docs-install", "docs-settings"],
     "Software architecture": ["docs-backend", "docs-frontend"]
   },
   "api": {
