@@ -92,6 +92,9 @@ Internships.init(
     {
         tableName: 'internships',
         sequelize: database,
+        defaultScope: {
+            attributes: { exclude: ['businessId'] },
+        },
     },
 );
 

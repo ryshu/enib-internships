@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import httpStatus from 'http-status-codes';
 
 import Internships from '../../models/Internships';
-import httpStatus from 'http-status-codes';
+import Businesses from '../../models/Businesses';
 
 import { paginate } from '../helpers/pagination.helper';
 import {
@@ -83,7 +84,7 @@ export const getInternship = (req: Request, res: Response, next: NextFunction): 
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id)
+    Internships.findByPk(req.params.id, { include: [{ model: Businesses, as: 'business' }] })
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val);
@@ -162,4 +163,45 @@ export const deleteInternship = (req: Request, res: Response, next: NextFunction
         .then((val) => (val ? val.destroy() : undefined))
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+};
+
+/**
+ * GET /internship/:id/business
+ * Used to select a internship by ID and return his business
+ */
+export const getInternshipBusiness = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Internships.findByPk(req.params.id, { include: [{ model: Businesses, as: 'business' }] })
+        .then((val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.business);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /internships/:id/business/:business_id/link
+ * Used to get all internships of a business
+ */
+export const linkInternshipBusinesses = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Businesses.findByPk(req.params.business_id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                await val.addInternship(Number(req.params.id));
+                return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
