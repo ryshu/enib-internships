@@ -1,0 +1,312 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Setup associations · Internships manager</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="In this tutorial, will see every step to set up an association between two entity."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Setup associations · Internships manager"/><meta property="og:type" content="website"/><meta property="og:url" content="https://ryshu.github.io/enib-internships/"/><meta property="og:description" content="In this tutorial, will see every step to set up an association between two entity."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/enib-internships/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/enib-internships/js/scrollSpy.js"></script><link rel="stylesheet" href="/enib-internships/css/main.css"/><script src="/enib-internships/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/enib-internships/"><img class="logo" src="/enib-internships/img/favicon.ico" alt="Internships manager"/><h2 class="headerTitleWithLogo">Internships manager</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/enib-internships/docs/docs-install" target="_self">Docs</a></li><li class=""><a href="/enib-internships/docs/api-index" target="_self">API</a></li><li class="siteNavGroupActive"><a href="/enib-internships/docs/tuto-mentors" target="_self">Tuto</a></li><li class=""><a href="/enib-internships/help" target="_self">Help</a></li><li class=""><a href="https://github.com/ryshu/enib-internships" target="_self">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Complete</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Complete</h3><ul class=""><li class="navListItem"><a class="navItem" href="/enib-internships/docs/tuto-mentors">Setup mentors</a></li><li class="navListItem"><a class="navItem" href="/enib-internships/docs/tuto-students">Setup students</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/enib-internships/docs/tuto-setup-associations">Setup associations</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Setup associations</h1></header><article><div><span><p>In this tutorial, will see every step to set up an association between two entity.
+We took the example of the relation One-To-Many between Businesses and Internships.
+In the end, we will be able to:</p>
+<ul>
+<li>Setup a link One-To-Many</li>
+<li>List internships related to a business</li>
+<li>Get the business related to an internships</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="the-one-to-many-relation"></a><a href="#the-one-to-many-relation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The One-To-Many relation</h2>
+<p>One-To-Many associations are connecting one source with multiple targets. The targets however are again connected to exactly one specific source.
+In our sample, we want to connect one <strong>Businesses</strong> to multiple <strong>Internships</strong></p>
+<p>To get more detail about oneToMany, you can reach this url:</p>
+<ul>
+<li><a href="https://sequelize.org/master/manual/associations.html#one-to-many-associations--hasmany-">Sequalize - One to Many</a></li>
+<li><a href="https://en.wikipedia.org/wiki/One-to-many_(data_model)">wikipedia</a></li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="add-relation-between-businesses-and-internships"></a><a href="#add-relation-between-businesses-and-internships" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Add relation between Businesses and Internships</h2>
+<p>The first thing we need to do is declare to our ORM that we want to set up the relation between <strong>Businesses</strong> and <strong>Internships</strong></p>
+<p>To do so, go to <code>services/src/configs/setup/database.ts</code> and add the following code:</p>
+<pre><code class="hljs css language-typescript">Businesses.hasMany(Internships, { <span class="hljs-keyword">as</span>: <span class="hljs-string">'internships'</span>, foreignKey: <span class="hljs-string">'businessId'</span>, sourceKey: <span class="hljs-string">'id'</span> });
+Internships.belongsTo(Businesses, { <span class="hljs-keyword">as</span>: <span class="hljs-string">'business'</span>, foreignKey: <span class="hljs-string">'businessId'</span>, targetKey: <span class="hljs-string">'id'</span> });
+</code></pre>
+<p>This can be translated as follows:</p>
+<ul>
+<li>We declare that <strong>Businesses</strong> has many <strong>Internships</strong>, which will be available on <strong>internships</strong> fields using <strong>businessId</strong> in the Internships table and the relation will be base on <strong>Business.id</strong></li>
+<li>We declare that <strong>Internships</strong> belongs to <strong>Businesses</strong>, which will be available on <strong>business</strong> fields using <strong>businessId</strong> in the Internships table and the relation which refering on <strong>Business.id</strong></li>
+</ul>
+<p>Then, we need to get declarations of all methods that will be created by <em>Sequelize</em> for us.</p>
+<p>Go to <code>servcices/src/models/Businesses.ts</code> and add the following code:</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">class</span> Businesses <span class="hljs-keyword">extends</span> Sequelize.Model <span class="hljs-keyword">implements</span> IBusinessEntity {
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> associations: {
+        business: Sequelize.Association&lt;Businesses, Internships&gt;;
+    };
+
+    ...
+
+    <span class="hljs-keyword">public</span> getInternships: Sequelize.HasManyGetAssociationsMixin&lt;Internships&gt;;
+    <span class="hljs-keyword">public</span> addInternship: Sequelize.HasManyAddAssociationMixin&lt;Internships, Internships[<span class="hljs-string">'id'</span>]&gt;;
+    <span class="hljs-keyword">public</span> createInternship: Sequelize.HasManyCreateAssociationMixin&lt;IInternshipEntity&gt;;
+    <span class="hljs-keyword">public</span> hasInternship: Sequelize.HasManyHasAssociationMixin&lt;Internships, Internships[<span class="hljs-string">'id'</span>]&gt;;
+    <span class="hljs-keyword">public</span> countInternships: Sequelize.HasManyCountAssociationsMixin;
+
+    <span class="hljs-keyword">public</span> readonly internships?: Internships[];
+    <span class="hljs-keyword">public</span> internshipCount: <span class="hljs-built_in">number</span>;
+}
+</code></pre>
+<p>Also, go to <code>services/src/models/Internships.ts</code> and add the following code:</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">class</span> Internships <span class="hljs-keyword">extends</span> Sequelize.Model <span class="hljs-keyword">implements</span> IInternshipEntity {
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> associations: {
+        business: Sequelize.Association&lt;Internships, Businesses&gt;;
+    };
+
+    ...
+
+    <span class="hljs-keyword">public</span> getBusiness: Sequelize.BelongsToGetAssociationMixin&lt;Businesses&gt;;
+    <span class="hljs-keyword">public</span> setBusiness: Sequelize.BelongsToSetAssociationMixin&lt;Businesses, Businesses[<span class="hljs-string">'id'</span>]&gt;;
+    <span class="hljs-keyword">public</span> createBusiness: Sequelize.BelongsToCreateAssociationMixin&lt;IBusinessEntity&gt;;
+
+    <span class="hljs-keyword">public</span> readonly business?: Businesses | Businesses[<span class="hljs-string">'id'</span>];
+}
+
+Internships.init(
+    {
+        ...
+    },
+    {
+        ...
+        defaultScope: {
+            attributes: { exclude: [<span class="hljs-string">'businessId'</span>] },
+        },
+    },
+);
+</code></pre>
+<p>Here we also add excluded attributes in default scope, <strong>businessId</strong>. We do this to prevent businessId to appear in internships entries.
+For our ORM, all is done. We have created in database our association.</p>
+<p>You now need to update your database.</p>
+<ul>
+<li>go to <code>services/.env</code> files and set <strong>&quot;ORM_DROP_DB_ON_START&quot;</strong> to true</li>
+<li>run your serve builded <code>npm run build</code> and <code>npm run serve</code></li>
+<li>go to <code>services/.env</code> files and set <strong>&quot;ORM_DROP_DB_ON_START&quot;</strong> to false</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="update-businesses-router"></a><a href="#update-businesses-router" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Update businesses router</h2>
+<p>We now need to let our user access those relations in api.</p>
+<p>For our case, in businesses router, we only need to set up 2 routes:</p>
+<ul>
+<li>GET /businesses/:id/internships (get list of internships linked to a business)</li>
+<li>POST /businesses/:id/internships/:internship_id/link (add new relation between business and internships)</li>
+</ul>
+<p>First, we want to get a list of all available internships.</p>
+<h3><a class="anchor" aria-hidden="true" id="controllers"></a><a href="#controllers" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Controllers</h3>
+<p>Go to <code>services/src/api/controllers/businesses.ctrl.ts</code></p>
+<p>We add the get controller</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * GET /businesses/:id/internships
+ * Used to get all internships of a business
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getBusinessInternships = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Businesses.findByPk(req.params.id, { include: [{ model: Internships, <span class="hljs-keyword">as</span>: <span class="hljs-string">'internships'</span> }] })
+        .then(<span class="hljs-keyword">async</span> (val) =&gt; {
+            <span class="hljs-keyword">if</span> (checkContent(val, next)) {
+                <span class="hljs-keyword">return</span> res.send(val.internships);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+</code></pre>
+<p>Then the post controller</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * GET /businesses/:id/internships/:internship_id/link
+ * Used to get all internships of a business
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> linkBusinessInternships = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Businesses.findByPk(req.params.id)
+        .then(<span class="hljs-keyword">async</span> (val) =&gt; {
+            <span class="hljs-keyword">if</span> (checkContent(val, next)) {
+                <span class="hljs-keyword">await</span> val.addInternship(<span class="hljs-built_in">Number</span>(req.params.internship_id));
+                <span class="hljs-keyword">return</span> res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+</code></pre>
+<p>Don't forget to update your import to include <strong>Internships</strong> database access.</p>
+<p>We also want to improve our <em>GET /buisnesses/:id</em> endpoint. To do so, we include internships in find query as following</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * GET /businesses/:id
+ * Used to select a business by ID
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getBusiness = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    ...
+
+    Businesses.findByPk(req.params.id, { include: [{ model: Internships, <span class="hljs-keyword">as</span>: <span class="hljs-string">'internships'</span> }] })
+        ...
+};
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="validators"></a><a href="#validators" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Validators</h3>
+<p>The only validator that we need to create is in <code>services/src/api/validators/generic.val.ts</code> and add the declaration of <strong>InternshipID</strong> validator</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> InternshipID: Schema = namedID(<span class="hljs-string">'internship_id'</span>, <span class="hljs-string">'Internship identifier'</span>);
+</code></pre>
+<p>Named ID is used to factorize ID validator declaration.</p>
+<h3><a class="anchor" aria-hidden="true" id="router"></a><a href="#router" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Router</h3>
+<p>Last thing to do on API is to update the <code>services/src/api/router/businesses.router.ts</code>.</p>
+<p>Add the following code in your router:</p>
+<pre><code class="hljs css language-typescript">...
+
+router.get(<span class="hljs-string">'/:id/internships'</span>, checkSchema(ID), BusinessesCtrl.getBusinessInternships);
+router.post(
+    <span class="hljs-string">'/:id/internships/:internship_id/link'</span>,
+    checkSchema(<span class="hljs-built_in">Object</span>.assign({}, ID, InternshipID)),
+    BusinessesCtrl.linkBusinessInternships,
+);
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> router;
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="update-internship-router"></a><a href="#update-internship-router" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Update internship router</h2>
+<p>We now need to let our user access those relations in api.</p>
+<p>For our case, in internships router, we only need to set up 2 routes:</p>
+<ul>
+<li>GET /internships/:id/businesses (get list of businesses linked to an internship)</li>
+<li>POST /internships/:id/businesses/:internship_id/link (add new relation between business and internships)</li>
+</ul>
+<p>First, we want to get a list of all available internships.</p>
+<h3><a class="anchor" aria-hidden="true" id="controller"></a><a href="#controller" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Controller</h3>
+<p>Go to <code>services/src/api/controllers/internships.ctrl.ts</code></p>
+<p>We add the get controller</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * GET /internship/:id/business
+ * Used to select a internship by ID and return his business
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getInternshipBusiness = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Internships.findByPk(req.params.id, { include: [{ model: Businesses, <span class="hljs-keyword">as</span>: <span class="hljs-string">'business'</span> }] })
+        .then(<span class="hljs-function">(<span class="hljs-params">val</span>) =&gt;</span> {
+            <span class="hljs-keyword">if</span> (checkContent(val, next)) {
+                <span class="hljs-keyword">return</span> res.send(val.business);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+</code></pre>
+<p>Then the post controller</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * POST /internships/:id/business/:business_id/link
+ * Used to get all internships of a business
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> linkInternshipBusinesses = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    <span class="hljs-comment">// @see validator + router</span>
+    <span class="hljs-keyword">const</span> errors = validationResult(req);
+    <span class="hljs-keyword">if</span> (!errors.isEmpty()) {
+        <span class="hljs-keyword">return</span> BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Businesses.findByPk(req.params.business_id)
+        .then(<span class="hljs-keyword">async</span> (val) =&gt; {
+            <span class="hljs-keyword">if</span> (checkContent(val, next)) {
+                <span class="hljs-keyword">await</span> val.addInternship(<span class="hljs-built_in">Number</span>(req.params.id));
+                <span class="hljs-keyword">return</span> res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> UNPROCESSABLE_ENTITY(next, e));
+};
+</code></pre>
+<p>Don't forget to update your import to include <strong>Businesses</strong> database access.</p>
+<p>We also want to improve our <em>GET /internships/:id</em> endpoint. To do so, we include businesses to find query as following</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-comment">/**
+ * GET /internship/:id
+ * Used to select a internship by ID
+ */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> getInternship = (req: Request, res: Response, next: NextFunction): <span class="hljs-function"><span class="hljs-params">void</span> =&gt;</span> {
+    ...
+
+    Internships.findByPk(req.params.id, { include: [{ model: Businesses, <span class="hljs-keyword">as</span>: <span class="hljs-string">'business'</span> }] })
+        ...
+};
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="validator"></a><a href="#validator" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Validator</h3>
+<p>The only validator that we need to create is in <code>services/src/api/validators/generic.val.ts</code> and add the declaration of <strong>BusinessID</strong> validator</p>
+<pre><code class="hljs css language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> BusinessID: Schema = namedID(<span class="hljs-string">'business_id'</span>, <span class="hljs-string">'Business identifier'</span>);
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="router-1"></a><a href="#router-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Router</h3>
+<p>Last thing to do on API is to update the <code>services/src/api/router/internships.router.ts</code>.</p>
+<p>Add the following code in your router:</p>
+<pre><code class="hljs css language-typescript">...
+
+router.get(<span class="hljs-string">'/:id/businesses'</span>, checkSchema(ID), InternshipsCtrl.getInternshipBusinesses);
+router.post(
+    <span class="hljs-string">'/:id/businesses/:businesse_id/link'</span>,
+    checkSchema(<span class="hljs-built_in">Object</span>.assign({}, ID, BusinessID)),
+    InternshipsCtrl.linkInternshipBusinesses,
+);
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> router;
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="for-futher"></a><a href="#for-futher" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>For futher</h2>
+<ul>
+<li>Update tests link to linked entities (if error on fixtures, <code>npm run test -- -u</code> will update them)</li>
+<li>Update api documentation of both linked entities</li>
+</ul>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/enib-internships/docs/tuto-students"><span class="arrow-prev">← </span><span>Setup students</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#the-one-to-many-relation">The One-To-Many relation</a></li><li><a href="#add-relation-between-businesses-and-internships">Add relation between Businesses and Internships</a></li><li><a href="#update-businesses-router">Update businesses router</a><ul class="toc-headings"><li><a href="#controllers">Controllers</a></li><li><a href="#validators">Validators</a></li><li><a href="#router">Router</a></li></ul></li><li><a href="#update-internship-router">Update internship router</a><ul class="toc-headings"><li><a href="#controller">Controller</a></li><li><a href="#validator">Validator</a></li><li><a href="#router-1">Router</a></li></ul></li><li><a href="#for-futher">For futher</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="copyright">Copyright © 2019 ENIB</section></footer></div></body></html>
