@@ -8,6 +8,6 @@
     "REST API": ["api-businesses", "api-files", "api-mentoring-propostions", "api-internships", "api-students"]
   },
   "tuto": {
-    "Complete": ["tuto-mentors", "tuto-students"]
+    "Complete": ["tuto-mentors", "tuto-students", "tuto-setup-associations"]
   }
 }
