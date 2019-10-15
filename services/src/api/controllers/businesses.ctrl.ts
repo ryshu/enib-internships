@@ -167,7 +167,7 @@ export const getBusinessInternships = (req: Request, res: Response, next: NextFu
     Businesses.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
         .then(async (val) => {
             if (checkContent(val, next)) {
-                return res.send(val.internships || []);
+                return res.send(val.internships);
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
