@@ -17,6 +17,9 @@
       "api-internships": {
         "title": "Internships"
       },
+      "api-mentoring-propostions": {
+        "title": "Mentoring propositions"
+      },
       "api-students": {
         "title": "Students"
       },

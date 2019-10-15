@@ -14,6 +14,7 @@ program
     .option('-q, --quantity <number>', 'Quantity to inject', 100)
     .option('--businesses', 'Inject businesses')
     .option('--internships', 'Inject interships')
+    .option('--mentoring-propositions', 'Inject mentoring propositions')
     .option('--students', 'Inject students')
     .option('--files', 'Inject files')
     .parse(process.argv);
@@ -26,6 +27,7 @@ require('../../dist/configs/setup/database'); // Only import to setup
 
 const BusinessesLoader = require('./fake-load/businesses');
 const InternshipsLoader = require('./fake-load/internships');
+const MentoringPropositionsLoader = require('./fake-load/mentoring-propositions');
 const StudentsLoader = require('./fake-load/students');
 const FilesLoader = require('./fake-load/files');
 
@@ -33,6 +35,8 @@ Promise.resolve().then(async () => {
     try {
         if (program.businesses) await BusinessesLoader(program.quantity, program.verbose);
         if (program.internships) await InternshipsLoader(program.quantity, program.verbose);
+        if (program['mentoring-propositions'])
+            await MentoringPropositionsLoader(program.quantity, program.verbose);
         if (program.students) await StudentsLoader(program.quantity, program.verbose);
         if (program.files) await FilesLoader(program.quantity, program.verbose);
 
