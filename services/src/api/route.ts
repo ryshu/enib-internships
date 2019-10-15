@@ -4,7 +4,7 @@ import businessesRouter from './routers/businesses.route';
 import internshipsRouter from './routers/internships.route';
 import studentsRouter from './routers/students.route';
 import filesRouter from './routers/files.route';
-import mentoringPropositionsRouter from './routers/mentoringPropositions.route';
+import mentoringPropositionsRouter from './routers/mentoring.propositions.route';
 
 import mockUserSystem from '../mock/route';
 
