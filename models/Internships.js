@@ -1,62 +1,72 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const sequelize_1 = require("sequelize");
+const Sequelize = __importStar(require("sequelize"));
 const database_1 = __importDefault(require("../configs/instances/database"));
-class Internships extends sequelize_1.Model {
+class Internships extends Sequelize.Model {
 }
 Internships.init({
     id: {
-        type: sequelize_1.DataTypes.INTEGER.UNSIGNED,
+        type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,
     },
     // Data
     subject: {
-        type: new sequelize_1.DataTypes.STRING(256),
+        type: new Sequelize.DataTypes.STRING(256),
         allowNull: false,
     },
     description: {
-        type: new sequelize_1.DataTypes.TEXT(),
+        type: new Sequelize.DataTypes.TEXT(),
         allowNull: true,
     },
     // Localisation
     country: {
-        type: new sequelize_1.DataTypes.STRING(128),
+        type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
     },
     city: {
-        type: new sequelize_1.DataTypes.STRING(128),
+        type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
     },
     postalCode: {
-        type: new sequelize_1.DataTypes.STRING(128),
+        type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
     },
     address: {
-        type: new sequelize_1.DataTypes.STRING(128),
+        type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
     },
     additional: {
-        type: new sequelize_1.DataTypes.STRING(),
+        type: new Sequelize.DataTypes.STRING(),
         allowNull: true,
     },
     // State
     isLanguageCourse: {
-        type: sequelize_1.DataTypes.BOOLEAN,
+        type: Sequelize.DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
     },
     isValidated: {
-        type: sequelize_1.DataTypes.BOOLEAN,
+        type: Sequelize.DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
     },
 }, {
     tableName: 'internships',
     sequelize: database_1.default,
+    defaultScope: {
+        attributes: { exclude: ['businessId'] },
+    },
 });
 exports.default = Internships;
 //# sourceMappingURL=Internships.js.map

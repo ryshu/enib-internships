@@ -1,43 +1,50 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const sequelize_1 = require("sequelize");
+const Sequelize = __importStar(require("sequelize"));
 const database_1 = __importDefault(require("../configs/instances/database"));
-class Businesses extends sequelize_1.Model {
+class Businesses extends Sequelize.Model {
 }
 Businesses.init({
     id: {
-        type: sequelize_1.DataTypes.INTEGER.UNSIGNED,
+        type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,
     },
     name: {
-        type: new sequelize_1.DataTypes.STRING(128),
+        type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
     },
     country: {
-        type: new sequelize_1.DataTypes.STRING(128),
+        type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
         defaultValue: 'France',
     },
     city: {
-        type: new sequelize_1.DataTypes.STRING(128),
+        type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
         defaultValue: 'Brest',
     },
     postalCode: {
-        type: new sequelize_1.DataTypes.STRING(128),
+        type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
         defaultValue: '29200',
     },
     address: {
-        type: new sequelize_1.DataTypes.STRING(),
+        type: new Sequelize.DataTypes.STRING(),
         allowNull: false,
     },
     additional: {
-        type: new sequelize_1.DataTypes.STRING(),
+        type: new Sequelize.DataTypes.STRING(),
         allowNull: true,
     },
 }, {

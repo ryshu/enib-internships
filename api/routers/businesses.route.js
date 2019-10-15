@@ -21,5 +21,7 @@ router.post('', express_validator_1.checkSchema(businesses_val_1.BusinessCreate)
 router.get('/:id', express_validator_1.checkSchema(generic_val_1.ID), BusinessesCtrl.getBusiness);
 router.put('/:id', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, businesses_val_1.BusinessUpdate)), BusinessesCtrl.putBusiness);
 router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), BusinessesCtrl.deleteBusiness);
+router.get('/:id/internships', express_validator_1.checkSchema(generic_val_1.ID), BusinessesCtrl.getBusinessInternships);
+router.post('/:id/internships/:internship_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipID)), BusinessesCtrl.linkBusinessInternships);
 exports.default = router;
 //# sourceMappingURL=businesses.route.js.map
