@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GET /mentoringPropositions MentoringPropositions_200 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "comment": "test",
+      "createdAt": Any<String>,
+      "id": 1,
+      "updatedAt": Any<String>,
+    },
+  ],
+  "length": 1,
+  "max": 1,
+  "page": 1,
+}
+`;
+
+exports[`GET /mentoringPropositions/:id MentoringPropositions_200 1`] = `
+Object {
+  "comment": "test",
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /mentoringPropositions ValidMentoringPropositions_200 1`] = `
+Object {
+  "comment": "test",
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /mentoringPropositions/:id MentoringPropositions_200_NotAnyDataUpdated 1`] = `
+Object {
+  "comment": "test",
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /mentoringPropositions/:id MentoringPropositions_200_UpdateAllData 1`] = `
+Object {
+  "comment": "additional data",
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "updatedAt": Any<String>,
+}
+`;
