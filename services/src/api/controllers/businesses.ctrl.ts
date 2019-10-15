@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import httpStatus from 'http-status-codes';
 
 import Businesses from '../../models/Businesses';
-import httpStatus from 'http-status-codes';
+import Internships from '../../models/Internships';
 
 import { paginate } from '../helpers/pagination.helper';
 import {
@@ -31,7 +32,7 @@ export const getBusinesses = (req: Request, res: Response, next: NextFunction): 
             max = rowNbr;
             return Businesses.findAll(paginate({ page, limit }));
         })
-        .then((businesses) => {
+        .then(async (businesses) => {
             if (checkArrayContent(businesses, next)) {
                 return res.send({
                     page,
@@ -80,7 +81,7 @@ export const getBusiness = (req: Request, res: Response, next: NextFunction): vo
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id)
+    Businesses.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val);
@@ -150,4 +151,45 @@ export const deleteBusiness = (req: Request, res: Response, next: NextFunction):
         .then((val) => (val ? val.destroy() : undefined))
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+};
+
+/**
+ * GET /businesses/:id/internships
+ * Used to get all internships of a business
+ */
+export const getBusinessInternships = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Businesses.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.internships || []);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /businesses/:id/internships/:internship_id/link
+ * Used to get all internships of a business
+ */
+export const linkBusinessInternships = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Businesses.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                await val.addInternship(Number(req.params.internship_id));
+                return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
