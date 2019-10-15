@@ -15,7 +15,7 @@ Internships.init({
     },
     // Data
     subject: {
-        type: new sequelize_1.DataTypes.STRING(128),
+        type: new sequelize_1.DataTypes.STRING(256),
         allowNull: false,
     },
     description: {
@@ -31,13 +31,17 @@ Internships.init({
         type: new sequelize_1.DataTypes.STRING(128),
         allowNull: false,
     },
+    postalCode: {
+        type: new sequelize_1.DataTypes.STRING(128),
+        allowNull: false,
+    },
     address: {
         type: new sequelize_1.DataTypes.STRING(128),
         allowNull: false,
     },
     additional: {
         type: new sequelize_1.DataTypes.STRING(),
-        allowNull: false,
+        allowNull: true,
     },
     // State
     isLanguageCourse: {

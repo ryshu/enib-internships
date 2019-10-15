@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const generic_val_1 = require("./generic.val");
+exports.StudentList = Object.assign({}, generic_val_1.paginateValidator);
 exports.StudentCreate = {
     firstName: {
         in: ['body'],
@@ -60,20 +62,6 @@ exports.StudentUpdate = {
         optional: true,
         trim: true,
         escape: true,
-    },
-};
-exports.StudentList = {
-    page: {
-        in: ['query'],
-        isInt: { errorMessage: 'Page need to be an integer' },
-        optional: true,
-        toInt: true,
-    },
-    limit: {
-        in: ['query'],
-        isInt: { errorMessage: 'Limit need to be an integer' },
-        optional: true,
-        toInt: true,
     },
 };
 //# sourceMappingURL=students.val.js.map
