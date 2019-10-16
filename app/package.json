@@ -65,7 +65,7 @@
     "@types/tinymce": "^4.5.23",
     "@types/webpack-env": "^1.14.0",
     "@types/yamljs": "^0.2.30",
-    "@vue/cli-plugin-babel": "^3.11.0",
+    "@vue/cli-plugin-babel": "^4.0.0",
     "@vue/cli-plugin-e2e-cypress": "^4.0.0",
     "@vue/cli-plugin-eslint": "^3.11.0",
     "@vue/cli-plugin-typescript": "^3.11.0",
