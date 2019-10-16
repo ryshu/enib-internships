@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.title"
-        :placeholder="$t('table.businesses.name')"
+        :placeholder="$t('table.students.lastName')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -42,24 +42,24 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.businesses.name')" min-width="150px">
+      <el-table-column :label="$t('table.students.firstName')" min-width="150px">
         <template slot-scope="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.firstName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.businesses.country')" min-width="150px">
+      <el-table-column :label="$t('table.students.lastName')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.country }}</span>
+          <span>{{ row.lastName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.businesses.city')" min-width="150px">
+      <el-table-column :label="$t('table.students.email')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.city }}</span>
+          <span>{{ row.email }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.businesses.postalCode')" min-width="150px">
+      <el-table-column :label="$t('table.students.semester')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.postalCode }}</span>
+          <span>{{ row.semester }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -79,7 +79,7 @@
             size="small"
             type="danger"
             icon="el-icon-remove"
-            @click="handleModifyStatus(row, 'deleted')"
+            @click="handleDelete(row, 'deleted')"
           >{{ $t('table.delete') }}</el-button>
         </template>
       </el-table-column>
@@ -97,28 +97,22 @@
       <el-form
         ref="dataForm"
         :rules="rules"
-        :model="tempBusinessData"
+        :model="tempStudentData"
         label-position="left"
         label-width="250px"
         style="width: 100%; padding: 0 50px;"
       >
-        <el-form-item :label="$t('table.businesses.name')" prop="name">
-          <el-input v-model="tempBusinessData.name" />
+        <el-form-item :label="$t('table.students.firstName')" prop="firstName">
+          <el-input v-model="tempStudentData.firstName" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.country')" prop="country">
-          <el-input v-model="tempBusinessData.country" />
+        <el-form-item :label="$t('table.students.lastName')" prop="lastName">
+          <el-input v-model="tempStudentData.lastName" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.city')" prop="city">
-          <el-input v-model="tempBusinessData.city" />
+        <el-form-item :label="$t('table.students.email')" prop="email">
+          <el-input v-model="tempStudentData.email" />
         </el-form-item>
-        <el-form-item :label="$t('table.businesses.postalCode')" prop="postalCode">
-          <el-input v-model="tempBusinessData.postalCode" />
-        </el-form-item>
-        <el-form-item :label="$t('table.businesses.address')" prop="address">
-          <el-input v-model="tempBusinessData.address" />
-        </el-form-item>
-        <el-form-item :label="$t('table.businesses.additional')" prop="additional">
-          <el-input v-model="tempBusinessData.additional" />
+        <el-form-item :label="$t('table.students.semester')" prop="semester">
+          <el-input v-model="tempStudentData.semester" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -138,12 +132,13 @@ import { Form } from 'element-ui';
 import { cloneDeep } from 'lodash';
 
 import {
-  getBusinesses,
-  createBusiness,
-  updateBusiness,
-  defaultBusinessData,
-} from '../../api/businesses';
-import { IBusiness } from '../../api/types';
+  getStudents,
+  createStudent,
+  updateStudent,
+  defaultStudentData,
+  deleteStudent,
+} from '../../api/students';
+import { IStudent } from '../../api/types';
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
 import Pagination from '../../components/Pagination/index.vue';
@@ -156,7 +151,7 @@ import Pagination from '../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IBusiness[] = [];
+  private list: IStudent[] = [];
   private total = 0;
   private listLoading = true;
   private listQuery = {
@@ -167,35 +162,26 @@ export default class extends Vue {
   private showReviewer = false;
   private dialogFormVisible = false;
   private dialogStatus = '';
-  private textMap = {
-    update: 'Edit',
-    create: 'Create',
-  };
+  private textMap = {};
   private dialogPageviewsVisible = false;
   private pageviewsData = [];
-  private rules = {
-    type: [{ required: true, message: 'type is required', trigger: 'change' }],
-    timestamp: [
-      {
-        required: true,
-        message: 'timestamp is required',
-        trigger: 'change',
-      },
-    ],
-    title: [{ required: true, message: 'title is required', trigger: 'blur' }],
-  };
+  private rules = {};
   private downloadLoading = false;
-  private tempBusinessData = defaultBusinessData;
+  private tempStudentData = defaultStudentData;
 
   public created() {
+    this.textMap = {
+      update: this.$t('dialog.title.edit'),
+      create: this.$t('dialog.title.create'),
+    };
     this.getList();
   }
 
   private getList() {
     this.listLoading = true;
-    getBusinesses(this.listQuery).then((data: any) => {
-      this.list = data;
-      this.total = data.length;
+    getStudents(this.listQuery).then((res: any) => {
+      this.list = res ? res.data : [];
+      this.total = res ? res.max : 0;
       this.listLoading = false;
     });
   }
@@ -204,20 +190,19 @@ export default class extends Vue {
     this.getList();
   }
 
-  private handleModifyStatus(row: any, status: string) {
-    this.$message({
-      message: '操作成功',
+  private async handleDelete(row: any, status: string) {
+    await deleteStudent(row.id!);
+    this.getList();
+    this.$notify({
+      title: this.$t('notify.students.delete.title') as string,
+      message: this.$t('notify.students.delete.msg') as string,
       type: 'success',
+      duration: 2000,
     });
-    row.status = status;
-  }
-
-  private resetTempBusinessData() {
-    this.tempBusinessData = cloneDeep(defaultBusinessData);
   }
 
   private handleCreate() {
-    this.resetTempBusinessData();
+    this.tempStudentData = cloneDeep(defaultStudentData);
     this.dialogStatus = 'create';
     this.dialogFormVisible = true;
     this.$nextTick(() => {
@@ -228,12 +213,12 @@ export default class extends Vue {
   private createData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
-        const res = await createBusiness(this.tempBusinessData);
-        this.list.unshift(res.data);
+        await createStudent(this.tempStudentData);
+        this.getList();
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Business creation',
-          message: 'Business successfully created',
+          title: this.$t('notify.students.create.title') as string,
+          message: this.$t('notify.students.create.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -242,7 +227,7 @@ export default class extends Vue {
   }
 
   private handleUpdate(row: any) {
-    this.tempBusinessData = Object.assign({}, row);
+    this.tempStudentData = Object.assign({}, row);
     this.dialogStatus = 'update';
     this.dialogFormVisible = true;
     this.$nextTick(() => {
@@ -253,19 +238,14 @@ export default class extends Vue {
   private updateData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
-        const tempData = Object.assign({}, this.tempBusinessData);
-        const { data } = await updateBusiness(tempData.id!, tempData);
-        for (const v of this.list) {
-          if (v.id === data.article.id) {
-            const index = this.list.indexOf(v);
-            this.list.splice(index, 1, data.article);
-            break;
-          }
-        }
+        const tempData = Object.assign({}, this.tempStudentData);
+        await updateStudent(tempData.id!, tempData);
+        this.getList();
+
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Update a business',
-          message: 'Successfully update business data',
+          title: this.$t('notify.students.update.title') as string,
+          message: this.$t('notify.students.update.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -276,13 +256,13 @@ export default class extends Vue {
   private handleDownload() {
     this.downloadLoading = true;
     const tHeader = [
-      'id',
-      'name',
-      'country',
-      'city',
-      'postalCode',
-      'address',
-      'additional',
+      this.$t('export.id') as string,
+      this.$t('export.name') as string,
+      this.$t('export.country') as string,
+      this.$t('export.city') as string,
+      this.$t('export.postalCode') as string,
+      this.$t('export.address') as string,
+      this.$t('export.additional') as string,
     ];
     const filterVal = [
       'id',
@@ -294,7 +274,9 @@ export default class extends Vue {
       'additional',
     ];
     const data = formatJson(filterVal, this.list);
-    exportJson2Excel(tHeader, data, 'table-list');
+    exportJson2Excel(tHeader, data, this.$t(
+      'export.students.fileName'
+    ) as string);
     this.downloadLoading = false;
   }
 }

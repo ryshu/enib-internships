@@ -125,7 +125,7 @@ export const constantRoutes: RouteConfig[] = [
           import(
             /* webpackChunkName: "students" */ '@/views/students/index.vue'
           ),
-        name: 'Businesses',
+        name: 'Students',
         meta: { title: 'students', icon: 'peoples', affix: true },
       },
     ],

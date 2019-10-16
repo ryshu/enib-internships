@@ -8,8 +8,20 @@
       "api-businesses": {
         "title": "Businesses"
       },
+      "api-files": {
+        "title": "Files"
+      },
       "api-index": {
         "title": "Internships manager API"
+      },
+      "api-internships": {
+        "title": "Internships"
+      },
+      "api-mentoring-propostions": {
+        "title": "Mentoring propositions"
+      },
+      "api-students": {
+        "title": "Students"
       },
       "docs-backend": {
         "title": "Back end part"
@@ -20,8 +32,14 @@
       "docs-install": {
         "title": "Installation"
       },
+      "docs-settings": {
+        "title": "Settings"
+      },
       "tuto-mentors": {
         "title": "Setup mentors"
+      },
+      "tuto-setup-associations": {
+        "title": "Setup associations"
       },
       "tuto-students": {
         "title": "Setup students"

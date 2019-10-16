@@ -12,6 +12,36 @@ export declare interface IBusiness {
   updatedAt?: string;
 }
 
+export declare interface IInternship {
+  id?: number;
+
+  subject: string;
+  description: string;
+  country: string;
+  city: string;
+  postalCode: string;
+  address: string;
+  additional?: string;
+
+  isLanguageCourse: boolean;
+  isValidated: boolean;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export declare interface IStudent {
+  id?: number;
+
+  firstName: string;
+  lastName: string;
+  email: string;
+  semester: string;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface IRoleData {
   key: string;
   name: string;

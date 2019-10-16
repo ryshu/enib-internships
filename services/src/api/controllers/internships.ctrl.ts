@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
 
-import Businesses from '../../models/Businesses';
 import Internships from '../../models/Internships';
+import Businesses from '../../models/Businesses';
 
 import { paginate } from '../helpers/pagination.helper';
 import {
@@ -14,10 +14,10 @@ import {
 } from '../helpers/global.helper';
 
 /**
- * GET /businesses
- * Used to GET all businesses
+ * GET /internships
+ * Used to GET all internships
  */
-export const getBusinesses = (req: Request, res: Response, next: NextFunction): void => {
+export const getInternships = (req: Request, res: Response, next: NextFunction): void => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -27,17 +27,17 @@ export const getBusinesses = (req: Request, res: Response, next: NextFunction): 
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
     let max: number;
-    Businesses.count()
+    Internships.count()
         .then((rowNbr) => {
             max = rowNbr;
-            return Businesses.findAll(paginate({ page, limit }));
+            return Internships.findAll(paginate({ page, limit }));
         })
-        .then(async (businesses) => {
-            if (checkArrayContent(businesses, next)) {
+        .then((internships) => {
+            if (checkArrayContent(internships, next)) {
                 return res.send({
                     page,
-                    data: businesses,
-                    length: businesses.length,
+                    data: internships,
+                    length: internships.length,
                     max,
                 });
             }
@@ -46,42 +46,45 @@ export const getBusinesses = (req: Request, res: Response, next: NextFunction): 
 };
 
 /**
- * POST /businesses
- * Used to create a new business entry
+ * POST /internship
+ * Used to create a new internship entry
  */
-export const postBusiness = (req: Request, res: Response, next: NextFunction): void => {
+export const postInternship = (req: Request, res: Response, next: NextFunction): void => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    const business: IBusinessEntity = {
-        name: req.body.name,
+    const internship: IInternshipEntity = {
+        subject: req.body.subject,
+        description: req.body.description,
         country: req.body.country,
         city: req.body.city,
         postalCode: req.body.postalCode,
         address: req.body.address,
         additional: req.body.additional,
+        isLanguageCourse: req.body.isLanguageCourse ? true : false,
+        isValidated: req.body.isValidated ? true : false,
     };
 
-    Businesses.create(business)
+    Internships.create(internship)
         .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
- * GET /businesses/:id
- * Used to select a business by ID
+ * GET /internship/:id
+ * Used to select a internship by ID
  */
-export const getBusiness = (req: Request, res: Response, next: NextFunction): void => {
+export const getInternship = (req: Request, res: Response, next: NextFunction): void => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
+    Internships.findByPk(req.params.id, { include: [{ model: Businesses, as: 'business' }] })
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val);
@@ -91,42 +94,51 @@ export const getBusiness = (req: Request, res: Response, next: NextFunction): vo
 };
 
 /**
- * PUT /businesses/:id
- * Used to update business values
+ * PUT /internship/:id
+ * Used to update internship values
  */
-export const putBusiness = (req: Request, res: Response, next: NextFunction): void => {
+export const putInternship = (req: Request, res: Response, next: NextFunction): void => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id)
-        .then((business) => {
-            if (!checkContent(business, next)) {
+    Internships.findByPk(req.params.id)
+        .then((internships) => {
+            if (!checkContent(internships, next)) {
                 return undefined;
             }
 
-            if (req.body.name) {
-                business.set('name', req.body.name);
+            if (req.body.subject) {
+                internships.set('subject', req.body.subject);
+            }
+            if (req.body.description) {
+                internships.set('description', req.body.description);
             }
             if (req.body.country) {
-                business.set('country', req.body.country);
+                internships.set('country', req.body.country);
             }
             if (req.body.city) {
-                business.set('city', req.body.city);
+                internships.set('city', req.body.city);
             }
             if (req.body.postalCode) {
-                business.set('postalCode', req.body.postalCode);
+                internships.set('postalCode', req.body.postalCode);
             }
             if (req.body.address) {
-                business.set('address', req.body.address);
+                internships.set('address', req.body.address);
             }
             if (req.body.additional) {
-                business.set('additional', req.body.additional);
+                internships.set('additional', req.body.additional);
+            }
+            if (req.body.isLanguageCourse !== undefined) {
+                internships.set('isLanguageCourse', req.body.isLanguageCourse ? true : false);
+            }
+            if (req.body.isValidated !== undefined) {
+                internships.set('isValidated', req.body.isValidated ? true : false);
             }
 
-            return business.save();
+            return internships.save();
         })
         .then((updated) => {
             if (updated) {
@@ -137,57 +149,57 @@ export const putBusiness = (req: Request, res: Response, next: NextFunction): vo
 };
 
 /**
- * DELETE /businesses/:id
- * Used to remove a business from database
+ * DELETE /internship/:id
+ * Used to remove a internship from database
  */
-export const deleteBusiness = (req: Request, res: Response, next: NextFunction): void => {
+export const deleteInternship = (req: Request, res: Response, next: NextFunction): void => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id)
+    Internships.findByPk(req.params.id)
         .then((val) => (val ? val.destroy() : undefined))
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
 
 /**
- * GET /businesses/:id/internships
- * Used to get all internships of a business
+ * GET /internship/:id/business
+ * Used to select a internship by ID and return his business
  */
-export const getBusinessInternships = (req: Request, res: Response, next: NextFunction): void => {
+export const getInternshipBusiness = (req: Request, res: Response, next: NextFunction): void => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
-        .then(async (val) => {
+    Internships.findByPk(req.params.id, { include: [{ model: Businesses, as: 'business' }] })
+        .then((val) => {
             if (checkContent(val, next)) {
-                return res.send(val.internships);
+                return res.send(val.business);
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
- * GET /businesses/:id/internships/:internship_id/link
+ * POST /internships/:id/business/:business_id/link
  * Used to get all internships of a business
  */
-export const linkBusinessInternships = (req: Request, res: Response, next: NextFunction): void => {
+export const linkInternshipBusinesses = (req: Request, res: Response, next: NextFunction): void => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id)
+    Businesses.findByPk(req.params.business_id)
         .then(async (val) => {
             if (checkContent(val, next)) {
-                await val.addInternship(Number(req.params.internship_id));
+                await val.addInternship(Number(req.params.id));
                 return res.sendStatus(httpStatus.OK);
             }
         })

@@ -1,13 +1,13 @@
 {
   "docs": {
-    "Get started": ["docs-install"],
+    "Get started": ["docs-install", "docs-settings"],
     "Software architecture": ["docs-backend", "docs-frontend"]
   },
   "api": {
     "Introduction": ["api-index"],
-    "REST API": ["api-businesses"]
+    "REST API": ["api-businesses", "api-files", "api-mentoring-propostions", "api-internships", "api-students"]
   },
   "tuto": {
-    "Complete": ["tuto-mentors", "tuto-students"]
+    "Complete": ["tuto-mentors", "tuto-students", "tuto-setup-associations"]
   }
 }
