@@ -49,3 +49,10 @@ export function defaultStudents() {
     };
     return VALID_STUDENT;
 }
+
+export function defaultInternshipTypes() {
+    const VALID_INTERNSHIP_TYPES: IInternshipTypeEntity = {
+        label: 'test',
+    };
+    return VALID_INTERNSHIP_TYPES;
+}

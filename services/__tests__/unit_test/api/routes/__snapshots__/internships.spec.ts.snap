@@ -29,6 +29,7 @@ Object {
   "additional": null,
   "address": "TEST",
   "business": null,
+  "category": null,
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
@@ -52,6 +53,15 @@ Object {
   "id": 1,
   "name": "test",
   "postalCode": "29200",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`GET /internships/:id/internshipTypes Internships_200_WithLinkedData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": 1,
+  "label": "test",
   "updatedAt": Any<String>,
 }
 `;
@@ -82,6 +92,15 @@ Object {
   "id": 2,
   "name": "test",
   "postalCode": "29200",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/internshipTypes/:internship_type_id/link Internships_200_WithBusiness 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": 2,
+  "label": "test",
   "updatedAt": Any<String>,
 }
 `;
