@@ -6,6 +6,7 @@ import Internships from '../../models/Internships';
 import Businesses from '../../models/Businesses';
 
 import { paginate } from '../helpers/pagination.helper';
+import InternshipTypes from '../../models/InternshipTypes';
 import {
     UNPROCESSABLE_ENTITY,
     checkArrayContent,
@@ -84,7 +85,12 @@ export const getInternship = (req: Request, res: Response, next: NextFunction): 
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id, { include: [{ model: Businesses, as: 'business' }] })
+    Internships.findByPk(req.params.id, {
+        include: [
+            { model: Businesses, as: 'business' },
+            { model: InternshipTypes, as: 'category' },
+        ],
+    })
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val);
@@ -166,7 +172,7 @@ export const deleteInternship = (req: Request, res: Response, next: NextFunction
 };
 
 /**
- * GET /internship/:id/business
+ * GET /internships/:id/businesses
  * Used to select a internship by ID and return his business
  */
 export const getInternshipBusiness = (req: Request, res: Response, next: NextFunction): void => {
@@ -186,8 +192,8 @@ export const getInternshipBusiness = (req: Request, res: Response, next: NextFun
 };
 
 /**
- * POST /internships/:id/business/:business_id/link
- * Used to get all internships of a business
+ * POST /internships/:id/businesses/:business_id/link
+ * Used to create a link between internships and business
  */
 export const linkInternshipBusinesses = (req: Request, res: Response, next: NextFunction): void => {
     // @see validator + router
@@ -196,11 +202,68 @@ export const linkInternshipBusinesses = (req: Request, res: Response, next: Next
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.business_id)
+    Internships.findByPk(req.params.id)
         .then(async (val) => {
             if (checkContent(val, next)) {
-                await val.addInternship(Number(req.params.id));
-                return res.sendStatus(httpStatus.OK);
+                try {
+                    await val.setBusiness(Number(req.params.business_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /internships/:id/internshipTypes
+ * Used to select a internship by ID and return his category
+ */
+export const getInternshipInternshipType = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Internships.findByPk(req.params.id, { include: [{ model: InternshipTypes, as: 'category' }] })
+        .then((val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.category);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /internships/:id/internshipTypes/:internship_type_id/link
+ * Used to create a link between internships and internshipsTypes
+ */
+export const linkInternshipInternshipTypes = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Internships.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.setCategory(Number(req.params.internship_type_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
