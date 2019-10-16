@@ -6,6 +6,7 @@ import InternshipTypes from '../../models/InternshipTypes';
 import MentoringPropositions from '../../models/MentoringPropositions';
 import Mentors from '../../models/Mentors';
 import Students from '../../models/Students';
+import '../../models/Campaigns';
 import Internships from '../../models/Internships';
 
 Businesses.hasMany(Internships, { as: 'internships', foreignKey: 'businessId', sourceKey: 'id' });

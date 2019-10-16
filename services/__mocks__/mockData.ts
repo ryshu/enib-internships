@@ -50,6 +50,16 @@ export function defaultStudents() {
     return VALID_STUDENT;
 }
 
+export function defaultCampaigns(): ICampaignEntity {
+    return {
+        name: 'test',
+        startAt: 0,
+        endAt: 0,
+        semester: 'S5',
+        maxProposition: 2,
+    };
+}
+
 export function defaultInternshipTypes() {
     const VALID_INTERNSHIP_TYPES: IInternshipTypeEntity = {
         label: 'test',
