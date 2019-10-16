@@ -3,9 +3,11 @@ import * as Sequelize from 'sequelize';
 import database from '../configs/instances/database';
 
 import Businesses from './Businesses';
+import InternshipTypes from './InternshipTypes';
 
 class Internships extends Sequelize.Model implements IInternshipEntity {
     public static associations: {
+        category: Sequelize.Association<Internships, InternshipTypes>;
         business: Sequelize.Association<Internships, Businesses>;
     };
 
@@ -34,7 +36,15 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public setBusiness: Sequelize.BelongsToSetAssociationMixin<Businesses, Businesses['id']>;
     public createBusiness: Sequelize.BelongsToCreateAssociationMixin<IBusinessEntity>;
 
+    public getCategory: Sequelize.BelongsToGetAssociationMixin<InternshipTypes>;
+    public setCategory: Sequelize.BelongsToSetAssociationMixin<
+        InternshipTypes,
+        InternshipTypes['id']
+    >;
+    public createCategory: Sequelize.BelongsToCreateAssociationMixin<IInternshipTypeEntity>;
+
     public readonly business?: Businesses | Businesses['id'];
+    public readonly category?: InternshipTypes | InternshipTypes['id'];
 }
 
 Internships.init(
@@ -93,7 +103,7 @@ Internships.init(
         tableName: 'internships',
         sequelize: database,
         defaultScope: {
-            attributes: { exclude: ['businessId'] },
+            attributes: { exclude: ['businessId', 'categoryId'] },
         },
     },
 );
