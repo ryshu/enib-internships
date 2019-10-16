@@ -17,7 +17,7 @@ export default {
     id: 'ID',
     internships: {
       fileName: 'stages',
-      isLanguageCourse: 'Linguistique ?',
+      isInternshipAbroad: "A l'étranger ?",
       isValidated: 'Validé ?',
     },
     name: 'Nom',
@@ -120,7 +120,7 @@ export default {
       city: 'Ville',
       country: 'Pays',
       description: 'Description',
-      isLanguageCourse: 'Stage linguistique',
+      isInternshipAbroad: 'Stage linguistique',
       isValidated: 'Validaté',
       postalCode: 'Code postal',
       subject: 'Sujets',

@@ -25,7 +25,7 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public additional?: string;
 
     // State
-    public isLanguageCourse: boolean;
+    public isInternshipAbroad: boolean;
     public isValidated: boolean;
 
     // timestamps!
@@ -88,7 +88,7 @@ Internships.init(
         },
 
         // State
-        isLanguageCourse: {
+        isInternshipAbroad: {
             type: Sequelize.DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,

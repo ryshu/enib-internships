@@ -240,7 +240,7 @@ Key | Type | Description
         "postalCode": "30636-9003",
         "address": "15486 Genoveva Isle",
         "additional": "Suite 755",
-        "isLanguageCourse": false,
+        "isInternshipAbroad": false,
         "isValidated": false,
         "createdAt": "2019-10-13T16:21:25.000Z",
         "updatedAt": "2019-10-13T16:21:25.000Z"

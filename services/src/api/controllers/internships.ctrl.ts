@@ -65,7 +65,7 @@ export const postInternship = (req: Request, res: Response, next: NextFunction):
         postalCode: req.body.postalCode,
         address: req.body.address,
         additional: req.body.additional,
-        isLanguageCourse: req.body.isLanguageCourse ? true : false,
+        isInternshipAbroad: req.body.isInternshipAbroad ? true : false,
         isValidated: req.body.isValidated ? true : false,
     };
 
@@ -137,8 +137,8 @@ export const putInternship = (req: Request, res: Response, next: NextFunction): 
             if (req.body.additional) {
                 internships.set('additional', req.body.additional);
             }
-            if (req.body.isLanguageCourse !== undefined) {
-                internships.set('isLanguageCourse', req.body.isLanguageCourse ? true : false);
+            if (req.body.isInternshipAbroad !== undefined) {
+                internships.set('isInternshipAbroad', req.body.isInternshipAbroad ? true : false);
             }
             if (req.body.isValidated !== undefined) {
                 internships.set('isValidated', req.body.isValidated ? true : false);

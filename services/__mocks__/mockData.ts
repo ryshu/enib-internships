@@ -27,7 +27,7 @@ export function defaultInternships() {
         city: 'Brest',
         postalCode: '29280',
         address: 'TEST',
-        isLanguageCourse: true,
+        isInternshipAbroad: true,
         isValidated: false,
     };
     return VALID_INTERNSHIP;

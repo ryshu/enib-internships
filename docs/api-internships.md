@@ -33,7 +33,7 @@ Key | Type | Optional | Description
             "postalCode": "30636-9003",
             "address": "15486 Genoveva Isle",
             "additional": "Suite 755",
-            "isLanguageCourse": false,
+            "isInternshipAbroad": false,
             "isValidated": false,
             "createdAt": "2019-10-13T16:21:25.000Z",
             "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -71,7 +71,7 @@ Key | Type | Optional | Description
 **postalCode** | String | *no* | Internship postalCode
 **address** | String | *no* | Internship address
 **additional** | String | *no* | Address additional detail
-**isLanguageCourse** | Boolean | *yes* | Address isLanguageCourse detail
+**isInternshipAbroad** | Boolean | *yes* | Address isInternshipAbroad detail
 **isValidated** | Boolean | *yes* | Address isValidated detail
 
 ### 200 - Created
@@ -88,7 +88,7 @@ Return created internship
     "postalCode": "30636-9003",
     "address": "15486 Genoveva Isle",
     "additional": "Suite 755",
-    "isLanguageCourse": false,
+    "isInternshipAbroad": false,
     "isValidated": false,
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -143,7 +143,7 @@ Key | Type | Description
     "postalCode": "30636-9003",
     "address": "15486 Genoveva Isle",
     "additional": "Suite 755",
-    "isLanguageCourse": false,
+    "isInternshipAbroad": false,
     "isValidated": false,
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -207,7 +207,7 @@ Key | Type | Optional | Description
 **postalCode** | String | *yes* | Internship postalCode
 **address** | String | *yes* | Internship address
 **additional** | String | *yes* | Address additional detail
-**isLanguageCourse** | Boolean | *yes* | Address isLanguageCourse detail
+**isInternshipAbroad** | Boolean | *yes* | Address isInternshipAbroad detail
 **isValidated** | Boolean | *yes* | Address isValidated detail
 
 ### 200 - Updated internship
@@ -222,7 +222,7 @@ Key | Type | Optional | Description
     "postalCode": "30636-9003",
     "address": "15486 Genoveva Isle",
     "additional": "Suite 755",
-    "isLanguageCourse": false,
+    "isInternshipAbroad": false,
     "isValidated": false,
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
