@@ -41,7 +41,7 @@ Campaigns.init(
         },
         maxProposition: {
             type: DataTypes.INTEGER.UNSIGNED,
-            allowNull: false,
+            defaultValue: 0,
         },
     },
     {

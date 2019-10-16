@@ -104,7 +104,6 @@ export const putCampaign = (req: Request, res: Response, next: NextFunction): vo
             if (!checkContent(campaign, next)) {
                 return undefined;
             }
-
             if (req.body.name) {
                 campaign.set('name', req.body.name);
             }

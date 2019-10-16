@@ -10,17 +10,15 @@ export const CampaignCreate: Schema = {
     },
     startAt: {
         in: ['body'],
-        isNumeric: { errorMessage: 'Start At must be of type number(date)' },
+        isInt: { errorMessage: 'Start At must be of type number(date)' , options: { min: 0 }},
         exists: { errorMessage: 'Start At must be defined' },
-        trim: true,
-        escape: true,
+        toInt: true
     },
     endAt: {
       in: ['body'],
-      isNumeric: { errorMessage: 'End At must be of type number(date)' },
+      isInt: { errorMessage: 'End At must be of type number(date)' , options: { min: 0 }},
       exists: { errorMessage: 'End At must be defined' },
-      trim: true,
-      escape: true,
+      toInt: true
     },
     semester: {
       in: ['body'],
@@ -31,10 +29,9 @@ export const CampaignCreate: Schema = {
     },
     maxProposition: {
       in: ['body'],
-      isNumeric: { errorMessage: 'maxProposition must be of type number' },
-      exists: { errorMessage: 'maxProposition At must be defined' },
-      trim: true,
-      escape: true,
+      isInt: { errorMessage: 'maxProposition must be of type number' , options: { min: 0 }},
+      toInt: true,
+      optional: true,
     },
 };
 
