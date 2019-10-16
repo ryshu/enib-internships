@@ -5,10 +5,10 @@ import { ICampaigns } from './types';
 
 export const defaultCampaignData: ICampaigns = {
   name: '',
-  startAt: 1,
-  endAt: 1,
+  startAt: 0,
+  endAt: 0,
   semester: '',
-  maxProposition: 1,
+  maxProposition: 0,
 };
 
 export const getCampaigns = (params: any) =>

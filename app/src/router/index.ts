@@ -111,7 +111,7 @@ export const constantRoutes: RouteConfig[] = [
             /* webpackChunkName: "campaigns" */ '@/views/campaigns/index.vue'
           ),
         name: 'Campaigns',
-        meta: { title: 'campaigns', icon: 'list', affix: true },
+        meta: { title: 'campaigns', icon: 'dashboard', affix: true },
       },
     ],
   },

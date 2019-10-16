@@ -51,12 +51,12 @@
       </el-table-column>
       <el-table-column :label="$t('table.campaigns.startAt')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.startAt }}</span>
+          <span>{{ row.startAt | formate('LL') }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.campaigns.endAt')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.endAt }}</span>
+          <span>{{ row.endAt | formate('LL') }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.campaigns.semester')" min-width="150px">
@@ -66,7 +66,7 @@
       </el-table-column>
       <el-table-column :label="$t('table.campaigns.maxProposition')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.semester }}</span>
+          <span>{{ row.maxProposition }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -86,7 +86,8 @@
             size="small"
             type="danger"
             icon="el-icon-remove"
-            @click="handleModifyStatus(row, 'deleted')"
+
+            @click="handleDelete(row, 'deleted')"
           >{{ $t('table.delete') }}</el-button>
         </template>
       </el-table-column>
@@ -144,6 +145,7 @@ import {
   getCampaigns,
   createCampaign,
   updateCampaign,
+  deleteCampaign,
   defaultCampaignData,
 } from '../../api/campaigns';
 import { ICampaigns } from '../../api/types';
@@ -170,10 +172,7 @@ export default class extends Vue {
   private showReviewer = false;
   private dialogFormVisible = false;
   private dialogStatus = '';
-  private textMap = {
-    update: 'Edit',
-    create: 'Create',
-  };
+  private textMap = {};
   private dialogPageviewsVisible = false;
   private pageviewsData = [];
   private rules = {
@@ -191,6 +190,10 @@ export default class extends Vue {
   private tempCampaignData = defaultCampaignData;
 
   public created() {
+    this.textMap =  {
+    update: this.$t('table.update') as string,
+    create: this.$t('table.create') as string,
+  };
     this.getList();
   }
 
@@ -207,14 +210,16 @@ export default class extends Vue {
     this.getList();
   }
 
-  private handleModifyStatus(row: any, status: string) {
-    this.$message({
-      message: '操作成功',
+    private async handleDelete(row: any, status: string) {
+    await deleteCampaign(row.id!);
+    this.getList();
+    this.$notify({
+      title: this.$t('notify.campaigns.delete.title') as string,
+      message: this.$t('notify.campaigns.delete.msg') as string,
       type: 'success',
+      duration: 2000,
     });
-    row.status = status;
   }
-
   private resetTempCampaignData() {
     this.tempCampaignData = cloneDeep(defaultCampaignData);
   }
@@ -236,8 +241,8 @@ export default class extends Vue {
 
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Campaign creation',
-          message: 'Campaign successfully created',
+          title: this.$t('notify.campaigns.create.title') as string,
+          message: this.$t('notify.campaigns.create.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -263,8 +268,8 @@ export default class extends Vue {
 
         this.dialogFormVisible = false;
         this.$notify({
-          title: 'Update a campaign',
-          message: 'Successfully update campaign data',
+          title: this.$t('notify.campaigns.update.title') as string,
+          message: this.$t('notify.campaigns.update.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -276,11 +281,11 @@ export default class extends Vue {
     this.downloadLoading = true;
     const tHeader = [
       'id',
-      'name',
-      'startAt',
-      'endAt',
-      'semester',
-      'maxProposition',
+      this.$t('table.campaigns.name') as string,
+      this.$t('table.campaigns.startAt') as string,
+      this.$t('table.campaigns.endAt') as string,
+      this.$t('table.campaigns.semester') as string,
+      this.$t('table.campaigns.maxProposition') as string,
     ];
     const filterVal = [
       'id',
