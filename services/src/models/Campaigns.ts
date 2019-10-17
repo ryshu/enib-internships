@@ -1,8 +1,14 @@
-import { Model, DataTypes } from 'sequelize';
+import * as Sequelize from 'sequelize';
 
 import database from '../configs/instances/database';
 
-class Campaigns extends Model implements ICampaignEntity {
+import MPS from './MentoringPropositions';
+
+class Campaigns extends Sequelize.Model implements ICampaignEntity {
+    public static associations: {
+        propositions: Sequelize.Association<Campaigns, MPS>;
+    };
+
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
 
     public name: string;
@@ -14,33 +20,41 @@ class Campaigns extends Model implements ICampaignEntity {
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+
+    public getPropositions: Sequelize.HasManyGetAssociationsMixin<MPS>;
+    public addProposition: Sequelize.HasManyAddAssociationMixin<MPS, MPS['id']>;
+    public createProposition: Sequelize.HasManyCreateAssociationMixin<IMentoringPropositionEntity>;
+    public hasProposition: Sequelize.HasManyHasAssociationMixin<MPS, MPS['id']>;
+    public countPropositions: Sequelize.HasManyCountAssociationsMixin;
+
+    public readonly propositions?: MPS[];
 }
 
 Campaigns.init(
     {
         id: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true,
         },
         name: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
         },
         startAt: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
         },
         endAt: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
         },
         semester: {
-            type: DataTypes.STRING(128),
+            type: Sequelize.DataTypes.STRING(128),
             allowNull: false,
         },
         maxProposition: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             defaultValue: 0,
             allowNull: true,
         },

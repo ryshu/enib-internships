@@ -6,7 +6,7 @@ import Internships from './Internships';
 
 class Businesses extends Sequelize.Model implements IBusinessEntity {
     public static associations: {
-        business: Sequelize.Association<Businesses, Internships>;
+        internships: Sequelize.Association<Businesses, Internships>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
