@@ -3,10 +3,12 @@ import * as Sequelize from 'sequelize';
 import database from '../configs/instances/database';
 
 import Businesses from './Businesses';
+import InternshipTypes from './InternshipTypes';
 import Students from './Students';
 
 class Internships extends Sequelize.Model implements IInternshipEntity {
     public static associations: {
+        category: Sequelize.Association<Internships, InternshipTypes>;
         business: Sequelize.Association<Internships, Businesses>;
         student: Sequelize.Association<Internships, Students>;
     };
@@ -25,7 +27,7 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public additional?: string;
 
     // State
-    public isLanguageCourse: boolean;
+    public isInternshipAbroad: boolean;
     public isValidated: boolean;
 
     // Date
@@ -40,13 +42,20 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public setBusiness: Sequelize.BelongsToSetAssociationMixin<Businesses, Businesses['id']>;
     public createBusiness: Sequelize.BelongsToCreateAssociationMixin<IBusinessEntity>;
 
-    public readonly business?: Businesses | Businesses['id'];
+    public getCategory: Sequelize.BelongsToGetAssociationMixin<InternshipTypes>;
+    public setCategory: Sequelize.BelongsToSetAssociationMixin<
+        InternshipTypes,
+        InternshipTypes['id']
+    >;
+    public createCategory: Sequelize.BelongsToCreateAssociationMixin<IInternshipTypeEntity>;
 
     // Students
     public getStudent: Sequelize.BelongsToGetAssociationMixin<Students>;
     public setStudent: Sequelize.BelongsToSetAssociationMixin<Students, Students['id']>;
     public createStudent: Sequelize.BelongsToCreateAssociationMixin<IStudentEntity>;
 
+    public readonly business?: Businesses | Businesses['id'];
+    public readonly category?: InternshipTypes | InternshipTypes['id'];
     public readonly student?: Students | Students['id'];
 }
 
@@ -91,7 +100,7 @@ Internships.init(
         },
 
         // State
-        isLanguageCourse: {
+        isInternshipAbroad: {
             type: Sequelize.DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,
@@ -116,7 +125,7 @@ Internships.init(
         tableName: 'internships',
         sequelize: database,
         defaultScope: {
-            attributes: { exclude: ['businessId', 'studentId'] },
+            attributes: { exclude: ['businessId', 'studentId', 'categoryId'] },
         },
     },
 );

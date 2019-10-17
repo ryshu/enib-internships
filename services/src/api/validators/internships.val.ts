@@ -56,7 +56,7 @@ export const InternshipCreate: Schema = {
         trim: true,
         escape: true,
     },
-    isLanguageCourse: {
+    isInternshipAbroad: {
         in: ['body'],
         isBoolean: { errorMessage: 'LanguageCourse must be of type boolean' },
         optional: true,
@@ -132,7 +132,7 @@ export const InternshipUpdate: Schema = {
         trim: true,
         escape: true,
     },
-    isLanguageCourse: {
+    isInternshipAbroad: {
         in: ['body'],
         isBoolean: { errorMessage: 'Language course must be of type boolean' },
         optional: true,

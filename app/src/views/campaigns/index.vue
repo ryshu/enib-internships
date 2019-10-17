@@ -4,7 +4,7 @@
     <div class="filter-container">
       <el-input
         v-model="listQuery.title"
-        :placeholder="$t('table.internships.subject')"
+        :placeholder="$t('table.campaigns.name')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -44,37 +44,29 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.internships.subject')" min-width="150px">
+      <el-table-column :label="$t('table.campaigns.name')" min-width="150px">
         <template slot-scope="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column :label="$t('table.internships.country')" min-width="150px">
+      <el-table-column :label="$t('table.campaigns.startAt')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.country }}</span>
+          <span>{{ row.startAt | formate('LL') }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.city')" min-width="150px">
+      <el-table-column :label="$t('table.campaigns.endAt')" min-width="150px">
         <template slot-scope="{ row }">
-          <span>{{ row.city }}</span>
+          <span>{{ row.endAt | formate('LL') }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column :label="$t('table.internships.isInternshipAbroad')" min-width="150px">
+      <el-table-column :label="$t('table.campaigns.semester')" min-width="150px">
         <template slot-scope="{ row }">
-          <el-tag
-            :type="row.isInternshipAbroad ? 'success' : 'danger'"
-            effect="dark"
-          >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
+          <span>{{ row.semester }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="150px">
+      <el-table-column :label="$t('table.campaigns.maxProposition')" min-width="150px">
         <template slot-scope="{ row }">
-          <el-tag
-            :type="row.isValidated ? 'success' : 'danger'"
-            effect="dark"
-          >{{ $t(row.isValidated ? 'status.yes' : 'status.no') }}</el-tag>
+          <span>{{ row.maxProposition }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -94,6 +86,7 @@
             size="small"
             type="danger"
             icon="el-icon-remove"
+
             @click="handleDelete(row, 'deleted')"
           >{{ $t('table.delete') }}</el-button>
         </template>
@@ -112,37 +105,25 @@
       <el-form
         ref="dataForm"
         :rules="rules"
-        :model="tempInternshipData"
+        :model="tempCampaignData"
         label-position="left"
         label-width="250px"
         style="width: 100%; padding: 0 50px;"
       >
-        <el-form-item :label="$t('table.internships.subject')" prop="subject">
-          <el-input v-model="tempInternshipData.subject" />
+        <el-form-item :label="$t('table.campaigns.name')" prop="name">
+          <el-input v-model="tempCampaignData.name" />
         </el-form-item>
-        <el-form-item :label="$t('table.internships.description')" prop="description">
-          <el-input v-model="tempInternshipData.description" />
+        <el-form-item :label="$t('table.campaigns.startAt')" prop="startAt">
+          <el-input v-model="tempCampaignData.startAt" />
         </el-form-item>
-        <el-form-item :label="$t('table.internships.country')" prop="country">
-          <el-input v-model="tempInternshipData.country" />
+        <el-form-item :label="$t('table.campaigns.endAt')" prop="endAt">
+          <el-input v-model="tempCampaignData.endAt" />
         </el-form-item>
-        <el-form-item :label="$t('table.internships.city')" prop="city">
-          <el-input v-model="tempInternshipData.city" />
+        <el-form-item :label="$t('table.campaigns.semester')" prop="semester">
+          <el-input v-model="tempCampaignData.semester" />
         </el-form-item>
-        <el-form-item :label="$t('table.internships.postalCode')" prop="postalCode">
-          <el-input v-model="tempInternshipData.postalCode" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.address')" prop="address">
-          <el-input v-model="tempInternshipData.address" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.additional')" prop="additional">
-          <el-input v-model="tempInternshipData.additional" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.isInternshipAbroad')" prop="isInternshipAbroad">
-          <input v-model="tempInternshipData.isInternshipAbroad" type="checkbox" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.isValidated')" prop="isValidated">
-          <input v-model="tempInternshipData.isValidated" type="checkbox" />
+        <el-form-item :label="$t('table.campaigns.maxProposition')" prop="maxProposition">
+          <el-input v-model="tempCampaignData.maxProposition" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -161,26 +142,26 @@ import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
 import { cloneDeep } from 'lodash';
 import {
-  getInternships,
-  createInternship,
-  updateInternship,
-  deleteInternship,
-  defaultInternshipData,
-} from '../../api/internships';
-import { IInternship } from '../../api/types';
+  getCampaigns,
+  createCampaign,
+  updateCampaign,
+  deleteCampaign,
+  defaultCampaignData,
+} from '../../api/campaigns';
+import { ICampaigns } from '../../api/types';
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
 import Pagination from '../../components/Pagination/index.vue';
 
 @Component({
-  name: 'Internships',
+  name: 'Campaigns',
   components: {
     Pagination,
   },
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IInternship[] = [];
+  private list: ICampaigns[] = [];
   private total = 0;
   private listLoading = true;
   private listQuery = {
@@ -194,21 +175,31 @@ export default class extends Vue {
   private textMap = {};
   private dialogPageviewsVisible = false;
   private pageviewsData = [];
-  private rules = {};
+  private rules = {
+    type: [{ required: true, message: 'type is required', trigger: 'change' }],
+    timestamp: [
+      {
+        required: true,
+        message: 'timestamp is required',
+        trigger: 'change',
+      },
+    ],
+    title: [{ required: true, message: 'title is required', trigger: 'blur' }],
+  };
   private downloadLoading = false;
-  private tempInternshipData = defaultInternshipData;
+  private tempCampaignData = defaultCampaignData;
 
   public created() {
-    this.textMap = {
-      update: this.$t('dialog.title.edit'),
-      create: this.$t('dialog.title.create'),
-    };
+    this.textMap =  {
+    update: this.$t('table.update') as string,
+    create: this.$t('table.create') as string,
+  };
     this.getList();
   }
 
   private getList() {
     this.listLoading = true;
-    getInternships(this.listQuery).then((res: any) => {
+    getCampaigns(this.listQuery).then((res: any) => {
       this.list = res ? res.data : [];
       this.total = res ? res.max : 0;
       this.listLoading = false;
@@ -219,23 +210,22 @@ export default class extends Vue {
     this.getList();
   }
 
-  private async handleDelete(row: any, status: string) {
-    await deleteInternship(row.id!);
+    private async handleDelete(row: any, status: string) {
+    await deleteCampaign(row.id!);
     this.getList();
     this.$notify({
-      title: this.$t('notify.internships.delete.title') as string,
-      message: this.$t('notify.internships.delete.msg') as string,
+      title: this.$t('notify.campaigns.delete.title') as string,
+      message: this.$t('notify.campaigns.delete.msg') as string,
       type: 'success',
       duration: 2000,
     });
   }
-
-  private resetTempInternshipData() {
-    this.tempInternshipData = cloneDeep(defaultInternshipData);
+  private resetTempCampaignData() {
+    this.tempCampaignData = cloneDeep(defaultCampaignData);
   }
 
   private handleCreate() {
-    this.resetTempInternshipData();
+    this.resetTempCampaignData();
     this.dialogStatus = 'create';
     this.dialogFormVisible = true;
     this.$nextTick(() => {
@@ -246,21 +236,22 @@ export default class extends Vue {
   private createData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
-        const res = await createInternship(this.tempInternshipData);
+        const res = await createCampaign(this.tempCampaignData);
+        this.getList();
+
         this.dialogFormVisible = false;
         this.$notify({
-          title: this.$t('notify.internships.create.title') as string,
-          message: this.$t('notify.internships.create.msg') as string,
+          title: this.$t('notify.campaigns.create.title') as string,
+          message: this.$t('notify.campaigns.create.msg') as string,
           type: 'success',
           duration: 2000,
         });
-        this.getList();
       }
     });
   }
 
   private handleUpdate(row: any) {
-    this.tempInternshipData = Object.assign({}, row);
+    this.tempCampaignData = Object.assign({}, row);
     this.dialogStatus = 'update';
     this.dialogFormVisible = true;
     this.$nextTick(() => {
@@ -271,15 +262,14 @@ export default class extends Vue {
   private updateData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
-        const tempData = Object.assign({}, this.tempInternshipData);
-
-        // Wait update
-        await updateInternship(tempData.id!, tempData);
+        const tempData = Object.assign({}, this.tempCampaignData);
+        await updateCampaign(tempData.id!, tempData);
         this.getList();
+
         this.dialogFormVisible = false;
         this.$notify({
-          title: this.$t('notify.internships.update.title') as string,
-          message: this.$t('notify.internships.update.msg') as string,
+          title: this.$t('notify.campaigns.update.title') as string,
+          message: this.$t('notify.campaigns.update.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -290,33 +280,23 @@ export default class extends Vue {
   private handleDownload() {
     this.downloadLoading = true;
     const tHeader = [
-      this.$t('export.id') as string,
-      this.$t('export.subject') as string,
-      this.$t('export.description') as string,
-      this.$t('export.country') as string,
-      this.$t('export.city') as string,
-      this.$t('export.postalCode') as string,
-      this.$t('export.address') as string,
-      this.$t('export.additional') as string,
-      this.$t('export.internships.isInternshipAbroad') as string,
-      this.$t('export.internships.isValidated') as string,
+      'id',
+      this.$t('table.campaigns.name') as string,
+      this.$t('table.campaigns.startAt') as string,
+      this.$t('table.campaigns.endAt') as string,
+      this.$t('table.campaigns.semester') as string,
+      this.$t('table.campaigns.maxProposition') as string,
     ];
     const filterVal = [
       'id',
-      'subject',
-      'description',
-      'country',
-      'city',
-      'postalCode',
-      'address',
-      'additional',
-      'isInternshipAbroad',
-      'isValidated',
+      'name',
+      'startAt',
+      'endAt',
+      'semester',
+      'maxProposition',
     ];
     const data = formatJson(filterVal, this.list);
-    exportJson2Excel(tHeader, data, this.$t(
-      'export.internships.fileName'
-    ) as string);
+    exportJson2Excel(tHeader, data, 'table-list');
     this.downloadLoading = false;
   }
 }
