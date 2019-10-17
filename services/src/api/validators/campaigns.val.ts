@@ -14,16 +14,23 @@ export const CampaignCreate: Schema = {
         trim: true,
         escape: true,
     },
+    description: {
+        in: ['body'],
+        isString: { errorMessage: 'Description must be of type string' },
+        exists: { errorMessage: 'Description must be defined' },
+        trim: true,
+        escape: true,
+    },
     startAt: {
         in: ['body'],
-        isInt: { errorMessage: 'Start At must be of type number(date)', options: { min: 0 } },
-        exists: { errorMessage: 'Start At must be defined' },
+        isInt: { errorMessage: 'Start At must be of type timestamp', options: { min: 0 } },
+        optional: true,
         toInt: true,
     },
     endAt: {
         in: ['body'],
-        isInt: { errorMessage: 'End At must be of type number(date)', options: { min: 0 } },
-        exists: { errorMessage: 'End At must be defined' },
+        isInt: { errorMessage: 'End At must be of type timestamp', options: { min: 0 } },
+        optional: true,
         toInt: true,
     },
     semester: {
@@ -35,9 +42,9 @@ export const CampaignCreate: Schema = {
     },
     maxProposition: {
         in: ['body'],
-        isInt: { errorMessage: 'maxProposition must be of type number', options: { min: 0 } },
-        toInt: true,
+        isInt: { errorMessage: 'maxProposition must be an integer >= 0', options: { min: 0 } },
         optional: true,
+        toInt: true,
     },
 };
 
@@ -49,19 +56,24 @@ export const CampaignUpdate: Schema = {
         trim: true,
         escape: true,
     },
-    startAt: {
+    description: {
         in: ['body'],
-        isNumeric: { errorMessage: 'StartAt must be of type numeric(date)' },
+        isString: { errorMessage: 'Description must be of type string' },
         optional: true,
         trim: true,
         escape: true,
     },
+    startAt: {
+        in: ['body'],
+        isInt: { errorMessage: 'StartAt must be of type timestamp', options: { min: 0 } },
+        optional: true,
+        toInt: true,
+    },
     endAt: {
         in: ['body'],
-        isNumeric: { errorMessage: 'endAt must be of type numeric(date)' },
+        isInt: { errorMessage: 'endAt must be of type timestamp', options: { min: 0 } },
         optional: true,
-        trim: true,
-        escape: true,
+        toInt: true,
     },
     semester: {
         in: ['body'],
@@ -72,9 +84,8 @@ export const CampaignUpdate: Schema = {
     },
     maxProposition: {
         in: ['body'],
-        isNumeric: { errorMessage: 'MaxProposition must be of type numeric' },
+        isInt: { errorMessage: 'MaxProposition must be an integer >= 0', options: { min: 0 } },
         optional: true,
-        trim: true,
-        escape: true,
+        toInt: true,
     },
 };

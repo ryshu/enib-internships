@@ -58,7 +58,7 @@ export const InternshipCreate: Schema = {
     },
     isInternshipAbroad: {
         in: ['body'],
-        isBoolean: { errorMessage: 'LanguageCourse must be of type boolean' },
+        isBoolean: { errorMessage: 'Internship abroad must be of type boolean' },
         optional: true,
         toBoolean: true,
     },
@@ -70,13 +70,13 @@ export const InternshipCreate: Schema = {
     },
     startAt: {
         in: ['body'],
-        isInt: { errorMessage: 'Start at must be of type integer' },
+        isInt: { errorMessage: 'Start at must be a timestamp', options: { min: 0 } },
         optional: true,
         toInt: true,
     },
     endAt: {
         in: ['body'],
-        isInt: { errorMessage: 'End at must be of type integer' },
+        isInt: { errorMessage: 'End at must be a timestamp', options: { min: 0 } },
         optional: true,
         toInt: true,
     },
@@ -134,7 +134,7 @@ export const InternshipUpdate: Schema = {
     },
     isInternshipAbroad: {
         in: ['body'],
-        isBoolean: { errorMessage: 'Language course must be of type boolean' },
+        isBoolean: { errorMessage: 'Internship abroad must be of type boolean' },
         optional: true,
         toBoolean: true,
     },
@@ -143,5 +143,17 @@ export const InternshipUpdate: Schema = {
         isBoolean: { errorMessage: 'Validated must be of type boolean' },
         optional: true,
         toBoolean: true,
+    },
+    startAt: {
+        in: ['body'],
+        isInt: { errorMessage: 'Start at must be a timestamp', options: { min: 0 } },
+        optional: true,
+        toInt: true,
+    },
+    endAt: {
+        in: ['body'],
+        isInt: { errorMessage: 'End at must be a timestamp', options: { min: 0 } },
+        optional: true,
+        toInt: true,
     },
 };
