@@ -3,10 +3,12 @@ import * as Sequelize from 'sequelize';
 import database from '../configs/instances/database';
 
 import Businesses from './Businesses';
+import Students from './Students';
 
 class Internships extends Sequelize.Model implements IInternshipEntity {
     public static associations: {
         business: Sequelize.Association<Internships, Businesses>;
+        student: Sequelize.Association<Internships, Students>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -26,6 +28,10 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public isLanguageCourse: boolean;
     public isValidated: boolean;
 
+    // Date
+    public startAt: number;
+    public endAt: number;
+
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -35,6 +41,13 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public createBusiness: Sequelize.BelongsToCreateAssociationMixin<IBusinessEntity>;
 
     public readonly business?: Businesses | Businesses['id'];
+
+    // Students
+    public getStudent: Sequelize.BelongsToGetAssociationMixin<Students>;
+    public setStudent: Sequelize.BelongsToSetAssociationMixin<Students, Students['id']>;
+    public createStudent: Sequelize.BelongsToCreateAssociationMixin<IStudentEntity>;
+
+    public readonly student?: Students | Students['id'];
 }
 
 Internships.init(
@@ -88,12 +101,22 @@ Internships.init(
             allowNull: false,
             defaultValue: false,
         },
+
+        // Date
+        startAt: {
+            type: Sequelize.DataTypes.INTEGER,
+            allowNull: false,
+        },
+        endAt: {
+          type: Sequelize.DataTypes.INTEGER,
+          allowNull: false,
+      },
     },
     {
         tableName: 'internships',
         sequelize: database,
         defaultScope: {
-            attributes: { exclude: ['businessId'] },
+            attributes: { exclude: ['businessId', 'studentId'] },
         },
     },
 );

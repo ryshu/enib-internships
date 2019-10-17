@@ -68,6 +68,18 @@ export const InternshipCreate: Schema = {
         optional: true,
         toBoolean: true,
     },
+    startAt: {
+        in: ['body'],
+        isInt: { errorMessage: 'Start at must be of type integer' },
+        optional: true,
+        toInt: true,
+    },
+    endAt: {
+        in: ['body'],
+        isInt: { errorMessage: 'End at must be of type integer' },
+        optional: true,
+        toInt: true,
+    },
 };
 
 export const InternshipUpdate: Schema = {
