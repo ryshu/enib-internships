@@ -216,11 +216,6 @@ API return **Bad Request** status with 400 code when request validation fail.
       "msg": "Email must be of type string",
       "param": "city",
       "location": "body"
-    },
-    {
-      "msg": "Email must be defined",
-      "param": "city",
-      "location": "body"
     }
   ],
   "name": "BAD REQUEST"
