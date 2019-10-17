@@ -29,7 +29,8 @@ Object {
 exports[`GET /mentoringPropositions/:id/campaigns MentoringPropositions_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
-  "endAt": 0,
+  "description": "A description to test",
+  "endAt": 20191012,
   "id": 1,
   "maxProposition": 2,
   "name": "test",
@@ -51,7 +52,8 @@ Object {
 exports[`POST /mentoringPropositions/:id/campaigns/:internship_type_id/link MentoringPropositions_200_WithBusiness 1`] = `
 Object {
   "createdAt": Any<String>,
-  "endAt": 0,
+  "description": "A description to test",
+  "endAt": 20191012,
   "id": 2,
   "maxProposition": 2,
   "name": "test",

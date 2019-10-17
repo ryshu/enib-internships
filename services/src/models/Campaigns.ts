@@ -43,16 +43,16 @@ Campaigns.init(
             allowNull: false,
         },
         description: {
-            type: new DataTypes.STRING(),
+            type: new Sequelize.DataTypes.STRING(),
             allowNull: false,
         },
         startAt: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             allowNull: true,
             defaultValue: null,
         },
         endAt: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             allowNull: true,
             defaultValue: null,
         },
