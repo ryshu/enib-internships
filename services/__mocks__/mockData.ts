@@ -55,8 +55,9 @@ export function defaultStudents() {
 export function defaultCampaigns(): ICampaignEntity {
     return {
         name: 'test',
+        description: 'A description to test',
         startAt: 0,
-        endAt: 0,
+        endAt: 20191012,
         semester: 'S5',
         maxProposition: 2,
     };

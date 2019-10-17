@@ -5,7 +5,8 @@ Object {
   "data": Array [
     Object {
       "createdAt": Any<String>,
-      "endAt": 0,
+      "description": "A description to test",
+      "endAt": 20191012,
       "id": 1,
       "maxProposition": 2,
       "name": "test",
@@ -23,7 +24,8 @@ Object {
 exports[`GET /campaigns/:id Campaigns_200 1`] = `
 Object {
   "createdAt": Any<String>,
-  "endAt": 0,
+  "description": "A description to test",
+  "endAt": 20191012,
   "id": Any<Number>,
   "maxProposition": 2,
   "name": "test",
@@ -37,12 +39,13 @@ Object {
 exports[`POST /campaigns ValidCampaigns_200 1`] = `
 Object {
   "createdAt": Any<String>,
-  "endAt": 0,
+  "description": "A description to test",
+  "endAt": 20191012,
   "id": Any<Number>,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
-  "startAt": 0,
+  "startAt": null,
   "updatedAt": Any<String>,
 }
 `;
@@ -50,7 +53,8 @@ Object {
 exports[`PUT /campaigns/:id Campaigns_200_NotAnyDataUpdated 1`] = `
 Object {
   "createdAt": Any<String>,
-  "endAt": 0,
+  "description": "A description to test",
+  "endAt": 20191012,
   "id": Any<Number>,
   "maxProposition": 2,
   "name": "test",
@@ -63,12 +67,13 @@ Object {
 exports[`PUT /campaigns/:id Campaigns_200_UpdateAllData 1`] = `
 Object {
   "createdAt": Any<String>,
-  "endAt": "0",
+  "description": "A description to test",
+  "endAt": 20191012,
   "id": Any<Number>,
-  "maxProposition": "2",
+  "maxProposition": 2,
   "name": "additional data",
   "semester": "S5",
-  "startAt": "0",
+  "startAt": 0,
   "updatedAt": Any<String>,
 }
 `;
