@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import httpStatus from 'http-status-codes';
 
 import Campaigns from '../../models/Campaigns';
-import httpStatus from 'http-status-codes';
+import MentoringPropositions from '../../models/MentoringPropositions';
 
 import {
     UNPROCESSABLE_ENTITY,
@@ -17,31 +18,31 @@ import { paginate } from '../helpers/pagination.helper';
  * Used to GET all campaigns
  */
 export const getCampaigns = (req: Request, res: Response, next: NextFunction): void => {
-  // @see validator + router
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return BAD_REQUEST_VALIDATOR(next, errors);
-  }
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
 
-  // Retrive query data
-  const { page = 1, limit = 20 } = req.query;
-  let max: number;
-  Campaigns.count()
-      .then((rowNbr) => {
-          max = rowNbr;
-          return Campaigns.findAll(paginate({ page, limit }));
-      })
-      .then((campaigns) => {
-          if (checkArrayContent(campaigns, next)) {
-              return res.send({
-                  page,
-                  data: campaigns,
-                  length: campaigns.length,
-                  max,
-              });
-          }
-      })
-      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    let max: number;
+    Campaigns.count()
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Campaigns.findAll(paginate({ page, limit }));
+        })
+        .then((campaigns) => {
+            if (checkArrayContent(campaigns, next)) {
+                return res.send({
+                    page,
+                    data: campaigns,
+                    length: campaigns.length,
+                    max,
+                });
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -79,7 +80,9 @@ export const getCampaign = (req: Request, res: Response, next: NextFunction): vo
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Campaigns.findByPk(req.params.id)
+    Campaigns.findByPk(req.params.id, {
+        include: [{ model: MentoringPropositions, as: 'propositions' }],
+    })
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val);
@@ -144,4 +147,55 @@ export const deleteCampaign = (req: Request, res: Response, next: NextFunction):
         .then((val) => (val ? val.destroy() : undefined))
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+};
+
+/**
+ * GET /campaigns/:id/mentoringPropositions
+ * Used to get all mentoringPropositions of a campaign
+ */
+export const getCampaignMentoringPropositions = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Campaigns.findByPk(req.params.id, {
+        include: [{ model: MentoringPropositions, as: 'propositions' }],
+    })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.propositions);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /campaigns/:id/mentoringPropositions/:mentoring_proposition_id/link
+ * Used to link a mentoring propositions with a campaign
+ */
+export const linkCampaignMentoringPropositions = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Campaigns.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                await val.addProposition(Number(req.params.mentoring_proposition_id));
+                return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

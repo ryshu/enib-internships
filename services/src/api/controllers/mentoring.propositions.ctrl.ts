@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import httpStatus from 'http-status-codes';
 
 import MentoringPropositions from '../../models/MentoringPropositions';
-import httpStatus from 'http-status-codes';
+import Campaigns from '../../models/Campaigns';
 
 import { paginate } from '../helpers/pagination.helper';
 import {
@@ -75,7 +76,9 @@ export const getMentoringProposition = (req: Request, res: Response, next: NextF
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositions.findByPk(req.params.id)
+    MentoringPropositions.findByPk(req.params.id, {
+        include: [{ model: Campaigns, as: 'campaign' }],
+    })
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val);
@@ -119,7 +122,11 @@ export const putMentoringProposition = (req: Request, res: Response, next: NextF
  * DELETE /mentoringPropositions/:id
  * Used to remove a mentoringProposition from database
  */
-export const deleteMentoringProposition = (req: Request, res: Response, next: NextFunction): void => {
+export const deleteMentoringProposition = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -130,4 +137,59 @@ export const deleteMentoringProposition = (req: Request, res: Response, next: Ne
         .then((val) => (val ? val.destroy() : undefined))
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+};
+
+/**
+ * GET /mentoringPropostions/:id/campaigns
+ * Used to select a mentoring propositions by ID and return his campaign
+ */
+export const getMentoringPropositionCampaigns = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    MentoringPropositions.findByPk(req.params.id, {
+        include: [{ model: Campaigns, as: 'campaign' }],
+    })
+        .then((val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.campaign);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /mentoringPropostions/:id/campaigns/:campaign_id/link
+ * Used to create a link between mentoring propositions and campaign
+ */
+export const linkMentoringPropositionCampaign = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    MentoringPropositions.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.setCampaign(Number(req.params.campaign_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
