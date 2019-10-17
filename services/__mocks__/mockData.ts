@@ -29,6 +29,8 @@ export function defaultInternships() {
         address: 'TEST',
         isLanguageCourse: true,
         isValidated: false,
+        startAt: 20191012,
+        endAt: 20191012,
     };
     return VALID_INTERNSHIP;
 }

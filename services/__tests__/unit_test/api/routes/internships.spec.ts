@@ -9,8 +9,9 @@ import dbSetup from '../../../../src/configs/setup/database';
 // Import model for pre-operation before asserting API methods
 import Internships from '../../../../src/models/Internships';
 import Businesses from '../../../../src/models/Businesses';
+import Students from '../../../../src/models/Students';
 
-import { defaultInternships, defaultBusiness } from '../../../../__mocks__/mockData';
+import { defaultInternships, defaultBusiness, defaultStudents } from '../../../../__mocks__/mockData';
 
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
@@ -320,4 +321,123 @@ describe('POST /internships/:id/businesses/:business_id/link', () => {
             updatedAt: expect.any(String),
         });
     });
+});
+
+describe('GET /internships/:id/students', () => {
+  beforeEach(async () => {
+      // Remove all
+      await Internships.destroy({ where: {} });
+  });
+
+  it('NoInternship_204', async () => {
+      const RESPONSE = await request(app).get(
+          `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships/10/students`,
+      );
+      expect(RESPONSE.status).toBe(204);
+  });
+
+  it('BadRequest_400', async () => {
+      const RESPONSE = await request(app).get(
+          `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships/{falseEncoding}/students`,
+      );
+      expect(RESPONSE.status).toBe(400);
+  });
+
+  it('Internships_200_NoLinkedData', async () => {
+      const VALID_INTERNSHIP = defaultInternships();
+
+      const CREATED = await Internships.create(VALID_INTERNSHIP);
+      const RESPONSE = await request(app).get(
+          `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships/${CREATED.id}/students`,
+      );
+      expect(RESPONSE.status).toBe(200);
+      expect(RESPONSE.body).toEqual({});
+  });
+
+  it('Internships_200_WithLinkedData', async () => {
+      const VALID_STUDENT = defaultStudents();
+      const VALID_INTERNSHIP = defaultInternships();
+
+      const CREATED_STUDENT = await Students.create(VALID_STUDENT);
+      let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+      await CREATED_INTERNSHIP.setStudent(CREATED_STUDENT.id);
+      CREATED_INTERNSHIP = await Internships.findByPk(CREATED_INTERNSHIP.id);
+
+      const RESPONSE = await request(app).get(
+          `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships/${CREATED_INTERNSHIP.id}/students`,
+      );
+      expect(RESPONSE.status).toBe(200);
+      expect(RESPONSE.body).toMatchSnapshot({
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+      });
+  });
+});
+
+describe('POST /internships/:id/students/:student_id/link', () => {
+  beforeEach(async () => {
+      // Remove all
+      await Internships.destroy({ where: {} });
+  });
+
+  it('NoInternship_204', async () => {
+      const RESPONSE = await request(app).post(
+          `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships/10/students/20/link`,
+      );
+      expect(RESPONSE.status).toBe(204);
+  });
+
+  it('BadRequest_400_WrongID', async () => {
+      const RESPONSE = await request(app).post(
+          `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships/{falseEncoding}/students/10/link`,
+      );
+      expect(RESPONSE.status).toBe(400);
+  });
+
+  it('BadRequest_400_WrongStudentID', async () => {
+      const RESPONSE = await request(app).post(
+          `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships/10/students/{falseEncoding}/link`,
+      );
+      expect(RESPONSE.status).toBe(400);
+  });
+
+  it('Internships_204_NoStudent', async () => {
+      // In this case, we check if link a existing internships and an unexisting students work
+      const VALID_INTERNSHIP = defaultInternships();
+
+      const CREATED = await Internships.create(VALID_INTERNSHIP);
+      const RESPONSE = await request(app).post(
+          `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships/${CREATED.id}/students/20/link`,
+      );
+      expect(RESPONSE.status).toBe(204);
+  });
+
+  it('Internships_200_WithStudent', async () => {
+      const VALID_STUDENT = defaultStudents();
+      const VALID_INTERNSHIP = defaultInternships();
+
+      const CREATED_STUDENT = await Students.create(VALID_STUDENT);
+      let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+      const RESPONSE = await request(app).post(
+          `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internships/${CREATED_INTERNSHIP.id}/students/${CREATED_STUDENT.id}/link`,
+      );
+
+      // Should answer 200
+      expect(RESPONSE.status).toBe(200);
+
+      // check if student and internship are linked
+      CREATED_INTERNSHIP = await Internships.findByPk(CREATED_INTERNSHIP.id, {
+          include: [{ model: Students, as: 'student' }],
+      });
+
+      const data = JSON.parse(JSON.stringify(CREATED_INTERNSHIP.student)) as any;
+
+      expect(CREATED_INTERNSHIP.student).toBeTruthy();
+      expect(data).toMatchSnapshot({
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+      });
+  });
 });
