@@ -140,6 +140,8 @@ Key | Type | Description
     "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
     "country": "Russian Federation",
     "city": "New Rocky",
+    "business": null,
+    "category": null,
     "postalCode": "30636-9003",
     "address": "15486 Genoveva Isle",
     "additional": "Suite 755",
@@ -244,11 +246,6 @@ API return **Bad Request** status with 400 code when request validation fail.
   "errors": [
     {
       "msg": "Subject must be of type string",
-      "param": "city",
-      "location": "body"
-    },
-    {
-      "msg": "Subject must be defined",
       "param": "city",
       "location": "body"
     }

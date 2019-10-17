@@ -248,11 +248,6 @@ API return **Bad Request** status with 400 code when request validation fail.
       "msg": "City must be of type string",
       "param": "city",
       "location": "body"
-    },
-    {
-      "msg": "City must be defined",
-      "param": "city",
-      "location": "body"
     }
   ],
   "name": "BAD REQUEST"

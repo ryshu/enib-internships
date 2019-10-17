@@ -27,6 +27,7 @@ Object {
   "id": Any<Number>,
   "maxProposition": 2,
   "name": "test",
+  "propositions": Array [],
   "semester": "S5",
   "startAt": 0,
   "updatedAt": Any<String>,
