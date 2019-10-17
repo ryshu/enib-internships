@@ -73,10 +73,12 @@ export declare interface ICampaigns {
   id?: number;
 
   name: string;
-  startAt: number;
-  endAt: number;
+  description: string;
   semester: string;
   maxProposition: number;
+
+  startAt: number;
+  endAt: number;
 
   createdAt?: string;
   updatedAt?: string;

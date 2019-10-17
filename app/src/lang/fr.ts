@@ -61,15 +61,15 @@ export default {
     },
     campaigns: {
       create: {
-        msg: "La campagne a bien été créée",
+        msg: 'La campagne a bien été créée',
         title: "Création d'une campagne",
       },
       delete: {
-        msg: "La campagne a bien été supprimée",
+        msg: 'La campagne a bien été supprimée',
         title: "Suppression d'une campagne",
       },
       update: {
-        msg: "La campagne a bien été modifiée",
+        msg: 'La campagne a bien été modifiée',
         title: "Modification d'une campagne",
       },
     },
@@ -129,7 +129,7 @@ export default {
     edit: 'Modifier',
     export: 'Exporter',
     id: 'ID',
-    update:'Modifier',
+    update: 'Modifier',
     create: 'Créer',
     internships: {
       additional: 'Informations complémentaire',
@@ -144,11 +144,11 @@ export default {
     },
     campaigns: {
       name: 'Nom de la campagne',
-      startAt: 'Début',
-      endAt: 'Fin',
+      description: 'Descriptif de la campagne',
       semester: 'Semestre',
       maxProposition: 'Nombre maximum de propositions',
-
+      startAt: 'Début',
+      endAt: 'Fin',
     },
     publish: 'Publier',
     search: 'Recherche',
@@ -166,4 +166,4 @@ export default {
     yes: 'Oui',
     no: 'Non',
   },
- };
+};
