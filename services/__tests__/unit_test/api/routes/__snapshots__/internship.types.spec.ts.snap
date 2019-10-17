@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GET /internshipTypes/:id InternshipTypes_200 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internshipTypes ValidInternshipTypes_200 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /internshipTypes/:id InternshipTypes_200_NotAnyDataUpdated 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /internshipTypes/:id InternshipTypes_200_UpdateAllData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": Any<Number>,
+  "label": "additional data",
+  "updatedAt": Any<String>,
+}
+`;

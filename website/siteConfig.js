@@ -12,7 +12,7 @@ const repoUrl = 'https://github.com/ryshu/enib-internships';
 
 const siteConfig = {
     title: 'Internships manager',
-    tagline: 'Application to manage ENIB interships system',
+    tagline: 'Application to manage ENIB internships system',
     url: 'https://ryshu.github.io',
     baseUrl: '/enib-internships/',
 

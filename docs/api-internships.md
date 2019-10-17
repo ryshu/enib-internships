@@ -33,7 +33,7 @@ Key | Type | Optional | Description
             "postalCode": "30636-9003",
             "address": "15486 Genoveva Isle",
             "additional": "Suite 755",
-            "isLanguageCourse": false,
+            "isInternshipAbroad": false,
             "isValidated": false,
             "createdAt": "2019-10-13T16:21:25.000Z",
             "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -71,7 +71,7 @@ Key | Type | Optional | Description
 **postalCode** | String | *no* | Internship postalCode
 **address** | String | *no* | Internship address
 **additional** | String | *no* | Address additional detail
-**isLanguageCourse** | Boolean | *yes* | Address isLanguageCourse detail
+**isInternshipAbroad** | Boolean | *yes* | Address isInternshipAbroad detail
 **isValidated** | Boolean | *yes* | Address isValidated detail
 
 ### 200 - Created
@@ -88,7 +88,7 @@ Return created internship
     "postalCode": "30636-9003",
     "address": "15486 Genoveva Isle",
     "additional": "Suite 755",
-    "isLanguageCourse": false,
+    "isInternshipAbroad": false,
     "isValidated": false,
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -143,7 +143,7 @@ Key | Type | Description
     "postalCode": "30636-9003",
     "address": "15486 Genoveva Isle",
     "additional": "Suite 755",
-    "isLanguageCourse": false,
+    "isInternshipAbroad": false,
     "isValidated": false,
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -207,7 +207,7 @@ Key | Type | Optional | Description
 **postalCode** | String | *yes* | Internship postalCode
 **address** | String | *yes* | Internship address
 **additional** | String | *yes* | Address additional detail
-**isLanguageCourse** | Boolean | *yes* | Address isLanguageCourse detail
+**isInternshipAbroad** | Boolean | *yes* | Address isInternshipAbroad detail
 **isValidated** | Boolean | *yes* | Address isValidated detail
 
 ### 200 - Updated internship
@@ -222,7 +222,7 @@ Key | Type | Optional | Description
     "postalCode": "30636-9003",
     "address": "15486 Genoveva Isle",
     "additional": "Suite 755",
-    "isLanguageCourse": false,
+    "isInternshipAbroad": false,
     "isValidated": false,
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -314,7 +314,7 @@ If not any business is linked to given internship, return this struct
 
 ### 204 - No content
 
-If the API doesn't have any internship in his database link to given ID, we return a status **204 - No content**
+If the API doesn't have any internship in database link to given ID, we return a status **204 - No content**
 
 ### 400 - Bad request
 
@@ -350,23 +350,120 @@ GET /api/v1/internships/:id/businesses/:business_id/link
 
 Key | Type | Description
 - | - | -
-**id** | String | Business ID
-**business_id** | String | Internship ID
+**id** | String | Internship ID
+**business_id** | String | Business ID
 
 ### 200 - OK
 
-Ok appears on two occasions
+Data are linked
 
-* If entries have been linked
-* If internship haven't been found
+### 204 - No content
+
+If the API doesn't have requested business or internship in his database, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
 
 ``` json
-OK
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Get category related to an internship by giving his ID
+
+``` sh
+GET /api/v1/internships/:id/internshipTypes
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Internship ID
+
+### 200 - Internships list
+
+If a internshipType is linked to given internship, return this struct
+
+``` json
+{
+  "id": 1,
+  "label": "Thales Group",
+  "updatedAt": "2019-09-19T22:21:24.365Z",
+  "createdAt": "2019-09-19T22:21:24.365Z"
+},
+```
+
+If not any internshipType is linked to given internship, return this struct
+
+``` json
+{}
 ```
 
 ### 204 - No content
 
-If the API doesn't have any business in his database, we return a status **204 - No content**
+If the API doesn't have any internship in his database link to given ID, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Link category to internship
+
+``` sh
+GET /api/v1/internships/:id/internshipTypes/:internship_type_id/link
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Internship ID
+**internship_type_id** | String | InternshipType ID
+
+### 200 - OK
+
+Data are linked
+
+### 204 - No content
+
+If the API doesn't have any internshipType in his database, we return a status **204 - No content**
 
 ### 400 - Bad request
 

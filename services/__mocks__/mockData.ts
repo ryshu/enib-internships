@@ -27,7 +27,7 @@ export function defaultInternships() {
         city: 'Brest',
         postalCode: '29280',
         address: 'TEST',
-        isLanguageCourse: true,
+        isInternshipAbroad: true,
         isValidated: false,
     };
     return VALID_INTERNSHIP;
@@ -58,4 +58,11 @@ export function defaultCampaigns(): ICampaignEntity {
         semester: 'S5',
         maxProposition: 2,
     };
+}
+
+export function defaultInternshipTypes() {
+    const VALID_INTERNSHIP_TYPES: IInternshipTypeEntity = {
+        label: 'test',
+    };
+    return VALID_INTERNSHIP_TYPES;
 }
