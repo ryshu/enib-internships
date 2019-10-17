@@ -113,6 +113,7 @@ Key | Type | Description
 {
     "id": 1,
     "comment": "Human Directives Administrator",
+    "campaign": null,
     "createdAt": "2019-10-13T16:24:13.000Z",
     "updatedAt": "2019-10-13T16:24:13.000Z"
 }
@@ -121,12 +122,6 @@ Key | Type | Description
 ### 204 - No content
 
 If the API doesn't have any mentoring proposition in his database, we return a status **204 - No content**
-
-## Update a mentoring proposition by ID
-
-``` sh
-PUT /api/v1/mentoringPropositions/:id
-```
 
 ### 400 - Bad request
 
@@ -150,6 +145,12 @@ API return **Bad Request** status with 400 code when request validation fail.
   ],
   "name": "BAD REQUEST"
 }
+```
+
+## Update a mentoring proposition by ID
+
+``` sh
+PUT /api/v1/mentoringPropositions/:id
 ```
 
 ### Paths variables
@@ -198,11 +199,6 @@ API return **Bad Request** status with 400 code when request validation fail.
       "msg": "Comment must be of type string",
       "param": "city",
       "location": "body"
-    },
-    {
-      "msg": "Comment must be defined",
-      "param": "city",
-      "location": "body"
     }
   ],
   "name": "BAD REQUEST"
@@ -228,3 +224,111 @@ Return a status **200** without data when delete succeed
 ### 204 - No content
 
 If the API doesn't have any mentoring proposition in his database, we return a status **204 - No content**
+
+## Get campaign related to an proposition by giving his ID
+
+``` sh
+GET /api/v1/mentoringPropositions/:id/campaigns
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Mentoring propostion ID
+
+### 200 - Campaigns list
+
+If a campaign is linked to given proposition, return this struct
+
+``` json
+{
+  "id": 1,
+  "maxProposition": 2,
+  "name": "test",
+  "semester": "S5",
+  "startAt": 0,
+  "endAt": 0,
+  "updatedAt": "2019-09-19T22:21:24.365Z",
+  "createdAt": "2019-09-19T22:21:24.365Z"
+},
+```
+
+If not any campaign is linked to given propostion, return this struct
+
+``` json
+{}
+```
+
+### 204 - No content
+
+If the API doesn't have any proposition in database link to given ID, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Link campaign to proposition
+
+``` sh
+GET /api/v1/mentoringPropositions/:id/campaigns/:campaign_id/link
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Mentoring proposition ID
+**campaign_id** | String | Campaign ID
+
+### 200 - OK
+
+Data are linked
+
+### 204 - No content
+
+If the API doesn't have requested campaign or proposition in his database, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```

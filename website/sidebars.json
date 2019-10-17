@@ -5,7 +5,7 @@
   },
   "api": {
     "Introduction": ["api-index"],
-    "REST API": ["api-businesses", "api-files", "api-mentoring-propostions", "api-internships", "api-internship-types", "api-students"]
+    "REST API": ["api-businesses", "api-campaigns", "api-files", "api-mentoring-propostions", "api-internships", "api-internship-types", "api-students"]
   },
   "tuto": {
     "Complete": ["tuto-mentors", "tuto-students", "tuto-setup-associations"]

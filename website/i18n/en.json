@@ -8,6 +8,9 @@
       "api-businesses": {
         "title": "Businesses"
       },
+      "api-campaigns": {
+        "title": "Campaigns"
+      },
       "api-files": {
         "title": "Files"
       },

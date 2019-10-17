@@ -3,7 +3,7 @@ import { checkSchema } from 'express-validator';
 
 import * as PropositionsCtrl from '../controllers/mentoring.propositions.ctrl';
 
-import { ID } from '../validators/generic.val';
+import { ID, CampaignID } from '../validators/generic.val';
 import {
     MentoringPropositionUpdate,
     MentoringPropositionCreate,
@@ -21,5 +21,12 @@ router.put(
     PropositionsCtrl.putMentoringProposition,
 );
 router.delete('/:id', checkSchema(ID), PropositionsCtrl.deleteMentoringProposition);
+
+router.get('/:id/campaigns', checkSchema(ID), PropositionsCtrl.getMentoringPropositionCampaigns);
+router.post(
+    '/:id/campaigns/:campaign_id/link',
+    checkSchema(Object.assign({}, ID, CampaignID)),
+    PropositionsCtrl.linkMentoringPropositionCampaign,
+);
 
 export default router;
