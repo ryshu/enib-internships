@@ -21,6 +21,7 @@ export function namedID(id: string, msg: string): Schema {
 export const ID: Schema = namedID('id', 'Identifier');
 export const InternshipID: Schema = namedID('internship_id', 'Internship identifier');
 export const BusinessID: Schema = namedID('business_id', 'Business identifier');
+export const StudentID: Schema = namedID('student_id', 'Student identifier');
 
 export const paginateValidator: Schema = {
     page: {

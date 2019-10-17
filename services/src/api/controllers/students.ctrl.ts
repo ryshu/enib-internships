@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 
 // Import students ORM class
 import Students from '../../models/Students';
+import Internships from '../../models/Internships';
 import httpStatus from 'http-status-codes';
 
 // Factorization methods to handle errors
@@ -83,7 +84,7 @@ export const getStudent = (req: Request, res: Response, next: NextFunction): voi
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Students.findByPk(req.params.id)
+    Students.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
         .then((val) => {
             // Check if we have content, and if so return it
             if (checkContent(val, next)) {
@@ -148,4 +149,45 @@ export const deleteStudent = (req: Request, res: Response, next: NextFunction): 
         .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected student
         .then(() => res.sendStatus(httpStatus.OK)) // Return OK status
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+};
+
+/**
+ * GET /students/:id/internships
+ * Used to get all internships of a student
+ */
+export const getStudentInternships = (req: Request, res: Response, next: NextFunction): void => {
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
+
+  Students.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
+      .then(async (val) => {
+          if (checkContent(val, next)) {
+              return res.send(val.internships);
+          }
+      })
+      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /students/:id/internships/:internship_id/link
+ * Link a internship to a student entry
+ */
+export const linkStudentInternships = (req: Request, res: Response, next: NextFunction): void => {
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
+
+  Students.findByPk(req.params.id)
+      .then(async (val) => {
+          if (checkContent(val, next)) {
+              await val.addInternship(Number(req.params.internship_id));
+              return res.sendStatus(httpStatus.OK);
+          }
+      })
+      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

@@ -10,4 +10,7 @@ import Students from '../../models/Students';
 Businesses.hasMany(Internships, { as: 'internships', foreignKey: 'businessId', sourceKey: 'id' });
 Internships.belongsTo(Businesses, { as: 'business', foreignKey: 'businessId', targetKey: 'id' });
 
+Students.hasMany(Internships, { as: 'internships', foreignKey: 'studentId', sourceKey: 'id' });
+Internships.belongsTo(Students, { as: 'student', foreignKey: 'studentId', targetKey: 'id' });
+
 export default database.sync({ force: process.env.ORM_DROP_DB_ON_START === 'true' });
