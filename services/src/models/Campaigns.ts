@@ -12,6 +12,7 @@ class Campaigns extends Sequelize.Model implements ICampaignEntity {
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
 
     public name: string;
+    public description: string;
     public startAt: number;
     public endAt: number;
     public semester: string;
@@ -41,13 +42,19 @@ Campaigns.init(
             type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
         },
-        startAt: {
-            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
+        description: {
+            type: new DataTypes.STRING(),
             allowNull: false,
         },
+        startAt: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: true,
+            defaultValue: null,
+        },
         endAt: {
-            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
-            allowNull: false,
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: true,
+            defaultValue: null,
         },
         semester: {
             type: Sequelize.DataTypes.STRING(128),

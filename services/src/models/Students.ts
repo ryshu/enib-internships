@@ -5,7 +5,7 @@ import database from '../configs/instances/database';
 import Internships from './Internships';
 class Students extends Sequelize.Model implements IStudentEntity {
     public static associations: {
-      student: Sequelize.Association<Students, Internships>;
+        student: Sequelize.Association<Students, Internships>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -30,33 +30,33 @@ class Students extends Sequelize.Model implements IStudentEntity {
 }
 
 Students.init(
-  {
-    id: {
-      type: Sequelize.DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
+    {
+        id: {
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
+            autoIncrement: true,
+            primaryKey: true,
+        },
+        firstName: {
+            type: new Sequelize.DataTypes.STRING(128),
+            allowNull: false,
+        },
+        lastName: {
+            type: new Sequelize.DataTypes.STRING(128),
+            allowNull: false,
+        },
+        email: {
+            type: new Sequelize.DataTypes.STRING(128),
+            allowNull: false,
+        },
+        semester: {
+            type: new Sequelize.DataTypes.STRING(3),
+            allowNull: false,
+        },
     },
-    firstName: {
-      type: new Sequelize.DataTypes.STRING(128),
-      allowNull: false,
+    {
+        tableName: 'students',
+        sequelize: database,
     },
-    lastName: {
-      type: new Sequelize.DataTypes.STRING(128),
-      allowNull: false,
-    },
-    email: {
-      type: new Sequelize.DataTypes.STRING(128),
-      allowNull: false,
-    },
-    semester: {
-      type: new Sequelize.DataTypes.STRING(3),
-      allowNull: false,
-    },
-  },
-  {
-    tableName: 'students',
-    sequelize: database,
-  },
 );
 
 export default Students;

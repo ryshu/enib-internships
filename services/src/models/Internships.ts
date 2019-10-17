@@ -114,12 +114,14 @@ Internships.init(
         // Date
         startAt: {
             type: Sequelize.DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
+            defaultValue: null,
         },
         endAt: {
-          type: Sequelize.DataTypes.INTEGER,
-          allowNull: false,
-      },
+            type: Sequelize.DataTypes.INTEGER,
+            allowNull: true,
+            defaultValue: null,
+        },
     },
     {
         tableName: 'internships',

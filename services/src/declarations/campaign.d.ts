@@ -1,12 +1,13 @@
 declare interface ICampaignEntity {
-  id?: number;
+    id?: number;
 
-  name: string;
-  startAt: number;
-  endAt: number;
-  semester: string;
-  maxProposition: number;
+    name: string;
+    description: string;
+    startAt: number;
+    endAt: number;
+    semester: string;
+    maxProposition: number;
 
-  createdAt?: Date;
-  updatedAt?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
