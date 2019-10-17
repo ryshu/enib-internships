@@ -60,7 +60,7 @@ export default {
       postalCode: 'Postal code',
       address: 'Address',
       additional: 'Additional information',
-      isLanguageCourse: 'Language course',
+      isInternshipAbroad: 'Abroad',
       isValidated: 'Validated',
     },
     title: 'Title',

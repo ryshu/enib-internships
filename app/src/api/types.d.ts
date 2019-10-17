@@ -23,7 +23,7 @@ export declare interface IInternship {
   address: string;
   additional?: string;
 
-  isLanguageCourse: boolean;
+  isInternshipAbroad: boolean;
   isValidated: boolean;
 
   createdAt?: string;

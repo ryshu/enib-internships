@@ -29,7 +29,6 @@ class Businesses extends Sequelize.Model implements IBusinessEntity {
     public countInternships: Sequelize.HasManyCountAssociationsMixin;
 
     public readonly internships?: Internships[];
-    public internshipCount: number;
 }
 
 Businesses.init(

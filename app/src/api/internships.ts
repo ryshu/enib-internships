@@ -11,7 +11,7 @@ export const defaultInternshipData: IInternship = {
   postalCode: '',
   address: '',
   additional: '',
-  isLanguageCourse: false,
+  isInternshipAbroad: false,
   isValidated: false,
 };
 

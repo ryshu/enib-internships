@@ -61,12 +61,12 @@
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.internships.isLanguageCourse')" min-width="150px">
+      <el-table-column :label="$t('table.internships.isInternshipAbroad')" min-width="150px">
         <template slot-scope="{ row }">
           <el-tag
-            :type="row.isLanguageCourse ? 'success' : 'danger'"
+            :type="row.isInternshipAbroad ? 'success' : 'danger'"
             effect="dark"
-          >{{ $t(row.isLanguageCourse ? 'status.yes' : 'status.no') }}</el-tag>
+          >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.internships.isValidated')" min-width="150px">
@@ -138,8 +138,8 @@
         <el-form-item :label="$t('table.internships.additional')" prop="additional">
           <el-input v-model="tempInternshipData.additional" />
         </el-form-item>
-        <el-form-item :label="$t('table.internships.isLanguageCourse')" prop="isLanguageCourse">
-          <input v-model="tempInternshipData.isLanguageCourse" type="checkbox" />
+        <el-form-item :label="$t('table.internships.isInternshipAbroad')" prop="isInternshipAbroad">
+          <input v-model="tempInternshipData.isInternshipAbroad" type="checkbox" />
         </el-form-item>
         <el-form-item :label="$t('table.internships.isValidated')" prop="isValidated">
           <input v-model="tempInternshipData.isValidated" type="checkbox" />
@@ -298,7 +298,7 @@ export default class extends Vue {
       this.$t('export.postalCode') as string,
       this.$t('export.address') as string,
       this.$t('export.additional') as string,
-      this.$t('export.internships.isLanguageCourse') as string,
+      this.$t('export.internships.isInternshipAbroad') as string,
       this.$t('export.internships.isValidated') as string,
     ];
     const filterVal = [
@@ -310,7 +310,7 @@ export default class extends Vue {
       'postalCode',
       'address',
       'additional',
-      'isLanguageCourse',
+      'isInternshipAbroad',
       'isValidated',
     ];
     const data = formatJson(filterVal, this.list);

@@ -14,7 +14,7 @@ module.exports = async function(quantity = 100, debug = false) {
             postalCode: faker.address.zipCode(),
             address: faker.address.streetAddress(),
             additional: faker.address.secondaryAddress(),
-            isLanguageCourse: faker.random.boolean(),
+            isInternshipAbroad: faker.random.boolean(),
             isValidated: faker.random.boolean(),
         };
         promises.push(
