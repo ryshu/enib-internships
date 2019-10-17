@@ -11,7 +11,7 @@ Object {
       "createdAt": Any<String>,
       "description": "Stage",
       "id": 1,
-      "isLanguageCourse": true,
+      "isInternshipAbroad": true,
       "isValidated": false,
       "postalCode": "29280",
       "subject": "test",
@@ -29,12 +29,13 @@ Object {
   "additional": null,
   "address": "TEST",
   "business": null,
+  "category": null,
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
   "description": "Stage",
   "id": Any<Number>,
-  "isLanguageCourse": true,
+  "isInternshipAbroad": true,
   "isValidated": false,
   "postalCode": "29280",
   "subject": "test",
@@ -56,6 +57,15 @@ Object {
 }
 `;
 
+exports[`GET /internships/:id/internshipTypes Internships_200_WithLinkedData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": 1,
+  "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
 exports[`POST /internships ValidInternships_200 1`] = `
 Object {
   "address": "TEST",
@@ -64,7 +74,7 @@ Object {
   "createdAt": Any<String>,
   "description": "Stage",
   "id": Any<Number>,
-  "isLanguageCourse": true,
+  "isInternshipAbroad": true,
   "isValidated": false,
   "postalCode": "29280",
   "subject": "test",
@@ -86,6 +96,15 @@ Object {
 }
 `;
 
+exports[`POST /internships/:id/internshipTypes/:internship_type_id/link Internships_200_WithBusiness 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": 2,
+  "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
 exports[`PUT /internships/:id Internships_200_NotAnyDataUpdated 1`] = `
 Object {
   "additional": null,
@@ -95,7 +114,7 @@ Object {
   "createdAt": Any<String>,
   "description": "Stage",
   "id": Any<Number>,
-  "isLanguageCourse": true,
+  "isInternshipAbroad": true,
   "isValidated": false,
   "postalCode": "29280",
   "subject": "test",
@@ -112,7 +131,7 @@ Object {
   "createdAt": Any<String>,
   "description": "Stage",
   "id": Any<Number>,
-  "isLanguageCourse": true,
+  "isInternshipAbroad": true,
   "isValidated": false,
   "postalCode": "29280",
   "subject": "test",
