@@ -5,6 +5,7 @@ import { ICampaigns } from './types';
 
 export const defaultCampaignData: ICampaigns = {
   name: '',
+  description: '',
   startAt: 0,
   endAt: 0,
   semester: '',

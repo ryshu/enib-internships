@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import moment from 'moment';
 import httpStatus from 'http-status-codes';
 
 import Campaigns from '../../models/Campaigns';
@@ -58,10 +59,11 @@ export const postCampaign = (req: Request, res: Response, next: NextFunction): v
 
     const campaign: ICampaignEntity = {
         name: req.body.name,
-        startAt: req.body.startAt,
-        endAt: req.body.endAt,
+        startAt: !req.body.startAt ? null : moment(req.body.startAt).valueOf(),
+        endAt: !req.body.endAt ? null : moment(req.body.endAt).valueOf(),
+        description: req.body.description,
         semester: req.body.semester,
-        maxProposition: req.body.maxProposition,
+        maxProposition: req.body.maxProposition ? req.body.maxProposition : 0,
     };
 
     Campaigns.create(campaign)
@@ -110,17 +112,29 @@ export const putCampaign = (req: Request, res: Response, next: NextFunction): vo
             if (req.body.name) {
                 campaign.set('name', req.body.name);
             }
+            if (req.body.description) {
+                campaign.set('description', req.body.description);
+            }
             if (req.body.startAt) {
-                campaign.set('startAt', req.body.startAt);
+                campaign.set(
+                    'startAt',
+                    req.body.startAt === 0 ? null : moment(req.body.startAt).valueOf(),
+                );
             }
             if (req.body.endAt) {
-                campaign.set('endAt', req.body.endAt);
+                campaign.set(
+                    'endAt',
+                    req.body.endAt === 0 ? null : moment(req.body.endAt).valueOf(),
+                );
             }
             if (req.body.semester) {
                 campaign.set('semester', req.body.semester);
             }
-            if (req.body.maxProposition) {
-                campaign.set('maxProposition', req.body.maxProposition);
+            if (req.body.maxProposition !== undefined) {
+                campaign.set(
+                    'maxProposition',
+                    req.body.maxProposition ? req.body.maxProposition : 0,
+                );
             }
             return campaign.save();
         })

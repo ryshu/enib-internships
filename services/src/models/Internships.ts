@@ -4,11 +4,13 @@ import database from '../configs/instances/database';
 
 import Businesses from './Businesses';
 import InternshipTypes from './InternshipTypes';
+import Students from './Students';
 
 class Internships extends Sequelize.Model implements IInternshipEntity {
     public static associations: {
         category: Sequelize.Association<Internships, InternshipTypes>;
         business: Sequelize.Association<Internships, Businesses>;
+        student: Sequelize.Association<Internships, Students>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -28,6 +30,10 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public isInternshipAbroad: boolean;
     public isValidated: boolean;
 
+    // Date
+    public startAt: number;
+    public endAt: number;
+
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -43,8 +49,14 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     >;
     public createCategory: Sequelize.BelongsToCreateAssociationMixin<IInternshipTypeEntity>;
 
+    // Students
+    public getStudent: Sequelize.BelongsToGetAssociationMixin<Students>;
+    public setStudent: Sequelize.BelongsToSetAssociationMixin<Students, Students['id']>;
+    public createStudent: Sequelize.BelongsToCreateAssociationMixin<IStudentEntity>;
+
     public readonly business?: Businesses | Businesses['id'];
     public readonly category?: InternshipTypes | InternshipTypes['id'];
+    public readonly student?: Students | Students['id'];
 }
 
 Internships.init(
@@ -98,12 +110,24 @@ Internships.init(
             allowNull: false,
             defaultValue: false,
         },
+
+        // Date
+        startAt: {
+            type: Sequelize.DataTypes.INTEGER,
+            allowNull: true,
+            defaultValue: null,
+        },
+        endAt: {
+            type: Sequelize.DataTypes.INTEGER,
+            allowNull: true,
+            defaultValue: null,
+        },
     },
     {
         tableName: 'internships',
         sequelize: database,
         defaultScope: {
-            attributes: { exclude: ['businessId', 'categoryId'] },
+            attributes: { exclude: ['businessId', 'studentId', 'categoryId'] },
         },
     },
 );

@@ -25,6 +25,7 @@ Object {
   "email": "john.doe@enib.fr",
   "firstName": "John",
   "id": Any<Number>,
+  "internships": Array [],
   "lastName": "Doe",
   "semester": "S10",
   "updatedAt": Any<String>,

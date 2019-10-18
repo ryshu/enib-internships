@@ -10,10 +10,12 @@ Object {
       "country": "France",
       "createdAt": Any<String>,
       "description": "Stage",
+      "endAt": 20191012,
       "id": 1,
       "isInternshipAbroad": true,
       "isValidated": false,
       "postalCode": "29280",
+      "startAt": 20191012,
       "subject": "test",
       "updatedAt": Any<String>,
     },
@@ -34,10 +36,13 @@ Object {
   "country": "France",
   "createdAt": Any<String>,
   "description": "Stage",
+  "endAt": 20191012,
   "id": Any<Number>,
   "isInternshipAbroad": true,
   "isValidated": false,
   "postalCode": "29280",
+  "startAt": 20191012,
+  "student": null,
   "subject": "test",
   "updatedAt": Any<String>,
 }
@@ -53,6 +58,18 @@ Object {
   "id": 1,
   "name": "test",
   "postalCode": "29200",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`GET /internships/:id/students Internships_200_WithLinkedData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": 1,
+  "lastName": "Doe",
+  "semester": "S10",
   "updatedAt": Any<String>,
 }
 `;
@@ -73,10 +90,12 @@ Object {
   "country": "France",
   "createdAt": Any<String>,
   "description": "Stage",
+  "endAt": 20191012,
   "id": Any<Number>,
   "isInternshipAbroad": true,
   "isValidated": false,
   "postalCode": "29280",
+  "startAt": 20191012,
   "subject": "test",
   "updatedAt": Any<String>,
 }
@@ -105,6 +124,18 @@ Object {
 }
 `;
 
+exports[`POST /internships/:id/students/:student_id/link Internships_200_WithStudent 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": 2,
+  "lastName": "Doe",
+  "semester": "S10",
+  "updatedAt": Any<String>,
+}
+`;
+
 exports[`PUT /internships/:id Internships_200_NotAnyDataUpdated 1`] = `
 Object {
   "additional": null,
@@ -113,10 +144,12 @@ Object {
   "country": "France",
   "createdAt": Any<String>,
   "description": "Stage",
+  "endAt": 20191012,
   "id": Any<Number>,
   "isInternshipAbroad": true,
   "isValidated": false,
   "postalCode": "29280",
+  "startAt": 20191012,
   "subject": "test",
   "updatedAt": Any<String>,
 }
@@ -130,10 +163,12 @@ Object {
   "country": "France",
   "createdAt": Any<String>,
   "description": "Stage",
+  "endAt": 20191012,
   "id": Any<Number>,
   "isInternshipAbroad": true,
   "isValidated": false,
   "postalCode": "29280",
+  "startAt": 20191012,
   "subject": "test",
   "updatedAt": Any<String>,
 }

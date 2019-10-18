@@ -113,6 +113,9 @@
         <el-form-item :label="$t('table.campaigns.name')" prop="name">
           <el-input v-model="tempCampaignData.name" />
         </el-form-item>
+        <el-form-item :label="$t('table.campaigns.description')" prop="description">
+          <el-input v-model="tempCampaignData.description" />
+        </el-form-item>
         <el-form-item :label="$t('table.campaigns.startAt')" prop="startAt">
           <el-input v-model="tempCampaignData.startAt" />
         </el-form-item>
@@ -175,17 +178,7 @@ export default class extends Vue {
   private textMap = {};
   private dialogPageviewsVisible = false;
   private pageviewsData = [];
-  private rules = {
-    type: [{ required: true, message: 'type is required', trigger: 'change' }],
-    timestamp: [
-      {
-        required: true,
-        message: 'timestamp is required',
-        trigger: 'change',
-      },
-    ],
-    title: [{ required: true, message: 'title is required', trigger: 'blur' }],
-  };
+  private rules = {};
   private downloadLoading = false;
   private tempCampaignData = defaultCampaignData;
 

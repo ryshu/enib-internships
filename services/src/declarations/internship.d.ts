@@ -16,6 +16,10 @@ declare interface IInternshipEntity {
     isInternshipAbroad: boolean;
     isValidated: boolean;
 
+    // Date
+    startAt: number;
+    endAt: number;
+
     createdAt?: Date;
     updatedAt?: Date;
 }

@@ -34,10 +34,12 @@ script:
   # Webapp
   - npm run lint:app
   - npm run test:unit:app
+  - npm run build:app
 
   # Services
   - npm run lint:services
   - npm run test:unit:services
+  - npm run build:services
 
   # Codecov
   - npm install codecov -g

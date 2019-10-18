@@ -1,12 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
+import moment from 'moment';
 
 import Internships from '../../models/Internships';
 import Businesses from '../../models/Businesses';
+import InternshipTypes from '../../models/InternshipTypes';
+import Students from '../../models/Students';
 
 import { paginate } from '../helpers/pagination.helper';
-import InternshipTypes from '../../models/InternshipTypes';
+
 import {
     UNPROCESSABLE_ENTITY,
     checkArrayContent,
@@ -67,6 +70,8 @@ export const postInternship = (req: Request, res: Response, next: NextFunction):
         additional: req.body.additional,
         isInternshipAbroad: req.body.isInternshipAbroad ? true : false,
         isValidated: req.body.isValidated ? true : false,
+        startAt: !req.body.startAt ? null : moment(req.body.startAt).valueOf(),
+        endAt: !req.body.endAt ? null : moment(req.body.endAt).valueOf(),
     };
 
     Internships.create(internship)
@@ -89,6 +94,7 @@ export const getInternship = (req: Request, res: Response, next: NextFunction): 
         include: [
             { model: Businesses, as: 'business' },
             { model: InternshipTypes, as: 'category' },
+            { model: Students, as: 'student' },
         ],
     })
         .then((val) => {
@@ -142,6 +148,18 @@ export const putInternship = (req: Request, res: Response, next: NextFunction): 
             }
             if (req.body.isValidated !== undefined) {
                 internships.set('isValidated', req.body.isValidated ? true : false);
+            }
+            if (req.body.startAt !== undefined) {
+                internships.set(
+                    'startAt',
+                    req.body.startAt === 0 ? null : moment(req.body.startAt).valueOf(),
+                );
+            }
+            if (req.body.endAt !== undefined) {
+                internships.set(
+                    'endAt',
+                    req.body.endAt === 0 ? null : moment(req.body.endAt).valueOf(),
+                );
             }
 
             return internships.save();
@@ -264,6 +282,47 @@ export const linkInternshipInternshipTypes = (
                 } catch (error) {
                     checkContent(null, next);
                 }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /internship/:id/student
+ * Used to select a internship by ID and return his student
+ */
+export const getInternshipStudent = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Internships.findByPk(req.params.id, { include: [{ model: Students, as: 'student' }] })
+        .then((val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.student);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /internships/:id/student/:students_id/link
+ * Used to link internship to a student
+ */
+export const linkInternshipStudents = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Students.findByPk(req.params.student_id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                await val.addInternship(Number(req.params.id));
+                return res.sendStatus(httpStatus.OK);
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
