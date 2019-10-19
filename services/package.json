@@ -54,7 +54,7 @@
     "@types/express-flash": "0.0.1",
     "@types/express-session": "^1.15.12",
     "@types/express-validator": "^3.0.0",
-    "@types/faker": "^4.1.5",
+    "@types/faker": "^4.1.6",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.144",
     "@types/lusca": "^1.5.0",
