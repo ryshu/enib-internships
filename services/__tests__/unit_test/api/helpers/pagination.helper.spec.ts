@@ -13,7 +13,6 @@ describe('paginate', () => {
         expect(paginate({ page: 13, limit: 7 })).toEqual({
             limit: 7,
             offset: 84,
-            where: {},
         });
     });
 });

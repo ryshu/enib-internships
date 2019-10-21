@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
+import sequelize from 'sequelize';
 
 import Businesses from '../../models/Businesses';
 import Internships from '../../models/Internships';
@@ -25,12 +26,46 @@ export const getBusinesses = (req: Request, res: Response, next: NextFunction): 
     }
 
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, countries, name } = req.query;
+
+    // Build query options
+    const findOpts: sequelize.FindOptions = {
+        attributes: {
+            include: [[sequelize.fn('count', sequelize.col(`internships.businessId`)), 'count']],
+        },
+        include: [
+            {
+                model: Internships,
+                as: 'internships',
+                attributes: [],
+                duplicating: false,
+            },
+        ],
+        where: {},
+        group: [sequelize.col(`Businesses.id`)],
+    };
+
+    // Build count query options
+    const countOpts: sequelize.FindOptions = { where: {} };
+
+    if (countries) {
+        // If country list is given, add it to query
+        // Sequelize will translate it by "country in countries"
+        (findOpts.where as any).country = countries;
+        (countOpts.where as any).country = countries;
+    }
+
+    if (name) {
+        // If name filter is given, apply it using substring
+        (findOpts.where as any).name = { [sequelize.Op.substring]: name };
+        (countOpts.where as any).name = { [sequelize.Op.substring]: name };
+    }
+
     let max: number;
-    Businesses.count()
+    Businesses.count(countOpts)
         .then((rowNbr) => {
             max = rowNbr;
-            return Businesses.findAll(paginate({ page, limit }));
+            return Businesses.findAll(paginate({ page, limit }, findOpts));
         })
         .then(async (businesses) => {
             if (checkArrayContent(businesses, next)) {

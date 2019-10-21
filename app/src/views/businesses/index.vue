@@ -3,12 +3,23 @@
     <!-- Filter -->
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.name"
         :placeholder="$t('table.businesses.name')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
+      <el-select
+        v-model="listQuery.countries"
+        filterable
+        multiple
+        collapse-tags
+        @change="handleFilter"
+        style="width: 200px; margin-left: 10px;"
+        class="filter-item"
+      >
+        <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
+      </el-select>
       <el-button
         v-waves
         style="margin-left: 10px;"
@@ -72,6 +83,12 @@
       >
         <template slot-scope="{ row }">
           <el-button
+            type="success"
+            size="small"
+            icon="el-icon-search"
+            @click="handleUpdate(row)"
+          >{{ $t('table.detail') }}</el-button>
+          <el-button
             type="primary"
             size="small"
             icon="el-icon-edit"
@@ -95,49 +112,16 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="tempBusinessData"
-        label-position="left"
-        label-width="250px"
-        style="width: 100%; padding: 0 50px;"
-      >
-        <el-form-item :label="$t('table.businesses.name')" prop="name">
-          <el-input v-model="tempBusinessData.name" />
-        </el-form-item>
-        <el-form-item :label="$t('table.businesses.country')" prop="country">
-          <el-input v-model="tempBusinessData.country" />
-        </el-form-item>
-        <el-form-item :label="$t('table.businesses.city')" prop="city">
-          <el-input v-model="tempBusinessData.city" />
-        </el-form-item>
-        <el-form-item :label="$t('table.businesses.postalCode')" prop="postalCode">
-          <el-input v-model="tempBusinessData.postalCode" />
-        </el-form-item>
-        <el-form-item :label="$t('table.businesses.address')" prop="address">
-          <el-input v-model="tempBusinessData.address" />
-        </el-form-item>
-        <el-form-item :label="$t('table.businesses.additional')" prop="additional">
-          <el-input v-model="tempBusinessData.additional" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus === 'create' ? createData() : updateData()"
-        >{{ $t('table.confirm') }}</el-button>
-      </div>
-    </el-dialog>
+    <edit-business ref="EditBusiness" />
   </div>
 </template>
 
 <script lang="ts">
+import countryList from 'country-list';
 import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
 import { cloneDeep } from 'lodash';
+
 import {
   getBusinesses,
   createBusiness,
@@ -146,14 +130,18 @@ import {
   defaultBusinessData,
 } from '../../api/businesses';
 import { IBusiness } from '../../api/types';
+
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
+
 import Pagination from '../../components/Pagination/index.vue';
+import EditBusiness from './dialog/EditBusiness.vue';
 
 @Component({
   name: 'Businesses',
   components: {
     Pagination,
+    EditBusiness,
   },
 })
 export default class extends Vue {
@@ -164,23 +152,16 @@ export default class extends Vue {
   private listQuery = {
     page: 1,
     limit: 10,
-    title: undefined,
+    name: undefined,
+    countries: [],
+    withInternships: false,
   };
-  private showReviewer = false;
-  private dialogFormVisible = false;
-  private dialogStatus = '';
-  private textMap = {};
-  private dialogPageviewsVisible = false;
-  private pageviewsData = [];
-  private rules = {};
   private downloadLoading = false;
   private tempBusinessData = defaultBusinessData;
 
+  private countryList = countryList.getNames();
+
   public created() {
-    this.textMap = {
-      update: this.$t('dialog.title.edit'),
-      create: this.$t('dialog.title.create'),
-    };
     this.getList();
   }
 
@@ -208,59 +189,38 @@ export default class extends Vue {
     });
   }
 
-  private resetTempBusinessData() {
-    this.tempBusinessData = cloneDeep(defaultBusinessData);
-  }
-
   private handleCreate() {
-    this.resetTempBusinessData();
-    this.dialogStatus = 'create';
-    this.dialogFormVisible = true;
-    this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
-    });
-  }
-
-  private createData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
-      if (valid) {
-        await createBusiness(this.tempBusinessData);
-        this.getList();
-        this.dialogFormVisible = false;
-        this.$notify({
-          title: this.$t('notify.businesses.create.title') as string,
-          message: this.$t('notify.businesses.create.msg') as string,
-          type: 'success',
-          duration: 2000,
-        });
-      }
-    });
+    (this.$refs.EditBusiness as EditBusiness)
+      .create()
+      .then(async (createdRow: IBusiness | undefined) => {
+        if (createdRow) {
+          await createBusiness(createdRow);
+          this.getList();
+          this.$notify({
+            title: this.$t('notify.businesses.create.title') as string,
+            message: this.$t('notify.businesses.create.msg') as string,
+            type: 'success',
+            duration: 2000,
+          });
+        }
+      });
   }
 
   private handleUpdate(row: any) {
-    this.tempBusinessData = Object.assign({}, row);
-    this.dialogStatus = 'update';
-    this.dialogFormVisible = true;
-    this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
-    });
-  }
-
-  private updateData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
-      if (valid) {
-        const tempData = Object.assign({}, this.tempBusinessData);
-        const { data } = await updateBusiness(tempData.id!, tempData);
-        this.getList();
-        this.dialogFormVisible = false;
-        this.$notify({
-          title: this.$t('notify.businesses.update.title') as string,
-          message: this.$t('notify.businesses.update.msg') as string,
-          type: 'success',
-          duration: 2000,
-        });
-      }
-    });
+    (this.$refs.EditBusiness as EditBusiness)
+      .update(row)
+      .then(async (updatedRow: IBusiness | undefined) => {
+        if (updatedRow) {
+          const { data } = await updateBusiness(updatedRow.id!, updatedRow);
+          this.getList();
+          this.$notify({
+            title: this.$t('notify.businesses.update.title') as string,
+            message: this.$t('notify.businesses.update.msg') as string,
+            type: 'success',
+            duration: 2000,
+          });
+        }
+      });
   }
 
   private handleDownload() {
@@ -291,3 +251,9 @@ export default class extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+.el-form-item .el-select {
+  width: 100%;
+}
+</style>

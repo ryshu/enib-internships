@@ -27,6 +27,25 @@ export default {
     },
     subject: 'Sujet',
   },
+  form: {
+    businesses: {
+      address: {
+        required: "L'adresse de l'entreprise est requise",
+      },
+      city: {
+        required: "La ville de l'entreprise est requise",
+      },
+      country: {
+        required: "Le pays de l'entreprise est requis",
+      },
+      name: {
+        required: "Le nom de l'entreprise est requis",
+      },
+      postalCode: {
+        required: "Le code postal de l'entreprise est requis",
+      },
+    },
+  },
   login: {
     any: 'any',
     logIn: 'Connexion',
@@ -104,12 +123,16 @@ export default {
   },
   route: {
     businesses: 'Entreprises',
+    campaigns: 'Campagnes',
     dashboard: 'Tableau de bord',
     internships: 'Stages',
-    campaigns: 'Campagnes',
     page404: '404',
     profile: 'Profile',
     students: 'Etudiants',
+  },
+  status: {
+    no: 'Non',
+    yes: 'Oui',
   },
   table: {
     actions: 'Actions',
@@ -121,16 +144,25 @@ export default {
       country: 'Pays',
       name: "Nom de l'entreprise",
       postalCode: 'Code postal',
+      withInternships: "N'afficher que les enteprises avec stages",
+    },
+    campaigns: {
+      description: 'Descriptif de la campagne',
+      endAt: 'Fin',
+      maxProposition: 'Nombre maximum de propositions',
+      name: 'Nom de la campagne',
+      semester: 'Semestre',
+      startAt: 'Début',
     },
     cancel: 'Annuler',
     confirm: 'Confirmer',
+    create: 'Créer',
     date: 'Date',
     delete: 'Supprimer',
     edit: 'Modifier',
     export: 'Exporter',
+    detail: 'Détail',
     id: 'ID',
-    update: 'Modifier',
-    create: 'Créer',
     internships: {
       additional: 'Informations complémentaire',
       address: 'Addresse',
@@ -142,14 +174,6 @@ export default {
       postalCode: 'Code postal',
       subject: 'Sujets',
     },
-    campaigns: {
-      name: 'Nom de la campagne',
-      description: 'Descriptif de la campagne',
-      semester: 'Semestre',
-      maxProposition: 'Nombre maximum de propositions',
-      startAt: 'Début',
-      endAt: 'Fin',
-    },
     publish: 'Publier',
     search: 'Recherche',
     status: 'Status',
@@ -160,10 +184,7 @@ export default {
       semester: 'Semester',
     },
     title: 'Titre',
+    update: 'Modifier',
   },
   title: 'Gestionnaire de stage',
-  status: {
-    yes: 'Oui',
-    no: 'Non',
-  },
 };
