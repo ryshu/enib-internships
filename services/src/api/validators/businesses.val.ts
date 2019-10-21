@@ -4,6 +4,19 @@ import { paginateValidator } from './generic.val';
 
 export const BusinessesList: Schema = {
     ...paginateValidator,
+    countries: {
+        in: ['query'],
+        isArray: { errorMessage: 'Country filter list must be array' },
+        optional: true,
+        toArray: true,
+    },
+    name: {
+        in: ['query'],
+        isString: { errorMessage: 'Name filter must be of type string' },
+        optional: true,
+        trim: true,
+        escape: true,
+    },
 };
 
 export const BusinessCreate: Schema = {
