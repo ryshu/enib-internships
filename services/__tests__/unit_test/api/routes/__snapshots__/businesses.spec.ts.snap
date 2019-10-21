@@ -7,6 +7,7 @@ Object {
       "additional": null,
       "address": "TEST",
       "city": "Brest",
+      "count": 0,
       "country": "France",
       "createdAt": Any<String>,
       "id": 1,
