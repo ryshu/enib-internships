@@ -29,7 +29,7 @@ Mentors.init(
             type: new DataTypes.STRING(128),
             allowNull: false,
         },
-        emailName: {
+        email: {
             type: new DataTypes.STRING(128),
             allowNull: false,
         },
