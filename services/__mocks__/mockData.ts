@@ -52,6 +52,15 @@ export function defaultStudents() {
     return VALID_STUDENT;
 }
 
+export function defaultMentors() {
+    const VALID_MENTOR: IMentorEntity = {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@enib.fr',
+    };
+    return VALID_MENTOR;
+}
+
 export function defaultCampaigns(): ICampaignEntity {
     return {
         name: 'test',
