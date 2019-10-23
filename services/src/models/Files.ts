@@ -18,7 +18,7 @@ class Files extends Sequelize.Model implements IFileEntity {
     public readonly updatedAt!: Date;
 
     public getInternship: Sequelize.BelongsToGetAssociationMixin<Internships>;
-    public addInternship: Sequelize.BelongsToSetAssociationMixin<Internships, Internships['id']>;
+    public setInternship: Sequelize.BelongsToSetAssociationMixin<Internships, Internships['id']>;
     public createInternship: Sequelize.BelongsToCreateAssociationMixin<IInternshipEntity>;
 
     public readonly internship?: Internships[];

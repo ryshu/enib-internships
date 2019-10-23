@@ -26,7 +26,7 @@ Students.hasMany(Internships, { as: 'internships', foreignKey: 'studentId', sour
 Internships.belongsTo(Students, { as: 'student', foreignKey: 'studentId', targetKey: 'id' });
 
 // One Internship to many Files
-Internships.hasMany(Files, { as: 'files', foreignKey: 'internshipId', sourceKey: 'id' });
-Files.belongsTo(Internships, { as: 'internship', foreignKey: 'internshipId', targetKey: 'id' });
+Internships.hasMany(Files, { as: 'files', foreignKey: 'internshipId' });
+Files.belongsTo(Internships, { as: 'internship', foreignKey: 'internshipId' });
 
 export default database.sync({ force: process.env.ORM_DROP_DB_ON_START === 'true' });
