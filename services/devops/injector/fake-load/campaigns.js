@@ -8,6 +8,7 @@ module.exports = async function(quantity = 100, debug = false) {
     for (let i = 0; i < quantity; i++) {
         const campaign = {
             name: faker.lorem.words(3),
+            description: faker.lorem.lines(10),
             startAt: faker.random.number({ min: 1571347682, max: 1576618082 }),
             endAt: faker.random.number({ min: 1576618082, max: 1581974882 }),
             semester: faker.random.arrayElement([
