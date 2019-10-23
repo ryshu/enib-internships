@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import httpStatus from 'http-status-codes';
 
 // Import files ORM class
 import Files from '../../models/Files';
-import httpStatus from 'http-status-codes';
+import Internships from '../../models/Internships';
 
 // Factorization methods to handle errors
 import {
@@ -81,7 +82,7 @@ export const getFile = (req: Request, res: Response, next: NextFunction): void =
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Files.findByPk(req.params.id)
+    Files.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
         .then((val) => {
             // Check if we have content, and if so return it
             if (checkContent(val, next)) {
@@ -146,4 +147,44 @@ export const deleteFile = (req: Request, res: Response, next: NextFunction): voi
         .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected file
         .then(() => res.sendStatus(httpStatus.OK)) // Return OK status
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+};
+/**
+ * GET /file/:id/intership
+ * Used to select a file by ID and return his internship
+ */
+export const getFileInternship = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Files.findByPk(req.params.id, { include: [{ model: Internships, as: 'internship' }] })
+        .then((val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.internship);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /files/:id/internship/:internship_id/link
+ * Used to get all files of a internship
+ */
+export const linkFilesInternship = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Files.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                await val.addInternship(Number(req.params.internship_id));
+                return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
