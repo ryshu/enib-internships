@@ -45,17 +45,17 @@
       style="width: 100%;"
     >
       <el-table-column :label="$t('table.mentors.firstName')" min-width="150px">
-        <template slot-scope="{row}">
+        <template slot-scope="{ row }">
           <span>{{ row.firstName }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.mentors.lastName')" min-width="150px">
-        <template slot-scope="{row}">
+        <template slot-scope="{ row }">
           <span>{{ row.lastName }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.mentors.email')" min-width="150px">
-        <template slot-scope="{row}">
+        <template slot-scope="{ row }">
           <span>{{ row.email }}</span>
         </template>
       </el-table-column>
@@ -65,7 +65,7 @@
         width="330"
         class-name="fixed-width"
       >
-        <template slot-scope="{row}">
+        <template slot-scope="{ row }">
           <el-button
             type="primary"
             size="small"
@@ -176,7 +176,7 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getMentors(this.listQuery).then(res => {
+    getMentors(this.listQuery).then((res: any) => {
       this.list = res ? res.data : [];
       this.total = res ? res.max : 0;
       this.listLoading = false;
@@ -215,7 +215,7 @@ export default class extends Vue {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
         const data = await createMentor(this.tempMentorData);
-        this.list.unshift(data);
+        this.getList();
         this.dialogFormVisible = false;
         this.$notify({
           title: this.$t('notify.mentors.create.title') as string,
