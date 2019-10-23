@@ -8,8 +8,9 @@ import dbSetup from '../../../../src/configs/setup/database';
 
 // Import model for pre-operation before asserting API methods
 import Files from '../../../../src/models/Files';
+import Internships from '../../../../src/models/Internships';
 
-import { defaultFiles } from '../../../../__mocks__/mockData';
+import { defaultFiles, defaultInternships } from '../../../../__mocks__/mockData';
 
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
@@ -199,5 +200,124 @@ describe('DELETE /files/:id', () => {
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}`,
         );
         expect(RESPONSE.status).toBe(200);
+    });
+});
+
+describe('GET /files/:id/internships', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Files.destroy({ where: {} });
+    });
+
+    it('NoInternship_204', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/10/internships`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/{falseEncoding}/internships`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Files_200_NoLinkedData', async () => {
+        const VALID_FILE = defaultFiles();
+
+        const CREATED = await Files.create(VALID_FILE);
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}/internships`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toEqual({});
+    });
+
+    it('Files_200_WithLinkedData', async () => {
+        const VALID_FILE = defaultFiles();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+        let CREATED_FILE = await Files.create(VALID_FILE);
+
+        await CREATED_FILE.setInternship(CREATED_INTERNSHIP.id);
+        CREATED_FILE = await Files.findByPk(CREATED_FILE.id);
+
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED_FILE.id}/internships`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+        });
+    });
+});
+
+describe('POST /files/:id/internships/:internship_id/link', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Files.destroy({ where: {} });
+    });
+
+    it('NoInternship_204', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/10/internships/20/link`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400_WrongID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/{falseEncoding}/internships/10/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('BadRequest_400_WrongBusinessID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/10/internships/{falseEncoding}/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Files_204_NoBusiness', async () => {
+        // In this case, we check if link a existing files and an unexisting internships work
+        const VALID_FILE = defaultFiles();
+
+        const CREATED = await Files.create(VALID_FILE);
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}/internships/20/link`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('Files_200_WithBusiness', async () => {
+        const VALID_INTERNSHIP = defaultInternships();
+        const VALID_FILE = defaultFiles();
+
+        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+        let CREATED_FILE = await Files.create(VALID_FILE);
+
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED_FILE.id}/internships/${CREATED_INTERNSHIP.id}/link`,
+        );
+
+        // Should answer 200
+        expect(RESPONSE.status).toBe(200);
+
+        // check if category and internship are linked
+        CREATED_FILE = await Files.findByPk(CREATED_FILE.id, {
+            include: [{ model: Internships, as: 'internship' }],
+        });
+
+        const data = JSON.parse(JSON.stringify(CREATED_FILE.internship)) as any;
+
+        expect(CREATED_FILE.internship).toBeTruthy();
+        expect(data).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+        });
     });
 });
