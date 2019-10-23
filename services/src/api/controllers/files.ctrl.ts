@@ -149,7 +149,7 @@ export const deleteFile = (req: Request, res: Response, next: NextFunction): voi
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
 /**
- * GET /file/:id/intership
+ * GET /files/:id/interships
  * Used to select a file by ID and return his internship
  */
 export const getFileInternship = (req: Request, res: Response, next: NextFunction): void => {
@@ -169,7 +169,7 @@ export const getFileInternship = (req: Request, res: Response, next: NextFunctio
 };
 
 /**
- * POST /files/:id/internship/:internship_id/link
+ * POST /files/:id/internships/:internship_id/link
  * Used to get all files of a internship
  */
 export const linkFilesInternship = (req: Request, res: Response, next: NextFunction): void => {
@@ -182,8 +182,12 @@ export const linkFilesInternship = (req: Request, res: Response, next: NextFunct
     Files.findByPk(req.params.id)
         .then(async (val) => {
             if (checkContent(val, next)) {
-                await val.addInternship(Number(req.params.internship_id));
-                return res.sendStatus(httpStatus.OK);
+                try {
+                    await val.setInternship(Number(req.params.internship_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
