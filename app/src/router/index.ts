@@ -160,6 +160,22 @@ export const constantRoutes: RouteConfig[] = [
       },
     ],
   },
+  {
+    path: '/mentors',
+    component: Layout,
+    children: [
+      {
+        path: 'mentors',
+        component: () =>
+          import(
+            /* webpackChunkName: "mentors" */ '@/views/mentors/index.vue'
+          ),
+        name: 'Mentors',
+        meta: { title: 'mentors', icon: 'shopping', affix: true },
+      },
+    ],
+  },
+
 ];
 
 /**
