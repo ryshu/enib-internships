@@ -51,6 +51,9 @@ Files.init(
     {
         tableName: 'files',
         sequelize: database,
+        defaultScope: {
+            attributes: { exclude: ['internshipId'] },
+        },
     },
 );
 

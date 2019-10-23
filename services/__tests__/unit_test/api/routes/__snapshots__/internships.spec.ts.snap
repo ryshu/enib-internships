@@ -37,6 +37,7 @@ Object {
   "createdAt": Any<String>,
   "description": "Stage",
   "endAt": 20191012,
+  "files": Array [],
   "id": Any<Number>,
   "isInternshipAbroad": true,
   "isValidated": false,
@@ -62,6 +63,15 @@ Object {
 }
 `;
 
+exports[`GET /internships/:id/internshipTypes Internships_200_WithLinkedData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": 1,
+  "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
 exports[`GET /internships/:id/students Internships_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
@@ -70,15 +80,6 @@ Object {
   "id": 1,
   "lastName": "Doe",
   "semester": "S10",
-  "updatedAt": Any<String>,
-}
-`;
-
-exports[`GET /internships/:id/internshipTypes Internships_200_WithLinkedData 1`] = `
-Object {
-  "createdAt": Any<String>,
-  "id": 1,
-  "label": "test",
   "updatedAt": Any<String>,
 }
 `;

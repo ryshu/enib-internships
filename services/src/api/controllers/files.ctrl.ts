@@ -82,7 +82,7 @@ export const getFile = (req: Request, res: Response, next: NextFunction): void =
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Files.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
+    Files.findByPk(req.params.id, { include: [{ model: Internships, as: 'internship' }] })
         .then((val) => {
             // Check if we have content, and if so return it
             if (checkContent(val, next)) {

@@ -23,6 +23,7 @@ exports[`GET /files/:id Files_200 1`] = `
 Object {
   "createdAt": Any<String>,
   "id": Any<Number>,
+  "internship": null,
   "name": "fichier",
   "path": "S10",
   "size": 150,
