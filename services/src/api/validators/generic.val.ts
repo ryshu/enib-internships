@@ -28,6 +28,7 @@ export const MentoringPropositionID: Schema = namedID(
     'mentoring_proposition_id',
     'Mentoring proposition identifier',
 );
+export const FileID: Schema = namedID('file_id', 'File identifier');
 
 export const paginateValidator: Schema = {
     page: {

@@ -1,7 +1,7 @@
 import * as Sequelize from 'sequelize';
 
 import database from '../configs/instances/database';
-
+import Files from './Files';
 import Businesses from './Businesses';
 import InternshipTypes from './InternshipTypes';
 import Students from './Students';
@@ -11,6 +11,7 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
         category: Sequelize.Association<Internships, InternshipTypes>;
         business: Sequelize.Association<Internships, Businesses>;
         student: Sequelize.Association<Internships, Students>;
+        files: Sequelize.Association<Internships, Files>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -54,9 +55,16 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public setStudent: Sequelize.BelongsToSetAssociationMixin<Students, Students['id']>;
     public createStudent: Sequelize.BelongsToCreateAssociationMixin<IStudentEntity>;
 
+    // Files
+    public getFiles: Sequelize.HasManyGetAssociationsMixin<Files>;
+    public addFile: Sequelize.HasManyAddAssociationMixin<Files, Files['id']>;
+    public createFile: Sequelize.HasManyCreateAssociationMixin<IFileEntity>;
+    public hasFile: Sequelize.HasManyHasAssociationMixin<Files, Files['id']>;
+
     public readonly business?: Businesses | Businesses['id'];
     public readonly category?: InternshipTypes | InternshipTypes['id'];
     public readonly student?: Students | Students['id'];
+    public readonly files?: Files[];
 }
 
 Internships.init(
