@@ -3,8 +3,9 @@ import { checkSchema } from 'express-validator';
 
 import * as InternshipsCtrl from '../controllers/internships.ctrl';
 
-import { ID, BusinessID, StudentID, InternshipTypeID } from '../validators/generic.val';
+import { ID, BusinessID, StudentID, InternshipTypeID, CampaignID } from '../validators/generic.val';
 import { InternshipUpdate, InternshipCreate, InternshipsList } from '../validators/internships.val';
+import Internships from '../../models/Internships';
 
 const router = express.Router();
 
@@ -41,6 +42,22 @@ router.post(
     '/:id/students/:student_id/link',
     checkSchema(Object.assign({}, ID, StudentID)),
     InternshipsCtrl.linkInternshipStudents,
+);
+
+// Available Campaigns
+router.get('/:id/availableCampaign', checkSchema(ID), InternshipsCtrl.geAvailabletInternshipCampaign);
+router.post(
+    '/:id/availableCampaign/:campaign_id/link',
+    checkSchema(Object.assign({}, ID, CampaignID)),
+    InternshipsCtrl.linkAvailableCampaignInternships,
+);
+
+// Validated Campaigns
+router.get('/:id/validatedCampaign', checkSchema(ID), InternshipsCtrl.geValidatedInternshipCampaign);
+router.post(
+    '/:id/validatedCampaign/:campaign_id/link',
+    checkSchema(Object.assign({}, ID, CampaignID)),
+    InternshipsCtrl.linkValidatedCampaignInternships,
 );
 
 export default router;

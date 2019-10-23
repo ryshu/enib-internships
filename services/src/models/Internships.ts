@@ -5,12 +5,16 @@ import database from '../configs/instances/database';
 import Businesses from './Businesses';
 import InternshipTypes from './InternshipTypes';
 import Students from './Students';
+import Campaigns from './Campaigns';
+import { getCampaign } from '../api/controllers/campaigns.ctrl';
 
 class Internships extends Sequelize.Model implements IInternshipEntity {
     public static associations: {
         category: Sequelize.Association<Internships, InternshipTypes>;
         business: Sequelize.Association<Internships, Businesses>;
         student: Sequelize.Association<Internships, Students>;
+        validatedCampaign: Sequelize.Association<Internships, Campaigns>;
+        availableCampaign: Sequelize.Association<Internships, Campaigns>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -54,9 +58,21 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public setStudent: Sequelize.BelongsToSetAssociationMixin<Students, Students['id']>;
     public createStudent: Sequelize.BelongsToCreateAssociationMixin<IStudentEntity>;
 
+    // AvailableCampaigns
+    public getAvailableCampaign: Sequelize.BelongsToGetAssociationMixin<Campaigns>;
+    public setAvailableCampaign: Sequelize.BelongsToSetAssociationMixin<Campaigns, Campaigns['id']>;
+    public createAvailableCampaign: Sequelize.BelongsToCreateAssociationMixin<ICampaignEntity>;
+
+    // ValidatedCampaigns
+    public getValidatedCampaign: Sequelize.BelongsToGetAssociationMixin<Campaigns>;
+    public setValidatedCampaign: Sequelize.BelongsToSetAssociationMixin<Campaigns, Campaigns['id']>;
+    public createValidatedCampaign: Sequelize.BelongsToCreateAssociationMixin<ICampaignEntity>;
+
     public readonly business?: Businesses | Businesses['id'];
     public readonly category?: InternshipTypes | InternshipTypes['id'];
     public readonly student?: Students | Students['id'];
+    public readonly availableCampaign?: Campaigns | Campaigns['id'];
+    public readonly validatedCampaign?: Campaigns | Campaigns['id'];
 }
 
 Internships.init(

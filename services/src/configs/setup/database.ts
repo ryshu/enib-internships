@@ -25,4 +25,12 @@ MentoringPropositions.belongsTo(Campaigns, { as: 'campaign', foreignKey: 'campai
 Students.hasMany(Internships, { as: 'internships', foreignKey: 'studentId', sourceKey: 'id' });
 Internships.belongsTo(Students, { as: 'student', foreignKey: 'studentId', targetKey: 'id' });
 
+// One Validated Campaign to many Internships
+Campaigns.hasMany(Internships, { as: 'validatedInternships', foreignKey: 'validatedCampaignId' });
+Internships.belongsTo(Campaigns, { as: 'validatedCampaign', foreignKey: 'validatedCampaignId' });
+
+// One Available Campaign to many Internships
+Campaigns.hasMany(Internships, { as: 'availableInternships', foreignKey: 'availableCampaignId' });
+Internships.belongsTo(Campaigns, { as: 'availableCampaign', foreignKey: 'availableCampaignId'});
+
 export default database.sync({ force: process.env.ORM_DROP_DB_ON_START === 'true' });

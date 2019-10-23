@@ -9,6 +9,7 @@ import InternshipTypes from '../../models/InternshipTypes';
 import Students from '../../models/Students';
 
 import { paginate } from '../helpers/pagination.helper';
+import Campaigns from '../../models/Campaigns';
 
 import {
     UNPROCESSABLE_ENTITY,
@@ -326,4 +327,86 @@ export const linkInternshipStudents = (req: Request, res: Response, next: NextFu
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /internship/:id/availableCampaign
+ * Used to select a internship by ID and return his availableCampaign
+ */
+export const geAvailabletInternshipCampaign = (req: Request, res: Response, next: NextFunction): void => {
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
+
+  Internships.findByPk(req.params.id, { include: [{ model: Campaigns, as: 'availableCampaign' }] })
+      .then((val) => {
+          if (checkContent(val, next)) {
+              return res.send(val.availableCampaign);
+          }
+      })
+      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /internships/:id/campaign/:campaign_id/link
+ * Used to link internship to a campaign
+ */
+export const linkAvailableCampaignInternships = (req: Request, res: Response, next: NextFunction): void => {
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
+
+  Campaigns.findByPk(req.params.campaign_id)
+      .then(async (val) => {
+          if (checkContent(val, next)) {
+              await val.addAvailableInternship(Number(req.params.id));
+              return res.sendStatus(httpStatus.OK);
+          }
+      })
+      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /internship/:id/campaign
+ * Used to select a internship by ID and return his validatedCampaign
+ */
+export const geValidatedInternshipCampaign = (req: Request, res: Response, next: NextFunction): void => {
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
+
+  Internships.findByPk(req.params.id, { include: [{ model: Campaigns, as: 'validatedCampaign' }] })
+      .then((val) => {
+          if (checkContent(val, next)) {
+              return res.send(val.validatedCampaign);
+          }
+      })
+      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /internships/:id/validatedCampaign/:validatedCampaign_id/link
+ * Used to link internship to a validatedCampaign
+ */
+export const linkValidatedCampaignInternships = (req: Request, res: Response, next: NextFunction): void => {
+  // @see validator + router
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return BAD_REQUEST_VALIDATOR(next, errors);
+  }
+
+  Campaigns.findByPk(req.params.campaign_id)
+      .then(async (val) => {
+          if (checkContent(val, next)) {
+              await val.addValidatedInternship(Number(req.params.id));
+              return res.sendStatus(httpStatus.OK);
+          }
+      })
+      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

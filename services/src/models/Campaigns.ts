@@ -3,10 +3,13 @@ import * as Sequelize from 'sequelize';
 import database from '../configs/instances/database';
 
 import MPS from './MentoringPropositions';
+import Internships from './Internships';
 
 class Campaigns extends Sequelize.Model implements ICampaignEntity {
     public static associations: {
         propositions: Sequelize.Association<Campaigns, MPS>;
+        availbleInternships: Sequelize.Association<Campaigns, Internships>;
+        validatedInternships: Sequelize.Association<Campaigns, Internships>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -28,7 +31,23 @@ class Campaigns extends Sequelize.Model implements ICampaignEntity {
     public hasProposition: Sequelize.HasManyHasAssociationMixin<MPS, MPS['id']>;
     public countPropositions: Sequelize.HasManyCountAssociationsMixin;
 
+    // AvailableInternships
+    public getAvailableInternships: Sequelize.HasManyGetAssociationsMixin<Internships>;
+    public addAvailableInternship: Sequelize.HasManyAddAssociationMixin<Internships, Internships['id']>;
+    public createAvailableInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
+    public hasAvailableInternship: Sequelize.HasManyHasAssociationMixin<Internships, Internships['id']>;
+    public countAvailableInternships: Sequelize.HasManyCountAssociationsMixin;
+
+    // ValidatedInternships
+    public getValidatedInternships: Sequelize.HasManyGetAssociationsMixin<Internships>;
+    public addValidatedInternship: Sequelize.HasManyAddAssociationMixin<Internships, Internships['id']>;
+    public createValidatedInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
+    public hasValidatedInternship: Sequelize.HasManyHasAssociationMixin<Internships, Internships['id']>;
+    public countValidatedInternships: Sequelize.HasManyCountAssociationsMixin;
+
     public readonly propositions?: MPS[];
+    public readonly availableInternships?: Internships[];
+    public readonly validatedInternships?: Internships[];
 }
 
 Campaigns.init(
