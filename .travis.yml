@@ -39,6 +39,8 @@ script:
   # Services
   - npm run lint:services
   - npm run test:unit:services
+
+  - cp /services/.env.example /services/.env
   - npm run build:services
 
   # Codecov
