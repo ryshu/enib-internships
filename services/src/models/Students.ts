@@ -1,8 +1,13 @@
-import { Model, DataTypes } from 'sequelize';
+import * as Sequelize from 'sequelize';
 
 import database from '../configs/instances/database';
 
-class Students extends Model implements IStudentEntity {
+import Internships from './Internships';
+class Students extends Sequelize.Model implements IStudentEntity {
+    public static associations: {
+        student: Sequelize.Association<Students, Internships>;
+    };
+
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
 
     public firstName: string;
@@ -13,29 +18,38 @@ class Students extends Model implements IStudentEntity {
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+
+    public getInternships: Sequelize.HasManyGetAssociationsMixin<Internships>;
+    public addInternship: Sequelize.HasManyAddAssociationMixin<Internships, Internships['id']>;
+    public createInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
+    public hasInternship: Sequelize.HasManyHasAssociationMixin<Internships, Internships['id']>;
+    public countInternships: Sequelize.HasManyCountAssociationsMixin;
+
+    public readonly internships?: Internships[];
+    public internshipCount: number;
 }
 
 Students.init(
     {
         id: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true,
         },
         firstName: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
         },
         lastName: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
         },
         email: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
         },
         semester: {
-            type: new DataTypes.STRING(3),
+            type: new Sequelize.DataTypes.STRING(3),
             allowNull: false,
         },
     },

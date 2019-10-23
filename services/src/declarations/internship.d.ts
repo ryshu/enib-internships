@@ -13,8 +13,12 @@ declare interface IInternshipEntity {
     additional?: string;
 
     // State
-    isLanguageCourse: boolean;
+    isInternshipAbroad: boolean;
     isValidated: boolean;
+
+    // Date
+    startAt: number;
+    endAt: number;
 
     createdAt?: Date;
     updatedAt?: Date;

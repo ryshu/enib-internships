@@ -1,6 +1,6 @@
 module.exports = {
     title: 'Internships manager',
-    tagline: 'Application to manage ENIB interships system',
+    tagline: 'Application to manage ENIB internships system',
     url: 'https://ryshu.github.io',
     baseUrl: '/enib-internships/',
 

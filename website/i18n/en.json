@@ -3,13 +3,28 @@
   "localized-strings": {
     "next": "Next",
     "previous": "Previous",
-    "tagline": "Application to manage ENIB interships system",
+    "tagline": "Application to manage ENIB internships system",
     "docs": {
       "api-businesses": {
         "title": "Businesses"
       },
+      "api-campaigns": {
+        "title": "Campaigns"
+      },
+      "api-files": {
+        "title": "Files"
+      },
       "api-index": {
         "title": "Internships manager API"
+      },
+      "api-internship-types": {
+        "title": "InternshipTypes"
+      },
+      "api-internships": {
+        "title": "Internships"
+      },
+      "api-mentoring-propostions": {
+        "title": "Mentoring propositions"
       },
       "api-students": {
         "title": "Students"
@@ -23,8 +38,14 @@
       "docs-install": {
         "title": "Installation"
       },
+      "docs-settings": {
+        "title": "Settings"
+      },
       "tuto-mentors": {
         "title": "Setup mentors"
+      },
+      "tuto-setup-associations": {
+        "title": "Setup associations"
       },
       "tuto-students": {
         "title": "Setup students"

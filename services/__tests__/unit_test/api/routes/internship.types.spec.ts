@@ -1,0 +1,302 @@
+import request from 'supertest';
+
+// Include app for super agent, not server
+import app from '../../../../src/app';
+
+// Include database connection
+import dbSetup from '../../../../src/configs/setup/database';
+
+// Import model for pre-operation before asserting API methods
+import InternshipTypes from '../../../../src/models/InternshipTypes';
+
+import { defaultInternshipTypes, defaultInternships } from '../../../../__mocks__/mockData';
+import Internships from '../../../../src/models/Internships';
+
+beforeAll((done) => {
+    dbSetup.then(() => done()).catch((e) => done(e));
+});
+
+describe('GET /internshipTypes', () => {
+    beforeEach(async () => {
+        // Remove all
+        await InternshipTypes.destroy({ where: {} });
+    });
+
+    it('NoInternshipTypes_204', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('InternshipTypes_200', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(Array.isArray(RESPONSE.body)).toBeTruthy();
+
+        expect(RESPONSE.body).toBeTruthy();
+        expect(RESPONSE.body).toHaveLength(1);
+    });
+});
+
+describe('POST /internshipTypes', () => {
+    it('NoBody_400', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('ValidInternshipTypes_200', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        const RESPONSE = await request(app)
+            .post(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes`)
+            .send(VALID_INTERNSHIP_TYPES);
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            id: expect.any(Number),
+        });
+    });
+});
+
+describe('GET /internshipTypes/:id', () => {
+    beforeEach(async () => {
+        // Remove all
+        await InternshipTypes.destroy({ where: {} });
+    });
+
+    it('NoInternshipTypes_204', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/10`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/{falseEncoding}`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('InternshipTypes_200', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED.id}`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            id: expect.any(Number),
+        });
+    });
+});
+
+describe('PUT /internshipTypes/:id', () => {
+    beforeEach(async () => {
+        // Remove all
+        await InternshipTypes.destroy({ where: {} });
+    });
+
+    it('NoInternshipTypes_204', async () => {
+        const RESPONSE = await request(app).put(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/10`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).put(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/{falseEncoding}`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('InternshipTypes_200_UpdateAllData', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+
+        // Change some data on VALID_INTERNSHIP_TYPES
+        VALID_INTERNSHIP_TYPES.label = 'additional data';
+
+        const RESPONSE = await request(app)
+            .put(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED.id}`)
+            .send(VALID_INTERNSHIP_TYPES);
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            id: expect.any(Number),
+        });
+    });
+
+    it('InternshipTypes_200_NotAnyDataUpdated', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+
+        const RESPONSE = await request(app)
+            .put(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED.id}`)
+            .send({});
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            id: expect.any(Number),
+        });
+    });
+});
+
+describe('DELETE /internshipTypes/:id', () => {
+    beforeEach(async () => {
+        // Remove all
+        await InternshipTypes.destroy({ where: {} });
+    });
+
+    it('NoInternshipTypes_200', async () => {
+        const RESPONSE = await request(app).delete(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/10`,
+        );
+        expect(RESPONSE.status).toBe(200);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).delete(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/{falseEncoding}`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('InternshipTypes_200', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+
+        const RESPONSE = await request(app).delete(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED.id}`,
+        );
+        expect(RESPONSE.status).toBe(200);
+    });
+});
+
+describe('GET /internshipTypes/:id/internships', () => {
+    beforeEach(async () => {
+        // Remove all
+        await InternshipTypes.destroy({ where: {} });
+    });
+
+    it('NoBusiness_204', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/10/internships`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/{falseEncoding}/internships`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('InternshipTypes_200_NoLinkedData', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED.id}/internships`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toEqual([]);
+    });
+
+    it('InternshipTypes_200_WithLinkedData', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        let CREATED_INTERNSHIP_TYPES = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+        await CREATED_INTERNSHIP_TYPES.addInternship(CREATED_INTERNSHIP);
+        CREATED_INTERNSHIP_TYPES = await InternshipTypes.findByPk(CREATED_INTERNSHIP_TYPES.id);
+
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED_INTERNSHIP_TYPES.id}/internships`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toHaveLength(1);
+    });
+});
+
+describe('POST /internshipTypes/:id/internships/:internship_id/link', () => {
+    beforeEach(async () => {
+        // Remove all
+        await InternshipTypes.destroy({ where: {} });
+    });
+
+    it('NoBusiness_204', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/10/internships/20/link`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400_WrongID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/{falseEncoding}/internships/10/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('BadRequest_400_WrongInternshipID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/10/internships/{falseEncoding}/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('InternshipTypes_200_NoInternship', async () => {
+        // In this case, we check if link a existing Bussiness and an unexisting internships work
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED.id}/internships/20/link`,
+        );
+        expect(RESPONSE.status).toBe(200);
+    });
+
+    it('InternshipTypes_200_WithInternship', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        let CREATED_INTERNSHIP_TYPES = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED_INTERNSHIP_TYPES.id}/internships/${CREATED_INTERNSHIP.id}/link`,
+        );
+
+        // Should answer 200
+        expect(RESPONSE.status).toBe(200);
+
+        // check if business and internship are linked
+        CREATED_INTERNSHIP_TYPES = await InternshipTypes.findByPk(CREATED_INTERNSHIP_TYPES.id);
+
+        const internships = await CREATED_INTERNSHIP_TYPES.getInternships();
+        expect(internships).toHaveLength(1);
+        expect(internships[0].id).toBe(CREATED_INTERNSHIP.id);
+    });
+});

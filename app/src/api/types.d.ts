@@ -23,7 +23,7 @@ export declare interface IInternship {
   address: string;
   additional?: string;
 
-  isLanguageCourse: boolean;
+  isInternshipAbroad: boolean;
   isValidated: boolean;
 
   createdAt?: string;
@@ -80,14 +80,16 @@ export declare interface IMentor {
   updatedAt?: string;
 }
 
-
-
-export declare interface IMentor {
+export declare interface ICampaigns {
   id?: number;
 
-  firstName: string;
-  lastName: string;
-  email: string;
+  name: string;
+  description: string;
+  semester: string;
+  maxProposition: number;
+
+  startAt: number;
+  endAt: number;
 
   createdAt?: string;
   updatedAt?: string;

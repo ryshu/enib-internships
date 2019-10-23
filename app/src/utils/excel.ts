@@ -189,7 +189,7 @@ export const exportJson2Excel = (
     if (!ws['!merges']) {
       ws['!merges'] = [];
     }
-    merges.forEach((item) => {
+    merges.forEach(item => {
       ws['!merges'].push(XLSX.utils.decode_range(item));
     });
   }
