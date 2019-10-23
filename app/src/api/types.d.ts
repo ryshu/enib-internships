@@ -68,3 +68,27 @@ export interface IUserData {
   introduction: string;
   roles: string[];
 }
+
+export declare interface IMentor {
+  id?: number;
+
+  firstName: string;
+  lastName: string;
+  email: string;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+
+
+export declare interface IMentor {
+  id?: number;
+
+  firstName: string;
+  lastName: string;
+  email: string;
+
+  createdAt?: string;
+  updatedAt?: string;
+}

@@ -20,6 +20,9 @@ export default {
       isLanguageCourse: 'Linguistique ?',
       isValidated: 'Validé ?',
     },
+    mentors: {
+      fileName: 'professeurs',
+    },
     name: 'Nom',
     postalCode: 'Code postal',
     students: {
@@ -73,6 +76,20 @@ export default {
         title: "Modification d'un stage",
       },
     },
+    mentors: {
+      create: {
+        msg: 'Le professeur a bien été créé',
+        title: "Création d'un professeur",
+      },
+      delete: {
+        msg: 'Le professeur a bien été supprimé',
+        title: "Suppression d'un professeur",
+      },
+      update: {
+        msg: 'Le professeur a bien été modifié',
+        title: "Modification d'un professeur",
+      },
+    },
     students: {
       create: {
         msg: "L'étudiant a bien été créé",
@@ -95,6 +112,7 @@ export default {
     page404: '404',
     profile: 'Profile',
     students: 'Etudiants',
+    mentors: 'Professeurs',
   },
   table: {
     actions: 'Actions',
@@ -124,6 +142,11 @@ export default {
       isValidated: 'Validaté',
       postalCode: 'Code postal',
       subject: 'Sujets',
+    },
+    mentors: {
+      firstName: 'Prénom',
+      lastName: 'Nom',
+      email: 'Email',
     },
     publish: 'Publier',
     search: 'Recherche',
