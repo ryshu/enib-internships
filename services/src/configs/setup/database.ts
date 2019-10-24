@@ -21,6 +21,18 @@ Internships.belongsTo(InternshipTypes, { as: 'category', foreignKey: 'categoryId
 Campaigns.hasMany(MentoringPropositions, { as: 'propositions', foreignKey: 'campaignId' });
 MentoringPropositions.belongsTo(Campaigns, { as: 'campaign', foreignKey: 'campaignId' });
 
+// Many Campaigns to many Mentors
+Campaigns.belongsToMany(Mentors, {
+    as: 'mentors',
+    through: 'campaigns_mentors',
+    foreignKey: 'campaignId',
+});
+Mentors.belongsToMany(Campaigns, {
+    as: 'campaigns',
+    through: 'campaigns_mentors',
+    foreignKey: 'mentorId',
+});
+
 // One Students to many Internships
 Students.hasMany(Internships, { as: 'internships', foreignKey: 'studentId', sourceKey: 'id' });
 Internships.belongsTo(Students, { as: 'student', foreignKey: 'studentId', targetKey: 'id' });
