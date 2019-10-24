@@ -1,6 +1,7 @@
 const faker = require('faker');
 const chalk = require('chalk');
 
+faker.locale = 'fr';
 const MentoringPropositions = require('../../../dist/models/MentoringPropositions').default;
 
 module.exports = async function(quantity = 100, debug = false) {

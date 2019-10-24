@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import httpStatus from 'http-status-codes';
 
 // Import mentors ORM class
 import Mentors from '../../models/Mentors';
-import httpStatus from 'http-status-codes';
+import Campaigns from '../../models/Campaigns';
 
 // Factorization methods to handle errors
 import {
@@ -144,4 +145,51 @@ export const deleteMentor = (req: Request, res: Response, next: NextFunction): v
         .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected mentor
         .then(() => res.sendStatus(httpStatus.OK)) // Return OK status
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+};
+
+/**
+ * GET /mentors/:id/campaigns
+ * Used to get all campaigns of a mentor
+ */
+export const getMentorCampaigns = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id, {
+        include: [{ model: Campaigns, as: 'campaigns' }],
+    })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.campaigns);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /mentors/:id/campaigns/:campaign_id/link
+ * Used to link a mentor with a campaign
+ */
+export const linkMentorCampaign = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.addCampaign(Number(req.params.campaign_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

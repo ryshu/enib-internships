@@ -24,6 +24,7 @@ export const InternshipTypeID: Schema = namedID('internship_type_id', 'Internshi
 export const BusinessID: Schema = namedID('business_id', 'Business identifier');
 export const StudentID: Schema = namedID('student_id', 'Student identifier');
 export const CampaignID: Schema = namedID('campaign_id', 'Campaign identifier');
+export const MentorID: Schema = namedID('mentor_id', 'Mentor identifier');
 export const MentoringPropositionID: Schema = namedID(
     'mentoring_proposition_id',
     'Mentoring proposition identifier',
