@@ -13,6 +13,7 @@ import {
     checkContent,
 } from '../helpers/global.helper';
 import { paginate } from '../helpers/pagination.helper';
+import Mentors from '../../models/Mentors';
 
 /**
  * GET /campaigns
@@ -209,6 +210,53 @@ export const linkCampaignMentoringPropositions = (
             if (checkContent(val, next)) {
                 await val.addProposition(Number(req.params.mentoring_proposition_id));
                 return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /campaigns/:id/mentors
+ * Used to get all mentors of a campaign
+ */
+export const getCampaignMentors = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Campaigns.findByPk(req.params.id, {
+        include: [{ model: Mentors, as: 'mentors' }],
+    })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.mentors);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /campaigns/:id/mentors/:mentor_id/link
+ * Used to link a mentor with a campaign
+ */
+export const linkCampaignMentor = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Campaigns.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.addMentor(Number(req.params.mentor_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
