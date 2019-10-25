@@ -12,6 +12,8 @@ import Campaigns from '../../../../src/models/Campaigns';
 
 import { defaultMentors, defaultCampaigns } from '../../../../__mocks__/mockData';
 
+jest.setTimeout(30000);
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });
@@ -22,11 +24,13 @@ describe('GET /mentors', () => {
         await Mentors.destroy({ where: {} });
     });
 
-    it('NoFile_204', async () => {
+    // In this case, we have 1 users every time during test
+    // (the testing user which is setup every time)
+    it('NoMentor_200', async () => {
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors`,
         );
-        expect(RESPONSE.status).toBe(204);
+        expect(RESPONSE.status).toBe(200);
     });
 
     it('BadRequest_400', async () => {
@@ -48,6 +52,12 @@ describe('GET /mentors', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             data: [
                 {
+                    id: expect.any(Number),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                },
+                {
+                    id: expect.any(Number),
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
                 },
@@ -85,7 +95,7 @@ describe('GET /mentors/:id', () => {
         await Mentors.destroy({ where: {} });
     });
 
-    it('NoFile_204', async () => {
+    it('NoMentor_204', async () => {
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10`,
         );
@@ -121,7 +131,7 @@ describe('PUT /mentors/:id', () => {
         await Mentors.destroy({ where: {} });
     });
 
-    it('NoFile_204', async () => {
+    it('NoMentor_204', async () => {
         const RESPONSE = await request(app).put(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10`,
         );
@@ -177,7 +187,7 @@ describe('DELETE /mentors/:id', () => {
         await Mentors.destroy({ where: {} });
     });
 
-    it('NoFile_200', async () => {
+    it('NoMentor_200', async () => {
         const RESPONSE = await request(app).delete(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10`,
         );
