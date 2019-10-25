@@ -11,7 +11,6 @@ import store from '@/store';
 export interface IUserState {
   firstName: string;
   lastName: string;
-  avatar: string;
   role: string;
   email: string;
 }
@@ -20,7 +19,6 @@ export interface IUserState {
 class User extends VuexModule implements IUserState {
   public firstName = '';
   public lastName = '';
-  public avatar = '';
   public role = '';
   public email = '';
 
@@ -32,11 +30,6 @@ class User extends VuexModule implements IUserState {
   @Mutation
   private SET_LAST_NAME(lastName: string) {
     this.lastName = lastName;
-  }
-
-  @Mutation
-  private SET_AVATAR(avatar: string) {
-    this.avatar = avatar;
   }
 
   @Mutation
@@ -56,7 +49,7 @@ class User extends VuexModule implements IUserState {
     if (!data) {
       throw Error('Verification failed, please Login.');
     }
-    const { role, firstName, lastName, avatar, email } = data;
+    const { role, firstName, lastName, email } = data;
     // role must be a non-empty array
     if (!role || role.length <= 0) {
       throw Error('GetUserInfo: role must be a non-null array!');
@@ -64,7 +57,6 @@ class User extends VuexModule implements IUserState {
     this.SET_ROLE(role);
     this.SET_FIRST_NAME(firstName);
     this.SET_LAST_NAME(lastName);
-    this.SET_AVATAR(avatar);
     this.SET_EMAIL(email);
   }
 }

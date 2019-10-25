@@ -38,14 +38,12 @@ import UserCard from './components/UserCard.vue';
 export interface IProfile {
   name: string;
   email: string;
-  avatar: string;
   role: string;
 }
 
 const defaultProfile: IProfile = {
   name: 'Loading...',
   email: 'Loading...',
-  avatar: 'Loading...',
   role: 'Loading...',
 };
 
@@ -70,10 +68,6 @@ export default class extends Vue {
     return UserModule.email;
   }
 
-  get avatar() {
-    return UserModule.avatar;
-  }
-
   get role() {
     return UserModule.role;
   }
@@ -86,7 +80,6 @@ export default class extends Vue {
     this.user = {
       name: this.fullName,
       email: this.email,
-      avatar: this.avatar,
       role: this.role,
     };
   }

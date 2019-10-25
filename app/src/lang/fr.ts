@@ -135,8 +135,11 @@ export default {
     internships: 'Stages',
     page404: '404',
     profile: 'Profile',
-    students: 'Etudiants',
-    mentors: 'Professeurs',
+    users: {
+      title: 'Utilisateurs',
+      students: 'Etudiants',
+      mentors: 'Professeurs',
+    },
   },
   status: {
     no: 'Non',

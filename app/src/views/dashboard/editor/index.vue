@@ -1,7 +1,6 @@
 <template>
   <div class="dashboard-editor-container">
     <div class="clearfix">
-      <pan-thumb :image="avatar" style="float: left">Your role: {{ role }}</pan-thumb>
       <div class="info-container">
         <span class="display_name">{{ fullName }}</span>
         <span style="font-size:20px;padding-top:20px;display:inline-block;">Editor's Dashboard</span>
@@ -31,10 +30,6 @@ export default class extends Vue {
 
   get fullName() {
     return `${UserModule.firstName} ${UserModule.lastName}`;
-  }
-
-  get avatar() {
-    return UserModule.avatar;
   }
 
   get role() {
