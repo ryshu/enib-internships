@@ -97,7 +97,7 @@ describe('GET /mentors/:id', () => {
 
     it('NoMentor_204', async () => {
         const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10`,
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/1321564465123`,
         );
         expect(RESPONSE.status).toBe(204);
     });
@@ -133,7 +133,7 @@ describe('PUT /mentors/:id', () => {
 
     it('NoMentor_204', async () => {
         const RESPONSE = await request(app).put(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10`,
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/116586546654132`,
         );
         expect(RESPONSE.status).toBe(204);
     });
@@ -189,7 +189,7 @@ describe('DELETE /mentors/:id', () => {
 
     it('NoMentor_200', async () => {
         const RESPONSE = await request(app).delete(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10`,
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/1235646813213`,
         );
         expect(RESPONSE.status).toBe(200);
     });
@@ -219,9 +219,9 @@ describe('GET /mentors/:id/campaigns', () => {
         await Mentors.destroy({ where: {} });
     });
 
-    it('NoBusiness_204', async () => {
+    it('NoMentor_204', async () => {
         const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10/campaigns`,
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/161541515632564465/campaigns`,
         );
         expect(RESPONSE.status).toBe(204);
     });
@@ -268,9 +268,9 @@ describe('POST /mentors/:id/campaigns/:internship_id/link', () => {
         await Mentors.destroy({ where: {} });
     });
 
-    it('NoBusiness_204', async () => {
+    it('NoMentor_204', async () => {
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10/campaigns/20/link`,
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/11561454121654/campaigns/20/link`,
         );
         expect(RESPONSE.status).toBe(204);
     });
@@ -282,14 +282,14 @@ describe('POST /mentors/:id/campaigns/:internship_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('BadRequest_400_WrongInternshipID', async () => {
+    it('BadRequest_400_WrongCampaignID', async () => {
         const RESPONSE = await request(app).post(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10/campaigns/{falseEncoding}/link`,
         );
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Mentors_204_NoInternship', async () => {
+    it('Mentors_204_NoCampaign', async () => {
         // In this case, we check if link a existing Bussiness and an unexisting campaigns work
         const VALID_MENTOR = defaultMentors();
 
@@ -300,7 +300,7 @@ describe('POST /mentors/:id/campaigns/:internship_id/link', () => {
         expect(RESPONSE.status).toBe(204);
     });
 
-    it('Mentors_200_WithInternship', async () => {
+    it('Mentors_200_WithCampaign', async () => {
         const VALID_MENTOR = defaultMentors();
         const VALID_CAMPAIGN = defaultCampaigns();
 
