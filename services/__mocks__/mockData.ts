@@ -57,6 +57,7 @@ export function defaultMentors() {
         firstName: 'John',
         lastName: 'Doe',
         email: 'john.doe@enib.fr',
+        role: 'default',
     };
     return VALID_MENTOR;
 }
