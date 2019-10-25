@@ -13,6 +13,7 @@ class Mentors extends Sequelize.Model implements IMentorEntity {
     public firstName: string;
     public lastName: string;
     public email: string;
+    public role: 'default' | 'admin';
 
     public getCampaigns: Sequelize.BelongsToManyGetAssociationsMixin<Campaigns>;
     public addCampaign: Sequelize.BelongsToManyAddAssociationMixin<Campaigns, Campaigns['id']>;
@@ -44,6 +45,11 @@ Mentors.init(
         email: {
             type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
+        },
+        role: {
+            type: new Sequelize.DataTypes.STRING(40),
+            allowNull: true,
+            defaultValue: 'default',
         },
     },
     {

@@ -9,7 +9,7 @@ import filesRouter from './routers/files.route';
 import mentoringPropositionsRouter from './routers/mentoring.propositions.route';
 import mentorsRouter from './routers/mentors.route';
 
-import mockUserSystem from '../mock/route';
+import casRouter from './cas/route';
 
 const router = express.Router();
 
@@ -22,6 +22,6 @@ router.use('/mentors', mentorsRouter);
 router.use('/files', filesRouter);
 router.use('/mentoringPropositions', mentoringPropositionsRouter);
 
-router.use(mockUserSystem);
+router.use('/cas', casRouter);
 
 export default router;

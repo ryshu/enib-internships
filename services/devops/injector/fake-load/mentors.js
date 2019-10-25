@@ -11,6 +11,7 @@ module.exports = async function(quantity = 100, debug = false) {
             firstName: faker.name.firstName(),
             lastName: faker.name.lastName(),
             email: faker.internet.email(),
+            role: 'default',
         };
         promises.push(
             new Promise(async (resolve, reject) => {

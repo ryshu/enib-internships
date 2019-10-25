@@ -49,16 +49,6 @@ export default {
       },
     },
   },
-  login: {
-    any: 'any',
-    logIn: 'Connexion',
-    password: 'Mot de passe',
-    thirdparty: 'Ou se connecter avec',
-    thirdpartyTips:
-      'Can not be simulated on local, so please combine you own business simulation! ! !',
-    title: 'Formulaire de connexion',
-    username: "Nom d'utilisateur",
-  },
   navbar: {
     dashboard: 'Tableau de bord',
     logOut: 'Deconnexion',
@@ -145,8 +135,11 @@ export default {
     internships: 'Stages',
     page404: '404',
     profile: 'Profile',
-    students: 'Etudiants',
-    mentors: 'Professeurs',
+    users: {
+      title: 'Utilisateurs',
+      students: 'Etudiants',
+      mentors: 'Professeurs',
+    },
   },
   status: {
     no: 'Non',

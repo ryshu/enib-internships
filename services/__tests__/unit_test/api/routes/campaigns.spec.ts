@@ -17,6 +17,8 @@ import {
     defaultMentors,
 } from '../../../../__mocks__/mockData';
 
+jest.setTimeout(30000);
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });
@@ -371,7 +373,7 @@ describe('GET /campaigns/:id/mentors', () => {
     });
 });
 
-describe('POST /campaigns/:id/mentors/:internship_id/link', () => {
+describe('POST /campaigns/:id/mentors/:mentor_id/link', () => {
     beforeEach(async () => {
         // Remove all
         await Campaigns.destroy({ where: {} });
@@ -391,25 +393,25 @@ describe('POST /campaigns/:id/mentors/:internship_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('BadRequest_400_WrongInternshipID', async () => {
+    it('BadRequest_400_WrongMentorID', async () => {
         const RESPONSE = await request(app).post(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/campaigns/10/mentors/{falseEncoding}/link`,
         );
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Campaigns_204_NoInternship', async () => {
+    it('Campaigns_204_NoMentor', async () => {
         // In this case, we check if link a existing Bussiness and an unexisting mentors work
         const VALID_CAMPAIGN = defaultCampaigns();
 
         const CREATED = await Campaigns.create(VALID_CAMPAIGN);
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/campaigns/${CREATED.id}/mentors/20/link`,
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/campaigns/${CREATED.id}/mentors/235012/link`,
         );
         expect(RESPONSE.status).toBe(204);
     });
 
-    it('Campaigns_200_WithInternship', async () => {
+    it('Campaigns_200_WithMentor', async () => {
         const VALID_CAMPAIGN = defaultCampaigns();
         const VALID_MENTOR = defaultMentors();
 
