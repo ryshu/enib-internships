@@ -21,8 +21,8 @@ export async function handleConnection(req: Request) {
 
         // Try to get our user in database
         const user = student
-            ? await Mentors.findOne({ where: { email } })
-            : await Students.findOne({ where: { email } });
+            ? await Students.findOne({ where: { email } })
+            : await Mentors.findOne({ where: { email } });
 
         if (user) {
             // This user is in database, copy his info into session
