@@ -30,8 +30,6 @@
 import 'echarts/theme/macarons.js'; // Theme used in BarChart, LineChart, PieChart and RadarChart
 import { Component, Vue } from 'vue-property-decorator';
 
-import { UserModule } from '../../../store/modules/user';
-
 import BarChart from './components/BarChart.vue';
 import LineChart, { ILineChartData } from './components/LineChart.vue';
 import PanelGroup from './components/PanelGroup.vue';
@@ -68,7 +66,7 @@ const lineChartData: { [type: string]: ILineChartData } = {
   },
 })
 export default class extends Vue {
-  private lineChartData = lineChartData.newVisitis
+  private lineChartData = lineChartData.newVisitis;
 
   private handleSetLineChartData(type: string) {
     this.lineChartData = lineChartData[type];

@@ -50,20 +50,6 @@ export const constantRoutes: RouteConfig[] = [
     ],
   },
   {
-    path: '/login',
-    component: () =>
-      import(/* webpackChunkName: "login" */ '@/views/login/index.vue'),
-    meta: { hidden: true },
-  },
-  {
-    path: '/auth-redirect',
-    component: () =>
-      import(
-        /* webpackChunkName: "auth-redirect" */ '@/views/login/auth-redirect.vue'
-      ),
-    meta: { hidden: true },
-  },
-  {
     path: '/404',
     component: () =>
       import(/* webpackChunkName: "404" */ '@/views/error-page/404.vue'),
@@ -167,15 +153,12 @@ export const constantRoutes: RouteConfig[] = [
       {
         path: 'mentors',
         component: () =>
-          import(
-            /* webpackChunkName: "mentors" */ '@/views/mentors/index.vue'
-          ),
+          import(/* webpackChunkName: "mentors" */ '@/views/mentors/index.vue'),
         name: 'Mentors',
         meta: { title: 'mentors', icon: 'shopping', affix: true },
       },
     ],
   },
-
 ];
 
 /**
