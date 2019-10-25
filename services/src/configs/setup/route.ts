@@ -7,6 +7,8 @@ const router = express.Router();
  */
 import apiRoute from '../../api/route';
 
-router.use(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`, apiRoute);
+import cas from './cas';
+
+router.use(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`, cas.block, apiRoute);
 
 export default router;
