@@ -71,7 +71,7 @@
     "faker": "^4.1.0",
     "jest": "^24.7.1",
     "node-sass": "^4.11.0",
-    "nodemon": "^1.19.3",
+    "nodemon": "^1.19.4",
     "supertest": "^4.0.2",
     "ts-jest": "^24.0.2",
     "tslint": "^5.15.0",
