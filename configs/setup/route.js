@@ -9,6 +9,7 @@ const router = express_1.default.Router();
  * API routes.
  */
 const route_1 = __importDefault(require("../../api/route"));
-router.use(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`, route_1.default);
+const cas_1 = __importDefault(require("./cas"));
+router.use(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`, cas_1.default.block, route_1.default);
 exports.default = router;
 //# sourceMappingURL=route.js.map

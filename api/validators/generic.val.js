@@ -20,7 +20,13 @@ function namedID(id, msg) {
 exports.namedID = namedID;
 exports.ID = namedID('id', 'Identifier');
 exports.InternshipID = namedID('internship_id', 'Internship identifier');
+exports.InternshipTypeID = namedID('internship_type_id', 'Internship type identifier');
 exports.BusinessID = namedID('business_id', 'Business identifier');
+exports.StudentID = namedID('student_id', 'Student identifier');
+exports.CampaignID = namedID('campaign_id', 'Campaign identifier');
+exports.MentorID = namedID('mentor_id', 'Mentor identifier');
+exports.MentoringPropositionID = namedID('mentoring_proposition_id', 'Mentoring proposition identifier');
+exports.FileID = namedID('file_id', 'File identifier');
 exports.paginateValidator = {
     page: {
         in: ['query'],

@@ -21,5 +21,7 @@ router.post('', express_validator_1.checkSchema(students_val_1.StudentCreate), S
 router.get('/:id', express_validator_1.checkSchema(generic_val_1.ID), StudentsCtrl.getStudent);
 router.put('/:id', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, students_val_1.StudentUpdate)), StudentsCtrl.putStudent);
 router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), StudentsCtrl.deleteStudent);
+router.get('/:id/internships', express_validator_1.checkSchema(generic_val_1.ID), StudentsCtrl.getStudentInternships);
+router.post('/:id/internships/:internship_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipID)), StudentsCtrl.linkStudentInternships);
 exports.default = router;
 //# sourceMappingURL=students.route.js.map

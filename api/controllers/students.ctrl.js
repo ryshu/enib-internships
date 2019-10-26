@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -6,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 // Import students ORM class
 const Students_1 = __importDefault(require("../../models/Students"));
+const Internships_1 = __importDefault(require("../../models/Internships"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 // Factorization methods to handle errors
 const global_helper_1 = require("../helpers/global.helper");
@@ -72,7 +82,7 @@ exports.getStudent = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Students_1.default.findByPk(req.params.id)
+    Students_1.default.findByPk(req.params.id, { include: [{ model: Internships_1.default, as: 'internships' }] })
         .then((val) => {
         // Check if we have content, and if so return it
         if (global_helper_1.checkContent(val, next)) {
@@ -131,5 +141,42 @@ exports.deleteStudent = (req, res, next) => {
         .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected student
         .then(() => res.sendStatus(http_status_codes_1.default.OK)) // Return OK status
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
+};
+/**
+ * GET /students/:id/internships
+ * Used to get all internships of a student
+ */
+exports.getStudentInternships = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Students_1.default.findByPk(req.params.id, { include: [{ model: Internships_1.default, as: 'internships' }] })
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(val, next)) {
+            return res.send(val.internships);
+        }
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * POST /students/:id/internships/:internship_id/link
+ * Link a internship to a student entry
+ */
+exports.linkStudentInternships = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Students_1.default.findByPk(req.params.id)
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(val, next)) {
+            yield val.addInternship(Number(req.params.internship_id));
+            return res.sendStatus(http_status_codes_1.default.OK);
+        }
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 //# sourceMappingURL=students.ctrl.js.map

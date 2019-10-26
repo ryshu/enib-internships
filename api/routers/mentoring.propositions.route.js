@@ -21,5 +21,7 @@ router.post('', express_validator_1.checkSchema(mentoringPropositions_val_1.Ment
 router.get('/:id', express_validator_1.checkSchema(generic_val_1.ID), PropositionsCtrl.getMentoringProposition);
 router.put('/:id', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, mentoringPropositions_val_1.MentoringPropositionUpdate)), PropositionsCtrl.putMentoringProposition);
 router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), PropositionsCtrl.deleteMentoringProposition);
+router.get('/:id/campaigns', express_validator_1.checkSchema(generic_val_1.ID), PropositionsCtrl.getMentoringPropositionCampaigns);
+router.post('/:id/campaigns/:campaign_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.CampaignID)), PropositionsCtrl.linkMentoringPropositionCampaign);
 exports.default = router;
 //# sourceMappingURL=mentoring.propositions.route.js.map

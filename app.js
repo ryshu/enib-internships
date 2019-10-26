@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const cors_1 = __importDefault(require("cors"));
 const compression_1 = __importDefault(require("compression")); // compresses requests
 const lusca_1 = __importDefault(require("lusca"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -20,8 +19,11 @@ const error_1 = require("./utils/error");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 // router and database
 const route_1 = __importDefault(require("./configs/setup/route"));
+const cas_1 = __importDefault(require("./configs/setup/cas"));
 require("./configs/instances/database"); // Only import to setup
 require("./configs/setup/database"); // Only import to setup
+const express_session_1 = __importDefault(require("express-session"));
+const handle_1 = require("./api/cas/handle");
 // Create Express server
 const app = express_1.default();
 // Express configuration
@@ -32,12 +34,26 @@ app.use(body_parser_1.default.urlencoded({ extended: true, limit: '1mb' }));
 app.use(express_flash_1.default());
 app.use(lusca_1.default.xframe('SAMEORIGIN'));
 app.use(lusca_1.default.xssProtection(true));
-app.use(express_1.default.static(path_1.default.join(__dirname, 'public'), { maxAge: 31557600000 }));
-const corsOptions = {
-    origin: 'http://localhost:4200',
-    optionsSuccessStatus: 200,
-};
-app.use(cors_1.default(corsOptions));
+app.use(express_session_1.default({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+}));
+// CAS Setup
+app.get('/logout', cas_1.default.logout); // Logout pass
+app.use('/', cas_1.default.bounce, // CAS bounce to connect user if isn't
+(req, _res, next) => {
+    if (!req.session.info) {
+        // If no session info, handle connection
+        handle_1.handleConnection(req)
+            .then(() => next())
+            .catch((e) => next(e));
+    }
+    else {
+        // else, pass
+        next();
+    }
+}, express_1.default.static(path_1.default.join(__dirname, 'public'), { maxAge: 31557600000 }));
 app.use(route_1.default);
 /**
  * Error handler setup

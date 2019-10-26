@@ -51,7 +51,7 @@ Internships.init({
         allowNull: true,
     },
     // State
-    isLanguageCourse: {
+    isInternshipAbroad: {
         type: Sequelize.DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
@@ -61,11 +61,22 @@ Internships.init({
         allowNull: false,
         defaultValue: false,
     },
+    // Date
+    startAt: {
+        type: Sequelize.DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
+    },
+    endAt: {
+        type: Sequelize.DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null,
+    },
 }, {
     tableName: 'internships',
     sequelize: database_1.default,
     defaultScope: {
-        attributes: { exclude: ['businessId'] },
+        attributes: { exclude: ['businessId', 'studentId', 'categoryId'] },
     },
 });
 exports.default = Internships;

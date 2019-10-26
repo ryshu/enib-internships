@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const sequelize_1 = __importDefault(require("sequelize"));
 const Businesses_1 = __importDefault(require("../../models/Businesses"));
 const Internships_1 = __importDefault(require("../../models/Internships"));
 const pagination_helper_1 = require("../helpers/pagination.helper");
@@ -29,12 +30,41 @@ exports.getBusinesses = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, countries, name } = req.query;
+    // Build query options
+    const findOpts = {
+        attributes: {
+            include: [[sequelize_1.default.fn('count', sequelize_1.default.col(`internships.businessId`)), 'count']],
+        },
+        include: [
+            {
+                model: Internships_1.default,
+                as: 'internships',
+                attributes: [],
+                duplicating: false,
+            },
+        ],
+        where: {},
+        group: [sequelize_1.default.col(`Businesses.id`)],
+    };
+    // Build count query options
+    const countOpts = { where: {} };
+    if (countries) {
+        // If country list is given, add it to query
+        // Sequelize will translate it by "country in countries"
+        findOpts.where.country = countries;
+        countOpts.where.country = countries;
+    }
+    if (name) {
+        // If name filter is given, apply it using substring
+        findOpts.where.name = { [sequelize_1.default.Op.substring]: name };
+        countOpts.where.name = { [sequelize_1.default.Op.substring]: name };
+    }
     let max;
-    Businesses_1.default.count()
+    Businesses_1.default.count(countOpts)
         .then((rowNbr) => {
         max = rowNbr;
-        return Businesses_1.default.findAll(pagination_helper_1.paginate({ page, limit }));
+        return Businesses_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
         .then((businesses) => __awaiter(void 0, void 0, void 0, function* () {
         if (global_helper_1.checkArrayContent(businesses, next)) {

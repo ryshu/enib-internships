@@ -1,7 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const generic_val_1 = require("./generic.val");
-exports.BusinessesList = Object.assign({}, generic_val_1.paginateValidator);
+exports.BusinessesList = Object.assign(Object.assign({}, generic_val_1.paginateValidator), { countries: {
+        in: ['query'],
+        isArray: { errorMessage: 'Country filter list must be array' },
+        optional: true,
+        toArray: true,
+    }, name: {
+        in: ['query'],
+        isString: { errorMessage: 'Name filter must be of type string' },
+        optional: true,
+        trim: true,
+        escape: true,
+    } });
 exports.BusinessCreate = {
     name: {
         in: ['body'],

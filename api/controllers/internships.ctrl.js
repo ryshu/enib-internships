@@ -14,8 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const moment_1 = __importDefault(require("moment"));
 const Internships_1 = __importDefault(require("../../models/Internships"));
 const Businesses_1 = __importDefault(require("../../models/Businesses"));
+const InternshipTypes_1 = __importDefault(require("../../models/InternshipTypes"));
+const Students_1 = __importDefault(require("../../models/Students"));
+const Files_1 = __importDefault(require("../../models/Files"));
 const pagination_helper_1 = require("../helpers/pagination.helper");
 const global_helper_1 = require("../helpers/global.helper");
 /**
@@ -66,8 +70,10 @@ exports.postInternship = (req, res, next) => {
         postalCode: req.body.postalCode,
         address: req.body.address,
         additional: req.body.additional,
-        isLanguageCourse: req.body.isLanguageCourse ? true : false,
+        isInternshipAbroad: req.body.isInternshipAbroad ? true : false,
         isValidated: req.body.isValidated ? true : false,
+        startAt: !req.body.startAt ? null : moment_1.default(req.body.startAt).valueOf(),
+        endAt: !req.body.endAt ? null : moment_1.default(req.body.endAt).valueOf(),
     };
     Internships_1.default.create(internship)
         .then((created) => res.send(created))
@@ -83,7 +89,14 @@ exports.getInternship = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Internships_1.default.findByPk(req.params.id, { include: [{ model: Businesses_1.default, as: 'business' }] })
+    Internships_1.default.findByPk(req.params.id, {
+        include: [
+            { model: Businesses_1.default, as: 'business' },
+            { model: InternshipTypes_1.default, as: 'category' },
+            { model: Students_1.default, as: 'student' },
+            { model: Files_1.default, as: 'files' },
+        ],
+    })
         .then((val) => {
         if (global_helper_1.checkContent(val, next)) {
             return res.send(val);
@@ -127,11 +140,17 @@ exports.putInternship = (req, res, next) => {
         if (req.body.additional) {
             internships.set('additional', req.body.additional);
         }
-        if (req.body.isLanguageCourse !== undefined) {
-            internships.set('isLanguageCourse', req.body.isLanguageCourse ? true : false);
+        if (req.body.isInternshipAbroad !== undefined) {
+            internships.set('isInternshipAbroad', req.body.isInternshipAbroad ? true : false);
         }
         if (req.body.isValidated !== undefined) {
             internships.set('isValidated', req.body.isValidated ? true : false);
+        }
+        if (req.body.startAt !== undefined) {
+            internships.set('startAt', req.body.startAt === 0 ? null : moment_1.default(req.body.startAt).valueOf());
+        }
+        if (req.body.endAt !== undefined) {
+            internships.set('endAt', req.body.endAt === 0 ? null : moment_1.default(req.body.endAt).valueOf());
         }
         return internships.save();
     })
@@ -158,7 +177,7 @@ exports.deleteInternship = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
 /**
- * GET /internship/:id/business
+ * GET /internships/:id/businesses
  * Used to select a internship by ID and return his business
  */
 exports.getInternshipBusiness = (req, res, next) => {
@@ -176,8 +195,8 @@ exports.getInternshipBusiness = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * POST /internships/:id/business/:business_id/link
- * Used to get all internships of a business
+ * POST /internships/:id/businesses/:business_id/link
+ * Used to create a link between internships and business
  */
 exports.linkInternshipBusinesses = (req, res, next) => {
     // @see validator + router
@@ -185,10 +204,131 @@ exports.linkInternshipBusinesses = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Businesses_1.default.findByPk(req.params.business_id)
+    Internships_1.default.findByPk(req.params.id)
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(val, next)) {
+            try {
+                yield val.setBusiness(Number(req.params.business_id));
+                return res.sendStatus(http_status_codes_1.default.OK);
+            }
+            catch (error) {
+                global_helper_1.checkContent(null, next);
+            }
+        }
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * GET /internships/:id/internshipTypes
+ * Used to select a internship by ID and return his category
+ */
+exports.getInternshipInternshipType = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Internships_1.default.findByPk(req.params.id, { include: [{ model: InternshipTypes_1.default, as: 'category' }] })
+        .then((val) => {
+        if (global_helper_1.checkContent(val, next)) {
+            return res.send(val.category);
+        }
+    })
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * POST /internships/:id/internshipTypes/:internship_type_id/link
+ * Used to create a link between internships and internshipsTypes
+ */
+exports.linkInternshipInternshipTypes = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Internships_1.default.findByPk(req.params.id)
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(val, next)) {
+            try {
+                yield val.setCategory(Number(req.params.internship_type_id));
+                return res.sendStatus(http_status_codes_1.default.OK);
+            }
+            catch (error) {
+                global_helper_1.checkContent(null, next);
+            }
+        }
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * GET /internship/:id/student
+ * Used to select a internship by ID and return his student
+ */
+exports.getInternshipStudent = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Internships_1.default.findByPk(req.params.id, { include: [{ model: Students_1.default, as: 'student' }] })
+        .then((val) => {
+        if (global_helper_1.checkContent(val, next)) {
+            return res.send(val.student);
+        }
+    })
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * POST /internships/:id/student/:students_id/link
+ * Used to link internship to a student
+ */
+exports.linkInternshipStudents = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Students_1.default.findByPk(req.params.student_id)
         .then((val) => __awaiter(void 0, void 0, void 0, function* () {
         if (global_helper_1.checkContent(val, next)) {
             yield val.addInternship(Number(req.params.id));
+            return res.sendStatus(http_status_codes_1.default.OK);
+        }
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * GET /internship/:id/files
+ * Used to get all files of an internship
+ */
+exports.getInternshipFiles = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Internships_1.default.findByPk(req.params.id, { include: [{ model: Files_1.default, as: 'files' }] })
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(val, next)) {
+            return res.send(val.files);
+        }
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * GET /internships/:id/files/:files_id/link
+ * Used to get all files of a internships
+ */
+exports.linkInternshipFiles = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Internships_1.default.findByPk(req.params.id)
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(val, next)) {
+            yield val.addFile(Number(req.params.file_id));
             return res.sendStatus(http_status_codes_1.default.OK);
         }
     }))
