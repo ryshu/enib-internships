@@ -5,24 +5,12 @@
     </div>
 
     <div class="user-profile">
-      <div class="box-center">
-        <pan-thumb
-          :image="user.avatar"
-          :height="'100px'"
-          :width="'100px'"
-          :hoverable="false"
-        >
-          <div>Hello</div>
-          {{ user.roles }}
-        </pan-thumb>
+      <div class="box-center user-icon">
+        <i class="el-icon-user"></i>
       </div>
       <div class="box-center">
-        <div class="user-name text-center">
-          {{ user.name }}
-        </div>
-        <div class="user-role text-center text-muted">
-          {{ user.roles | uppercaseFirstChar }}
-        </div>
+        <div class="user-name text-center">{{ user.name }}</div>
+        <div class="user-role text-center text-muted">{{ user.role | uppercaseFirstChar }}</div>
       </div>
     </div>
 
@@ -33,9 +21,7 @@
           <span>Education</span>
         </div>
         <div class="user-bio-section-body">
-          <div class="text-muted">
-            JS in Computer Science from the University of Technology
-          </div>
+          <div class="text-muted">JS in Computer Science from the University of Technology</div>
         </div>
       </div>
 
@@ -81,7 +67,7 @@ import PanThumb from '../../../components/PanThumb/index.vue';
   },
 })
 export default class extends Vue {
-  @Prop({ required: true }) private user!: IProfile
+  @Prop({ required: true }) private user!: IProfile;
 }
 </script>
 
@@ -102,6 +88,14 @@ export default class extends Vue {
 
   .box-center {
     padding-top: 10px;
+    &.user-icon {
+      border: 2px solid;
+      border-radius: 100px;
+      padding: 15px;
+      i {
+        font-size: 40px;
+      }
+    }
   }
 
   .user-role {

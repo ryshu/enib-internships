@@ -21,6 +21,8 @@ import {
     defaultFiles,
 } from '../../../../__mocks__/mockData';
 
+jest.setTimeout(30000);
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });

@@ -15,6 +15,8 @@ import {
 } from '../helpers/global.helper';
 import { paginate } from '../helpers/pagination.helper';
 
+import { isMentorRole } from '../../utils/type';
+
 /**
  * GET /mentors
  * Used to GET all mentors
@@ -64,6 +66,7 @@ export const postMentor = (req: Request, res: Response, next: NextFunction): voi
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
+        role: req.body.role && isMentorRole(req.body.role) ? req.body.role : 'default',
     };
 
     // Insert mentor in database
@@ -118,6 +121,9 @@ export const putMentor = (req: Request, res: Response, next: NextFunction): void
             }
             if (req.body.email) {
                 mentor.set('email', req.body.email);
+            }
+            if (req.body.role && isMentorRole(req.body.role)) {
+                mentor.set('role', req.body.role);
             }
 
             return mentor.save();

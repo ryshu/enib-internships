@@ -81,7 +81,7 @@
     "babel-eslint": "^10.0.3",
     "concurrently": "^5.0.0",
     "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.3.0",
+    "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-vue": "^5.2.3",
     "fibers": "^4.0.1",
     "jest": "^24.9.0",
