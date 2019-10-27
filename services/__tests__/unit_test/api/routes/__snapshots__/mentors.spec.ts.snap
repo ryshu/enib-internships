@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GET /mentors Mentors_200 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": Any<String>,
+      "email": "john.doe@enib.fr",
+      "firstName": "John",
+      "id": Any<Number>,
+      "lastName": "Doe",
+      "role": "default",
+      "updatedAt": Any<String>,
+    },
+    Object {
+      "createdAt": Any<String>,
+      "email": "cas.dev@enib.fr",
+      "firstName": "Cas",
+      "id": Any<Number>,
+      "lastName": "DEV",
+      "role": "default",
+      "updatedAt": Any<String>,
+    },
+  ],
+  "length": 2,
+  "max": 2,
+  "page": 1,
+}
+`;
+
+exports[`GET /mentors/:id Mentors_200 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": Any<Number>,
+  "lastName": "Doe",
+  "role": "default",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /mentors ValidMentors_200 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": Any<Number>,
+  "lastName": "Doe",
+  "role": "default",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /mentors/:id Mentors_200_NotAnyDataUpdated 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": Any<Number>,
+  "lastName": "Doe",
+  "role": "default",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /mentors/:id Mentors_200_UpdateAllData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "250",
+  "id": Any<Number>,
+  "lastName": "Doe",
+  "role": "default",
+  "updatedAt": Any<String>,
+}
+`;

@@ -13,7 +13,7 @@ COPY services/package.json ./
 RUN npm install --only=production
 
 # Copy service and webapp
-COPY app/dist ./app/
+COPY app/dist ./public/
 COPY services/dist ./
 
 EXPOSE 8090

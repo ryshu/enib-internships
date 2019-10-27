@@ -12,6 +12,8 @@ import InternshipTypes from '../../../../src/models/InternshipTypes';
 import { defaultInternshipTypes, defaultInternships } from '../../../../__mocks__/mockData';
 import Internships from '../../../../src/models/Internships';
 
+jest.setTimeout(30000);
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });

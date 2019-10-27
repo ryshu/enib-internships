@@ -3,7 +3,7 @@ import { checkSchema } from 'express-validator';
 
 import * as InternshipsCtrl from '../controllers/internships.ctrl';
 
-import { ID, BusinessID, StudentID, InternshipTypeID } from '../validators/generic.val';
+import { ID, BusinessID, StudentID, InternshipTypeID, FileID } from '../validators/generic.val';
 import { InternshipUpdate, InternshipCreate, InternshipsList } from '../validators/internships.val';
 
 const router = express.Router();
@@ -41,6 +41,14 @@ router.post(
     '/:id/students/:student_id/link',
     checkSchema(Object.assign({}, ID, StudentID)),
     InternshipsCtrl.linkInternshipStudents,
+);
+
+// Files
+router.get('/:id/files', checkSchema(ID), InternshipsCtrl.getInternshipFiles);
+router.post(
+    '/:id/files/:file_id/link',
+    checkSchema(Object.assign({}, ID, FileID)),
+    InternshipsCtrl.linkInternshipFiles,
 );
 
 export default router;

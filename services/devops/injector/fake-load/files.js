@@ -1,6 +1,7 @@
 const faker = require('faker');
 const chalk = require('chalk');
 
+faker.locale = 'fr';
 const Files = require('../../../dist/models/Files').default;
 
 module.exports = async function(quantity = 100, debug = false) {

@@ -20,6 +20,9 @@ export default {
       isInternshipAbroad: "A l'étranger ?",
       isValidated: 'Validé ?',
     },
+    mentors: {
+      fileName: 'professeurs',
+    },
     name: 'Nom',
     postalCode: 'Code postal',
     students: {
@@ -45,16 +48,6 @@ export default {
         required: "Le code postal de l'entreprise est requis",
       },
     },
-  },
-  login: {
-    any: 'any',
-    logIn: 'Connexion',
-    password: 'Mot de passe',
-    thirdparty: 'Ou se connecter avec',
-    thirdpartyTips:
-      'Can not be simulated on local, so please combine you own business simulation! ! !',
-    title: 'Formulaire de connexion',
-    username: "Nom d'utilisateur",
   },
   navbar: {
     dashboard: 'Tableau de bord',
@@ -106,6 +99,20 @@ export default {
         title: "Modification d'un stage",
       },
     },
+    mentors: {
+      create: {
+        msg: 'Le professeur a bien été créé',
+        title: "Création d'un professeur",
+      },
+      delete: {
+        msg: 'Le professeur a bien été supprimé',
+        title: "Suppression d'un professeur",
+      },
+      update: {
+        msg: 'Le professeur a bien été modifié',
+        title: "Modification d'un professeur",
+      },
+    },
     students: {
       create: {
         msg: "L'étudiant a bien été créé",
@@ -128,7 +135,11 @@ export default {
     internships: 'Stages',
     page404: '404',
     profile: 'Profile',
-    students: 'Etudiants',
+    users: {
+      title: 'Utilisateurs',
+      students: 'Etudiants',
+      mentors: 'Professeurs',
+    },
   },
   status: {
     no: 'Non',
@@ -173,6 +184,11 @@ export default {
       isValidated: 'Validaté',
       postalCode: 'Code postal',
       subject: 'Sujets',
+    },
+    mentors: {
+      firstName: 'Prénom',
+      lastName: 'Nom',
+      email: 'Email',
     },
     publish: 'Publier',
     search: 'Recherche',
