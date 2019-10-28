@@ -10,6 +10,10 @@ import { APIError } from '../../utils/error';
 export function getProfile(req: Request, res: Response, next: NextFunction) {
     // Check if any session is defined
     if (req.session && req.session.info) {
+        if (!req.session.info.role) {
+            // Prevent student case to doesn't have any role returned
+            req.session.info.role = 'student';
+        }
         return res.send(req.session.info);
     }
     next(new APIError('Missing cas user info in given session', httpStatus.BAD_REQUEST, 11103));
