@@ -1,6 +1,6 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator } from './generic.val';
+import { paginateValidator, replaceAllExistByOptional } from './generic.val';
 
 import { mentorRoles } from '../../utils/type';
 
@@ -42,37 +42,5 @@ export const MentorCreate: Schema = {
         trim: true,
     },
 };
-export const MentorUpdate: Schema = {
-    firstName: {
-        in: ['body'],
-        isString: { errorMessage: 'First name must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    lastName: {
-        in: ['body'],
-        isString: { errorMessage: 'Last name must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    email: {
-        in: ['body'],
-        isString: { errorMessage: 'Email must be of type string' },
-        isEmail: { errorMessage: 'Email must complain to email struct' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    role: {
-        in: ['body'],
-        isString: { errorMessage: 'Role must be of type string' },
-        isIn: {
-            options: [mentorRoles],
-            errorMessage: `Role must be in [${mentorRoles.join(', ')}]`,
-        },
-        optional: true,
-        trim: true,
-    },
-};
+
+export const MentorUpdate = replaceAllExistByOptional(MentorCreate);
