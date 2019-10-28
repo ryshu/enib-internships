@@ -45,3 +45,21 @@ export const paginateValidator: Schema = {
         toInt: true,
     },
 };
+
+/**
+ * @summary Method used to prevent code duplication in REST API
+ * @param {Schema} schema see express-validator schema
+ */
+export function replaceAllExistByOptional(schema: Schema): Schema {
+    const newSchema = cloneDeep(schema);
+
+    for (const key in newSchema) {
+        if (newSchema.hasOwnProperty(key)) {
+            const elem = newSchema[key];
+            delete elem.exists;
+            elem.optional = true;
+        }
+    }
+
+    return newSchema;
+}
