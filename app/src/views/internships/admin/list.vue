@@ -44,24 +44,24 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.internships.subject')" min-width="150px">
+      <el-table-column :label="$t('table.internships.subject')" min-width="250px">
         <template slot-scope="{ row }">
           <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.internships.country')" min-width="150px">
+      <el-table-column :label="$t('table.internships.country')" min-width="100px">
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.city')" min-width="150px">
+      <el-table-column :label="$t('table.internships.city')" min-width="100px">
         <template slot-scope="{ row }">
           <span>{{ row.city }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.internships.isInternshipAbroad')" min-width="150px">
+      <el-table-column :label="$t('table.internships.isInternshipAbroad')" min-width="70px" align="center">
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isInternshipAbroad ? 'success' : 'danger'"
@@ -69,7 +69,7 @@
           >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="150px">
+      <el-table-column :label="$t('table.internships.isValidated')" min-width="70px" align="center">
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isValidated ? 'success' : 'danger'"
@@ -166,14 +166,14 @@ import {
   updateInternship,
   deleteInternship,
   defaultInternshipData,
-} from '../../api/internships';
-import { IInternship } from '../../api/types';
-import { exportJson2Excel } from '../../utils/excel';
-import { formatJson } from '../../utils';
-import Pagination from '../../components/Pagination/index.vue';
+} from '../../../api/internships';
+import { IInternship } from '../../../api/types';
+import { exportJson2Excel } from '../../../utils/excel';
+import { formatJson } from '../../../utils';
+import Pagination from '../../../components/Pagination/index.vue';
 
 @Component({
-  name: 'Internships',
+  name: 'InternshipsStudentList',
   components: {
     Pagination,
   },
