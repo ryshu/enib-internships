@@ -12,7 +12,6 @@ import {
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
-import { paginate } from '../helpers/pagination.helper';
 import Mentors from '../../models/Mentors';
 
 /**
@@ -26,22 +25,10 @@ export const getCampaigns = (req: Request, res: Response, next: NextFunction): v
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    let max: number;
-    Campaigns.count()
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Campaigns.findAll(paginate({ page, limit }));
-        })
+    Campaigns.findAll()
         .then((campaigns) => {
             if (checkArrayContent(campaigns, next)) {
-                return res.send({
-                    page,
-                    data: campaigns,
-                    length: campaigns.length,
-                    max,
-                });
+                return res.send(campaigns);
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));

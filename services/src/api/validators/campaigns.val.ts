@@ -1,10 +1,8 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator, replaceAllExistByOptional } from './generic.val';
+import { replaceAllExistByOptional } from './generic.val';
 
-export const CampaignList: Schema = {
-    ...paginateValidator,
-};
+export const CampaignList: Schema = {};
 
 export const CampaignCreate: Schema = {
     name: {

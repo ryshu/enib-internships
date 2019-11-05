@@ -12,7 +12,7 @@ export const defaultCampaignData: ICampaigns = {
   maxProposition: 0,
 };
 
-export const getCampaigns = (params: any) =>
+export const getCampaigns = (params?: any) =>
   request({
     url: '/campaigns',
     method: 'get',

@@ -36,13 +36,6 @@ describe('GET /campaigns', () => {
         expect(RESPONSE.status).toBe(204);
     });
 
-    it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/campaigns?page={fgds}`,
-        );
-        expect(RESPONSE.status).toBe(400);
-    });
-
     it('Campaigns_200', async () => {
         const VALID_CAMPAIGN: ICampaignEntity = defaultCampaigns();
 
@@ -51,14 +44,10 @@ describe('GET /campaigns', () => {
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/campaigns`,
         );
         expect(RESPONSE.status).toBe(200);
-        expect(Array.isArray(RESPONSE.body.data)).toBeTruthy();
-        expect(RESPONSE.body).toMatchSnapshot({
-            data: [
-                {
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String),
-                },
-            ],
+        expect(Array.isArray(RESPONSE.body)).toBeTruthy();
+        expect(RESPONSE.body[0]).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
         });
     });
 });
