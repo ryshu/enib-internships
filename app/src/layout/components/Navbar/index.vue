@@ -11,6 +11,18 @@
       <template v-if="device !== 'mobile'">
         <lang-select class="right-menu-item hover-effect" />
       </template>
+      <div class="right-menu-item hover-effect">
+        <el-dropdown trigger="click" class="international" @command="handleSetRole">
+          <div>
+            <svg-icon name="password" class="password-icon" />
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :disabled="role === 'student'" command="student">Etudiant</el-dropdown-item>
+            <el-dropdown-item :disabled="role === 'default'" command="default">Professeur</el-dropdown-item>
+            <el-dropdown-item :disabled="role === 'admin'" command="admin">Admin</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div>
           <i class="el-icon-user-solid"></i>
@@ -21,11 +33,7 @@
             <el-dropdown-item>{{ $t('navbar.profile') }}</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">
-              {{
-              $t('navbar.logOut')
-              }}
-            </span>
+            <span style="display:block;" @click="logout">{{ $t('navbar.logOut') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -58,6 +66,19 @@ export default class extends Vue {
 
   get device() {
     return AppModule.device.toString();
+  }
+
+  get role() {
+    return UserModule.role;
+  }
+
+  private handleSetRole(role: string) {
+    UserModule.changeRole(role).then(() => {
+      this.$message({
+        message: 'Switch Role Success',
+        type: 'success',
+      });
+    });
   }
 
   private toggleSideBar() {
