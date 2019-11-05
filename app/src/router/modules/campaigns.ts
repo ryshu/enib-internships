@@ -26,6 +26,12 @@ const campaignsRouter = {
       meta: { title: 'campaigns.internships', noCache: true },
     },
     {
+      path: 'students/:id(\\w+)',
+      component: () => import('@/views/campaigns/students.vue'),
+      name: `campaigns.students`,
+      meta: { title: 'campaigns.students', noCache: true },
+    },
+    {
       path: 'mentors/:id(\\w+)',
       component: () => import('@/views/campaigns/mentors.vue'),
       name: `campaigns.mentors`,
