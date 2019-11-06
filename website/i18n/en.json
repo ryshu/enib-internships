@@ -26,6 +26,9 @@
       "api-mentoring-propostions": {
         "title": "Mentoring propositions"
       },
+      "api-mentors": {
+        "title": "Mentors"
+      },
       "api-students": {
         "title": "Students"
       },

@@ -21,6 +21,9 @@ We use module [dotenv](https://github.com/motdotla/dotenv) to handle settings in
 | ORM_DROP_DB_ON_START | Set to true if you want to reset database at each server restart | false |
 | ORM_LOGGING | Set to true if you want to debug SQL request | false |
 | SESSION_SECRET | Random alphanum seed | / |
+| CAS_URL | Your [CAS](https://apereo.github.io/cas/6.1.x/index.html) url | / |
+| SERVICE_URL | Your service url (use for redirect) | / |
+| CAS_DEV_MODE | If [CAS](https://apereo.github.io/cas/6.1.x/index.html) is in dev mode | true |
 | HASH_KEY | Random alphanum seed, length=32 | / |
 | INTERNSHIP_ENIB_API_VERSION | Used to change API versionning path | v1 |
 | INTERNSHIP_ENIB_API_PORT | API port | 4000 |
