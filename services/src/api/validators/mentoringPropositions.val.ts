@@ -1,6 +1,6 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator } from './generic.val';
+import { paginateValidator, replaceAllExistByOptional } from './generic.val';
 
 export const MentoringPropositionsList: Schema = {
     ...paginateValidator,
@@ -16,12 +16,6 @@ export const MentoringPropositionCreate: Schema = {
     },
 };
 
-export const MentoringPropositionUpdate: Schema = {
-    comment: {
-        in: ['body'],
-        isString: { errorMessage: 'Comment must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-};
+export const MentoringPropositionUpdate: Schema = replaceAllExistByOptional(
+    MentoringPropositionCreate,
+);

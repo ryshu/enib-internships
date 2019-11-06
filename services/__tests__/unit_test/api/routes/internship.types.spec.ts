@@ -9,8 +9,16 @@ import dbSetup from '../../../../src/configs/setup/database';
 // Import model for pre-operation before asserting API methods
 import InternshipTypes from '../../../../src/models/InternshipTypes';
 
-import { defaultInternshipTypes, defaultInternships } from '../../../../__mocks__/mockData';
+import {
+    defaultInternshipTypes,
+    defaultInternships,
+    defaultCampaigns,
+} from '../../../../__mocks__/mockData';
+
 import Internships from '../../../../src/models/Internships';
+import Campaigns from '../../../../src/models/Campaigns';
+
+jest.setTimeout(30000);
 
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
@@ -298,5 +306,115 @@ describe('POST /internshipTypes/:id/internships/:internship_id/link', () => {
         const internships = await CREATED_INTERNSHIP_TYPES.getInternships();
         expect(internships).toHaveLength(1);
         expect(internships[0].id).toBe(CREATED_INTERNSHIP.id);
+    });
+});
+
+describe('GET /internshipTypes/:id/campaigns', () => {
+    beforeEach(async () => {
+        // Remove all
+        await InternshipTypes.destroy({ where: {} });
+    });
+
+    it('NoBusiness_204', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/10/campaigns`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/{falseEncoding}/campaigns`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('InternshipTypes_200_NoLinkedData', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED.id}/campaigns`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toEqual([]);
+    });
+
+    it('InternshipTypes_200_WithLinkedData', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+        const VALID_CAMPAIGN = defaultCampaigns();
+
+        let CREATED_INTERNSHIP_TYPES = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
+
+        await CREATED_INTERNSHIP_TYPES.addCampaign(CREATED_CAMPAIGN);
+        CREATED_INTERNSHIP_TYPES = await InternshipTypes.findByPk(CREATED_INTERNSHIP_TYPES.id);
+
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED_INTERNSHIP_TYPES.id}/campaigns`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toHaveLength(1);
+    });
+});
+
+describe('POST /internshipTypes/:id/campaigns/:campaign_id/link', () => {
+    beforeEach(async () => {
+        // Remove all
+        await InternshipTypes.destroy({ where: {} });
+    });
+
+    it('NoBusiness_204', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/10/campaigns/20/link`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400_WrongID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/{falseEncoding}/campaigns/10/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('BadRequest_400_WrongInternshipID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/10/campaigns/{falseEncoding}/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('InternshipTypes_200_NoInternship', async () => {
+        // In this case, we check if link a existing Bussiness and an unexisting campaigns work
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+
+        const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED.id}/campaigns/20/link`,
+        );
+        expect(RESPONSE.status).toBe(200);
+    });
+
+    it('InternshipTypes_200_WithInternship', async () => {
+        const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
+        const VALID_CAMPAIGN = defaultCampaigns();
+
+        let CREATED_INTERNSHIP_TYPES = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
+        const CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
+
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/internshipTypes/${CREATED_INTERNSHIP_TYPES.id}/campaigns/${CREATED_CAMPAIGN.id}/link`,
+        );
+
+        // Should answer 200
+        expect(RESPONSE.status).toBe(200);
+
+        // check if business and internship are linked
+        CREATED_INTERNSHIP_TYPES = await InternshipTypes.findByPk(CREATED_INTERNSHIP_TYPES.id);
+
+        const campaigns = await CREATED_INTERNSHIP_TYPES.getCampaigns();
+        expect(campaigns).toHaveLength(1);
+        expect(campaigns[0].id).toBe(CREATED_CAMPAIGN.id);
     });
 });

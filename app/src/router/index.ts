@@ -4,6 +4,10 @@ import Router, { RouteConfig } from 'vue-router';
 /* Layout */
 import Layout from '@/layout/index.vue';
 
+import usersRouter from './modules/users';
+import internshipsRouter from './modules/internships';
+import campaignRouter from './modules/campaigns';
+
 Vue.use(Router);
 
 /*
@@ -50,20 +54,6 @@ export const constantRoutes: RouteConfig[] = [
     ],
   },
   {
-    path: '/login',
-    component: () =>
-      import(/* webpackChunkName: "login" */ '@/views/login/index.vue'),
-    meta: { hidden: true },
-  },
-  {
-    path: '/auth-redirect',
-    component: () =>
-      import(
-        /* webpackChunkName: "auth-redirect" */ '@/views/login/auth-redirect.vue'
-      ),
-    meta: { hidden: true },
-  },
-  {
     path: '/404',
     component: () =>
       import(/* webpackChunkName: "404" */ '@/views/error-page/404.vue'),
@@ -82,66 +72,6 @@ export const constantRoutes: RouteConfig[] = [
           ),
         name: 'Dashboard',
         meta: { title: 'dashboard', icon: 'dashboard', affix: true },
-      },
-    ],
-  },
-  {
-    path: '/internships',
-    component: Layout,
-    children: [
-      {
-        path: 'internships',
-        component: () =>
-          import(
-            /* webpackChunkName: "internships" */ '@/views/internships/index.vue'
-          ),
-        name: 'Businesses',
-        meta: { title: 'internships', icon: 'list', affix: true },
-      },
-    ],
-  },
-  {
-    path: '/campaigns',
-    component: Layout,
-    children: [
-      {
-        path: 'campaigns',
-        component: () =>
-          import(
-            /* webpackChunkName: "campaigns" */ '@/views/campaigns/index.vue'
-          ),
-        name: 'Campaigns',
-        meta: { title: 'campaigns', icon: 'dashboard', affix: true },
-      },
-    ],
-  },
-  {
-    path: '/students',
-    component: Layout,
-    children: [
-      {
-        path: 'students',
-        component: () =>
-          import(
-            /* webpackChunkName: "students" */ '@/views/students/index.vue'
-          ),
-        name: 'Students',
-        meta: { title: 'students', icon: 'peoples', affix: true },
-      },
-    ],
-  },
-  {
-    path: '/businesses',
-    component: Layout,
-    children: [
-      {
-        path: 'businesses',
-        component: () =>
-          import(
-            /* webpackChunkName: "businesses" */ '@/views/businesses/index.vue'
-          ),
-        name: 'Businesses',
-        meta: { title: 'businesses', icon: 'shopping', affix: true },
       },
     ],
   },
@@ -167,6 +97,32 @@ export const constantRoutes: RouteConfig[] = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes: RouteConfig[] = [
+  internshipsRouter,
+  campaignRouter,
+  {
+    path: '/businesses',
+    component: Layout,
+    meta: {
+      roles: ['admin', 'default'],
+    },
+    children: [
+      {
+        path: 'businesses',
+        component: () =>
+          import(
+            /* webpackChunkName: "businesses" */ '@/views/businesses/index.vue'
+          ),
+        name: 'Businesses',
+        meta: {
+          title: 'businesses',
+          icon: 'shopping',
+          affix: true,
+          roles: ['admin', 'default'],
+        },
+      },
+    ],
+  },
+  usersRouter,
   {
     path: '*',
     redirect: '/404',

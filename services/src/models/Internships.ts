@@ -1,7 +1,7 @@
 import * as Sequelize from 'sequelize';
 
 import database from '../configs/instances/database';
-
+import Files from './Files';
 import Businesses from './Businesses';
 import InternshipTypes from './InternshipTypes';
 import Students from './Students';
@@ -13,6 +13,7 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
         category: Sequelize.Association<Internships, InternshipTypes>;
         business: Sequelize.Association<Internships, Businesses>;
         student: Sequelize.Association<Internships, Students>;
+        files: Sequelize.Association<Internships, Files>;
         validatedCampaign: Sequelize.Association<Internships, Campaigns>;
         availableCampaign: Sequelize.Association<Internships, Campaigns>;
     };
@@ -68,9 +69,16 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public setValidatedCampaign: Sequelize.BelongsToSetAssociationMixin<Campaigns, Campaigns['id']>;
     public createValidatedCampaign: Sequelize.BelongsToCreateAssociationMixin<ICampaignEntity>;
 
+    // Files
+    public getFiles: Sequelize.HasManyGetAssociationsMixin<Files>;
+    public addFile: Sequelize.HasManyAddAssociationMixin<Files, Files['id']>;
+    public createFile: Sequelize.HasManyCreateAssociationMixin<IFileEntity>;
+    public hasFile: Sequelize.HasManyHasAssociationMixin<Files, Files['id']>;
+
     public readonly business?: Businesses | Businesses['id'];
     public readonly category?: InternshipTypes | InternshipTypes['id'];
     public readonly student?: Students | Students['id'];
+    public readonly files?: Files[];
     public readonly availableCampaign?: Campaigns | Campaigns['id'];
     public readonly validatedCampaign?: Campaigns | Campaigns['id'];
 }

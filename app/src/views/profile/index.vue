@@ -38,15 +38,13 @@ import UserCard from './components/UserCard.vue';
 export interface IProfile {
   name: string;
   email: string;
-  avatar: string;
-  roles: string;
+  role: string;
 }
 
 const defaultProfile: IProfile = {
   name: 'Loading...',
   email: 'Loading...',
-  avatar: 'Loading...',
-  roles: 'Loading...',
+  role: 'Loading...',
 };
 
 @Component({
@@ -62,20 +60,16 @@ export default class extends Vue {
   private user = defaultProfile;
   private activeTab = 'activity';
 
-  get name() {
-    return UserModule.name;
+  get fullName() {
+    return `${UserModule.firstName} ${UserModule.lastName}`;
   }
 
   get email() {
     return UserModule.email;
   }
 
-  get avatar() {
-    return UserModule.avatar;
-  }
-
-  get roles() {
-    return UserModule.roles;
+  get role() {
+    return UserModule.role;
   }
 
   created() {
@@ -84,10 +78,9 @@ export default class extends Vue {
 
   private getUser() {
     this.user = {
-      name: this.name,
+      name: this.fullName,
       email: this.email,
-      avatar: this.avatar,
-      roles: this.roles.join(' | '),
+      role: this.role,
     };
   }
 }

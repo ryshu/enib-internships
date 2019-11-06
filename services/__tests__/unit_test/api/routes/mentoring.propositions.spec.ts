@@ -12,6 +12,8 @@ import MentoringPropositions from '../../../../src/models/MentoringPropositions'
 
 import { defaultMentoringPropositions, defaultCampaigns } from '../../../../__mocks__/mockData';
 
+jest.setTimeout(30000);
+
 beforeAll((done) => {
     dbSetup.then(() => done()).catch((e) => done(e));
 });

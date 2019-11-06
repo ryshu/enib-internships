@@ -3,7 +3,7 @@ import { checkSchema } from 'express-validator';
 
 import * as InternshipsCtrl from '../controllers/internships.ctrl';
 
-import { ID, BusinessID, StudentID, InternshipTypeID, CampaignID } from '../validators/generic.val';
+import { ID, BusinessID, StudentID, InternshipTypeID, FileID, CampaignID } from '../validators/generic.val';
 import { InternshipUpdate, InternshipCreate, InternshipsList } from '../validators/internships.val';
 import Internships from '../../models/Internships';
 
@@ -42,6 +42,14 @@ router.post(
     '/:id/students/:student_id/link',
     checkSchema(Object.assign({}, ID, StudentID)),
     InternshipsCtrl.linkInternshipStudents,
+);
+
+// Files
+router.get('/:id/files', checkSchema(ID), InternshipsCtrl.getInternshipFiles);
+router.post(
+    '/:id/files/:file_id/link',
+    checkSchema(Object.assign({}, ID, FileID)),
+    InternshipsCtrl.linkInternshipFiles,
 );
 
 // Available Campaigns

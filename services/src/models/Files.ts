@@ -1,8 +1,11 @@
-import { Model, DataTypes } from 'sequelize';
-
+import * as Sequelize from 'sequelize';
+import Internships from './Internships';
 import database from '../configs/instances/database';
 
-class Files extends Model implements IFileEntity {
+class Files extends Sequelize.Model implements IFileEntity {
+    public static associations: {
+        internship: Sequelize.Association<Files, Internships>;
+    };
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
 
     public name: string;
@@ -13,35 +16,44 @@ class Files extends Model implements IFileEntity {
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+
+    public getInternship: Sequelize.BelongsToGetAssociationMixin<Internships>;
+    public setInternship: Sequelize.BelongsToSetAssociationMixin<Internships, Internships['id']>;
+    public createInternship: Sequelize.BelongsToCreateAssociationMixin<IInternshipEntity>;
+
+    public readonly internship?: Internships[];
 }
 
 Files.init(
     {
         id: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             autoIncrement: true,
             primaryKey: true,
         },
         name: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
         },
         size: {
-            type: DataTypes.INTEGER.UNSIGNED,
+            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
         },
         type: {
-            type: new DataTypes.STRING(20),
+            type: new Sequelize.DataTypes.STRING(20),
             allowNull: false,
         },
         path: {
-            type: new DataTypes.STRING(128),
+            type: new Sequelize.DataTypes.STRING(128),
             allowNull: false,
         },
     },
     {
         tableName: 'files',
         sequelize: database,
+        defaultScope: {
+            attributes: { exclude: ['internshipId'] },
+        },
     },
 );
 

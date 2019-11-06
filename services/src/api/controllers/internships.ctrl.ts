@@ -7,6 +7,7 @@ import Internships from '../../models/Internships';
 import Businesses from '../../models/Businesses';
 import InternshipTypes from '../../models/InternshipTypes';
 import Students from '../../models/Students';
+import Files from '../../models/Files';
 
 import { paginate } from '../helpers/pagination.helper';
 import Campaigns from '../../models/Campaigns';
@@ -96,6 +97,7 @@ export const getInternship = (req: Request, res: Response, next: NextFunction): 
             { model: Businesses, as: 'business' },
             { model: InternshipTypes, as: 'category' },
             { model: Students, as: 'student' },
+            { model: Files, as: 'files' },
         ],
     })
         .then((val) => {
@@ -323,6 +325,43 @@ export const linkInternshipStudents = (req: Request, res: Response, next: NextFu
         .then(async (val) => {
             if (checkContent(val, next)) {
                 await val.addInternship(Number(req.params.id));
+                return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * GET /internship/:id/files
+ * Used to get all files of an internship
+ */
+export const getInternshipFiles = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Internships.findByPk(req.params.id, { include: [{ model: Files, as: 'files' }] })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.files);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * GET /internships/:id/files/:files_id/link
+ * Used to get all files of a internships
+ */
+export const linkInternshipFiles = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Internships.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                await val.addFile(Number(req.params.file_id));
                 return res.sendStatus(httpStatus.OK);
             }
         })

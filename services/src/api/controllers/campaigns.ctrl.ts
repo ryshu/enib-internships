@@ -5,6 +5,7 @@ import httpStatus from 'http-status-codes';
 
 import Campaigns from '../../models/Campaigns';
 import MentoringPropositions from '../../models/MentoringPropositions';
+import InternshipTypes from '../../models/InternshipTypes';
 import Internships from '../../models/Internships';
 
 import {
@@ -13,7 +14,9 @@ import {
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
-import { paginate } from '../helpers/pagination.helper';
+import Mentors from '../../models/Mentors';
+
+import { APIError } from '../../utils/error';
 
 /**
  * GET /campaigns
@@ -26,22 +29,10 @@ export const getCampaigns = (req: Request, res: Response, next: NextFunction): v
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    let max: number;
-    Campaigns.count()
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Campaigns.findAll(paginate({ page, limit }));
-        })
+    Campaigns.findAll({ include: [{ model: InternshipTypes, as: 'category' }] })
         .then((campaigns) => {
             if (checkArrayContent(campaigns, next)) {
-                return res.send({
-                    page,
-                    data: campaigns,
-                    length: campaigns.length,
-                    max,
-                });
+                return res.send(campaigns);
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -51,7 +42,7 @@ export const getCampaigns = (req: Request, res: Response, next: NextFunction): v
  * POST /campaignss
  * Used to create a new campaign entry
  */
-export const postCampaign = (req: Request, res: Response, next: NextFunction): void => {
+export const postCampaign = async (req: Request, res: Response, next: NextFunction) => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -67,9 +58,26 @@ export const postCampaign = (req: Request, res: Response, next: NextFunction): v
         maxProposition: req.body.maxProposition ? req.body.maxProposition : 0,
     };
 
-    Campaigns.create(campaign)
-        .then((created) => res.send(created))
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+    try {
+        const category = await InternshipTypes.findByPk(req.body.category_id);
+        if (!category) {
+            next(
+                new APIError(
+                    `Couldn't find given category in database`,
+                    httpStatus.BAD_REQUEST,
+                    11103,
+                ),
+            );
+            return;
+        }
+
+        const created = await Campaigns.create(campaign);
+        await created.setCategory(category);
+
+        res.send(created);
+    } catch (error) {
+        UNPROCESSABLE_ENTITY(next, error);
+    }
 };
 
 /**
@@ -84,7 +92,10 @@ export const getCampaign = (req: Request, res: Response, next: NextFunction): vo
     }
 
     Campaigns.findByPk(req.params.id, {
-        include: [{ model: MentoringPropositions, as: 'propositions' }],
+        include: [
+            { model: MentoringPropositions, as: 'propositions' },
+            { model: InternshipTypes, as: 'category' },
+        ],
     })
         .then((val) => {
             if (checkContent(val, next)) {
@@ -106,7 +117,7 @@ export const putCampaign = (req: Request, res: Response, next: NextFunction): vo
     }
 
     Campaigns.findByPk(req.params.id)
-        .then((campaign) => {
+        .then(async (campaign) => {
             if (!checkContent(campaign, next)) {
                 return undefined;
             }
@@ -137,6 +148,21 @@ export const putCampaign = (req: Request, res: Response, next: NextFunction): vo
                     req.body.maxProposition ? req.body.maxProposition : 0,
                 );
             }
+
+            if (req.body.category_id !== undefined && !Number.isNaN(Number(req.body.category_id))) {
+                try {
+                    const category = await InternshipTypes.findByPk(req.body.category_id);
+                    if (!category) {
+                        return undefined;
+                    }
+
+                    await campaign.setCategory(category);
+                } catch (error) {
+                    UNPROCESSABLE_ENTITY(next, error);
+                    return undefined;
+                }
+            }
+
             return campaign.save();
         })
         .then((updated) => {
@@ -315,4 +341,104 @@ export const linkValidatedCampaignInternships = (
           }
       })
       .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /campaigns/:id/mentors
+ * Used to get all mentors of a campaign
+ */
+export const getCampaignMentors = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Campaigns.findByPk(req.params.id, {
+        include: [{ model: Mentors, as: 'mentors' }],
+    })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.mentors);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /campaigns/:id/mentors/:mentor_id/link
+ * Used to link a mentor with a campaign
+ */
+export const linkCampaignMentor = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Campaigns.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.addMentor(Number(req.params.mentor_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /campaigns/:id/internshipTypes
+ * Used to select a campaign by ID and return his category
+ */
+export const getCampaignInternshipType = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Campaigns.findByPk(req.params.id, { include: [{ model: InternshipTypes, as: 'category' }] })
+        .then((val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.category);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /campaigns/:id/internshipTypes/:internship_type_id/link
+ * Used to create a link between campaigns and internshipsTypes
+ */
+export const linkCampaignInternshipType = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Campaigns.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.setCategory(Number(req.params.internship_type_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
