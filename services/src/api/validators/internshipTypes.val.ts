@@ -1,4 +1,5 @@
 import { Schema } from 'express-validator';
+import { replaceAllExistByOptional } from './generic.val';
 
 export const InternshipTypeCreate: Schema = {
     label: {
@@ -10,12 +11,4 @@ export const InternshipTypeCreate: Schema = {
     },
 };
 
-export const InternshipTypeUpdate: Schema = {
-    label: {
-        in: ['body'],
-        isString: { errorMessage: 'Label must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-};
+export const InternshipTypeUpdate = replaceAllExistByOptional(InternshipTypeCreate);

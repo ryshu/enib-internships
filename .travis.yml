@@ -20,6 +20,9 @@ env:
   - MYSQL_PASSWORD=""
   - ORM_DROP_DB_ON_START=true
   - ORM_LOGGING=false
+  - CAS_URL=https://cas.enib.fr
+  - SERVICE_URL=https://pri-stages.enib.fr
+  - CAS_DEV_MODE=true
   - SESSION_SECRET=ashdfjhasdlkjfhalksdjhflak
   - HASH_KEY=gLgk8Nt7ograVzCsgQz1JM05QJtpzDbk
   - INTERNSHIP_ENIB_API_VERSION=v1

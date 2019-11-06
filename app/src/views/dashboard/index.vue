@@ -5,29 +5,45 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { UserModule } from '../../store/modules/user';
+
 import AdminDashboard from './admin/index.vue';
-import EditorDashboard from './editor/index.vue';
+import MentorDashboard from './mentor/index.vue';
+import StudentDashboard from './student/index.vue';
 
 @Component({
   name: 'Dashboard',
   components: {
     AdminDashboard,
-    EditorDashboard,
+    MentorDashboard,
+    StudentDashboard,
   },
 })
 export default class extends Vue {
-  private currentRole = 'admin-dashboard'
+  private currentRole = 'admin-dashboard';
 
-  get roles() {
-    return UserModule.roles;
+  get role() {
+    return UserModule.role;
+  }
+
+  changeRole(role: string) {
+    if (role === 'admin') {
+      this.currentRole = 'admin-dashboard';
+    } else if(role === 'default') {
+      this.currentRole = 'mentor-dashboard';
+    } else {
+      this.currentRole = 'student-dashboard';
+    }
+  }
+
+  @Watch('role')
+  onRoleChange(val: string) {
+    this.changeRole(val);
   }
 
   created() {
-    if (!this.roles.includes('admin')) {
-      this.currentRole = 'editor-dashboard';
-    }
+    this.changeRole(this.role);
   }
 }
 </script>

@@ -3,10 +3,14 @@ import * as Sequelize from 'sequelize';
 import database from '../configs/instances/database';
 
 import MPS from './MentoringPropositions';
+import Mentors from './Mentors';
+import InternshipTypes from './InternshipTypes';
 
 class Campaigns extends Sequelize.Model implements ICampaignEntity {
     public static associations: {
         propositions: Sequelize.Association<Campaigns, MPS>;
+        mentors: Sequelize.Association<Campaigns, Mentors>;
+        category: Sequelize.Association<Campaigns, InternshipTypes>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -28,7 +32,21 @@ class Campaigns extends Sequelize.Model implements ICampaignEntity {
     public hasProposition: Sequelize.HasManyHasAssociationMixin<MPS, MPS['id']>;
     public countPropositions: Sequelize.HasManyCountAssociationsMixin;
 
+    public getMentors: Sequelize.BelongsToManyGetAssociationsMixin<Mentors>;
+    public addMentor: Sequelize.BelongsToManyAddAssociationMixin<Mentors, Mentors['id']>;
+    public hasMentor: Sequelize.BelongsToManyHasAssociationMixin<Mentors, Mentors['id']>;
+    public countMentors: Sequelize.BelongsToManyCountAssociationsMixin;
+
+    public getCategory: Sequelize.BelongsToGetAssociationMixin<InternshipTypes>;
+    public setCategory: Sequelize.BelongsToSetAssociationMixin<
+        InternshipTypes,
+        InternshipTypes['id']
+    >;
+    public createCategory: Sequelize.BelongsToCreateAssociationMixin<IInternshipTypeEntity>;
+
     public readonly propositions?: MPS[];
+    public readonly mentors?: Mentors[];
+    public readonly category: InternshipTypes;
 }
 
 Campaigns.init(
@@ -43,7 +61,7 @@ Campaigns.init(
             allowNull: false,
         },
         description: {
-            type: new Sequelize.DataTypes.STRING(),
+            type: new Sequelize.DataTypes.TEXT(),
             allowNull: false,
         },
         startAt: {
@@ -69,6 +87,9 @@ Campaigns.init(
     {
         tableName: 'campaigns',
         sequelize: database,
+        defaultScope: {
+            attributes: { exclude: ['categoryId'] },
+        },
     },
 );
 

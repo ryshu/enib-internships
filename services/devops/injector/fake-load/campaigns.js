@@ -1,13 +1,32 @@
 const faker = require('faker');
 const chalk = require('chalk');
 
+faker.locale = 'fr';
 const Campaigns = require('../../../dist/models/Campaigns').default;
+const InternshipTypes = require('../../../dist/models/InternshipTypes').default;
+
+const categories = require('../../../dist/configs/data/categories').defaultCategories;
 
 module.exports = async function(quantity = 100, debug = false) {
+    const q = quantity > categories.length ? categories.length : quantity;
+
+    // Get all types to associate a type to our fake categories
+    const types = await InternshipTypes.findAll();
+    // If label doesn't exist, inject them
+    if (types.length !== categories.length) {
+        const todo = Object.assign([], categories);
+        types.forEach((t) => {
+            const found = todo.findIndex((td) => td === t.label);
+            if (found !== -1) todo.splice(found, 1);
+        });
+        await Promise.all(todo.map((t) => InternshipTypes.create({ label: t })));
+    }
+
     const promises = [];
-    for (let i = 0; i < quantity; i++) {
+    for (let i = 0; i < q; i++) {
         const campaign = {
             name: faker.lorem.words(3),
+            description: faker.lorem.paragraphs(3),
             startAt: faker.random.number({ min: 1571347682, max: 1576618082 }),
             endAt: faker.random.number({ min: 1576618082, max: 1581974882 }),
             semester: faker.random.arrayElement([
@@ -27,7 +46,8 @@ module.exports = async function(quantity = 100, debug = false) {
         promises.push(
             new Promise(async (resolve, reject) => {
                 try {
-                    await Campaigns.create(campaign);
+                    const created = await Campaigns.create(campaign);
+                    await created.setCategory(types[i].id);
                     if (debug)
                         console.info(chalk.white(`Inject campaign "${campaign.name}" in database`));
 
@@ -40,5 +60,5 @@ module.exports = async function(quantity = 100, debug = false) {
     }
 
     await Promise.all(promises);
-    console.info(chalk.blue(`Successfully inject ${quantity} campaigns in database`));
+    console.info(chalk.blue(`Successfully inject ${q} campaigns in database`));
 };

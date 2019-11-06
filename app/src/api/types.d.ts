@@ -64,9 +64,18 @@ export interface IUserData {
   name: string;
   email: string;
   phone: string;
-  avatar: string;
-  introduction: string;
-  roles: string[];
+  role: string;
+}
+
+export declare interface IMentor {
+  id?: number;
+
+  firstName: string;
+  lastName: string;
+  email: string;
+
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export declare interface ICampaigns {
