@@ -63,7 +63,7 @@ Object {
 }
 `;
 
-exports[`POST /files/:id/internships/:internship_id/link Files_200_WithBusiness 1`] = `
+exports[`POST /files/:id/internships/:internship_id/link Files_200_WithInternship 1`] = `
 Object {
   "additional": null,
   "address": "TEST",

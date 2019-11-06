@@ -8,12 +8,14 @@ import { StudentUpdate, StudentCreate, StudentList } from '../validators/student
 
 const router = express.Router();
 
+// Students
 router.get('', checkSchema(StudentList), StudentsCtrl.getStudents);
 router.post('', checkSchema(StudentCreate), StudentsCtrl.postStudent);
 router.get('/:id', checkSchema(ID), StudentsCtrl.getStudent);
 router.put('/:id', checkSchema(Object.assign({}, ID, StudentUpdate)), StudentsCtrl.putStudent);
 router.delete('/:id', checkSchema(ID), StudentsCtrl.deleteStudent);
 
+// Students internships
 router.get('/:id/internships', checkSchema(ID), StudentsCtrl.getStudentInternships);
 router.post(
     '/:id/internships/:internship_id/link',

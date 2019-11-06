@@ -19,12 +19,14 @@ class InternshipTypes extends Sequelize.Model implements IInternshipTypeEntity {
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
+    // Internships
     public getInternships: Sequelize.HasManyGetAssociationsMixin<Internships>;
     public addInternship: Sequelize.HasManyAddAssociationMixin<Internships, Internships['id']>;
     public createInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
     public hasInternship: Sequelize.HasManyHasAssociationMixin<Internships, Internships['id']>;
     public countInternships: Sequelize.HasManyCountAssociationsMixin;
 
+    // Campaigns
     public getCampaigns: Sequelize.HasManyGetAssociationsMixin<Campaigns>;
     public addCampaign: Sequelize.HasManyAddAssociationMixin<Campaigns, Campaigns['id']>;
     public createCampaign: Sequelize.HasManyCreateAssociationMixin<ICampaignEntity>;

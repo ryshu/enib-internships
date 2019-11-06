@@ -3,9 +3,15 @@ import { checkSchema } from 'express-validator';
 
 import * as InternshipsCtrl from '../controllers/internships.ctrl';
 
-import { ID, BusinessID, StudentID, InternshipTypeID, FileID, CampaignID } from '../validators/generic.val';
+import {
+    ID,
+    BusinessID,
+    StudentID,
+    InternshipTypeID,
+    FileID,
+    CampaignID,
+} from '../validators/generic.val';
 import { InternshipUpdate, InternshipCreate, InternshipsList } from '../validators/internships.val';
-import Internships from '../../models/Internships';
 
 const router = express.Router();
 
@@ -36,7 +42,7 @@ router.post(
     InternshipsCtrl.linkInternshipInternshipTypes,
 );
 
-// Students
+// Internships Student
 router.get('/:id/students', checkSchema(ID), InternshipsCtrl.getInternshipStudent);
 router.post(
     '/:id/students/:student_id/link',
@@ -44,7 +50,7 @@ router.post(
     InternshipsCtrl.linkInternshipStudents,
 );
 
-// Files
+// Internships Files
 router.get('/:id/files', checkSchema(ID), InternshipsCtrl.getInternshipFiles);
 router.post(
     '/:id/files/:file_id/link',
@@ -52,18 +58,26 @@ router.post(
     InternshipsCtrl.linkInternshipFiles,
 );
 
-// Available Campaigns
-router.get('/:id/availableCampaign', checkSchema(ID), InternshipsCtrl.geAvailabletInternshipCampaign);
+// Internships Available Campaign
+router.get(
+    '/:id/availableCampaigns',
+    checkSchema(ID),
+    InternshipsCtrl.getAvailabletInternshipCampaign,
+);
 router.post(
-    '/:id/availableCampaign/:campaign_id/link',
+    '/:id/availableCampaigns/:campaign_id/link',
     checkSchema(Object.assign({}, ID, CampaignID)),
     InternshipsCtrl.linkAvailableCampaignInternships,
 );
 
-// Validated Campaigns
-router.get('/:id/validatedCampaign', checkSchema(ID), InternshipsCtrl.geValidatedInternshipCampaign);
+// Internships Validated Campaign
+router.get(
+    '/:id/validatedCampaigns',
+    checkSchema(ID),
+    InternshipsCtrl.getValidatedInternshipCampaign,
+);
 router.post(
-    '/:id/validatedCampaign/:campaign_id/link',
+    '/:id/validatedCampaigns/:campaign_id/link',
     checkSchema(Object.assign({}, ID, CampaignID)),
     InternshipsCtrl.linkValidatedCampaignInternships,
 );

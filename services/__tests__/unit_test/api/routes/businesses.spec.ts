@@ -12,6 +12,8 @@ import Internships from '../../../../src/models/Internships';
 
 import { defaultBusiness, defaultInternships } from '../../../../__mocks__/mockData';
 
+const baseURL = `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`;
+
 jest.setTimeout(30000);
 
 beforeAll((done) => {
@@ -25,16 +27,12 @@ describe('GET /businesses', () => {
     });
 
     it('NoBusiness_204', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/businesses`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses?limit=Nan`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/businesses?limit=Nan`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -42,9 +40,7 @@ describe('GET /businesses', () => {
         const VALID_BUSINESS = defaultBusiness();
 
         await Businesses.create(VALID_BUSINESS);
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/businesses`);
         expect(RESPONSE.status).toBe(200);
         expect(Array.isArray(RESPONSE.body.data)).toBeTruthy();
         expect(RESPONSE.body).toMatchSnapshot({
@@ -60,9 +56,7 @@ describe('GET /businesses', () => {
 
 describe('POST /businesses', () => {
     it('NoBody_400', async () => {
-        const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses`,
-        );
+        const RESPONSE = await request(app).post(`${baseURL}/businesses`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -70,7 +64,7 @@ describe('POST /businesses', () => {
         const VALID_BUSINESS = defaultBusiness();
 
         const RESPONSE = await request(app)
-            .post(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses`)
+            .post(`${baseURL}/businesses`)
             .send(VALID_BUSINESS);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
@@ -88,16 +82,12 @@ describe('GET /businesses/:id', () => {
     });
 
     it('NoBusiness_204', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/10`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/businesses/10`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/{falseEncoding}`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/businesses/{falseEncoding}`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -105,9 +95,7 @@ describe('GET /businesses/:id', () => {
         const VALID_BUSINESS = defaultBusiness();
 
         const CREATED = await Businesses.create(VALID_BUSINESS);
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/${CREATED.id}`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/businesses/${CREATED.id}`);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -124,16 +112,12 @@ describe('PUT /businesses/:id', () => {
     });
 
     it('NoBusiness_204', async () => {
-        const RESPONSE = await request(app).put(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/10`,
-        );
+        const RESPONSE = await request(app).put(`${baseURL}/businesses/10`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).put(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/{falseEncoding}`,
-        );
+        const RESPONSE = await request(app).put(`${baseURL}/businesses/{falseEncoding}`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -146,7 +130,7 @@ describe('PUT /businesses/:id', () => {
         VALID_BUSINESS.additional = 'additional data';
 
         const RESPONSE = await request(app)
-            .put(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/${CREATED.id}`)
+            .put(`${baseURL}/businesses/${CREATED.id}`)
             .send(VALID_BUSINESS);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
@@ -162,7 +146,7 @@ describe('PUT /businesses/:id', () => {
         const CREATED = await Businesses.create(VALID_BUSINESS);
 
         const RESPONSE = await request(app)
-            .put(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/${CREATED.id}`)
+            .put(`${baseURL}/businesses/${CREATED.id}`)
             .send({});
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
@@ -180,16 +164,12 @@ describe('DELETE /businesses/:id', () => {
     });
 
     it('NoBusiness_200', async () => {
-        const RESPONSE = await request(app).delete(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/10`,
-        );
+        const RESPONSE = await request(app).delete(`${baseURL}/businesses/10`);
         expect(RESPONSE.status).toBe(200);
     });
 
     it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).delete(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/{falseEncoding}`,
-        );
+        const RESPONSE = await request(app).delete(`${baseURL}/businesses/{falseEncoding}`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -198,9 +178,7 @@ describe('DELETE /businesses/:id', () => {
 
         const CREATED = await Businesses.create(VALID_BUSINESS);
 
-        const RESPONSE = await request(app).delete(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/${CREATED.id}`,
-        );
+        const RESPONSE = await request(app).delete(`${baseURL}/businesses/${CREATED.id}`);
         expect(RESPONSE.status).toBe(200);
     });
 });
@@ -212,15 +190,13 @@ describe('GET /businesses/:id/internships', () => {
     });
 
     it('NoBusiness_204', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/10/internships`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/businesses/10/internships`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400', async () => {
         const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/{falseEncoding}/internships`,
+            `${baseURL}/businesses/{falseEncoding}/internships`,
         );
         expect(RESPONSE.status).toBe(400);
     });
@@ -229,25 +205,23 @@ describe('GET /businesses/:id/internships', () => {
         const VALID_BUSINESS = defaultBusiness();
 
         const CREATED = await Businesses.create(VALID_BUSINESS);
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/${CREATED.id}/internships`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/businesses/${CREATED.id}/internships`);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toEqual([]);
     });
 
     it('Businesses_200_WithLinkedData', async () => {
-        const VALID_BUSINESS = defaultBusiness();
         const VALID_INTERNSHIP = defaultInternships();
+        const VALID_BUSINESS = defaultBusiness();
 
-        let CREATED_BUSINESS = await Businesses.create(VALID_BUSINESS);
         const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+        let CREATED_BUSINESS = await Businesses.create(VALID_BUSINESS);
 
         await CREATED_BUSINESS.addInternship(CREATED_INTERNSHIP);
         CREATED_BUSINESS = await Businesses.findByPk(CREATED_BUSINESS.id);
 
         const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/${CREATED_BUSINESS.id}/internships`,
+            `${baseURL}/businesses/${CREATED_BUSINESS.id}/internships`,
         );
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toHaveLength(1);
@@ -261,22 +235,20 @@ describe('POST /businesses/:id/internships/:internship_id/link', () => {
     });
 
     it('NoBusiness_204', async () => {
-        const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/10/internships/20/link`,
-        );
+        const RESPONSE = await request(app).post(`${baseURL}/businesses/10/internships/20/link`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400_WrongID', async () => {
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/{falseEncoding}/internships/10/link`,
+            `${baseURL}/businesses/{falseEncoding}/internships/10/link`,
         );
         expect(RESPONSE.status).toBe(400);
     });
 
     it('BadRequest_400_WrongInternshipID', async () => {
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/10/internships/{falseEncoding}/link`,
+            `${baseURL}/businesses/10/internships/{falseEncoding}/link`,
         );
         expect(RESPONSE.status).toBe(400);
     });
@@ -287,20 +259,20 @@ describe('POST /businesses/:id/internships/:internship_id/link', () => {
 
         const CREATED = await Businesses.create(VALID_BUSINESS);
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/${CREATED.id}/internships/20/link`,
+            `${baseURL}/businesses/${CREATED.id}/internships/20/link`,
         );
         expect(RESPONSE.status).toBe(200);
     });
 
     it('Businesses_200_WithInternship', async () => {
-        const VALID_BUSINESS = defaultBusiness();
         const VALID_INTERNSHIP = defaultInternships();
+        const VALID_BUSINESS = defaultBusiness();
 
-        let CREATED_BUSINESS = await Businesses.create(VALID_BUSINESS);
         const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+        let CREATED_BUSINESS = await Businesses.create(VALID_BUSINESS);
 
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/businesses/${CREATED_BUSINESS.id}/internships/${CREATED_INTERNSHIP.id}/link`,
+            `${baseURL}/businesses/${CREATED_BUSINESS.id}/internships/${CREATED_INTERNSHIP.id}/link`,
         );
 
         // Should answer 200

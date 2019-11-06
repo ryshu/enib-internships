@@ -43,6 +43,7 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
+    // Business
     public getBusiness: Sequelize.BelongsToGetAssociationMixin<Businesses>;
     public setBusiness: Sequelize.BelongsToSetAssociationMixin<Businesses, Businesses['id']>;
     public createBusiness: Sequelize.BelongsToCreateAssociationMixin<IBusinessEntity>;
@@ -151,7 +152,15 @@ Internships.init(
         tableName: 'internships',
         sequelize: database,
         defaultScope: {
-            attributes: { exclude: ['businessId', 'studentId', 'categoryId'] },
+            attributes: {
+                exclude: [
+                    'businessId',
+                    'studentId',
+                    'categoryId',
+                    'availableCampaignId',
+                    'validatedCampaignId',
+                ],
+            },
         },
     },
 );

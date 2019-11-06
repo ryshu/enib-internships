@@ -246,25 +246,25 @@ export const linkCampaignMentoringPropositions = (
  * Used to get all availableInternships of a campaign
  */
 export const getAvailableCampaignInternships = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
+    req: Request,
+    res: Response,
+    next: NextFunction,
 ): void => {
-  // @see validator + router
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return BAD_REQUEST_VALIDATOR(next, errors);
-  }
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
 
-  Campaigns.findByPk(req.params.id, {
-      include: [{ model: Internships, as: 'availableInternships' }],
-  })
-      .then(async (val) => {
-          if (checkContent(val, next)) {
-              return res.send(val.availableInternships);
-          }
-      })
-      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+    Campaigns.findByPk(req.params.id, {
+        include: [{ model: Internships, as: 'availableInternships' }],
+    })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.availableInternships);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -272,24 +272,28 @@ export const getAvailableCampaignInternships = (
  * Used to link an internship with an availableCampaign
  */
 export const linkAvailableCampaignInternships = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
+    req: Request,
+    res: Response,
+    next: NextFunction,
 ): void => {
-  // @see validator + router
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return BAD_REQUEST_VALIDATOR(next, errors);
-  }
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
 
-  Campaigns.findByPk(req.params.id)
-      .then(async (val) => {
-          if (checkContent(val, next)) {
-              await val.addAvailableInternship(Number(req.params.internship_id));
-              return res.sendStatus(httpStatus.OK);
-          }
-      })
-      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+    Campaigns.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.addAvailableInternship(Number(req.params.internship_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -297,50 +301,54 @@ export const linkAvailableCampaignInternships = (
  * Used to get all validatedInternships of a campaign
  */
 export const getValidatedCampaignInternships = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
+    req: Request,
+    res: Response,
+    next: NextFunction,
 ): void => {
-  // @see validator + router
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return BAD_REQUEST_VALIDATOR(next, errors);
-  }
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
 
-  Campaigns.findByPk(req.params.id, {
-      include: [{ model: Internships, as: 'validatedInternships' }],
-  })
-      .then(async (val) => {
-          if (checkContent(val, next)) {
-              return res.send(val.validatedInternships);
-          }
-      })
-      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+    Campaigns.findByPk(req.params.id, {
+        include: [{ model: Internships, as: 'validatedInternships' }],
+    })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.validatedInternships);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
- * GET /validatedCampaigns/:id/internships/:validatedCampaign_id/link
+ * GET /campaigns/:id/validatedCampaigns/:internship_id/link
  * Used to link an internship with a ValidatedCampaign
  */
 export const linkValidatedCampaignInternships = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
+    req: Request,
+    res: Response,
+    next: NextFunction,
 ): void => {
-  // @see validator + router
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return BAD_REQUEST_VALIDATOR(next, errors);
-  }
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
 
-  Campaigns.findByPk(req.params.id)
-      .then(async (val) => {
-          if (checkContent(val, next)) {
-              await val.addValidatedInternship(Number(req.params.internship_id));
-              return res.sendStatus(httpStatus.OK);
-          }
-      })
-      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+    Campaigns.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.addValidatedInternship(Number(req.params.internship_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**

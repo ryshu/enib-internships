@@ -17,6 +17,7 @@ class MentoringPropositions extends Sequelize.Model implements IMentoringProposi
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
+    // Campaign
     public getCampaign: Sequelize.BelongsToGetAssociationMixin<Campaigns>;
     public setCampaign: Sequelize.BelongsToSetAssociationMixin<Campaigns, Campaigns['id']>;
     public createCampaign: Sequelize.BelongsToCreateAssociationMixin<ICampaignEntity>;

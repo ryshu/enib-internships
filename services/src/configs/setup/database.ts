@@ -51,6 +51,6 @@ Internships.belongsTo(Campaigns, { as: 'validatedCampaign', foreignKey: 'validat
 
 // One Available Campaign to many Internships
 Campaigns.hasMany(Internships, { as: 'availableInternships', foreignKey: 'availableCampaignId' });
-Internships.belongsTo(Campaigns, { as: 'availableCampaign', foreignKey: 'availableCampaignId'});
+Internships.belongsTo(Campaigns, { as: 'availableCampaign', foreignKey: 'availableCampaignId' });
 
 export default database.sync({ force: process.env.ORM_DROP_DB_ON_START === 'true' });
