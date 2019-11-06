@@ -201,13 +201,12 @@ describe('GET /businesses/:id/internships', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Businesses_200_NoLinkedData', async () => {
+    it('Businesses_204_NoLinkedData', async () => {
         const VALID_BUSINESS = defaultBusiness();
 
         const CREATED = await Businesses.create(VALID_BUSINESS);
         const RESPONSE = await request(app).get(`${baseURL}/businesses/${CREATED.id}/internships`);
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Businesses_200_WithLinkedData', async () => {
@@ -217,7 +216,7 @@ describe('GET /businesses/:id/internships', () => {
         const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
         let CREATED_BUSINESS = await Businesses.create(VALID_BUSINESS);
 
-        await CREATED_BUSINESS.addInternship(CREATED_INTERNSHIP);
+        await CREATED_BUSINESS.addInternship(CREATED_INTERNSHIP.id);
         CREATED_BUSINESS = await Businesses.findByPk(CREATED_BUSINESS.id);
 
         const RESPONSE = await request(app).get(

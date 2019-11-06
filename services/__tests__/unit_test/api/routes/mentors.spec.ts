@@ -258,7 +258,7 @@ describe('GET /mentors/:id/campaigns', () => {
         let CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
         const CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
 
-        await CREATED_MENTOR.addCampaign(CREATED_CAMPAIGN);
+        await CREATED_MENTOR.addCampaign(CREATED_CAMPAIGN.id);
         CREATED_MENTOR = await Mentors.findByPk(CREATED_MENTOR.id);
 
         const RESPONSE = await request(app).get(
@@ -350,15 +350,14 @@ describe('GET /mentors/:id/propositions', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Mentors_200_NoLinkedData', async () => {
+    it('Mentors_204_NoLinkedData', async () => {
         const VALID_MENTOR = defaultMentors();
 
         const CREATED = await Mentors.create(VALID_MENTOR);
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED.id}/propositions`,
         );
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Mentors_200_WithLinkedData', async () => {
@@ -370,7 +369,7 @@ describe('GET /mentors/:id/propositions', () => {
             VALID_PROPOSITIONS,
         );
 
-        await CREATED_MENTOR.addProposition(CREATED_MENTORING_PROPOSITIONS);
+        await CREATED_MENTOR.addProposition(CREATED_MENTORING_PROPOSITIONS.id);
         CREATED_MENTOR = await Mentors.findByPk(CREATED_MENTOR.id);
 
         const RESPONSE = await request(app).get(
@@ -464,15 +463,14 @@ describe('GET /mentors/:id/internships', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Mentors_200_NoLinkedData', async () => {
+    it('Mentors_204_NoLinkedData', async () => {
         const VALID_MENTOR = defaultMentors();
 
         const CREATED = await Mentors.create(VALID_MENTOR);
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED.id}/internships`,
         );
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Mentors_200_WithLinkedData', async () => {
@@ -482,7 +480,7 @@ describe('GET /mentors/:id/internships', () => {
         let CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
         const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
 
-        await CREATED_MENTOR.addInternship(CREATED_INTERNSHIP);
+        await CREATED_MENTOR.addInternship(CREATED_INTERNSHIP.id);
         CREATED_MENTOR = await Mentors.findByPk(CREATED_MENTOR.id);
 
         const RESPONSE = await request(app).get(

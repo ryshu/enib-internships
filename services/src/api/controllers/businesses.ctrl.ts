@@ -199,10 +199,25 @@ export const getBusinessInternships = (req: Request, res: Response, next: NextFu
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.internships);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = { where: { businessId: req.params.id } };
+
+    let max: number;
+    Internships.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Internships.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (internships) => {
+            if (checkArrayContent(internships, next)) {
+                return res.send({
+                    page,
+                    data: internships,
+                    length: internships.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));

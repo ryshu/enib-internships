@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
+import sequelize from 'sequelize';
 
 import InternshipTypes from '../../models/InternshipTypes';
 import Internships from '../../models/Internships';
@@ -12,6 +13,7 @@ import {
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
+import { paginate } from '../helpers/pagination.helper';
 
 /**
  * GET /internshipTypes
@@ -130,12 +132,25 @@ export const getInternshipTypeInternships = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    InternshipTypes.findByPk(req.params.id, {
-        include: [{ model: Internships, as: 'internships' }],
-    })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.internships);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = { where: { categoryId: req.params.id } };
+
+    let max: number;
+    Internships.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Internships.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (internships) => {
+            if (checkArrayContent(internships, next)) {
+                return res.send({
+                    page,
+                    data: internships,
+                    length: internships.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -180,13 +195,25 @@ export const getInternshipTypeCampaigns = (
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
 
-    InternshipTypes.findByPk(req.params.id, {
-        include: [{ model: Campaigns, as: 'campaigns' }],
-    })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.campaigns);
+    const findOpts: sequelize.FindOptions = { where: { categoryId: req.params.id } };
+
+    let max: number;
+    Campaigns.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Campaigns.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (campaigns) => {
+            if (checkArrayContent(campaigns, next)) {
+                return res.send({
+                    page,
+                    data: campaigns,
+                    length: campaigns.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));

@@ -372,10 +372,25 @@ export const getInternshipFiles = (req: Request, res: Response, next: NextFuncti
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Internships.findByPk(req.params.id, { include: [{ model: Files, as: 'files' }] })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.files);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = { where: { internshipId: req.params.id } };
+
+    let max: number;
+    Files.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Files.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (files) => {
+            if (checkArrayContent(files, next)) {
+                return res.send({
+                    page,
+                    data: files,
+                    length: files.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -517,12 +532,25 @@ export const getInternshipPropositions = (
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Internships.findByPk(req.params.id, {
-        include: [{ model: MentoringPropositions, as: 'propositions' }],
-    })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.propositions);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = { where: { internshipId: req.params.id } };
+
+    let max: number;
+    MentoringPropositions.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return MentoringPropositions.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (mps) => {
+            if (checkArrayContent(mps, next)) {
+                return res.send({
+                    page,
+                    data: mps,
+                    length: mps.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));

@@ -197,15 +197,14 @@ describe('GET /internshipTypes/:id/internships', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('InternshipTypes_200_NoLinkedData', async () => {
+    it('InternshipTypes_204_NoLinkedData', async () => {
         const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
 
         const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
         const RESPONSE = await request(app).get(
             `${baseURL}/internshipTypes/${CREATED.id}/internships`,
         );
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('InternshipTypes_200_WithLinkedData', async () => {
@@ -215,7 +214,7 @@ describe('GET /internshipTypes/:id/internships', () => {
         let CREATED_INTERNSHIP_TYPES = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
         const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
 
-        await CREATED_INTERNSHIP_TYPES.addInternship(CREATED_INTERNSHIP);
+        await CREATED_INTERNSHIP_TYPES.addInternship(CREATED_INTERNSHIP.id);
         CREATED_INTERNSHIP_TYPES = await InternshipTypes.findByPk(CREATED_INTERNSHIP_TYPES.id);
 
         const RESPONSE = await request(app).get(
@@ -305,15 +304,14 @@ describe('GET /internshipTypes/:id/campaigns', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('InternshipTypes_200_NoLinkedData', async () => {
+    it('InternshipTypes_204_NoLinkedData', async () => {
         const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
 
         const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
         const RESPONSE = await request(app).get(
             `${baseURL}/internshipTypes/${CREATED.id}/campaigns`,
         );
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('InternshipTypes_200_WithLinkedData', async () => {
@@ -323,7 +321,7 @@ describe('GET /internshipTypes/:id/campaigns', () => {
         let CREATED_INTERNSHIP_TYPES = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
         const CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
 
-        await CREATED_INTERNSHIP_TYPES.addCampaign(CREATED_CAMPAIGN);
+        await CREATED_INTERNSHIP_TYPES.addCampaign(CREATED_CAMPAIGN.id);
         CREATED_INTERNSHIP_TYPES = await InternshipTypes.findByPk(CREATED_INTERNSHIP_TYPES.id);
 
         const RESPONSE = await request(app).get(
