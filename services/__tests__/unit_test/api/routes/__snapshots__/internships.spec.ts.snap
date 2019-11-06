@@ -30,6 +30,7 @@ exports[`GET /internships/:id Internships_200 1`] = `
 Object {
   "additional": null,
   "address": "TEST",
+  "availableCampaign": null,
   "business": null,
   "category": null,
   "city": "Brest",
@@ -45,6 +46,21 @@ Object {
   "startAt": 20191012,
   "student": null,
   "subject": "test",
+  "updatedAt": Any<String>,
+  "validatedCampaign": null,
+}
+`;
+
+exports[`GET /internships/:id/availableCampaigns Internships_200_WithLinkedData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "description": "A description to test",
+  "endAt": 20191012,
+  "id": 1,
+  "maxProposition": 2,
+  "name": "test",
+  "semester": "S5",
+  "startAt": 0,
   "updatedAt": Any<String>,
 }
 `;
@@ -84,6 +100,20 @@ Object {
 }
 `;
 
+exports[`GET /internships/:id/validatedCampaigns Internships_200_WithLinkedData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "description": "A description to test",
+  "endAt": 20191012,
+  "id": 3,
+  "maxProposition": 2,
+  "name": "test",
+  "semester": "S5",
+  "startAt": 0,
+  "updatedAt": Any<String>,
+}
+`;
+
 exports[`POST /internships ValidInternships_200 1`] = `
 Object {
   "address": "TEST",
@@ -102,6 +132,20 @@ Object {
 }
 `;
 
+exports[`POST /internships/:id/availableCampaigns/:campaign_id/link Internships_200_WithCampaign 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "description": "A description to test",
+  "endAt": 20191012,
+  "id": 2,
+  "maxProposition": 2,
+  "name": "test",
+  "semester": "S5",
+  "startAt": 0,
+  "updatedAt": Any<String>,
+}
+`;
+
 exports[`POST /internships/:id/businesses/:business_id/link Internships_200_WithBusiness 1`] = `
 Object {
   "additional": null,
@@ -116,7 +160,7 @@ Object {
 }
 `;
 
-exports[`POST /internships/:id/internshipTypes/:internship_type_id/link Internships_200_WithBusiness 1`] = `
+exports[`POST /internships/:id/internshipTypes/:internship_type_id/link Internships_200_WithInternshipType 1`] = `
 Object {
   "createdAt": Any<String>,
   "id": 2,
@@ -133,6 +177,20 @@ Object {
   "id": 2,
   "lastName": "Doe",
   "semester": "S10",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/validatedCampaigns/:campaign_id/link Internships_200_WithCampaign 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "description": "A description to test",
+  "endAt": 20191012,
+  "id": 4,
+  "maxProposition": 2,
+  "name": "test",
+  "semester": "S5",
+  "startAt": 0,
   "updatedAt": Any<String>,
 }
 `;

@@ -8,12 +8,14 @@ import { BusinessUpdate, BusinessCreate, BusinessesList } from '../validators/bu
 
 const router = express.Router();
 
+// Businesses
 router.get('', checkSchema(BusinessesList), BusinessesCtrl.getBusinesses);
 router.post('', checkSchema(BusinessCreate), BusinessesCtrl.postBusiness);
 router.get('/:id', checkSchema(ID), BusinessesCtrl.getBusiness);
 router.put('/:id', checkSchema(Object.assign({}, ID, BusinessUpdate)), BusinessesCtrl.putBusiness);
 router.delete('/:id', checkSchema(ID), BusinessesCtrl.deleteBusiness);
 
+// Businesses internships
 router.get('/:id/internships', checkSchema(ID), BusinessesCtrl.getBusinessInternships);
 router.post(
     '/:id/internships/:internship_id/link',

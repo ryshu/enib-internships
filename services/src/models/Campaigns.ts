@@ -5,10 +5,13 @@ import database from '../configs/instances/database';
 import MPS from './MentoringPropositions';
 import Mentors from './Mentors';
 import InternshipTypes from './InternshipTypes';
+import Internships from './Internships';
 
 class Campaigns extends Sequelize.Model implements ICampaignEntity {
     public static associations: {
         propositions: Sequelize.Association<Campaigns, MPS>;
+        availbleInternships: Sequelize.Association<Campaigns, Internships>;
+        validatedInternships: Sequelize.Association<Campaigns, Internships>;
         mentors: Sequelize.Association<Campaigns, Mentors>;
         category: Sequelize.Association<Campaigns, InternshipTypes>;
     };
@@ -26,17 +29,20 @@ class Campaigns extends Sequelize.Model implements ICampaignEntity {
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
+    // Proposition
     public getPropositions: Sequelize.HasManyGetAssociationsMixin<MPS>;
     public addProposition: Sequelize.HasManyAddAssociationMixin<MPS, MPS['id']>;
     public createProposition: Sequelize.HasManyCreateAssociationMixin<IMentoringPropositionEntity>;
     public hasProposition: Sequelize.HasManyHasAssociationMixin<MPS, MPS['id']>;
     public countPropositions: Sequelize.HasManyCountAssociationsMixin;
 
+    // Mentor
     public getMentors: Sequelize.BelongsToManyGetAssociationsMixin<Mentors>;
     public addMentor: Sequelize.BelongsToManyAddAssociationMixin<Mentors, Mentors['id']>;
     public hasMentor: Sequelize.BelongsToManyHasAssociationMixin<Mentors, Mentors['id']>;
     public countMentors: Sequelize.BelongsToManyCountAssociationsMixin;
 
+    // Category
     public getCategory: Sequelize.BelongsToGetAssociationMixin<InternshipTypes>;
     public setCategory: Sequelize.BelongsToSetAssociationMixin<
         InternshipTypes,
@@ -44,7 +50,35 @@ class Campaigns extends Sequelize.Model implements ICampaignEntity {
     >;
     public createCategory: Sequelize.BelongsToCreateAssociationMixin<IInternshipTypeEntity>;
 
+    // AvailableInternships
+    public getAvailableInternships: Sequelize.HasManyGetAssociationsMixin<Internships>;
+    public addAvailableInternship: Sequelize.HasManyAddAssociationMixin<
+        Internships,
+        Internships['id']
+    >;
+    public createAvailableInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
+    public hasAvailableInternship: Sequelize.HasManyHasAssociationMixin<
+        Internships,
+        Internships['id']
+    >;
+    public countAvailableInternships: Sequelize.HasManyCountAssociationsMixin;
+
+    // ValidatedInternships
+    public getValidatedInternships: Sequelize.HasManyGetAssociationsMixin<Internships>;
+    public addValidatedInternship: Sequelize.HasManyAddAssociationMixin<
+        Internships,
+        Internships['id']
+    >;
+    public createValidatedInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
+    public hasValidatedInternship: Sequelize.HasManyHasAssociationMixin<
+        Internships,
+        Internships['id']
+    >;
+    public countValidatedInternships: Sequelize.HasManyCountAssociationsMixin;
+
     public readonly propositions?: MPS[];
+    public readonly availableInternships?: Internships[];
+    public readonly validatedInternships?: Internships[];
     public readonly mentors?: Mentors[];
     public readonly category: InternshipTypes;
 }

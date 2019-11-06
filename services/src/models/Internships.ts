@@ -5,6 +5,8 @@ import Files from './Files';
 import Businesses from './Businesses';
 import InternshipTypes from './InternshipTypes';
 import Students from './Students';
+import Campaigns from './Campaigns';
+import { getCampaign } from '../api/controllers/campaigns.ctrl';
 
 class Internships extends Sequelize.Model implements IInternshipEntity {
     public static associations: {
@@ -12,6 +14,8 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
         business: Sequelize.Association<Internships, Businesses>;
         student: Sequelize.Association<Internships, Students>;
         files: Sequelize.Association<Internships, Files>;
+        validatedCampaign: Sequelize.Association<Internships, Campaigns>;
+        availableCampaign: Sequelize.Association<Internships, Campaigns>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -39,6 +43,7 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
+    // Business
     public getBusiness: Sequelize.BelongsToGetAssociationMixin<Businesses>;
     public setBusiness: Sequelize.BelongsToSetAssociationMixin<Businesses, Businesses['id']>;
     public createBusiness: Sequelize.BelongsToCreateAssociationMixin<IBusinessEntity>;
@@ -55,6 +60,16 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public setStudent: Sequelize.BelongsToSetAssociationMixin<Students, Students['id']>;
     public createStudent: Sequelize.BelongsToCreateAssociationMixin<IStudentEntity>;
 
+    // AvailableCampaigns
+    public getAvailableCampaign: Sequelize.BelongsToGetAssociationMixin<Campaigns>;
+    public setAvailableCampaign: Sequelize.BelongsToSetAssociationMixin<Campaigns, Campaigns['id']>;
+    public createAvailableCampaign: Sequelize.BelongsToCreateAssociationMixin<ICampaignEntity>;
+
+    // ValidatedCampaigns
+    public getValidatedCampaign: Sequelize.BelongsToGetAssociationMixin<Campaigns>;
+    public setValidatedCampaign: Sequelize.BelongsToSetAssociationMixin<Campaigns, Campaigns['id']>;
+    public createValidatedCampaign: Sequelize.BelongsToCreateAssociationMixin<ICampaignEntity>;
+
     // Files
     public getFiles: Sequelize.HasManyGetAssociationsMixin<Files>;
     public addFile: Sequelize.HasManyAddAssociationMixin<Files, Files['id']>;
@@ -65,6 +80,8 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public readonly category?: InternshipTypes | InternshipTypes['id'];
     public readonly student?: Students | Students['id'];
     public readonly files?: Files[];
+    public readonly availableCampaign?: Campaigns | Campaigns['id'];
+    public readonly validatedCampaign?: Campaigns | Campaigns['id'];
 }
 
 Internships.init(
@@ -135,7 +152,15 @@ Internships.init(
         tableName: 'internships',
         sequelize: database,
         defaultScope: {
-            attributes: { exclude: ['businessId', 'studentId', 'categoryId'] },
+            attributes: {
+                exclude: [
+                    'businessId',
+                    'studentId',
+                    'categoryId',
+                    'availableCampaignId',
+                    'validatedCampaignId',
+                ],
+            },
         },
     },
 );

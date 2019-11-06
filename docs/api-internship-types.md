@@ -322,3 +322,116 @@ API return **Bad Request** status with 400 code when request validation fail.
   "name": "BAD REQUEST"
 }
 ```
+
+## Get campaigns related to a category by giving his ID
+
+``` sh
+GET /api/v1/internshipTypes/:id/campaigns
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | InternshipType ID
+
+### 200 - Internships list
+
+``` json
+[
+    {
+        "id": 1,
+        "subject": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
+        "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
+        "country": "Russian Federation",
+        "city": "New Rocky",
+        "postalCode": "30636-9003",
+        "address": "15486 Genoveva Isle",
+        "additional": "Suite 755",
+        "isInternshipAbroad": false,
+        "isValidated": false,
+        "createdAt": "2019-10-13T16:21:25.000Z",
+        "updatedAt": "2019-10-13T16:21:25.000Z"
+    },
+]
+```
+
+### 204 - No content
+
+If the API doesn't have any category linked to given ID in his database, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Link campaign to category
+
+``` sh
+GET /api/v1/internshipTypes/:id/campaigns/:campaign_id/link
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | InternshipType ID
+**campaign_id** | String | Campaign ID
+
+### 200 - OK
+
+Ok appears on two occasions
+
+* If entries have been linked
+* If campaign haven't been found
+
+``` json
+OK
+```
+
+### 204 - No content
+
+If the API doesn't have any category linked to given ID in his database, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```

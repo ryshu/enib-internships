@@ -8,6 +8,7 @@ import { InternshipTypeUpdate, InternshipTypeCreate } from '../validators/intern
 
 const router = express.Router();
 
+// Internships types
 router.get('', InternshipTypesCtrl.getInternshipTypes);
 router.post('', checkSchema(InternshipTypeCreate), InternshipTypesCtrl.postInternshipType);
 router.get('/:id', checkSchema(ID), InternshipTypesCtrl.getInternshipType);
@@ -18,6 +19,7 @@ router.put(
 );
 router.delete('/:id', checkSchema(ID), InternshipTypesCtrl.deleteInternshipType);
 
+// Internships types link to internships
 router.get('/:id/internships', checkSchema(ID), InternshipTypesCtrl.getInternshipTypeInternships);
 router.post(
     '/:id/internships/:internship_id/link',
@@ -25,6 +27,7 @@ router.post(
     InternshipTypesCtrl.linkInternshipTypeInternship,
 );
 
+// Internships types link to campaigns
 router.get('/:id/campaigns', checkSchema(ID), InternshipTypesCtrl.getInternshipTypeCampaigns);
 router.post(
     '/:id/campaigns/:campaign_id/link',

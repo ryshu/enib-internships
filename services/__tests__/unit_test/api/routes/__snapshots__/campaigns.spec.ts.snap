@@ -55,7 +55,7 @@ Object {
 }
 `;
 
-exports[`POST /campaigns/:id/internshipTypes/:internship_type_id/link Campaigns_200_WithBusiness 1`] = `
+exports[`POST /campaigns/:id/internshipTypes/:internship_type_id/link Campaigns_200_WithInternshipType 1`] = `
 Object {
   "createdAt": Any<String>,
   "id": 4,
