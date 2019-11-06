@@ -3,7 +3,7 @@ import { checkSchema } from 'express-validator';
 
 import * as MentorsCtrl from '../controllers/mentors.ctrl';
 
-import { ID, CampaignID } from '../validators/generic.val';
+import { ID, CampaignID, InternshipID, MentoringPropositionID } from '../validators/generic.val';
 import { MentorUpdate, MentorCreate, MentorList } from '../validators/mentors.val';
 
 const router = express.Router();
@@ -21,6 +21,22 @@ router.post(
     '/:id/campaigns/:campaign_id/link',
     checkSchema(Object.assign({}, ID, CampaignID)),
     MentorsCtrl.linkMentorCampaign,
+);
+
+// Mentors propositions
+router.get('/:id/propositions', checkSchema(ID), MentorsCtrl.getMentorPropositions);
+router.post(
+    '/:id/propositions/:mentoring_proposition_id/link',
+    checkSchema(Object.assign({}, ID, MentoringPropositionID)),
+    MentorsCtrl.linkMentorProposition,
+);
+
+// Mentors internships
+router.get('/:id/internships', checkSchema(ID), MentorsCtrl.getMentorInternships);
+router.post(
+    '/:id/internships/:internship_id/link',
+    checkSchema(Object.assign({}, ID, InternshipID)),
+    MentorsCtrl.linkMentorInternship,
 );
 
 export default router;

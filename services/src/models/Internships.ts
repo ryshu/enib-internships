@@ -1,12 +1,14 @@
 import * as Sequelize from 'sequelize';
 
 import database from '../configs/instances/database';
+
 import Files from './Files';
 import Businesses from './Businesses';
 import InternshipTypes from './InternshipTypes';
 import Students from './Students';
+import Mentors from './Mentors';
+import MPs from './MentoringPropositions';
 import Campaigns from './Campaigns';
-import { getCampaign } from '../api/controllers/campaigns.ctrl';
 
 class Internships extends Sequelize.Model implements IInternshipEntity {
     public static associations: {
@@ -16,6 +18,8 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
         files: Sequelize.Association<Internships, Files>;
         validatedCampaign: Sequelize.Association<Internships, Campaigns>;
         availableCampaign: Sequelize.Association<Internships, Campaigns>;
+        mentor: Sequelize.Association<Internships, Mentors>;
+        propositions: Sequelize.Association<Internships, MPs>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -76,10 +80,23 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public createFile: Sequelize.HasManyCreateAssociationMixin<IFileEntity>;
     public hasFile: Sequelize.HasManyHasAssociationMixin<Files, Files['id']>;
 
+    // Mentors
+    public getMentor: Sequelize.BelongsToGetAssociationMixin<Mentors>;
+    public setMentor: Sequelize.BelongsToSetAssociationMixin<Mentors, Mentors['id']>;
+    public createMentor: Sequelize.BelongsToCreateAssociationMixin<IMentorEntity>;
+
+    // Propositions
+    public getPropositions: Sequelize.HasManyGetAssociationsMixin<MPs>;
+    public addProposition: Sequelize.HasManyAddAssociationMixin<MPs, MPs['id']>;
+    public createProposition: Sequelize.HasManyCreateAssociationMixin<IMentoringPropositionEntity>;
+    public hasProposition: Sequelize.HasManyHasAssociationMixin<MPs, MPs['id']>;
+
     public readonly business?: Businesses | Businesses['id'];
     public readonly category?: InternshipTypes | InternshipTypes['id'];
     public readonly student?: Students | Students['id'];
     public readonly files?: Files[];
+    public readonly mentor?: Mentors | Mentors['id'];
+    public readonly propositions?: MPs[];
     public readonly availableCampaign?: Campaigns | Campaigns['id'];
     public readonly validatedCampaign?: Campaigns | Campaigns['id'];
 }
@@ -159,6 +176,7 @@ Internships.init(
                     'categoryId',
                     'availableCampaignId',
                     'validatedCampaignId',
+                    'mentorId',
                 ],
             },
         },

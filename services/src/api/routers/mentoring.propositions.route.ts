@@ -3,7 +3,7 @@ import { checkSchema } from 'express-validator';
 
 import * as PropositionsCtrl from '../controllers/mentoring.propositions.ctrl';
 
-import { ID, CampaignID } from '../validators/generic.val';
+import { ID, CampaignID, MentorID, InternshipID } from '../validators/generic.val';
 import {
     MentoringPropositionUpdate,
     MentoringPropositionCreate,
@@ -29,6 +29,20 @@ router.post(
     '/:id/campaigns/:campaign_id/link',
     checkSchema(Object.assign({}, ID, CampaignID)),
     PropositionsCtrl.linkMentoringPropositionCampaign,
+);
+
+router.get('/:id/mentors', checkSchema(ID), PropositionsCtrl.getMentoringPropositionMentor);
+router.post(
+    '/:id/mentors/:mentor_id/link',
+    checkSchema(Object.assign({}, ID, MentorID)),
+    PropositionsCtrl.linkMentoringPropositionMentor,
+);
+
+router.get('/:id/internships', checkSchema(ID), PropositionsCtrl.getMentoringPropositionInternship);
+router.post(
+    '/:id/internships/:internship_id/link',
+    checkSchema(Object.assign({}, ID, InternshipID)),
+    PropositionsCtrl.linkMentoringPropositionInternship,
 );
 
 export default router;

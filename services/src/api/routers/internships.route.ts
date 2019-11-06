@@ -10,6 +10,8 @@ import {
     InternshipTypeID,
     FileID,
     CampaignID,
+    MentoringPropositionID,
+    MentorID,
 } from '../validators/generic.val';
 import { InternshipUpdate, InternshipCreate, InternshipsList } from '../validators/internships.val';
 
@@ -80,6 +82,22 @@ router.post(
     '/:id/validatedCampaigns/:campaign_id/link',
     checkSchema(Object.assign({}, ID, CampaignID)),
     InternshipsCtrl.linkValidatedCampaignInternships,
+);
+
+// Internships Propositions
+router.get('/:id/propositions', checkSchema(ID), InternshipsCtrl.getInternshipPropositions);
+router.post(
+    '/:id/propositions/:mentoring_proposition_id/link',
+    checkSchema(Object.assign({}, ID, MentoringPropositionID)),
+    InternshipsCtrl.linkInternshipPropositions,
+);
+
+// Internships Mentor
+router.get('/:id/mentors', checkSchema(ID), InternshipsCtrl.getInternshipMentor);
+router.post(
+    '/:id/mentors/:mentor_id/link',
+    checkSchema(Object.assign({}, ID, MentorID)),
+    InternshipsCtrl.linkInternshipMentor,
 );
 
 export default router;
