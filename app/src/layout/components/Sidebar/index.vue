@@ -8,17 +8,20 @@
         :background-color="variables.menuBg"
         :text-color="variables.menuText"
         :active-text-color="menuActiveTextColor"
-        :unique-opened="false"
+        :unique-opened="true"
         :collapse-transition="false"
         mode="vertical"
       >
-        <sidebar-item
-          v-for="route in routes"
-          :key="route.path"
-          :item="route"
-          :base-path="route.path"
-          :is-collapse="isCollapse"
-        />
+        <template v-for="route in routes">
+          <sidebar-campaign-item v-if="route.meta && route.meta.isCampaign" :key="route.path" :item="route" />
+          <sidebar-item
+            v-else
+            :key="route.path"
+            :item="route"
+            :base-path="route.path"
+            :is-collapse="isCollapse"
+          />
+        </template>
       </el-menu>
     </el-scrollbar>
   </div>
@@ -29,7 +32,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { AppModule } from '../../../store/modules/app';
 import { PermissionModule } from '../../../store/modules/permission';
 import { SettingsModule } from '../../../store/modules/settings';
+
 import SidebarItem from './SidebarItem.vue';
+import SidebarCampaignItem from './SidebarCampaignItem.vue';
 import SidebarLogo from './SidebarLogo.vue';
 import variables from '../../../styles/_variables.scss';
 
@@ -37,6 +42,7 @@ import variables from '../../../styles/_variables.scss';
   name: 'SideBar',
   components: {
     SidebarItem,
+    SidebarCampaignItem,
     SidebarLogo,
   },
 })

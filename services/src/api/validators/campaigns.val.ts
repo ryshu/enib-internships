@@ -1,10 +1,8 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator, replaceAllExistByOptional } from './generic.val';
+import { replaceAllExistByOptional } from './generic.val';
 
-export const CampaignList: Schema = {
-    ...paginateValidator,
-};
+export const CampaignList: Schema = {};
 
 export const CampaignCreate: Schema = {
     name: {
@@ -44,6 +42,12 @@ export const CampaignCreate: Schema = {
         in: ['body'],
         isInt: { errorMessage: 'maxProposition must be an integer >= 0', options: { min: 0 } },
         optional: true,
+        toInt: true,
+    },
+    category_id: {
+        in: ['body'],
+        isInt: { errorMessage: 'Category ID should be integer > 0', options: { min: 1 } },
+        exists: { errorMessage: 'Category ID should be defined' },
         toInt: true,
     },
 };

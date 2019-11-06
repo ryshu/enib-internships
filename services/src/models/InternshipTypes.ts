@@ -3,10 +3,12 @@ import * as Sequelize from 'sequelize';
 import database from '../configs/instances/database';
 
 import Internships from './Internships';
+import Campaigns from './Campaigns';
 
 class InternshipTypes extends Sequelize.Model implements IInternshipTypeEntity {
     public static associations: {
         internships: Sequelize.Association<InternshipTypes, Internships>;
+        campaigns: Sequelize.Association<InternshipTypes, Campaigns>;
     };
 
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
@@ -23,7 +25,14 @@ class InternshipTypes extends Sequelize.Model implements IInternshipTypeEntity {
     public hasInternship: Sequelize.HasManyHasAssociationMixin<Internships, Internships['id']>;
     public countInternships: Sequelize.HasManyCountAssociationsMixin;
 
+    public getCampaigns: Sequelize.HasManyGetAssociationsMixin<Campaigns>;
+    public addCampaign: Sequelize.HasManyAddAssociationMixin<Campaigns, Campaigns['id']>;
+    public createCampaign: Sequelize.HasManyCreateAssociationMixin<ICampaignEntity>;
+    public hasCampaign: Sequelize.HasManyHasAssociationMixin<Campaigns, Campaigns['id']>;
+    public countCampaigns: Sequelize.HasManyCountAssociationsMixin;
+
     public readonly internships?: Internships[];
+    public readonly campaigns?: Campaigns[];
 }
 
 InternshipTypes.init(

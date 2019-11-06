@@ -31,7 +31,6 @@ require('../../dist/configs/setup/database'); // Only import to setup
 const BusinessesLoader = require('./fake-load/businesses');
 const CampaignsLoader = require('./fake-load/campaigns');
 const InternshipsLoader = require('./fake-load/internships');
-const InternshipTypesLoader = require('./fake-load/internship-types');
 const MentorsLoader = require('./fake-load/mentors');
 const MentoringPropositionsLoader = require('./fake-load/mentoring-propositions');
 const StudentsLoader = require('./fake-load/students');
@@ -42,8 +41,6 @@ Promise.resolve().then(async () => {
         if (program.businesses) await BusinessesLoader(program.quantity, program.verbose);
         if (program.campaigns) await CampaignsLoader(program.quantity, program.verbose);
         if (program.internships) await InternshipsLoader(program.quantity, program.verbose);
-        if (program.internshipsTypes)
-            await InternshipTypesLoader(program.quantity, program.verbose);
         if (program.mentors) await MentorsLoader(program.quantity, program.verbose);
         if (program.mentoringPropositions)
             await MentoringPropositionsLoader(program.quantity, program.verbose);

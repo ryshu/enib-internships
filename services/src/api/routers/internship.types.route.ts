@@ -3,7 +3,7 @@ import { checkSchema } from 'express-validator';
 
 import * as InternshipTypesCtrl from '../controllers/internship.types.ctrl';
 
-import { ID, InternshipID } from '../validators/generic.val';
+import { ID, InternshipID, CampaignID } from '../validators/generic.val';
 import { InternshipTypeUpdate, InternshipTypeCreate } from '../validators/internshipTypes.val';
 
 const router = express.Router();
@@ -23,6 +23,13 @@ router.post(
     '/:id/internships/:internship_id/link',
     checkSchema(Object.assign({}, ID, InternshipID)),
     InternshipTypesCtrl.linkInternshipTypeInternship,
+);
+
+router.get('/:id/campaigns', checkSchema(ID), InternshipTypesCtrl.getInternshipTypeCampaigns);
+router.post(
+    '/:id/campaigns/:campaign_id/link',
+    checkSchema(Object.assign({}, ID, CampaignID)),
+    InternshipTypesCtrl.linkInternshipTypeCampaign,
 );
 
 export default router;

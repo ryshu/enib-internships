@@ -6,6 +6,7 @@ const usersRouter = {
   redirect: '/users/students',
   name: 'users.title',
   meta: {
+    roles: ['admin'],
     title: 'users.title',
     icon: 'user',
   },
