@@ -8,6 +8,10 @@ import {
 import { getProfile } from '@/api/cas';
 import store from '@/store';
 
+import router, { resetRouter } from '@/router/index';
+import { PermissionModule } from './permission';
+import { TagsViewModule } from './tags-view';
+
 export interface IUserState {
   firstName: string;
   lastName: string;
@@ -58,6 +62,19 @@ class User extends VuexModule implements IUserState {
     this.SET_FIRST_NAME(firstName);
     this.SET_LAST_NAME(lastName);
     this.SET_EMAIL(email);
+  }
+
+  @Action
+  public async changeRole(role: string) {
+    // Dynamically modify permissions
+    this.SET_ROLE(role);
+    resetRouter();
+    // Generate dynamic accessible routes based on roles
+    PermissionModule.GenerateRoutes(role);
+    // Add generated routes
+    router.addRoutes(PermissionModule.dynamicRoutes);
+    // Reset visited views and cached views
+    TagsViewModule.delAllViews();
   }
 }
 

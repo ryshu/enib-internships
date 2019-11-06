@@ -21,6 +21,8 @@ import './fullscreen';
 import './guide-2';
 import './guide';
 import './hamburger';
+import './heart-empty';
+import './heart-full';
 import './icon';
 import './international';
 import './language';

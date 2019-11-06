@@ -7,6 +7,8 @@ import logger from '../../utils/logger';
 import Mentors from '../../models/Mentors';
 import Students from '../../models/Students';
 
+import { adminsCasUsername } from '../../configs/data/admin';
+
 /**
  * @summary Method used to handle cas connection and setup user info
  * @param {Request} req Express request
@@ -16,7 +18,9 @@ export async function handleConnection(req: Request) {
     // Check if any session is defined
     if (req.session && req.session.cas_user) {
         // Check if cas user is a student and get his email
-        const student = isStudent(req.session.cas_user);
+        // Check also if username isn't included in admin list (case when user is admin)
+        const student =
+            isStudent(req.session.cas_user) && !adminsCasUsername.includes(req.session.cas_user);
         const email = getEmail(req.session.cas_user);
 
         // Try to get our user in database
