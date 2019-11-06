@@ -45,6 +45,18 @@ Internships.belongsTo(Students, { as: 'student', foreignKey: 'studentId', target
 Internships.hasMany(Files, { as: 'files', foreignKey: 'internshipId' });
 Files.belongsTo(Internships, { as: 'internship', foreignKey: 'internshipId' });
 
+// One Mentor to many Internships
+Mentors.hasMany(Internships, { as: 'internships', foreignKey: 'mentorId' });
+Internships.belongsTo(Mentors, { as: 'mentor', foreignKey: 'mentorId' });
+
+// One Mentor to many MentoringPropositions
+Mentors.hasMany(MentoringPropositions, { as: 'propositions', foreignKey: 'mentorId' });
+MentoringPropositions.belongsTo(Mentors, { as: 'mentor', foreignKey: 'mentorId' });
+
+// One Internships to many MentoringPropositions
+Internships.hasMany(MentoringPropositions, { as: 'propositions', foreignKey: 'internshipId' });
+MentoringPropositions.belongsTo(Internships, { as: 'internship', foreignKey: 'internshipId' });
+
 // One Validated Campaign to many Internships
 Campaigns.hasMany(Internships, { as: 'validatedInternships', foreignKey: 'validatedCampaignId' });
 Internships.belongsTo(Campaigns, { as: 'validatedCampaign', foreignKey: 'validatedCampaignId' });

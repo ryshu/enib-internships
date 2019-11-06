@@ -9,9 +9,13 @@ import Businesses from '../../models/Businesses';
 import InternshipTypes from '../../models/InternshipTypes';
 import Students from '../../models/Students';
 import Files from '../../models/Files';
+import MentoringPropositions from '../../models/MentoringPropositions';
+import Mentors from '../../models/Mentors';
+import Campaigns from '../../models/Campaigns';
+
+import logger from '../../utils/logger';
 
 import { paginate } from '../helpers/pagination.helper';
-import Campaigns from '../../models/Campaigns';
 
 import {
     UNPROCESSABLE_ENTITY,
@@ -19,8 +23,6 @@ import {
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
-
-import logger from '../../utils/logger';
 
 /**
  * GET /internships
@@ -123,6 +125,8 @@ export const getInternship = (req: Request, res: Response, next: NextFunction): 
             { model: InternshipTypes, as: 'category' },
             { model: Campaigns, as: 'availableCampaign' },
             { model: Campaigns, as: 'validatedCampaign' },
+            { model: Mentors, as: 'mentor' },
+            { model: MentoringPropositions, as: 'propositions' },
             { model: Students, as: 'student' },
             { model: Files, as: 'files' },
         ],
@@ -357,6 +361,7 @@ export const linkInternshipStudents = (req: Request, res: Response, next: NextFu
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
+
 /**
  * GET /internship/:id/files
  * Used to get all files of an internship
@@ -375,6 +380,7 @@ export const getInternshipFiles = (req: Request, res: Response, next: NextFuncti
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
+
 /**
  * GET /internships/:id/files/:files_id/link
  * Used to get all files of a internships
@@ -492,6 +498,100 @@ export const linkValidatedCampaignInternships = (
             if (checkContent(val, next)) {
                 await val.addValidatedInternship(Number(req.params.id));
                 return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /internship/:id/propositions
+ * Used to get all propositions of an internship
+ */
+export const getInternshipPropositions = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Internships.findByPk(req.params.id, {
+        include: [{ model: MentoringPropositions, as: 'propositions' }],
+    })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.propositions);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /internships/:id/propositions/:mentoring_proposition_id/link
+ * Used to get all propositions of a internships
+ */
+export const linkInternshipPropositions = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    Internships.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                await val.addProposition(Number(req.params.mentoring_proposition_id));
+                return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /internship/:id/mentors
+ * Used to select a internship by ID and return his mentor
+ */
+export const getInternshipMentor = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Internships.findByPk(req.params.id, { include: [{ model: Mentors, as: 'mentor' }] })
+        .then((val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.mentor);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /internships/:id/mentors/:mentor_id/link
+ * Used to link internship to a mentor
+ */
+export const linkInternshipMentor = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.mentor_id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.addInternship(Number(req.params.id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));

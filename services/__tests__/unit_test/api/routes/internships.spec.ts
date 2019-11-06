@@ -13,6 +13,8 @@ import Students from '../../../../src/models/Students';
 import InternshipTypes from '../../../../src/models/InternshipTypes';
 import Files from '../../../../src/models/Files';
 import Campaigns from '../../../../src/models/Campaigns';
+import MentoringPropositions from '../../../../src/models/MentoringPropositions';
+import Mentors from '../../../../src/models/Mentors';
 
 import {
     defaultCampaigns,
@@ -21,6 +23,8 @@ import {
     defaultInternshipTypes,
     defaultStudents,
     defaultFiles,
+    defaultMentoringPropositions,
+    defaultMentors,
 } from '../../../../__mocks__/mockData';
 
 const baseURL = `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`;
@@ -864,6 +868,234 @@ describe('POST /internships/:id/validatedCampaigns/:campaign_id/link', () => {
         const data = JSON.parse(JSON.stringify(CREATED_INTERNSHIP.validatedCampaign)) as any;
 
         expect(CREATED_INTERNSHIP.validatedCampaign).toBeTruthy();
+        expect(data).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+        });
+    });
+});
+
+describe('GET /internships/:id/propositions', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Internships.destroy({ where: {} });
+    });
+
+    it('NoInternship_204', async () => {
+        const RESPONSE = await request(app).get(`${baseURL}/internships/10/propositions`);
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).get(
+            `${baseURL}/internships/{falseEncoding}/propositions`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Internships_200_NoLinkedData', async () => {
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED = await Internships.create(VALID_INTERNSHIP);
+        const RESPONSE = await request(app).get(
+            `${baseURL}/internships/${CREATED.id}/propositions`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toEqual([]);
+    });
+
+    it('Internships_200_WithLinkedData', async () => {
+        const VALID_PROPOSITIONS = defaultMentoringPropositions();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED_PROPOSITIONS = await MentoringPropositions.create(VALID_PROPOSITIONS);
+        let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+        await CREATED_INTERNSHIP.addProposition(CREATED_PROPOSITIONS.id);
+        CREATED_INTERNSHIP = await Internships.findByPk(CREATED_INTERNSHIP.id);
+
+        const RESPONSE = await request(app).get(
+            `${baseURL}/internships/${CREATED_INTERNSHIP.id}/propositions`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body[0]).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+        });
+    });
+});
+
+describe('POST /internships/:id/propositions/:mentoring_proposition_id/link', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Internships.destroy({ where: {} });
+    });
+
+    it('NoInternship_204', async () => {
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/10/propositions/21356/link`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400_WrongID', async () => {
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/{falseEncoding}/propositions/10/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('BadRequest_400_WrongPropositionsID', async () => {
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/10/propositions/{falseEncoding}/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Internships_200_NoPropositions', async () => {
+        // In this case, we check if link a existing internships and an unexisting propositions work
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED = await Internships.create(VALID_INTERNSHIP);
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/${CREATED.id}/propositions/2231565610/link`,
+        );
+        expect(RESPONSE.status).toBe(200);
+    });
+
+    it('Internships_200_WithPropositions', async () => {
+        const VALID_PROPOSITIONS = defaultMentoringPropositions();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED_PROPOSITIONS = await MentoringPropositions.create(VALID_PROPOSITIONS);
+        let CREATED = await Internships.create(VALID_INTERNSHIP);
+
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/${CREATED.id}/propositions/${CREATED_PROPOSITIONS.id}/link`,
+        );
+
+        // Should answer 200
+        expect(RESPONSE.status).toBe(200);
+
+        // check if propositions and internship are linked
+        CREATED = await Internships.findByPk(CREATED.id, {
+            include: [{ model: MentoringPropositions, as: 'propositions' }],
+        });
+
+        const data = JSON.parse(JSON.stringify(CREATED.propositions)) as any;
+
+        expect(CREATED.propositions).toBeTruthy();
+        expect(data[0]).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+        });
+    });
+});
+
+describe('GET /internships/:id/mentors', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Internships.destroy({ where: {} });
+    });
+
+    it('NoInternship_204', async () => {
+        const RESPONSE = await request(app).get(`${baseURL}/internships/10/mentors`);
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).get(`${baseURL}/internships/{falseEncoding}/mentors`);
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Internships_200_NoLinkedData', async () => {
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED = await Internships.create(VALID_INTERNSHIP);
+        const RESPONSE = await request(app).get(`${baseURL}/internships/${CREATED.id}/mentors`);
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toEqual({});
+    });
+
+    it('Internships_200_WithLinkedData', async () => {
+        const VALID_MENTOR = defaultMentors();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
+        let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+        await CREATED_INTERNSHIP.setMentor(CREATED_MENTOR.id);
+        CREATED_INTERNSHIP = await Internships.findByPk(CREATED_INTERNSHIP.id);
+
+        const RESPONSE = await request(app).get(
+            `${baseURL}/internships/${CREATED_INTERNSHIP.id}/mentors`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+        });
+    });
+});
+
+describe('POST /internships/:id/mentors/:mentor_id/link', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Internships.destroy({ where: {} });
+    });
+
+    it('NoInternship_204', async () => {
+        const RESPONSE = await request(app).post(`${baseURL}/internships/10/mentors/20/link`);
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400_WrongID', async () => {
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/{falseEncoding}/mentors/10/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('BadRequest_400_WrongMentorID', async () => {
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/10/mentors/{falseEncoding}/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Internships_204_NoMentor', async () => {
+        // In this case, we check if link a existing internships and an unexisting mentors work
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED = await Internships.create(VALID_INTERNSHIP);
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/${CREATED.id}/mentors/20/link`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('Internships_200_WithMentor', async () => {
+        const VALID_MENTOR = defaultMentors();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
+        let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/${CREATED_INTERNSHIP.id}/mentors/${CREATED_MENTOR.id}/link`,
+        );
+
+        // Should answer 200
+        expect(RESPONSE.status).toBe(200);
+
+        // check if mentor and internship are linked
+        CREATED_INTERNSHIP = await Internships.findByPk(CREATED_INTERNSHIP.id, {
+            include: [{ model: Mentors, as: 'mentor' }],
+        });
+
+        const data = JSON.parse(JSON.stringify(CREATED_INTERNSHIP.mentor)) as any;
+
+        expect(CREATED_INTERNSHIP.mentor).toBeTruthy();
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),

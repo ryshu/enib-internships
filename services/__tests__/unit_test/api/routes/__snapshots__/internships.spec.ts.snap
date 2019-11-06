@@ -42,7 +42,9 @@ Object {
   "id": Any<Number>,
   "isInternshipAbroad": true,
   "isValidated": false,
+  "mentor": null,
   "postalCode": "29280",
+  "propositions": Array [],
   "startAt": 20191012,
   "student": null,
   "subject": "test",
@@ -84,6 +86,27 @@ Object {
   "createdAt": Any<String>,
   "id": 1,
   "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`GET /internships/:id/mentors Internships_200_WithLinkedData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": 2,
+  "lastName": "Doe",
+  "role": "default",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`GET /internships/:id/propositions Internships_200_WithLinkedData 1`] = `
+Object {
+  "comment": "test",
+  "createdAt": Any<String>,
+  "id": 1,
   "updatedAt": Any<String>,
 }
 `;
@@ -165,6 +188,27 @@ Object {
   "createdAt": Any<String>,
   "id": 2,
   "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/mentors/:mentor_id/link Internships_200_WithMentor 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "email": "john.doe@enib.fr",
+  "firstName": "John",
+  "id": 3,
+  "lastName": "Doe",
+  "role": "default",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/propositions/:mentoring_proposition_id/link Internships_200_WithPropositions 1`] = `
+Object {
+  "comment": "test",
+  "createdAt": Any<String>,
+  "id": 2,
   "updatedAt": Any<String>,
 }
 `;

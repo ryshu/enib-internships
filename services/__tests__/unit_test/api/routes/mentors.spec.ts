@@ -10,7 +10,14 @@ import dbSetup from '../../../../src/configs/setup/database';
 import Mentors from '../../../../src/models/Mentors';
 import Campaigns from '../../../../src/models/Campaigns';
 
-import { defaultMentors, defaultCampaigns } from '../../../../__mocks__/mockData';
+import {
+    defaultMentors,
+    defaultCampaigns,
+    defaultMentoringPropositions,
+} from '../../../../__mocks__/mockData';
+import MentoringPropositions from '../../../../src/models/MentoringPropositions';
+import Internships from '../../../../src/models/Internships';
+import { defaultInternships } from '../../../../__mocks__/mockData';
 
 jest.setTimeout(30000);
 
@@ -262,7 +269,7 @@ describe('GET /mentors/:id/campaigns', () => {
     });
 });
 
-describe('POST /mentors/:id/campaigns/:internship_id/link', () => {
+describe('POST /mentors/:id/campaigns/:campaign_id/link', () => {
     beforeEach(async () => {
         // Remove all
         await Mentors.destroy({ where: {} });
@@ -320,5 +327,229 @@ describe('POST /mentors/:id/campaigns/:internship_id/link', () => {
         const campaigns = await CREATED_MENTOR.getCampaigns();
         expect(campaigns).toHaveLength(1);
         expect(campaigns[0].id).toBe(CREATED_CAMPAIGN.id);
+    });
+});
+
+describe('GET /mentors/:id/propositions', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Mentors.destroy({ where: {} });
+    });
+
+    it('NoMentor_204', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/161541515632564465/propositions`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/{falseEncoding}/propositions`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Mentors_200_NoLinkedData', async () => {
+        const VALID_MENTOR = defaultMentors();
+
+        const CREATED = await Mentors.create(VALID_MENTOR);
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED.id}/propositions`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toEqual([]);
+    });
+
+    it('Mentors_200_WithLinkedData', async () => {
+        const VALID_MENTOR = defaultMentors();
+        const VALID_PROPOSITIONS = defaultMentoringPropositions();
+
+        let CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
+        const CREATED_MENTORING_PROPOSITIONS = await MentoringPropositions.create(
+            VALID_PROPOSITIONS,
+        );
+
+        await CREATED_MENTOR.addProposition(CREATED_MENTORING_PROPOSITIONS);
+        CREATED_MENTOR = await Mentors.findByPk(CREATED_MENTOR.id);
+
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED_MENTOR.id}/propositions`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toHaveLength(1);
+    });
+});
+
+describe('POST /mentors/:id/propositions/:mentoring_propositions_id/link', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Mentors.destroy({ where: {} });
+    });
+
+    it('NoMentor_204', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/11561454121654/propositions/20/link`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400_WrongID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/{falseEncoding}/propositions/10/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('BadRequest_400_WrongPropositionsID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10/propositions/{falseEncoding}/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Mentors_200_NoPropositions', async () => {
+        // In this case, we check if link a existing Bussiness and an unexisting propositions work
+        const VALID_MENTOR = defaultMentors();
+
+        const CREATED = await Mentors.create(VALID_MENTOR);
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED.id}/propositions/20/link`,
+        );
+        expect(RESPONSE.status).toBe(200);
+    });
+
+    it('Mentors_200_WithPropositions', async () => {
+        const VALID_MENTOR = defaultMentors();
+        const VALID_MENTORING_PROPOSITIONS = defaultMentoringPropositions();
+
+        let CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
+        const CREATED_MENTORING_PROPOSITIONS = await MentoringPropositions.create(
+            VALID_MENTORING_PROPOSITIONS,
+        );
+
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED_MENTOR.id}/propositions/${CREATED_MENTORING_PROPOSITIONS.id}/link`,
+        );
+
+        // Should answer 200
+        expect(RESPONSE.status).toBe(200);
+
+        // check if business and internship are linked
+        CREATED_MENTOR = await Mentors.findByPk(CREATED_MENTOR.id);
+
+        const propositions = await CREATED_MENTOR.getPropositions();
+        expect(propositions).toHaveLength(1);
+        expect(propositions[0].id).toBe(CREATED_MENTORING_PROPOSITIONS.id);
+    });
+});
+
+describe('GET /mentors/:id/internships', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Mentors.destroy({ where: {} });
+    });
+
+    it('NoMentor_204', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/161541515632564465/internships`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/{falseEncoding}/internships`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Mentors_200_NoLinkedData', async () => {
+        const VALID_MENTOR = defaultMentors();
+
+        const CREATED = await Mentors.create(VALID_MENTOR);
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED.id}/internships`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toEqual([]);
+    });
+
+    it('Mentors_200_WithLinkedData', async () => {
+        const VALID_MENTOR = defaultMentors();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        let CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
+        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+        await CREATED_MENTOR.addInternship(CREATED_INTERNSHIP);
+        CREATED_MENTOR = await Mentors.findByPk(CREATED_MENTOR.id);
+
+        const RESPONSE = await request(app).get(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED_MENTOR.id}/internships`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toHaveLength(1);
+    });
+});
+
+describe('POST /mentors/:id/internships/:internship_id/link', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Mentors.destroy({ where: {} });
+    });
+
+    it('NoMentor_204', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/11561454121654/internships/20/link`,
+        );
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400_WrongID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/{falseEncoding}/internships/10/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('BadRequest_400_WrongInternshipID', async () => {
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/10/internships/{falseEncoding}/link`,
+        );
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Mentors_200_NoInternship', async () => {
+        // In this case, we check if link a existing Bussiness and an unexisting internships work
+        const VALID_MENTOR = defaultMentors();
+
+        const CREATED = await Mentors.create(VALID_MENTOR);
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED.id}/internships/20/link`,
+        );
+        expect(RESPONSE.status).toBe(200);
+    });
+
+    it('Mentors_200_WithInternship', async () => {
+        const VALID_MENTOR = defaultMentors();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        let CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
+        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+        const RESPONSE = await request(app).post(
+            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED_MENTOR.id}/internships/${CREATED_INTERNSHIP.id}/link`,
+        );
+
+        // Should answer 200
+        expect(RESPONSE.status).toBe(200);
+
+        // check if business and internship are linked
+        CREATED_MENTOR = await Mentors.findByPk(CREATED_MENTOR.id);
+
+        const internships = await CREATED_MENTOR.getInternships();
+        expect(internships).toHaveLength(1);
+        expect(internships[0].id).toBe(CREATED_INTERNSHIP.id);
     });
 });

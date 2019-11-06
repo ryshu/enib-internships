@@ -2,9 +2,13 @@ import * as Sequelize from 'sequelize';
 
 import database from '../configs/instances/database';
 import Campaigns from './Campaigns';
+import MPs from './MentoringPropositions';
+import Internships from './Internships';
 
 class Mentors extends Sequelize.Model implements IMentorEntity {
     public static associations: {
+        propositions: Sequelize.Association<Mentors, MPs>;
+        internships: Sequelize.Association<Mentors, Internships>;
         campaigns: Sequelize.Association<Mentors, Campaigns>;
     };
 
@@ -21,11 +25,27 @@ class Mentors extends Sequelize.Model implements IMentorEntity {
     public hasCampaign: Sequelize.BelongsToManyHasAssociationMixin<Campaigns, Campaigns['id']>;
     public countCampaigns: Sequelize.BelongsToManyCountAssociationsMixin;
 
+    // Propositions
+    public getPropositions: Sequelize.HasManyGetAssociationsMixin<MPs>;
+    public addProposition: Sequelize.HasManyAddAssociationMixin<MPs, MPs['id']>;
+    public createProposition: Sequelize.HasManyCreateAssociationMixin<IMentoringPropositionEntity>;
+    public hasProposition: Sequelize.HasManyHasAssociationMixin<MPs, MPs['id']>;
+    public countPropositions: Sequelize.HasManyCountAssociationsMixin;
+
+    // Internships
+    public getInternships: Sequelize.HasManyGetAssociationsMixin<Internships>;
+    public addInternship: Sequelize.HasManyAddAssociationMixin<Internships, Internships['id']>;
+    public createInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
+    public hasInternship: Sequelize.HasManyHasAssociationMixin<Internships, Internships['id']>;
+    public countInternships: Sequelize.HasManyCountAssociationsMixin;
+
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
     public readonly campaigns?: Campaigns[];
+    public readonly internships?: Internships[];
+    public readonly propositions?: MPs[];
 }
 
 Mentors.init(

@@ -3,8 +3,10 @@ import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
 
 // Import mentors ORM class
-import Mentors from '../../models/Mentors';
 import Campaigns from '../../models/Campaigns';
+import Internships from '../../models/Internships';
+import Mentors from '../../models/Mentors';
+import MentoringPropositions from '../../models/MentoringPropositions';
 
 // Factorization methods to handle errors
 import {
@@ -191,6 +193,100 @@ export const linkMentorCampaign = (req: Request, res: Response, next: NextFuncti
             if (checkContent(val, next)) {
                 try {
                     await val.addCampaign(Number(req.params.campaign_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /mentors/:id/propositions
+ * Used to get all propositions of a mentor
+ */
+export const getMentorPropositions = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id, {
+        include: [{ model: MentoringPropositions, as: 'propositions' }],
+    })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.propositions);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /mentors/:id/propositions/:mentoring_proposition_id/link
+ * Used to link a mentor with a campaign
+ */
+export const linkMentorProposition = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.addProposition(Number(req.params.mentoring_proposition_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /mentors/:id/internships
+ * Used to get all internships of a mentor
+ */
+export const getMentorInternships = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id, {
+        include: [{ model: Internships, as: 'internships' }],
+    })
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.internships);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /mentors/:id/internships/:internship_id/link
+ * Used to link a mentor with an internship
+ */
+export const linkMentorInternship = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    Mentors.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                try {
+                    await val.addInternship(Number(req.params.internship_id));
                     return res.sendStatus(httpStatus.OK);
                 } catch (error) {
                     checkContent(null, next);
