@@ -4,6 +4,7 @@ import httpStatus from 'http-status-codes';
 
 import InternshipTypes from '../../models/InternshipTypes';
 import Internships from '../../models/Internships';
+import Campaigns from '../../models/Campaigns';
 
 import {
     UNPROCESSABLE_ENTITY,
@@ -159,6 +160,57 @@ export const linkInternshipTypeInternship = (
         .then(async (val) => {
             if (checkContent(val, next)) {
                 await val.addInternship(Number(req.params.internship_id));
+                return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /internshipTypes/:id/campaigns
+ * Used to select an campaigns type by ID and return list of campaigns link to it
+ */
+export const getInternshipTypeCampaigns = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    InternshipTypes.findByPk(req.params.id, {
+        include: [{ model: Campaigns, as: 'campaigns' }],
+    })
+        .then((val) => {
+            if (checkContent(val, next)) {
+                return res.send(val.campaigns);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /internshipTypes/:id/campaigns/:campaign_id/link
+ * Used to link campaign types to campaigns
+ */
+export const linkInternshipTypeCampaign = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    InternshipTypes.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                await val.addCampaign(Number(req.params.campaign_id));
                 return res.sendStatus(httpStatus.OK);
             }
         })

@@ -2,6 +2,7 @@
 
 exports[`GET /campaigns Campaigns_200 1`] = `
 Object {
+  "category": null,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
@@ -16,6 +17,7 @@ Object {
 
 exports[`GET /campaigns/:id Campaigns_200 1`] = `
 Object {
+  "category": null,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
@@ -29,8 +31,18 @@ Object {
 }
 `;
 
+exports[`GET /campaigns/:id/internshipTypes Campaigns_200_WithLinkedData 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": 3,
+  "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
 exports[`POST /campaigns ValidCampaigns_200 1`] = `
 Object {
+  "categoryId": 1,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
@@ -43,8 +55,47 @@ Object {
 }
 `;
 
+exports[`POST /campaigns/:id/internshipTypes/:internship_type_id/link Campaigns_200_WithBusiness 1`] = `
+Object {
+  "createdAt": Any<String>,
+  "id": 4,
+  "label": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /campaigns/:id Campaigns_200_CategoryUpdated 1`] = `
+Object {
+  "categoryId": 2,
+  "createdAt": Any<String>,
+  "description": "A description to test",
+  "endAt": 20191012,
+  "id": Any<Number>,
+  "maxProposition": 2,
+  "name": "test",
+  "semester": "S5",
+  "startAt": 0,
+  "updatedAt": Any<String>,
+}
+`;
+
 exports[`PUT /campaigns/:id Campaigns_200_NotAnyDataUpdated 1`] = `
 Object {
+  "createdAt": Any<String>,
+  "description": "A description to test",
+  "endAt": 20191012,
+  "id": Any<Number>,
+  "maxProposition": 2,
+  "name": "test",
+  "semester": "S5",
+  "startAt": 0,
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`PUT /campaigns/:id Campaigns_200_UndefinedCategoryUpdate 1`] = `
+Object {
+  "categoryId": 1,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,

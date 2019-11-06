@@ -44,6 +44,12 @@ export const CampaignCreate: Schema = {
         optional: true,
         toInt: true,
     },
+    category_id: {
+        in: ['body'],
+        isInt: { errorMessage: 'Category ID should be integer > 0', options: { min: 1 } },
+        exists: { errorMessage: 'Category ID should be defined' },
+        toInt: true,
+    },
 };
 
 export const CampaignUpdate = replaceAllExistByOptional(CampaignCreate);
