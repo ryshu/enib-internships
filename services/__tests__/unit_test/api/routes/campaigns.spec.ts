@@ -254,15 +254,14 @@ describe('GET /campaigns/:id/mentoringPropositions', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Campaigns_200_NoLinkedData', async () => {
+    it('Campaigns_204_NoLinkedData', async () => {
         const VALID_CAMPAIGN = defaultCampaigns();
 
         const CREATED = await Campaigns.create(VALID_CAMPAIGN);
         const RESPONSE = await request(app).get(
             `${baseURL}/campaigns/${CREATED.id}/mentoringPropositions`,
         );
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Campaigns_200_WithLinkedData', async () => {
@@ -274,7 +273,7 @@ describe('GET /campaigns/:id/mentoringPropositions', () => {
             VALID_MENTORING_PROPOSITION,
         );
 
-        await CREATED_CAMPAIGN.addProposition(CREATED_MENTORING_PROPOSITION);
+        await CREATED_CAMPAIGN.addProposition(CREATED_MENTORING_PROPOSITION.id);
         CREATED_CAMPAIGN = await Campaigns.findByPk(CREATED_CAMPAIGN.id);
 
         const RESPONSE = await request(app).get(
@@ -366,15 +365,14 @@ describe('GET /campaigns/:id/availableInternships', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Campaigns_200_NoLinkedData', async () => {
+    it('Campaigns_204_NoLinkedData', async () => {
         const VALID_CAMPAIGN = defaultCampaigns();
 
         const CREATED = await Campaigns.create(VALID_CAMPAIGN);
         const RESPONSE = await request(app).get(
             `${baseURL}/campaigns/${CREATED.id}/availableInternships`,
         );
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Campaigns_200_WithLinkedData', async () => {
@@ -384,7 +382,7 @@ describe('GET /campaigns/:id/availableInternships', () => {
         let CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
         const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
 
-        await CREATED_CAMPAIGN.addAvailableInternship(CREATED_INTERNSHIP);
+        await CREATED_CAMPAIGN.addAvailableInternship(CREATED_INTERNSHIP.id);
         CREATED_CAMPAIGN = await Campaigns.findByPk(CREATED_CAMPAIGN.id);
 
         const RESPONSE = await request(app).get(
@@ -474,15 +472,14 @@ describe('GET /campaigns/:id/validatedInternships', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Campaigns_200_NoLinkedData', async () => {
+    it('Campaigns_204_NoLinkedData', async () => {
         const VALID_CAMPAIGN = defaultCampaigns();
 
         const CREATED = await Campaigns.create(VALID_CAMPAIGN);
         const RESPONSE = await request(app).get(
             `${baseURL}/campaigns/${CREATED.id}/validatedInternships`,
         );
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Campaigns_200_WithLinkedData', async () => {
@@ -492,7 +489,7 @@ describe('GET /campaigns/:id/validatedInternships', () => {
         let CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
         const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
 
-        await CREATED_CAMPAIGN.addValidatedInternship(CREATED_INTERNSHIP);
+        await CREATED_CAMPAIGN.addValidatedInternship(CREATED_INTERNSHIP.id);
         CREATED_CAMPAIGN = await Campaigns.findByPk(CREATED_CAMPAIGN.id);
 
         const RESPONSE = await request(app).get(
@@ -580,13 +577,12 @@ describe('GET /campaigns/:id/mentors', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Campaigns_200_NoLinkedData', async () => {
+    it('Campaigns_204_NoLinkedData', async () => {
         const VALID_CAMPAIGN = defaultCampaigns();
 
         const CREATED = await Campaigns.create(VALID_CAMPAIGN);
         const RESPONSE = await request(app).get(`${baseURL}/campaigns/${CREATED.id}/mentors`);
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Campaigns_200_WithLinkedData', async () => {
@@ -596,7 +592,7 @@ describe('GET /campaigns/:id/mentors', () => {
         let CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
         const CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
 
-        await CREATED_CAMPAIGN.addMentor(CREATED_MENTOR);
+        await CREATED_CAMPAIGN.addMentor(CREATED_MENTOR.id);
         CREATED_CAMPAIGN = await Campaigns.findByPk(CREATED_CAMPAIGN.id);
 
         const RESPONSE = await request(app).get(

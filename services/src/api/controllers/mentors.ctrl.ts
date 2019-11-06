@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
+import sequelize from 'sequelize';
 
 // Import mentors ORM class
 import Campaigns from '../../models/Campaigns';
@@ -213,12 +214,25 @@ export const getMentorPropositions = (req: Request, res: Response, next: NextFun
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Mentors.findByPk(req.params.id, {
-        include: [{ model: MentoringPropositions, as: 'propositions' }],
-    })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.propositions);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = { where: { mentorId: req.params.id } };
+
+    let max: number;
+    MentoringPropositions.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return MentoringPropositions.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (mps) => {
+            if (checkArrayContent(mps, next)) {
+                return res.send({
+                    page,
+                    data: mps,
+                    length: mps.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -260,12 +274,25 @@ export const getMentorInternships = (req: Request, res: Response, next: NextFunc
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Mentors.findByPk(req.params.id, {
-        include: [{ model: Internships, as: 'internships' }],
-    })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.internships);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = { where: { mentorId: req.params.id } };
+
+    let max: number;
+    Internships.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Internships.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (mps) => {
+            if (checkArrayContent(mps, next)) {
+                return res.send({
+                    page,
+                    data: mps,
+                    length: mps.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));

@@ -555,13 +555,12 @@ describe('GET /internships/:id/files', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Internships_200_NoLinkedData', async () => {
+    it('Internships_204_NoLinkedData', async () => {
         const VALID_INTERNSHIP = defaultInternships();
 
         const CREATED = await Internships.create(VALID_INTERNSHIP);
         const RESPONSE = await request(app).get(`${baseURL}/internships/${CREATED.id}/files`);
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Internships_200_WithLinkedData', async () => {
@@ -571,7 +570,7 @@ describe('GET /internships/:id/files', () => {
         let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
         const CREATE_FILE = await Files.create(VALID_FILE);
 
-        await CREATED_INTERNSHIP.addFile(CREATE_FILE);
+        await CREATED_INTERNSHIP.addFile(CREATE_FILE.id);
         CREATED_INTERNSHIP = await Internships.findByPk(CREATED_INTERNSHIP.id);
 
         const RESPONSE = await request(app).get(
@@ -893,15 +892,14 @@ describe('GET /internships/:id/propositions', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Internships_200_NoLinkedData', async () => {
+    it('Internships_204_NoLinkedData', async () => {
         const VALID_INTERNSHIP = defaultInternships();
 
         const CREATED = await Internships.create(VALID_INTERNSHIP);
         const RESPONSE = await request(app).get(
             `${baseURL}/internships/${CREATED.id}/propositions`,
         );
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Internships_200_WithLinkedData', async () => {
@@ -918,7 +916,7 @@ describe('GET /internships/:id/propositions', () => {
             `${baseURL}/internships/${CREATED_INTERNSHIP.id}/propositions`,
         );
         expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body[0]).toMatchSnapshot({
+        expect(RESPONSE.body.data[0]).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
         });

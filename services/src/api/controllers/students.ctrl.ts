@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import sequelize from 'sequelize';
+import httpStatus from 'http-status-codes';
 
 // Import students ORM class
 import Students from '../../models/Students';
 import Internships from '../../models/Internships';
-import httpStatus from 'http-status-codes';
 
 // Factorization methods to handle errors
 import {
@@ -156,19 +157,33 @@ export const deleteStudent = (req: Request, res: Response, next: NextFunction): 
  * Used to get all internships of a student
  */
 export const getStudentInternships = (req: Request, res: Response, next: NextFunction): void => {
-  // @see validator + router
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return BAD_REQUEST_VALIDATOR(next, errors);
-  }
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
 
-  Students.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
-      .then(async (val) => {
-          if (checkContent(val, next)) {
-              return res.send(val.internships);
-          }
-      })
-      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+    const findOpts: sequelize.FindOptions = { where: { studentId: req.params.id } };
+
+    let max: number;
+    Internships.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Internships.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (mps) => {
+            if (checkArrayContent(mps, next)) {
+                return res.send({
+                    page,
+                    data: mps,
+                    length: mps.length,
+                    max,
+                });
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -176,18 +191,18 @@ export const getStudentInternships = (req: Request, res: Response, next: NextFun
  * Link a internship to a student entry
  */
 export const linkStudentInternships = (req: Request, res: Response, next: NextFunction): void => {
-  // @see validator + router
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return BAD_REQUEST_VALIDATOR(next, errors);
-  }
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
 
-  Students.findByPk(req.params.id)
-      .then(async (val) => {
-          if (checkContent(val, next)) {
-              await val.addInternship(Number(req.params.internship_id));
-              return res.sendStatus(httpStatus.OK);
-          }
-      })
-      .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+    Students.findByPk(req.params.id)
+        .then(async (val) => {
+            if (checkContent(val, next)) {
+                await val.addInternship(Number(req.params.internship_id));
+                return res.sendStatus(httpStatus.OK);
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

@@ -22,7 +22,7 @@ class Files extends Sequelize.Model implements IFileEntity {
     public setInternship: Sequelize.BelongsToSetAssociationMixin<Internships, Internships['id']>;
     public createInternship: Sequelize.BelongsToCreateAssociationMixin<IInternshipEntity>;
 
-    public readonly internship?: Internships[];
+    public readonly internship?: Internships;
 }
 
 Files.init(

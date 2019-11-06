@@ -2,11 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import moment from 'moment';
 import httpStatus from 'http-status-codes';
+import sequelize from 'sequelize';
 
 import Campaigns from '../../models/Campaigns';
 import MentoringPropositions from '../../models/MentoringPropositions';
 import InternshipTypes from '../../models/InternshipTypes';
 import Internships from '../../models/Internships';
+import Mentors from '../../models/Mentors';
 
 import {
     UNPROCESSABLE_ENTITY,
@@ -14,7 +16,7 @@ import {
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
-import Mentors from '../../models/Mentors';
+import { paginate } from '../helpers/pagination.helper';
 
 import { APIError } from '../../utils/error';
 
@@ -205,12 +207,25 @@ export const getCampaignMentoringPropositions = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Campaigns.findByPk(req.params.id, {
-        include: [{ model: MentoringPropositions, as: 'propositions' }],
-    })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.propositions);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = { where: { campaignId: req.params.id } };
+
+    let max: number;
+    MentoringPropositions.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return MentoringPropositions.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (mps) => {
+            if (checkArrayContent(mps, next)) {
+                return res.send({
+                    page,
+                    data: mps,
+                    length: mps.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -256,12 +271,25 @@ export const getAvailableCampaignInternships = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Campaigns.findByPk(req.params.id, {
-        include: [{ model: Internships, as: 'availableInternships' }],
-    })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.availableInternships);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = { where: { availableCampaignId: req.params.id } };
+
+    let max: number;
+    Internships.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Internships.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (internships) => {
+            if (checkArrayContent(internships, next)) {
+                return res.send({
+                    page,
+                    data: internships,
+                    length: internships.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -305,18 +333,30 @@ export const getValidatedCampaignInternships = (
     res: Response,
     next: NextFunction,
 ): void => {
-    // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Campaigns.findByPk(req.params.id, {
-        include: [{ model: Internships, as: 'validatedInternships' }],
-    })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.validatedInternships);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = { where: { validatedCampaignId: req.params.id } };
+
+    let max: number;
+    Internships.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Internships.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (internships) => {
+            if (checkArrayContent(internships, next)) {
+                return res.send({
+                    page,
+                    data: internships,
+                    length: internships.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -356,18 +396,33 @@ export const linkValidatedCampaignInternships = (
  * Used to get all mentors of a campaign
  */
 export const getCampaignMentors = (req: Request, res: Response, next: NextFunction): void => {
-    // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Campaigns.findByPk(req.params.id, {
-        include: [{ model: Mentors, as: 'mentors' }],
-    })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.mentors);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = {
+        include: [{ model: Campaigns, as: 'campaigns', attributes: [], duplicating: false }],
+        where: { '$campaigns.id$': req.params.id },
+    };
+
+    let max: number;
+    Mentors.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Mentors.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (mentors) => {
+            if (checkArrayContent(mentors, next)) {
+                return res.send({
+                    page,
+                    data: mentors,
+                    length: mentors.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));

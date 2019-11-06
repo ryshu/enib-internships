@@ -225,15 +225,14 @@ describe('GET /students/:id/internships', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Students_200_NoLinkedData', async () => {
+    it('Students_204_NoLinkedData', async () => {
         const VALID_STUDENT = defaultStudents();
 
         const CREATED = await Students.create(VALID_STUDENT);
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/students/${CREATED.id}/internships`,
         );
-        expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual([]);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Students_200_WithLinkedData', async () => {
@@ -243,7 +242,7 @@ describe('GET /students/:id/internships', () => {
         let CREATED_STUDENT = await Students.create(VALID_STUDENT);
         const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
 
-        await CREATED_STUDENT.addInternship(CREATED_INTERNSHIP);
+        await CREATED_STUDENT.addInternship(CREATED_INTERNSHIP.id);
         CREATED_STUDENT = await Students.findByPk(CREATED_STUDENT.id);
 
         const RESPONSE = await request(app).get(
