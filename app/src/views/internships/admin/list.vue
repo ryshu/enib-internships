@@ -3,12 +3,23 @@
     <!-- Filter -->
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.subject"
         :placeholder="$t('table.internships.subject')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
+      <el-select
+        v-model="listQuery.countries"
+        filterable
+        multiple
+        collapse-tags
+        style="width: 200px; margin-left: 10px;"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
+      </el-select>
       <el-button
         v-waves
         style="margin-left: 10px;"
@@ -61,7 +72,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.internships.isInternshipAbroad')" min-width="70px" align="center">
+      <el-table-column
+        :label="$t('table.internships.isInternshipAbroad')"
+        min-width="70px"
+        align="center"
+      >
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isInternshipAbroad ? 'success' : 'danger'"
@@ -108,58 +123,16 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="tempInternshipData"
-        label-position="left"
-        label-width="250px"
-        style="width: 100%; padding: 0 50px;"
-      >
-        <el-form-item :label="$t('table.internships.subject')" prop="subject">
-          <el-input v-model="tempInternshipData.subject" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.description')" prop="description">
-          <el-input v-model="tempInternshipData.description" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.country')" prop="country">
-          <el-input v-model="tempInternshipData.country" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.city')" prop="city">
-          <el-input v-model="tempInternshipData.city" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.postalCode')" prop="postalCode">
-          <el-input v-model="tempInternshipData.postalCode" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.address')" prop="address">
-          <el-input v-model="tempInternshipData.address" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.additional')" prop="additional">
-          <el-input v-model="tempInternshipData.additional" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.isInternshipAbroad')" prop="isInternshipAbroad">
-          <input v-model="tempInternshipData.isInternshipAbroad" type="checkbox" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.isValidated')" prop="isValidated">
-          <input v-model="tempInternshipData.isValidated" type="checkbox" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus === 'create' ? createData() : updateData()"
-        >{{ $t('table.confirm') }}</el-button>
-      </div>
-    </el-dialog>
+    <edit-internship ref="EditInternship" />
   </div>
 </template>
 
 <script lang="ts">
+import countryList from 'country-list';
 import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
 import { cloneDeep } from 'lodash';
+
 import {
   getInternships,
   createInternship,
@@ -167,42 +140,40 @@ import {
   deleteInternship,
   defaultInternshipData,
 } from '../../../api/internships';
+
 import { IInternship } from '../../../api/types';
+
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
+
 import Pagination from '../../../components/Pagination/index.vue';
+import EditInternship from '../dialog/EditInternship.vue';
 
 @Component({
   name: 'InternshipsStudentList',
   components: {
     Pagination,
+    EditInternship,
   },
 })
 export default class extends Vue {
   private tableKey = 0;
   private list: IInternship[] = [];
   private total = 0;
+
   private listLoading = true;
   private listQuery = {
     page: 1,
     limit: 10,
-    title: undefined,
+    subject: undefined,
+    countries: [],
   };
-  private showReviewer = false;
-  private dialogFormVisible = false;
-  private dialogStatus = '';
-  private textMap = {};
-  private dialogPageviewsVisible = false;
-  private pageviewsData = [];
-  private rules = {};
+
   private downloadLoading = false;
-  private tempInternshipData = defaultInternshipData;
+
+  private countryList = countryList.getNames();
 
   public created() {
-    this.textMap = {
-      update: this.$t('dialog.title.edit'),
-      create: this.$t('dialog.title.create'),
-    };
     this.getList();
   }
 
@@ -230,61 +201,38 @@ export default class extends Vue {
     });
   }
 
-  private resetTempInternshipData() {
-    this.tempInternshipData = cloneDeep(defaultInternshipData);
-  }
-
   private handleCreate() {
-    this.resetTempInternshipData();
-    this.dialogStatus = 'create';
-    this.dialogFormVisible = true;
-    this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
-    });
-  }
-
-  private createData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
-      if (valid) {
-        const res = await createInternship(this.tempInternshipData);
-        this.dialogFormVisible = false;
-        this.$notify({
-          title: this.$t('notify.internships.create.title') as string,
-          message: this.$t('notify.internships.create.msg') as string,
-          type: 'success',
-          duration: 2000,
-        });
-        this.getList();
-      }
-    });
+    (this.$refs.EditInternship as EditInternship)
+      .create()
+      .then(async (createdRow: IInternship | undefined) => {
+        if (createdRow) {
+          await createInternship(createdRow);
+          this.getList();
+          this.$notify({
+            title: this.$t('notify.internships.create.title') as string,
+            message: this.$t('notify.internships.create.msg') as string,
+            type: 'success',
+            duration: 2000,
+          });
+        }
+      });
   }
 
   private handleUpdate(row: any) {
-    this.tempInternshipData = Object.assign({}, row);
-    this.dialogStatus = 'update';
-    this.dialogFormVisible = true;
-    this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
-    });
-  }
-
-  private updateData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
-      if (valid) {
-        const tempData = Object.assign({}, this.tempInternshipData);
-
-        // Wait update
-        await updateInternship(tempData.id!, tempData);
-        this.getList();
-        this.dialogFormVisible = false;
-        this.$notify({
-          title: this.$t('notify.internships.update.title') as string,
-          message: this.$t('notify.internships.update.msg') as string,
-          type: 'success',
-          duration: 2000,
-        });
-      }
-    });
+    (this.$refs.EditInternship as EditInternship)
+      .update(row)
+      .then(async (updatedRow: IInternship | undefined) => {
+        if (updatedRow) {
+          const { data } = await updateInternship(updatedRow.id!, updatedRow);
+          this.getList();
+          this.$notify({
+            title: this.$t('notify.internships.update.title') as string,
+            message: this.$t('notify.internships.update.msg') as string,
+            type: 'success',
+            duration: 2000,
+          });
+        }
+      });
   }
 
   private handleDownload() {
@@ -321,3 +269,9 @@ export default class extends Vue {
   }
 }
 </script>
+
+<style lang="scss">
+.el-form-item .el-select {
+  width: 100%;
+}
+</style>
