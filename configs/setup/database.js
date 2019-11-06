@@ -18,6 +18,9 @@ Internships_1.default.belongsTo(Businesses_1.default, { as: 'business', foreignK
 // One InternshipTypes to many Internships
 InternshipTypes_1.default.hasMany(Internships_1.default, { as: 'internships', foreignKey: 'categoryId' });
 Internships_1.default.belongsTo(InternshipTypes_1.default, { as: 'category', foreignKey: 'categoryId' });
+// One InternshipTypes to many Internships
+InternshipTypes_1.default.hasMany(Campaigns_1.default, { as: 'campaigns', foreignKey: 'categoryId' });
+Campaigns_1.default.belongsTo(InternshipTypes_1.default, { as: 'category', foreignKey: 'categoryId' });
 // One Campaigns to many MentoringPropositions
 Campaigns_1.default.hasMany(MentoringPropositions_1.default, { as: 'propositions', foreignKey: 'campaignId' });
 MentoringPropositions_1.default.belongsTo(Campaigns_1.default, { as: 'campaign', foreignKey: 'campaignId' });
@@ -38,5 +41,20 @@ Internships_1.default.belongsTo(Students_1.default, { as: 'student', foreignKey:
 // One Internship to many Files
 Internships_1.default.hasMany(Files_1.default, { as: 'files', foreignKey: 'internshipId' });
 Files_1.default.belongsTo(Internships_1.default, { as: 'internship', foreignKey: 'internshipId' });
+// One Mentor to many Internships
+Mentors_1.default.hasMany(Internships_1.default, { as: 'internships', foreignKey: 'mentorId' });
+Internships_1.default.belongsTo(Mentors_1.default, { as: 'mentor', foreignKey: 'mentorId' });
+// One Mentor to many MentoringPropositions
+Mentors_1.default.hasMany(MentoringPropositions_1.default, { as: 'propositions', foreignKey: 'mentorId' });
+MentoringPropositions_1.default.belongsTo(Mentors_1.default, { as: 'mentor', foreignKey: 'mentorId' });
+// One Internships to many MentoringPropositions
+Internships_1.default.hasMany(MentoringPropositions_1.default, { as: 'propositions', foreignKey: 'internshipId' });
+MentoringPropositions_1.default.belongsTo(Internships_1.default, { as: 'internship', foreignKey: 'internshipId' });
+// One Validated Campaign to many Internships
+Campaigns_1.default.hasMany(Internships_1.default, { as: 'validatedInternships', foreignKey: 'validatedCampaignId' });
+Internships_1.default.belongsTo(Campaigns_1.default, { as: 'validatedCampaign', foreignKey: 'validatedCampaignId' });
+// One Available Campaign to many Internships
+Campaigns_1.default.hasMany(Internships_1.default, { as: 'availableInternships', foreignKey: 'availableCampaignId' });
+Internships_1.default.belongsTo(Campaigns_1.default, { as: 'availableCampaign', foreignKey: 'availableCampaignId' });
 exports.default = database_1.default.sync({ force: process.env.ORM_DROP_DB_ON_START === 'true' });
 //# sourceMappingURL=database.js.map

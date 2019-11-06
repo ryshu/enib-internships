@@ -16,12 +16,17 @@ const InternshipTypesCtrl = __importStar(require("../controllers/internship.type
 const generic_val_1 = require("../validators/generic.val");
 const internshipTypes_val_1 = require("../validators/internshipTypes.val");
 const router = express_1.default.Router();
+// Internships types
 router.get('', InternshipTypesCtrl.getInternshipTypes);
 router.post('', express_validator_1.checkSchema(internshipTypes_val_1.InternshipTypeCreate), InternshipTypesCtrl.postInternshipType);
 router.get('/:id', express_validator_1.checkSchema(generic_val_1.ID), InternshipTypesCtrl.getInternshipType);
 router.put('/:id', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, internshipTypes_val_1.InternshipTypeUpdate)), InternshipTypesCtrl.putInternshipType);
 router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), InternshipTypesCtrl.deleteInternshipType);
+// Internships types link to internships
 router.get('/:id/internships', express_validator_1.checkSchema(generic_val_1.ID), InternshipTypesCtrl.getInternshipTypeInternships);
 router.post('/:id/internships/:internship_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipID)), InternshipTypesCtrl.linkInternshipTypeInternship);
+// Internships types link to campaigns
+router.get('/:id/campaigns', express_validator_1.checkSchema(generic_val_1.ID), InternshipTypesCtrl.getInternshipTypeCampaigns);
+router.post('/:id/campaigns/:campaign_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.CampaignID)), InternshipTypesCtrl.linkInternshipTypeCampaign);
 exports.default = router;
 //# sourceMappingURL=internship.types.route.js.map

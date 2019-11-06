@@ -33,35 +33,5 @@ exports.StudentCreate = {
         escape: true,
     },
 };
-exports.StudentUpdate = {
-    firstName: {
-        in: ['body'],
-        isString: { errorMessage: 'First name must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    lastName: {
-        in: ['body'],
-        isString: { errorMessage: 'Last name must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    email: {
-        in: ['body'],
-        isString: { errorMessage: 'Email must be of type string' },
-        isEmail: { errorMessage: 'Email must complain to email struct' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    semester: {
-        in: ['body'],
-        isString: { errorMessage: 'Semester must be of type strin' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-};
+exports.StudentUpdate = generic_val_1.replaceAllExistByOptional(exports.StudentCreate);
 //# sourceMappingURL=students.val.js.map

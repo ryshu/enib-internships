@@ -16,6 +16,8 @@ const express_validator_1 = require("express-validator");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const MentoringPropositions_1 = __importDefault(require("../../models/MentoringPropositions"));
 const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
+const Mentors_1 = __importDefault(require("../../models/Mentors"));
+const Internships_1 = __importDefault(require("../../models/Internships"));
 const pagination_helper_1 = require("../helpers/pagination.helper");
 const global_helper_1 = require("../helpers/global.helper");
 /**
@@ -162,6 +164,94 @@ exports.linkMentoringPropositionCampaign = (req, res, next) => {
         if (global_helper_1.checkContent(val, next)) {
             try {
                 yield val.setCampaign(Number(req.params.campaign_id));
+                return res.sendStatus(http_status_codes_1.default.OK);
+            }
+            catch (error) {
+                global_helper_1.checkContent(null, next);
+            }
+        }
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * GET /mentoringPropostions/:id/mentors
+ * Used to select a mentoring propositions by ID and return his mentor
+ */
+exports.getMentoringPropositionMentor = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    MentoringPropositions_1.default.findByPk(req.params.id, {
+        include: [{ model: Mentors_1.default, as: 'mentor' }],
+    })
+        .then((val) => {
+        if (global_helper_1.checkContent(val, next)) {
+            return res.send(val.mentor);
+        }
+    })
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * POST /mentoringPropostions/:id/mentors/:mentor_id/link
+ * Used to create a link between mentoring propositions and mentor
+ */
+exports.linkMentoringPropositionMentor = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    MentoringPropositions_1.default.findByPk(req.params.id)
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(val, next)) {
+            try {
+                yield val.setMentor(Number(req.params.mentor_id));
+                return res.sendStatus(http_status_codes_1.default.OK);
+            }
+            catch (error) {
+                global_helper_1.checkContent(null, next);
+            }
+        }
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * GET /mentoringPropostions/:id/internship
+ * Used to select a mentoring propositions by ID and return his internship
+ */
+exports.getMentoringPropositionInternship = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    MentoringPropositions_1.default.findByPk(req.params.id, {
+        include: [{ model: Internships_1.default, as: 'internship' }],
+    })
+        .then((val) => {
+        if (global_helper_1.checkContent(val, next)) {
+            return res.send(val.internship);
+        }
+    })
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * POST /mentoringPropostions/:id/internships/:internship_id/link
+ * Used to create a link between mentoring propositions and internship
+ */
+exports.linkMentoringPropositionInternship = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    MentoringPropositions_1.default.findByPk(req.params.id)
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(val, next)) {
+            try {
+                yield val.setInternship(Number(req.params.internship_id));
                 return res.sendStatus(http_status_codes_1.default.OK);
             }
             catch (error) {

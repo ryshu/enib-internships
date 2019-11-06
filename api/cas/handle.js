@@ -16,6 +16,7 @@ const utils_1 = require("./utils");
 const logger_1 = __importDefault(require("../../utils/logger"));
 const Mentors_1 = __importDefault(require("../../models/Mentors"));
 const Students_1 = __importDefault(require("../../models/Students"));
+const admin_1 = require("../../configs/data/admin");
 /**
  * @summary Method used to handle cas connection and setup user info
  * @param {Request} req Express request
@@ -26,7 +27,8 @@ function handleConnection(req) {
         // Check if any session is defined
         if (req.session && req.session.cas_user) {
             // Check if cas user is a student and get his email
-            const student = utils_1.isStudent(req.session.cas_user);
+            // Check also if username isn't included in admin list (case when user is admin)
+            const student = utils_1.isStudent(req.session.cas_user) && !admin_1.adminsCasUsername.includes(req.session.cas_user);
             const email = utils_1.getEmail(req.session.cas_user);
             // Try to get our user in database
             const user = student

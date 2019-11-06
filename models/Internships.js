@@ -76,7 +76,16 @@ Internships.init({
     tableName: 'internships',
     sequelize: database_1.default,
     defaultScope: {
-        attributes: { exclude: ['businessId', 'studentId', 'categoryId'] },
+        attributes: {
+            exclude: [
+                'businessId',
+                'studentId',
+                'categoryId',
+                'availableCampaignId',
+                'validatedCampaignId',
+                'mentorId',
+            ],
+        },
     },
 });
 exports.default = Internships;

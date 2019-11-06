@@ -41,4 +41,20 @@ exports.paginateValidator = {
         toInt: true,
     },
 };
+/**
+ * @summary Method used to prevent code duplication in REST API
+ * @param {Schema} schema see express-validator schema
+ */
+function replaceAllExistByOptional(schema) {
+    const newSchema = lodash_1.cloneDeep(schema);
+    for (const key in newSchema) {
+        if (newSchema.hasOwnProperty(key)) {
+            const elem = newSchema[key];
+            delete elem.exists;
+            elem.optional = true;
+        }
+    }
+    return newSchema;
+}
+exports.replaceAllExistByOptional = replaceAllExistByOptional;
 //# sourceMappingURL=generic.val.js.map

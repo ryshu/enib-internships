@@ -50,6 +50,9 @@ Campaigns.init({
 }, {
     tableName: 'campaigns',
     sequelize: database_1.default,
+    defaultScope: {
+        attributes: { exclude: ['categoryId'] },
+    },
 });
 exports.default = Campaigns;
 //# sourceMappingURL=Campaigns.js.map

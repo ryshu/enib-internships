@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const generic_val_1 = require("./generic.val");
-exports.CampaignList = Object.assign({}, generic_val_1.paginateValidator);
+exports.CampaignList = {};
 exports.CampaignCreate = {
     name: {
         in: ['body'],
@@ -42,46 +42,12 @@ exports.CampaignCreate = {
         optional: true,
         toInt: true,
     },
-};
-exports.CampaignUpdate = {
-    name: {
+    category_id: {
         in: ['body'],
-        isString: { errorMessage: 'Name must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    description: {
-        in: ['body'],
-        isString: { errorMessage: 'Description must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    startAt: {
-        in: ['body'],
-        isInt: { errorMessage: 'StartAt must be of type timestamp', options: { min: 0 } },
-        optional: true,
-        toInt: true,
-    },
-    endAt: {
-        in: ['body'],
-        isInt: { errorMessage: 'endAt must be of type timestamp', options: { min: 0 } },
-        optional: true,
-        toInt: true,
-    },
-    semester: {
-        in: ['body'],
-        isString: { errorMessage: 'Semester must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    maxProposition: {
-        in: ['body'],
-        isInt: { errorMessage: 'MaxProposition must be an integer >= 0', options: { min: 0 } },
-        optional: true,
+        isInt: { errorMessage: 'Category ID should be integer > 0', options: { min: 1 } },
+        exists: { errorMessage: 'Category ID should be defined' },
         toInt: true,
     },
 };
+exports.CampaignUpdate = generic_val_1.replaceAllExistByOptional(exports.CampaignCreate);
 //# sourceMappingURL=campaigns.val.js.map

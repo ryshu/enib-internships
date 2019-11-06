@@ -28,7 +28,7 @@ MentoringPropositions.init({
     tableName: 'mentoring-propositions',
     sequelize: database_1.default,
     defaultScope: {
-        attributes: { exclude: ['campaignId'] },
+        attributes: { exclude: ['campaignId', 'mentorId', 'internshipId'] },
     },
 });
 exports.default = MentoringPropositions;

@@ -32,34 +32,5 @@ exports.FileCreate = {
         escape: true,
     },
 };
-exports.FileUpdate = {
-    name: {
-        in: ['body'],
-        isString: { errorMessage: 'Name must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    size: {
-        in: ['body'],
-        isInt: { errorMessage: 'Size must be of type integer' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    type: {
-        in: ['body'],
-        isString: { errorMessage: 'Type must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    path: {
-        in: ['body'],
-        isString: { errorMessage: 'Path must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-};
+exports.FileUpdate = generic_val_1.replaceAllExistByOptional(exports.FileCreate);
 //# sourceMappingURL=files.val.js.map

@@ -16,6 +16,7 @@ const express_validator_1 = require("express-validator");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const InternshipTypes_1 = __importDefault(require("../../models/InternshipTypes"));
 const Internships_1 = __importDefault(require("../../models/Internships"));
+const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
 const global_helper_1 = require("../helpers/global.helper");
 /**
  * GET /internshipTypes
@@ -141,6 +142,45 @@ exports.linkInternshipTypeInternship = (req, res, next) => {
         .then((val) => __awaiter(void 0, void 0, void 0, function* () {
         if (global_helper_1.checkContent(val, next)) {
             yield val.addInternship(Number(req.params.internship_id));
+            return res.sendStatus(http_status_codes_1.default.OK);
+        }
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * GET /internshipTypes/:id/campaigns
+ * Used to select an campaigns type by ID and return list of campaigns link to it
+ */
+exports.getInternshipTypeCampaigns = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    InternshipTypes_1.default.findByPk(req.params.id, {
+        include: [{ model: Campaigns_1.default, as: 'campaigns' }],
+    })
+        .then((val) => {
+        if (global_helper_1.checkContent(val, next)) {
+            return res.send(val.campaigns);
+        }
+    })
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
+};
+/**
+ * POST /internshipTypes/:id/campaigns/:campaign_id/link
+ * Used to link campaign types to campaigns
+ */
+exports.linkInternshipTypeCampaign = (req, res, next) => {
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    InternshipTypes_1.default.findByPk(req.params.id)
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(val, next)) {
+            yield val.addCampaign(Number(req.params.campaign_id));
             return res.sendStatus(http_status_codes_1.default.OK);
         }
     }))

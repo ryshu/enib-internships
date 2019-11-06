@@ -12,6 +12,10 @@ const error_1 = require("../../utils/error");
 function getProfile(req, res, next) {
     // Check if any session is defined
     if (req.session && req.session.info) {
+        if (!req.session.info.role) {
+            // Prevent student case to doesn't have any role returned
+            req.session.info.role = 'student';
+        }
         return res.send(req.session.info);
     }
     next(new error_1.APIError('Missing cas user info in given session', http_status_codes_1.default.BAD_REQUEST, 11103));

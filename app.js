@@ -53,7 +53,7 @@ app.use('/', cas_1.default.bounce, // CAS bounce to connect user if isn't
         // else, pass
         next();
     }
-}, express_1.default.static(path_1.default.join(__dirname, 'public'), { maxAge: 31557600000 }));
+}, express_1.default.static(path_1.default.join(__dirname, 'public'), { maxAge: 0 }));
 app.use(route_1.default);
 /**
  * Error handler setup

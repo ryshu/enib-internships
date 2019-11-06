@@ -11,13 +11,5 @@ exports.MentoringPropositionCreate = {
         escape: true,
     },
 };
-exports.MentoringPropositionUpdate = {
-    comment: {
-        in: ['body'],
-        isString: { errorMessage: 'Comment must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-};
+exports.MentoringPropositionUpdate = generic_val_1.replaceAllExistByOptional(exports.MentoringPropositionCreate);
 //# sourceMappingURL=mentoringPropositions.val.js.map

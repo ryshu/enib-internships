@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /** @property {string} regex pattern to identify students */
-const regex = /[a-z][0-9][a-z]{1,6}@enib\.fr/;
+const regex = /^[a-z][0-9][a-z]{1,6}/;
 /**
  * @summary Method used to check if given casUser match student pattern
  * @param {string} casUser cas username
