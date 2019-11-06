@@ -3,7 +3,14 @@ import { checkSchema } from 'express-validator';
 
 import * as InternshipsCtrl from '../controllers/internships.ctrl';
 
-import { ID, BusinessID, StudentID, InternshipTypeID, FileID } from '../validators/generic.val';
+import {
+    ID,
+    BusinessID,
+    StudentID,
+    InternshipTypeID,
+    FileID,
+    CampaignID,
+} from '../validators/generic.val';
 import { InternshipUpdate, InternshipCreate, InternshipsList } from '../validators/internships.val';
 
 const router = express.Router();
@@ -35,7 +42,7 @@ router.post(
     InternshipsCtrl.linkInternshipInternshipTypes,
 );
 
-// Students
+// Internships Student
 router.get('/:id/students', checkSchema(ID), InternshipsCtrl.getInternshipStudent);
 router.post(
     '/:id/students/:student_id/link',
@@ -43,12 +50,36 @@ router.post(
     InternshipsCtrl.linkInternshipStudents,
 );
 
-// Files
+// Internships Files
 router.get('/:id/files', checkSchema(ID), InternshipsCtrl.getInternshipFiles);
 router.post(
     '/:id/files/:file_id/link',
     checkSchema(Object.assign({}, ID, FileID)),
     InternshipsCtrl.linkInternshipFiles,
+);
+
+// Internships Available Campaign
+router.get(
+    '/:id/availableCampaigns',
+    checkSchema(ID),
+    InternshipsCtrl.getAvailabletInternshipCampaign,
+);
+router.post(
+    '/:id/availableCampaigns/:campaign_id/link',
+    checkSchema(Object.assign({}, ID, CampaignID)),
+    InternshipsCtrl.linkAvailableCampaignInternships,
+);
+
+// Internships Validated Campaign
+router.get(
+    '/:id/validatedCampaigns',
+    checkSchema(ID),
+    InternshipsCtrl.getValidatedInternshipCampaign,
+);
+router.post(
+    '/:id/validatedCampaigns/:campaign_id/link',
+    checkSchema(Object.assign({}, ID, CampaignID)),
+    InternshipsCtrl.linkValidatedCampaignInternships,
 );
 
 export default router;

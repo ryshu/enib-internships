@@ -1,14 +1,14 @@
 ---
-id: api-students
-title: Students
+id: api-mentors
+title: Mentors
 ---
 
-Details of routes to handle **students**
+Details of routes to handle **mentors**
 
-## List of all students
+## List of all mentors
 
 ``` sh
-GET /api/v1/students
+GET /api/v1/mentors
 ```
 
 ### Params
@@ -18,7 +18,7 @@ Key | Type | Optional | Description
 **limit** | Number | *no* | Page expected (By default 1)
 **page** | Number | *no* | Number of row expected (By default 20)
 
-### 200 - List of students
+### 200 - List of mentors
 
 ``` json
 {
@@ -28,6 +28,7 @@ Key | Type | Optional | Description
             "id": 1,
             "firstName": "John",
             "lastName": "Doe",
+            "role": "default",
             "email": "john.doe@enib.fr",
             "semester": "S8",
             "createdAt": "2019-09-30T11:24:50.000Z",
@@ -41,12 +42,12 @@ Key | Type | Optional | Description
 
 ### 204 - Not content
 
-If the API doesn't have any student in his database, we return a status **204 - No content**
+If the API doesn't have any mentors in his database, we return a status **204 - No content**
 
-## Create a new student
+## Create a new mentor
 
 ``` sh
-POST /api/v1/students
+POST /api/v1/mentors
 ```
 
 ### Headers
@@ -59,149 +60,28 @@ Key | Value | Description
 
 Key | Type | Optional | Description
 - | - | - | -
-**firstName** | String | *no* | Student firstName
-**lastName** | String | *no* | Student lastName
-**email** | String | *no* | Student email
-**semester** | String | *no* | Student semester
+**firstName** | String | *no* | Mentor firstName
+**lastName** | String | *no* | Mentor lastName
+**role** | String | *no* | Mentor role
+**email** | String | *no* | Mentor email
+**semester** | String | *no* | Mentor semester
 
 ### 200 - Created
 
-Return created student
+Return created mentor
 
 ``` json
 {
-  "id": 1,
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@enib.fr",
-  "semester": "S8",
-  "updatedAt": "2019-09-19T22:21:24.365Z",
-  "createdAt": "2019-09-19T22:21:24.365Z"
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "default",
+    "email": "john.doe@enib.fr",
+    "semester": "S8",
+    "createdAt": "2019-09-30T11:24:50.000Z",
+    "updatedAt": "2019-09-30T11:24:50.000Z"
 }
 ```
-
-### 400 - Bad request
-
-API return **Bad Request** status with 400 code when request validation fail.
-
-``` json
-{
-  "code": 11103,
-  "status": 400,
-  "errors": [
-    {
-      "msg": "First name must be of type string",
-      "param": "city",
-      "location": "body"
-    },
-    {
-      "msg": "First name must be defined",
-      "param": "city",
-      "location": "body"
-    }
-  ],
-  "name": "BAD REQUEST"
-}
-```
-
-## Get a student by ID
-
-``` sh
-GET /api/v1/students/:id
-```
-
-### Paths variables
-
-Key | Type | Description
-- | - | -
-**id** | String | Student ID
-
-### 200 - Student
-
-``` json
-{
-  "id": 1,
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@enib.fr",
-  "semester": "S8",
-  "createdAt": "2019-09-30T11:24:50.000Z",
-  "updatedAt": "2019-09-30T11:24:50.000Z"
-}
-```
-
-### 204 - No content
-
-If the API doesn't have any student in his database, we return a status **204 - No content**
-
-### 400 - Bad request
-
-API return **Bad Request** status with 400 code when request validation fail.
-
-``` json
-{
-  "code": 11103,
-  "status": 400,
-  "errors": [
-    {
-      "msg": "Identifier must be an integer",
-      "param": "city",
-      "location": "body"
-    },
-    {
-      "msg": "Identifier must be defined",
-      "param": "city",
-      "location": "body"
-    }
-  ],
-  "name": "BAD REQUEST"
-}
-```
-
-## Update a student by ID
-
-``` sh
-PUT /api/v1/students/:id
-```
-
-### Paths variables
-
-Key | Type | Description
-- | - | -
-**id** | String | Student ID
-
-### Headers
-
-Key | Value | Description
-- | - | -
-**Content-Type** | application/x-www-form-urlencoded | Body encoding
-
-### Body
-
-Key | Type | Optional | Description
-- | - | - | -
-**firstName** | String | *yes* | Student firstName
-**lastName** | String | *yes* | Student lastName
-**email** | String | *yes* | Student email
-**semester** | String | *yes* | Student semester
-
-### 200 - Updated student
-
-``` json
-{
-  "id": 1,
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@enib.fr",
-  "semester": "S8",
-  "createdAt": "2019-09-30T11:24:50.000Z",
-  "updatedAt": "2019-09-30T11:24:50.000Z"
-}
-```
-
-### 204 - No content
-
-If the API doesn't have any student in his database, we return a status **204 - No content**
 
 ### 400 - Bad request
 
@@ -216,68 +96,47 @@ API return **Bad Request** status with 400 code when request validation fail.
       "msg": "Email must be of type string",
       "param": "city",
       "location": "body"
+    },
+    {
+      "msg": "Email must be defined",
+      "param": "city",
+      "location": "body"
     }
   ],
   "name": "BAD REQUEST"
 }
 ```
 
-## Remove a student by ID
+## Get a mentor by ID
 
 ``` sh
-DELETE /api/v1/students/:id
+GET /api/v1/mentors/:id
 ```
 
 ### Paths variables
 
 Key | Type | Description
 - | - | -
-**id** | String | Student ID
+**id** | String | Mentor ID
 
-### 200 - Removed
-
-Return a status **200** without data when delete succeed
-
-### 204 - No content
-
-If the API doesn't have any student in his database, we return a status **204 - No content**
-
-## Get internships related to a student by giving his ID
-
-``` sh
-GET /api/v1/students/:id/internships
-```
-
-### Paths variables
-
-Key | Type | Description
-- | - | -
-**id** | String | Student ID
-
-### 200 - Internships list
+### 200 - Mentor
 
 ``` json
-[
-    {
-        "id": 1,
-        "subject": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
-        "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
-        "country": "Russian Federation",
-        "city": "New Rocky",
-        "postalCode": "30636-9003",
-        "address": "15486 Genoveva Isle",
-        "additional": "Suite 755",
-        "isInternshipAbroad": false,
-        "isValidated": false,
-        "createdAt": "2019-10-13T16:21:25.000Z",
-        "updatedAt": "2019-10-13T16:21:25.000Z"
-    },
-]
+{
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "default",
+    "email": "john.doe@enib.fr",
+    "semester": "S8",
+    "createdAt": "2019-09-30T11:24:50.000Z",
+    "updatedAt": "2019-09-30T11:24:50.000Z"
+}
 ```
 
 ### 204 - No content
 
-If the API doesn't have any student in his database, we return a status **204 - No content**
+If the API doesn't have any mentor in his database, we return a status **204 - No content**
 
 ### 400 - Bad request
 
@@ -303,33 +162,167 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Link student to internship
+## Update a mentor by ID
 
 ``` sh
-GET /api/v1/students/:id/internships/:internship_id/link
+PUT /api/v1/mentors/:id
 ```
 
 ### Paths variables
 
 Key | Type | Description
 - | - | -
-**id** | String | Student ID
-**internship_id** | String | Internship ID
+**id** | String | Mentor ID
 
-### 200 - OK
+### Headers
 
-Ok appears on two occasions
+Key | Value | Description
+- | - | -
+**Content-Type** | application/x-www-form-urlencoded | Body encoding
 
-* If entries have been linked
-* If internship haven't been found
+### Body
+
+Key | Type | Optional | Description
+- | - | - | -
+**firstName** | String | *no* | Mentor firstName
+**lastName** | String | *no* | Mentor lastName
+**role** | String | *no* | Mentor role
+**email** | String | *no* | Mentor email
+**semester** | String | *no* | Mentor semester
+
+### 200 - Updated mentor
 
 ``` json
-OK
+{
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "default",
+    "email": "john.doe@enib.fr",
+    "semester": "S8",
+    "createdAt": "2019-09-30T11:24:50.000Z",
+    "updatedAt": "2019-09-30T11:24:50.000Z"
+}
 ```
 
 ### 204 - No content
 
-If the API doesn't have any student in his database, we return a status **204 - No content**
+If the API doesn't have any mentor in his database, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Role must be of type string",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Remove a mentor by ID
+
+``` sh
+DELETE /api/v1/mentors/:id
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Mentor ID
+
+### 200 - Removed
+
+Return a status **200** without data when delete succeed
+
+### 204 - No content
+
+If the API doesn't have any mentor in his database, we return a status **204 - No content**
+
+## Get campaign related to a mentor by giving his ID
+
+``` sh
+GET /api/v1/mentors/:id/campaigns
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Mentor ID
+
+### 200 - Campaigns list
+
+``` json
+{
+  "id": 1,
+  "maxProposition": 2,
+  "name": "test",
+  "semester": "S5",
+  "startAt": 0,
+  "endAt": 0,
+  "updatedAt": "2019-09-19T22:21:24.365Z",
+  "createdAt": "2019-09-19T22:21:24.365Z"
+},
+```
+
+### 204 - No content
+
+If the API doesn't have any mentor in database link to given ID, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Link campaign to mentor
+
+``` sh
+GET /api/v1/mentors/:id/campaigns/:campaign_id/link
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Mentor ID
+**campaign_id** | String | Campaign ID
+
+### 200 - OK
+
+Data are linked
+
+### 204 - No content
+
+If the API doesn't have requested campaign or mentor in his database, we return a status **204 - No content**
 
 ### 400 - Bad request
 

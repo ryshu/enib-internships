@@ -12,6 +12,8 @@ import Internships from '../../../../src/models/Internships';
 
 import { defaultFiles, defaultInternships } from '../../../../__mocks__/mockData';
 
+const baseURL = `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`;
+
 jest.setTimeout(30000);
 
 beforeAll((done) => {
@@ -25,16 +27,12 @@ describe('GET /files', () => {
     });
 
     it('NoFile_204', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files?limit=Nan`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files?limit=Nan`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -42,9 +40,7 @@ describe('GET /files', () => {
         const VALID_FILE = defaultFiles();
 
         await Files.create(VALID_FILE);
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files`);
         expect(RESPONSE.status).toBe(200);
         expect(Array.isArray(RESPONSE.body.data)).toBeTruthy();
         expect(RESPONSE.body).toMatchSnapshot({
@@ -60,9 +56,7 @@ describe('GET /files', () => {
 
 describe('POST /files', () => {
     it('NoBody_400', async () => {
-        const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files`,
-        );
+        const RESPONSE = await request(app).post(`${baseURL}/files`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -70,7 +64,7 @@ describe('POST /files', () => {
         const VALID_FILE = defaultFiles();
 
         const RESPONSE = await request(app)
-            .post(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files`)
+            .post(`${baseURL}/files`)
             .send(VALID_FILE);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
@@ -88,16 +82,12 @@ describe('GET /files/:id', () => {
     });
 
     it('NoFile_204', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/10`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files/10`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/{falseEncoding}`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files/{falseEncoding}`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -105,9 +95,7 @@ describe('GET /files/:id', () => {
         const VALID_FILE = defaultFiles();
 
         const CREATED = await Files.create(VALID_FILE);
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files/${CREATED.id}`);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -124,16 +112,12 @@ describe('PUT /files/:id', () => {
     });
 
     it('NoFile_204', async () => {
-        const RESPONSE = await request(app).put(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/10`,
-        );
+        const RESPONSE = await request(app).put(`${baseURL}/files/10`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).put(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/{falseEncoding}`,
-        );
+        const RESPONSE = await request(app).put(`${baseURL}/files/{falseEncoding}`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -146,7 +130,7 @@ describe('PUT /files/:id', () => {
         VALID_FILE.size = 250;
 
         const RESPONSE = await request(app)
-            .put(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}`)
+            .put(`${baseURL}/files/${CREATED.id}`)
             .send(VALID_FILE);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
@@ -162,7 +146,7 @@ describe('PUT /files/:id', () => {
         const CREATED = await Files.create(VALID_FILE);
 
         const RESPONSE = await request(app)
-            .put(`/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}`)
+            .put(`${baseURL}/files/${CREATED.id}`)
             .send({});
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
@@ -180,16 +164,12 @@ describe('DELETE /files/:id', () => {
     });
 
     it('NoFile_200', async () => {
-        const RESPONSE = await request(app).delete(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/10`,
-        );
+        const RESPONSE = await request(app).delete(`${baseURL}/files/10`);
         expect(RESPONSE.status).toBe(200);
     });
 
     it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).delete(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/{falseEncoding}`,
-        );
+        const RESPONSE = await request(app).delete(`${baseURL}/files/{falseEncoding}`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -198,9 +178,7 @@ describe('DELETE /files/:id', () => {
 
         const CREATED = await Files.create(VALID_FILE);
 
-        const RESPONSE = await request(app).delete(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}`,
-        );
+        const RESPONSE = await request(app).delete(`${baseURL}/files/${CREATED.id}`);
         expect(RESPONSE.status).toBe(200);
     });
 });
@@ -212,16 +190,12 @@ describe('GET /files/:id/internships', () => {
     });
 
     it('NoInternship_204', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/10/internships`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files/10/internships`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400', async () => {
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/{falseEncoding}/internships`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files/{falseEncoding}/internships`);
         expect(RESPONSE.status).toBe(400);
     });
 
@@ -229,9 +203,7 @@ describe('GET /files/:id/internships', () => {
         const VALID_FILE = defaultFiles();
 
         const CREATED = await Files.create(VALID_FILE);
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}/internships`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files/${CREATED.id}/internships`);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toEqual({});
     });
@@ -246,9 +218,7 @@ describe('GET /files/:id/internships', () => {
         await CREATED_FILE.setInternship(CREATED_INTERNSHIP.id);
         CREATED_FILE = await Files.findByPk(CREATED_FILE.id);
 
-        const RESPONSE = await request(app).get(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED_FILE.id}/internships`,
-        );
+        const RESPONSE = await request(app).get(`${baseURL}/files/${CREATED_FILE.id}/internships`);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -264,38 +234,36 @@ describe('POST /files/:id/internships/:internship_id/link', () => {
     });
 
     it('NoInternship_204', async () => {
-        const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/10/internships/20/link`,
-        );
+        const RESPONSE = await request(app).post(`${baseURL}/files/10/internships/20/link`);
         expect(RESPONSE.status).toBe(204);
     });
 
     it('BadRequest_400_WrongID', async () => {
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/{falseEncoding}/internships/10/link`,
+            `${baseURL}/files/{falseEncoding}/internships/10/link`,
         );
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('BadRequest_400_WrongBusinessID', async () => {
+    it('BadRequest_400_WrongInternshipID', async () => {
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/10/internships/{falseEncoding}/link`,
+            `${baseURL}/files/10/internships/{falseEncoding}/link`,
         );
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Files_204_NoBusiness', async () => {
+    it('Files_204_NoInternship', async () => {
         // In this case, we check if link a existing files and an unexisting internships work
         const VALID_FILE = defaultFiles();
 
         const CREATED = await Files.create(VALID_FILE);
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED.id}/internships/20/link`,
+            `${baseURL}/files/${CREATED.id}/internships/20/link`,
         );
         expect(RESPONSE.status).toBe(204);
     });
 
-    it('Files_200_WithBusiness', async () => {
+    it('Files_200_WithInternship', async () => {
         const VALID_INTERNSHIP = defaultInternships();
         const VALID_FILE = defaultFiles();
 
@@ -303,7 +271,7 @@ describe('POST /files/:id/internships/:internship_id/link', () => {
         let CREATED_FILE = await Files.create(VALID_FILE);
 
         const RESPONSE = await request(app).post(
-            `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/files/${CREATED_FILE.id}/internships/${CREATED_INTERNSHIP.id}/link`,
+            `${baseURL}/files/${CREATED_FILE.id}/internships/${CREATED_INTERNSHIP.id}/link`,
         );
 
         // Should answer 200

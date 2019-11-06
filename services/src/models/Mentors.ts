@@ -15,6 +15,7 @@ class Mentors extends Sequelize.Model implements IMentorEntity {
     public email: string;
     public role: 'default' | 'admin';
 
+    // Campaigns
     public getCampaigns: Sequelize.BelongsToManyGetAssociationsMixin<Campaigns>;
     public addCampaign: Sequelize.BelongsToManyAddAssociationMixin<Campaigns, Campaigns['id']>;
     public hasCampaign: Sequelize.BelongsToManyHasAssociationMixin<Campaigns, Campaigns['id']>;

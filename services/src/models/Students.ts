@@ -19,6 +19,7 @@ class Students extends Sequelize.Model implements IStudentEntity {
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
+    // Internships
     public getInternships: Sequelize.HasManyGetAssociationsMixin<Internships>;
     public addInternship: Sequelize.HasManyAddAssociationMixin<Internships, Internships['id']>;
     public createInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;

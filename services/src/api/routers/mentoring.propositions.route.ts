@@ -12,6 +12,7 @@ import {
 
 const router = express.Router();
 
+// Mentoring propositions
 router.get('', checkSchema(MentoringPropositionsList), PropositionsCtrl.getMentoringPropositions);
 router.post('', checkSchema(MentoringPropositionCreate), PropositionsCtrl.postMentoringProposition);
 router.get('/:id', checkSchema(ID), PropositionsCtrl.getMentoringProposition);
@@ -22,6 +23,7 @@ router.put(
 );
 router.delete('/:id', checkSchema(ID), PropositionsCtrl.deleteMentoringProposition);
 
+// Mentoring proposition's campaign
 router.get('/:id/campaigns', checkSchema(ID), PropositionsCtrl.getMentoringPropositionCampaigns);
 router.post(
     '/:id/campaigns/:campaign_id/link',
