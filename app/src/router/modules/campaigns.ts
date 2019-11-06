@@ -33,7 +33,7 @@ const campaignsRouter = {
     },
     {
       path: 'mentors/:id(\\w+)',
-      component: () => import('@/views/campaigns/mentors.vue'),
+      component: () => import('@/views/campaigns/admin/mentors.vue'),
       name: `campaigns.mentors`,
       meta: { title: 'campaigns.mentors', noCache: true },
     },

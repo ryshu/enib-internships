@@ -14,6 +14,13 @@ export const getMentors = (params: any) =>
     params,
   });
 
+export const getMentorsByCampaign = (id:number, params: any) =>
+  request({
+    url: `/campaigns/${id}/mentors`,
+    method: 'get',
+    params,
+  });
+
 export const getMentor = (id: number, params: any) =>
   request({
     url: `/mentors/${id}`,
