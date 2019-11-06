@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
 import moment from 'moment';
+import sequelize from 'sequelize';
 
 import Internships from '../../models/Internships';
 import Businesses from '../../models/Businesses';
@@ -31,14 +32,36 @@ export const getInternships = (req: Request, res: Response, next: NextFunction):
     }
 
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, countries, subject } = req.query;
+
+    const findOpts: sequelize.FindOptions = {
+      where: {},
+      group: [sequelize.col(`Internships.id`)],
+    };
+
+    // Build count query options
+    const countOpts: sequelize.FindOptions = { where: {} };
+
+    if (countries) {
+        // If country list is given, add it to query
+        // Sequelize will translate it by "country in countries"
+        (findOpts.where as any).country = countries;
+        (countOpts.where as any).country = countries;
+    }
+
+    if (subject) {
+        // If subject filter is given, apply it using substring
+        (findOpts.where as any).subject = { [sequelize.Op.substring]: subject };
+        (countOpts.where as any).subject = { [sequelize.Op.substring]: subject };
+    }
+
     let max: number;
-    Internships.count()
+    Internships.count(countOpts)
         .then((rowNbr) => {
             max = rowNbr;
-            return Internships.findAll(paginate({ page, limit }));
+            return Internships.findAll(paginate({ page, limit }, findOpts));
         })
-        .then((internships) => {
+        .then(async (internships) => {
             if (checkArrayContent(internships, next)) {
                 return res.send({
                     page,
