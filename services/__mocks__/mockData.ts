@@ -30,6 +30,9 @@ export function defaultInternships() {
         address: 'TEST',
         isInternshipAbroad: true,
         isValidated: false,
+        isProposition: false,
+        isPublish: true,
+        publishAt: 20191012,
         startAt: 20191012,
         endAt: 20191012,
     };
