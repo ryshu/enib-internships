@@ -92,3 +92,14 @@ export declare interface ICampaigns {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export declare interface IFile {
+  id?: number;
+
+  name: string;
+  type: string;
+  path: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
+}
