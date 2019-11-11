@@ -9,6 +9,30 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
+      <el-select
+        v-model="listQuery.countries"
+        filterable
+        multiple
+        collapse-tags
+        :placeholder="$t('table.filter.countries')"
+        style="width: 200px; margin-left: 10px;"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
+      </el-select>
+      <el-select
+        v-model="listQuery.types"
+        filterable
+        multiple
+        collapse-tags
+        :placeholder="$t('table.filter.types')"
+        style="width: 200px; margin-left: 10px;"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option v-for="item in types" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
       <el-button
         v-waves
         style="margin-left: 10px;"
@@ -17,6 +41,22 @@
         icon="el-icon-search"
         @click="handleFilter"
       >{{ $t('table.search') }}</el-button>
+      <el-checkbox
+        v-model="listQuery.isAbroad"
+        v-waves
+        style="margin-left: 10px;"
+        class="filter-item"
+        type="primary"
+        @change="handleFilter"
+      >{{ $t('table.checkbox.isAbroad') }}</el-checkbox>
+      <el-checkbox
+        v-model="listQuery.isValidated"
+        v-waves
+        style="margin-left: 10px;"
+        class="filter-item"
+        type="primary"
+        @change="handleFilter"
+      >{{ $t('table.checkbox.isValidated') }}</el-checkbox>
     </div>
 
     <!-- Table -->
@@ -34,19 +74,28 @@
           <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.internships.category')" min-width="100px">
+        <template slot-scope="{ row }">
+          <span>{{ row.category.label }}</span>
+        </template>
+      </el-table-column>
 
-      <el-table-column :label="$t('table.internships.country')" min-width="100px">
+      <el-table-column :label="$t('table.internships.country')" min-width="80px">
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.city')" min-width="100px">
+      <el-table-column :label="$t('table.internships.city')" min-width="80px">
         <template slot-scope="{ row }">
           <span>{{ row.city }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.internships.isInternshipAbroad')" min-width="70px" align="center">
+      <el-table-column
+        :label="$t('table.internships.isInternshipAbroad')"
+        min-width="80px"
+        align="center"
+      >
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isInternshipAbroad ? 'success' : 'danger'"
@@ -54,7 +103,7 @@
           >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="70px" align="center">
+      <el-table-column :label="$t('table.internships.isValidated')" min-width="75px" align="center">
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isValidated ? 'success' : 'danger'"
@@ -147,6 +196,7 @@
 </template>
 
 <script lang="ts">
+import countryList from 'country-list';
 import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
 
@@ -159,6 +209,8 @@ import {
 import { IInternship } from '../../../api/types';
 
 import Pagination from '../../../components/Pagination/index.vue';
+
+import { CategoriesModule } from '../../../store/modules/categories';
 
 @Component({
   name: 'InternshipsStudentList',
@@ -176,12 +228,23 @@ export default class extends Vue {
     page: 1,
     limit: 10,
     title: undefined,
+    mode: 'propositions',
+    countries: [],
+    types: [],
+    isAbroad: false,
+    isValidated: false,
   };
 
   private dialogFormVisible = false;
   private dialogStatus = '';
   private textMap = {};
   private tempInternshipData = defaultInternshipData;
+
+  private countryList = countryList.getNames();
+
+  private get types() {
+    return CategoriesModule.categories;
+  }
 
   public created() {
     this.textMap = {
