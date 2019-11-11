@@ -27,6 +27,7 @@ We use module [dotenv](https://github.com/motdotla/dotenv) to handle settings in
 | HASH_KEY | Random alphanum seed, length=32 | / |
 | INTERNSHIP_ENIB_API_VERSION | Used to change API versionning path | v1 |
 | INTERNSHIP_ENIB_API_PORT | API port | 4000 |
+| BASE_STORAGE_DIR | Directory for files | /caches |
 
 ## Generate random seed
 

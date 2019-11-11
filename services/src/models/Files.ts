@@ -9,7 +9,6 @@ class Files extends Sequelize.Model implements IFileEntity {
     public id!: number; // Note that the `null assertion` `!` is required in strict mode.
 
     public name: string;
-    public size: number;
     public type: string;
     public path: string;
 
@@ -34,10 +33,6 @@ Files.init(
         },
         name: {
             type: new Sequelize.DataTypes.STRING(128),
-            allowNull: false,
-        },
-        size: {
-            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
         },
         type: {

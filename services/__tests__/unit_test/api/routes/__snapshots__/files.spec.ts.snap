@@ -8,7 +8,6 @@ Object {
       "id": 1,
       "name": "fichier",
       "path": "S10",
-      "size": 150,
       "type": "john.doe@enib.fr",
       "updatedAt": Any<String>,
     },
@@ -26,7 +25,6 @@ Object {
   "internship": null,
   "name": "fichier",
   "path": "S10",
-  "size": 150,
   "type": "john.doe@enib.fr",
   "updatedAt": Any<String>,
 }
@@ -56,8 +54,7 @@ Object {
   "createdAt": Any<String>,
   "id": Any<Number>,
   "name": "fichier",
-  "path": "S10",
-  "size": "150",
+  "path": "/home/padeon/Bureau/enib/stages/services/src/caches",
   "type": "john.doe@enib.fr",
   "updatedAt": Any<String>,
 }
@@ -88,7 +85,6 @@ Object {
   "id": Any<Number>,
   "name": "fichier",
   "path": "S10",
-  "size": 150,
   "type": "john.doe@enib.fr",
   "updatedAt": Any<String>,
 }
@@ -99,8 +95,7 @@ Object {
   "createdAt": Any<String>,
   "id": Any<Number>,
   "name": "fichier",
-  "path": "S10",
-  "size": "250",
+  "path": "250",
   "type": "john.doe@enib.fr",
   "updatedAt": Any<String>,
 }

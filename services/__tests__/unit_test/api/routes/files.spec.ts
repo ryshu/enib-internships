@@ -10,7 +10,7 @@ import dbSetup from '../../../../src/configs/setup/database';
 import Files from '../../../../src/models/Files';
 import Internships from '../../../../src/models/Internships';
 
-import { defaultFiles, defaultInternships } from '../../../../__mocks__/mockData';
+import { defaultFiles, defaultInternships, getPdfSampleDir } from '../../../../__mocks__/mockData';
 
 const baseURL = `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`;
 
@@ -65,7 +65,10 @@ describe('POST /files', () => {
 
         const RESPONSE = await request(app)
             .post(`${baseURL}/files`)
-            .send(VALID_FILE);
+            .field('name', VALID_FILE.name)
+            .field('type', VALID_FILE.type)
+            .attach('file', getPdfSampleDir());
+
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -127,7 +130,7 @@ describe('PUT /files/:id', () => {
         const CREATED = await Files.create(VALID_FILE);
 
         // Change some data on VALID_FILE
-        VALID_FILE.size = 250;
+        VALID_FILE.path = '250';
 
         const RESPONSE = await request(app)
             .put(`${baseURL}/files/${CREATED.id}`)

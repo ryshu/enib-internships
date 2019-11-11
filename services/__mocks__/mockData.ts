@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 export function defaultBusiness() {
     const VALID_BUSINESS: IBusinessEntity = {
         name: 'test',
@@ -12,7 +14,6 @@ export function defaultBusiness() {
 export function defaultFiles() {
     const VALID_FILE: IFileEntity = {
         name: 'fichier',
-        size: 150,
         type: 'john.doe@enib.fr',
         path: 'S10',
     };
@@ -78,4 +79,8 @@ export function defaultInternshipTypes() {
         label: 'test',
     };
     return VALID_INTERNSHIP_TYPES;
+}
+
+export function getPdfSampleDir() {
+    return `${__dirname}/sample.pdf`;
 }
