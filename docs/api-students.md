@@ -254,6 +254,13 @@ Key | Type | Description
 - | - | -
 **id** | String | Student ID
 
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**limit** | Number | *no* | Page expected (By default 1)
+**page** | Number | *no* | Number of row expected (By default 20)
+
 ### 200 - Internships list
 
 ``` json
@@ -269,6 +276,9 @@ Key | Type | Description
         "additional": "Suite 755",
         "isInternshipAbroad": false,
         "isValidated": false,
+        "isProposition": true,
+        "isPublish": false,
+        "publishAt": "2019-10-13T16:21:25.000Z",
         "createdAt": "2019-10-13T16:21:25.000Z",
         "updatedAt": "2019-10-13T16:21:25.000Z"
     },

@@ -265,8 +265,13 @@ Key | Type | Description
 ``` json
 {
   "id": 1,
-  "maxProposition": 2,
   "name": "test",
+  "maxProposition": 2,
+  "description": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
+  "category": {
+    "id": 1,
+    "label": "Stage ouvrier"
+  },
   "semester": "S5",
   "startAt": 0,
   "endAt": 0,
