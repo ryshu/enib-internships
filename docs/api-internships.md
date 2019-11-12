@@ -17,6 +17,12 @@ Key | Type | Optional | Description
 - | - | - | -
 **limit** | Number | *no* | Page expected (By default 1)
 **page** | Number | *no* | Number of row expected (By default 20)
+**contries** | String[] | *no* | List of reached countries
+**types** | Number[] | *no* | List of reached types
+**subject** | String | *no* | Part of subject to filter in database
+**mode** | String | *no* | published or propositions or self
+**isAbroad** | Number | *no* | Filter to get only abroad internships
+**isValidated** | Number | *no* | Filter to get only validated internships
 
 ### 200 - List of internships
 
@@ -62,17 +68,23 @@ Key | Value | Description
 
 ### Body
 
-Key | Type | Optional | Description
-- | - | - | -
-**subject** | String | *no* | Internship subject
-**description** | String | *no* | Internship description
-**country** | String | *no* | Internship country
-**city** | String | *no* | Internship city
-**postalCode** | String | *no* | Internship postalCode
-**address** | String | *no* | Internship address
-**additional** | String | *no* | Address additional detail
-**isInternshipAbroad** | Boolean | *yes* | Address isInternshipAbroad detail
-**isValidated** | Boolean | *yes* | Address isValidated detail
+Key | Type | Optional | Description | Access
+- | - | - | - | -
+**subject** | String | *no* | Internship subject | *
+**description** | String | *no* | Internship description | *
+**category** | String | *no* | Internship category | *
+**country** | String | *no* | Internship country | *
+**city** | String | *no* | Internship city | *
+**postalCode** | String | *no* | Internship postalCode | *
+**address** | String | *no* | Internship address | *
+**additional** | String | *no* | Address additional detail | *
+**isInternshipAbroad** | Boolean | *yes* | Internship is abroad | *
+**isValidated** | Boolean | *yes* | Internship is validated | admin
+**isPublish** | Boolean | *yes* | Internship is publish | admin
+**isProposition** | Boolean | *yes* | Internship is proposition
+**startAt** | Number(timestamp) | *yes* | Internship start at | *
+**endAt** | Number(timestamp) | *yes* | Internship end at | *
+**publishAt** | Number(timestamp) | *yes* | Internship publish at | admin
 
 ### 200 - Created
 
@@ -90,6 +102,9 @@ Return created internship
     "additional": "Suite 755",
     "isInternshipAbroad": false,
     "isValidated": false,
+    "isProposition": true,
+    "isPublish": false,
+    "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
 }
@@ -147,6 +162,9 @@ Key | Type | Description
     "additional": "Suite 755",
     "isInternshipAbroad": false,
     "isValidated": false,
+    "isProposition": true,
+    "isPublish": false,
+    "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
 }
@@ -200,17 +218,23 @@ Key | Value | Description
 
 ### Body
 
-Key | Type | Optional | Description
-- | - | - | -
-**subject** | String | *yes* | Internship subject
-**description** | String | *yes* | Internship description
-**country** | String | *yes* | Internship country
-**city** | String | *yes* | Internship city
-**postalCode** | String | *yes* | Internship postalCode
-**address** | String | *yes* | Internship address
-**additional** | String | *yes* | Address additional detail
-**isInternshipAbroad** | Boolean | *yes* | Address isInternshipAbroad detail
-**isValidated** | Boolean | *yes* | Address isValidated detail
+Key | Type | Optional | Description | Access
+- | - | - | - | -
+**subject** | String | *yes* | Internship subject | *
+**description** | String | *yes* | Internship description | *
+**category** | String | *yes* | Internship category | *
+**country** | String | *yes* | Internship country | *
+**city** | String | *yes* | Internship city | *
+**postalCode** | String | *yes* | Internship postalCode | *
+**address** | String | *yes* | Internship address | *
+**additional** | String | *yes* | Address additional detail | *
+**isInternshipAbroad** | Boolean | *yes* | Internship is abroad | *
+**isValidated** | Boolean | *yes* | Internship is validated | admin
+**isPublish** | Boolean | *yes* | Internship is publish | admin
+**isProposition** | Boolean | *yes* | Internship is proposition | admin
+**startAt** | Number(timestamp) | *yes* | Internship start at | *
+**endAt** | Number(timestamp) | *yes* | Internship end at | *
+**publishAt** | Number(timestamp) | *yes* | Internship publish at | admin
 
 ### 200 - Updated internship
 
@@ -226,6 +250,9 @@ Key | Type | Optional | Description
     "additional": "Suite 755",
     "isInternshipAbroad": false,
     "isValidated": false,
+    "isProposition": true,
+    "isPublish": false,
+    "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
 }
@@ -604,18 +631,18 @@ Key | Type | Description
 ``` json
 {
     "id": 1,
-    "subject": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
-    "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
-    "country": "Russian Federation",
-    "city": "New Rocky",
-    "postalCode": "30636-9003",
-    "address": "15486 Genoveva Isle",
-    "additional": "Suite 755",
-    "isInternshipAbroad": false,
-    "isValidated": false,
-    "createdAt": "2019-10-13T16:21:25.000Z",
-    "updatedAt": "2019-10-13T16:21:25.000Z"
-
+    "name": "test",
+    "maxProposition": 2,
+    "description": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
+    "category": {
+      "id": 1,
+      "label": "Stage ouvrier"
+    },
+    "semester": "S5",
+    "startAt": 0,
+    "endAt": 0,
+    "updatedAt": "2019-09-19T22:21:24.365Z",
+    "createdAt": "2019-09-19T22:21:24.365Z"
 }
 ```
 

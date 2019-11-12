@@ -9,6 +9,9 @@ import Students from '../../models/Students';
 
 import { adminsCasUsername } from '../../configs/data/admin';
 
+const handled: string[] = [];
+
+const wait = (ms: number) => new Promise((r, j) => setTimeout(r, ms));
 /**
  * @summary Method used to handle cas connection and setup user info
  * @param {Request} req Express request
@@ -23,6 +26,13 @@ export async function handleConnection(req: Request) {
             isStudent(req.session.cas_user) && !adminsCasUsername.includes(req.session.cas_user);
         const email = getEmail(req.session.cas_user);
 
+        // When user create is already handled, we wait few time
+        // This is used to prevent a multi user insert
+        while (handled.includes(req.session.cas_user)) {
+            await wait(100);
+        }
+        handled.push(req.session.cas_user);
+
         // Try to get our user in database
         const user = student
             ? await Students.findOne({ where: { email } })
@@ -34,6 +44,10 @@ export async function handleConnection(req: Request) {
             if (student) {
                 // Set student roles, avoid to store role in database
                 req.session.info.role = 'student';
+            }
+            const found1 = handled.findIndex((h) => h === req.session.cas_user);
+            if (found1 !== -1) {
+                handled.splice(found1, 1);
             }
             return;
         }
@@ -59,6 +73,10 @@ export async function handleConnection(req: Request) {
             req.session.info = await Mentors.create(newUser);
         }
         logger.info(`Inject "${req.session.cas_user}" into database after his first connection`);
+        const found2 = handled.findIndex((h) => h === req.session.cas_user);
+        if (found2 !== -1) {
+            handled.splice(found2, 1);
+        }
         return;
     }
     throw new Error('No session found in given request');

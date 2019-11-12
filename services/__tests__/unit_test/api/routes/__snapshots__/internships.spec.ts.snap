@@ -6,6 +6,7 @@ Object {
     Object {
       "additional": null,
       "address": "TEST",
+      "category": null,
       "city": "Brest",
       "country": "France",
       "createdAt": Any<String>,
@@ -13,8 +14,11 @@ Object {
       "endAt": 20191012,
       "id": 1,
       "isInternshipAbroad": true,
+      "isProposition": false,
+      "isPublish": true,
       "isValidated": false,
       "postalCode": "29280",
+      "publishAt": 20191012,
       "startAt": 20191012,
       "subject": "test",
       "updatedAt": Any<String>,
@@ -41,10 +45,13 @@ Object {
   "files": Array [],
   "id": Any<Number>,
   "isInternshipAbroad": true,
+  "isProposition": false,
+  "isPublish": true,
   "isValidated": false,
   "mentor": null,
   "postalCode": "29280",
   "propositions": Array [],
+  "publishAt": 20191012,
   "startAt": 20191012,
   "student": null,
   "subject": "test",
@@ -84,7 +91,7 @@ Object {
 exports[`GET /internships/:id/internshipTypes Internships_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 1,
+  "id": 3,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -140,6 +147,7 @@ Object {
 exports[`POST /internships ValidInternships_200 1`] = `
 Object {
   "address": "TEST",
+  "categoryId": 1,
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
@@ -147,8 +155,11 @@ Object {
   "endAt": 20191012,
   "id": Any<Number>,
   "isInternshipAbroad": true,
+  "isProposition": true,
+  "isPublish": false,
   "isValidated": false,
   "postalCode": "29280",
+  "publishAt": null,
   "startAt": 20191012,
   "subject": "test",
   "updatedAt": Any<String>,
@@ -186,7 +197,7 @@ Object {
 exports[`POST /internships/:id/internshipTypes/:internship_type_id/link Internships_200_WithInternshipType 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 2,
+  "id": 4,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -250,8 +261,11 @@ Object {
   "endAt": 20191012,
   "id": Any<Number>,
   "isInternshipAbroad": true,
+  "isProposition": false,
+  "isPublish": true,
   "isValidated": false,
   "postalCode": "29280",
+  "publishAt": 20191012,
   "startAt": 20191012,
   "subject": "test",
   "updatedAt": Any<String>,
@@ -262,6 +276,7 @@ exports[`PUT /internships/:id Internships_200_UpdateAllData 1`] = `
 Object {
   "additional": "additional data",
   "address": "TEST",
+  "categoryId": 2,
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
@@ -269,8 +284,11 @@ Object {
   "endAt": 20191012,
   "id": Any<Number>,
   "isInternshipAbroad": true,
+  "isProposition": false,
+  "isPublish": true,
   "isValidated": false,
   "postalCode": "29280",
+  "publishAt": 20191012,
   "startAt": 20191012,
   "subject": "test",
   "updatedAt": Any<String>,

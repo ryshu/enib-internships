@@ -16,27 +16,21 @@
       <el-form-item
         :label="$t('table.internships.subject')"
         prop="subject"
-        :rules="[
-          { required: true, message: $t('form.internships.subject.required'), trigger: 'blur' },
-        ]"
+        :rules="[{ required: true, message: $t('form.internships.subject.required'), trigger: 'blur' }]"
       >
         <el-input v-model="tempInternshipData.subject" />
       </el-form-item>
       <el-form-item
         :label="$t('table.internships.description')"
         prop="description"
-        :rules="[
-          { required: true, message: $t('form.internships.description.required'), trigger: 'blur' },
-        ]"
+        :rules="[{ required: true, message: $t('form.internships.description.required'), trigger: 'blur' }]"
       >
         <el-input v-model="tempInternshipData.description" />
       </el-form-item>
       <el-form-item
         :label="$t('table.internships.country')"
         prop="country"
-        :rules="[
-          { required: true, message: $t('form.internships.country.required'), trigger: 'blur' },
-        ]"
+        :rules="[{ required: true, message: $t('form.internships.country.required'), trigger: 'blur' }]"
       >
         <el-select v-model="tempInternshipData.country" filterable>
           <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
@@ -45,27 +39,21 @@
       <el-form-item
         :label="$t('table.internships.city')"
         prop="city"
-        :rules="[
-          { required: true, message: $t('form.internships.city.required'), trigger: 'blur' },
-        ]"
+        :rules="[{ required: true, message: $t('form.internships.city.required'), trigger: 'blur' }]"
       >
         <el-input v-model="tempInternshipData.city" />
       </el-form-item>
       <el-form-item
         :label="$t('table.internships.postalCode')"
         prop="postalCode"
-        :rules="[
-          { required: true, message: $t('form.internships.postalCode.required'), trigger: 'blur' },
-        ]"
+        :rules="[{ required: true, message: $t('form.internships.postalCode.required'), trigger: 'blur' }]"
       >
         <el-input v-model="tempInternshipData.postalCode" />
       </el-form-item>
       <el-form-item
         :label="$t('table.internships.address')"
         prop="address"
-        :rules="[
-          { required: true, message: $t('form.internships.address.required'), trigger: 'blur' },
-        ]"
+        :rules="[{ required: true, message: $t('form.internships.address.required'), trigger: 'blur' }]"
       >
         <el-input v-model="tempInternshipData.address" />
       </el-form-item>
@@ -75,18 +63,14 @@
       <el-form-item
         :label="$t('table.internships.isInternshipAbroad')"
         prop="isInternshipAbroad"
-        :rules="[
-          { required: true, message: $t('form.internships.isInternshipAbroad.required'), trigger: 'blur' },
-        ]"
+        :rules="[{ required: true, message: $t('form.internships.isInternshipAbroad.required'), trigger: 'blur' }]"
       >
         <el-input v-model="tempInternshipData.isInternshipAbroad" />
       </el-form-item>
       <el-form-item
         :label="$t('table.internships.isValidated')"
         prop="isValidated"
-        :rules="[
-          { required: true, message: $t('form.internships.isValidated.required'), trigger: 'blur' },
-        ]"
+        :rules="[{ required: true, message: $t('form.internships.isValidated.required'), trigger: 'blur' }]"
       >
         <el-input v-model="tempInternshipData.isValidated" />
       </el-form-item>
@@ -119,6 +103,10 @@ export default class EditInternship extends Vue {
 
   private resolve: (value?: IInternship) => void = () => {};
   private reject: (error?: any) => void = () => {};
+
+  public get id() {
+    return this.$route.params.id;
+  }
 
   public created() {
     this.textMap = {

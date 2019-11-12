@@ -14,9 +14,9 @@
         filterable
         multiple
         collapse-tags
-        @change="handleFilter"
         style="width: 200px; margin-left: 10px;"
         class="filter-item"
+        @change="handleFilter"
       >
         <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
       </el-select>

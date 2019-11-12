@@ -7,7 +7,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
-import { CampaignsModule } from '@/store/modules/campaigns';
+import { CampaignsModule } from './store/modules/campaigns';
+import { CategoriesModule } from './store/modules/categories';
 
 @Component({
   name: 'App',
@@ -15,6 +16,7 @@ import { CampaignsModule } from '@/store/modules/campaigns';
 export default class extends Vue {
   created() {
     CampaignsModule.setup();
+    CategoriesModule.setup();
   }
 }
 </script>

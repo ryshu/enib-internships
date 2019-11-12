@@ -13,9 +13,8 @@ import MentoringPropositions from '../../models/MentoringPropositions';
 import Mentors from '../../models/Mentors';
 import Campaigns from '../../models/Campaigns';
 
-import logger from '../../utils/logger';
-
 import { paginate } from '../helpers/pagination.helper';
+import { cloneDeep } from 'lodash';
 
 import {
     UNPROCESSABLE_ENTITY,
@@ -36,28 +35,64 @@ export const getInternships = (req: Request, res: Response, next: NextFunction):
     }
 
     // Retrive query data
-    const { page = 1, limit = 20, countries, subject } = req.query;
+    const {
+        page = 1,
+        limit = 20,
+        countries,
+        types,
+        subject,
+        mode = 'published',
+        isAbroad,
+        isValidated,
+    } = req.query;
 
     const findOpts: sequelize.FindOptions = {
-        where: {},
+        where: {
+            isProposition: mode === 'propositions',
+            isPublish: mode === 'published',
+        },
+        include: [{ model: InternshipTypes, as: 'category', duplicating: false }],
         group: [sequelize.col(`Internships.id`)],
     };
 
-    // Build count query options
-    const countOpts: sequelize.FindOptions = { where: {} };
+    if (mode === 'self') {
+        (findOpts.where as any).mentorId = req.session.info.id;
+    }
 
     if (countries) {
         // If country list is given, add it to query
         // Sequelize will translate it by "country in countries"
         (findOpts.where as any).country = countries;
-        (countOpts.where as any).country = countries;
+    }
+
+    if (types) {
+        // If category list is given, add it to query
+        // Sequelize will translate it by "category in types"
+        (findOpts.where as any).categoryId = types;
+    }
+
+    if (!!isAbroad) {
+        (findOpts.where as any).isInternshipAbroad = true;
+    }
+
+    if (!!isValidated) {
+        (findOpts.where as any).isValidated = true;
+    } else if (req.session.info.role !== 'admin' && mode !== 'self') {
+        // If user isn't admin and doesn't want only validated,
+        // give him only not validated internships
+        (findOpts.where as any).isValidated = false;
     }
 
     if (subject) {
         // If subject filter is given, apply it using substring
         (findOpts.where as any).subject = { [sequelize.Op.substring]: subject };
-        (countOpts.where as any).subject = { [sequelize.Op.substring]: subject };
     }
+
+    // Build count query options
+    const countOpts: sequelize.FindOptions = {
+        where: cloneDeep(findOpts.where),
+        include: [{ model: InternshipTypes, as: 'category', attributes: [], duplicating: false }],
+    };
 
     let max: number;
     Internships.count(countOpts)
@@ -82,7 +117,7 @@ export const getInternships = (req: Request, res: Response, next: NextFunction):
  * POST /internship
  * Used to create a new internship entry
  */
-export const postInternship = (req: Request, res: Response, next: NextFunction): void => {
+export const postInternship = async (req: Request, res: Response, next: NextFunction) => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -98,14 +133,31 @@ export const postInternship = (req: Request, res: Response, next: NextFunction):
         address: req.body.address,
         additional: req.body.additional,
         isInternshipAbroad: req.body.isInternshipAbroad ? true : false,
-        isValidated: req.body.isValidated ? true : false,
+        isProposition: req.body.isProposition || req.session.info.role !== 'admin' ? true : false,
+        isPublish: req.body.isPublish && req.session.info.role === 'admin' ? true : false,
+        isValidated: req.body.isValidated && req.session.info.role === 'admin' ? true : false,
+
+        publishAt:
+            !req.body.publishAt || req.session.info.role !== 'admin'
+                ? null
+                : moment(req.body.publishAt).valueOf(),
         startAt: !req.body.startAt ? null : moment(req.body.startAt).valueOf(),
         endAt: !req.body.endAt ? null : moment(req.body.endAt).valueOf(),
     };
 
-    Internships.create(internship)
-        .then((created) => res.send(created))
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+    try {
+        const category = await InternshipTypes.findByPk(req.body.category);
+        if (!checkContent(category, next)) {
+            return undefined;
+        }
+
+        const created = await Internships.create(internship);
+        await created.setCategory(category);
+
+        return res.send(created);
+    } catch (error) {
+        UNPROCESSABLE_ENTITY(next, error);
+    }
 };
 
 /**
@@ -151,7 +203,7 @@ export const putInternship = (req: Request, res: Response, next: NextFunction): 
     }
 
     Internships.findByPk(req.params.id)
-        .then((internships) => {
+        .then(async (internships) => {
             if (!checkContent(internships, next)) {
                 return undefined;
             }
@@ -162,6 +214,18 @@ export const putInternship = (req: Request, res: Response, next: NextFunction): 
             if (req.body.description) {
                 internships.set('description', req.body.description);
             }
+
+            if (req.body.category) {
+                try {
+                    const category = await InternshipTypes.findByPk(req.body.category);
+                    if (category) {
+                        await internships.setCategory(category);
+                    }
+                } catch (_e) {
+                    // Pass, don't thrown any error
+                }
+            }
+
             if (req.body.country) {
                 internships.set('country', req.body.country);
             }
@@ -177,11 +241,19 @@ export const putInternship = (req: Request, res: Response, next: NextFunction): 
             if (req.body.additional) {
                 internships.set('additional', req.body.additional);
             }
+
             if (req.body.isInternshipAbroad !== undefined) {
                 internships.set('isInternshipAbroad', req.body.isInternshipAbroad ? true : false);
             }
-            if (req.body.isValidated !== undefined) {
+            if (req.body.isValidated !== undefined && req.session.info.role === 'admin') {
                 internships.set('isValidated', req.body.isValidated ? true : false);
+            }
+
+            if (req.body.publishAt !== undefined && req.session.info.role === 'admin') {
+                internships.set(
+                    'publishAt',
+                    req.body.publishAt === 0 ? null : moment(req.body.publishAt).valueOf(),
+                );
             }
             if (req.body.startAt !== undefined) {
                 internships.set(

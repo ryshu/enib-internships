@@ -75,12 +75,27 @@ describe('POST /internships', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('ValidInternships_200', async () => {
-        const VALID_INTERNSHIP = defaultInternships();
+    it('Missing category_400', async () => {
+        const VALID_INTERNSHIP: any = defaultInternships();
 
         const RESPONSE = await request(app)
             .post(`${baseURL}/internships`)
             .send(VALID_INTERNSHIP);
+
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('ValidInternships_200', async () => {
+        const VALID_INTERNSHIP: any = defaultInternships();
+        const VALID_INTERNSHIP_TYPE = defaultInternshipTypes();
+
+        const category = await InternshipTypes.create(VALID_INTERNSHIP_TYPE);
+        VALID_INTERNSHIP.category = category.id;
+
+        const RESPONSE = await request(app)
+            .post(`${baseURL}/internships`)
+            .send(VALID_INTERNSHIP);
+
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
@@ -137,7 +152,11 @@ describe('PUT /internships/:id', () => {
     });
 
     it('Internships_200_UpdateAllData', async () => {
-        const VALID_INTERNSHIP = defaultInternships();
+        const VALID_INTERNSHIP: any = defaultInternships();
+        const VALID_INTERNSHIP_TYPE = defaultInternshipTypes();
+
+        const category = await InternshipTypes.create(VALID_INTERNSHIP_TYPE);
+        VALID_INTERNSHIP.category = category.id;
 
         const CREATED = await Internships.create(VALID_INTERNSHIP);
 

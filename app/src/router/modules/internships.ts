@@ -42,7 +42,7 @@ const internshipsRouter = {
     },
     {
       path: 'new',
-      component: () => import('@/views/internships/admin/new.vue'),
+      component: () => import('@/views/internships/suggest.vue'),
       name: 'internships.new',
       meta: { title: 'internships.new', roles: ['admin'] },
     },

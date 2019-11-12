@@ -46,7 +46,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.internships.isInternshipAbroad')" min-width="70px" align="center">
+      <el-table-column
+        :label="$t('table.internships.isInternshipAbroad')"
+        min-width="70px"
+        align="center"
+      >
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isInternshipAbroad ? 'success' : 'danger'"
@@ -98,6 +102,8 @@ export default class extends Vue {
     page: 1,
     limit: 10,
     title: undefined,
+    isValidated: false,
+    mode: 'self',
   };
 
   public created() {

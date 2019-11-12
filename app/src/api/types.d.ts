@@ -23,8 +23,16 @@ export declare interface IInternship {
   address: string;
   additional?: string;
 
+  category?: IInternshipTypes;
+
   isInternshipAbroad: boolean;
   isValidated: boolean;
+  isProposition: boolean;
+  isPublish: boolean;
+
+  publishAt?: number;
+  startAt?: number;
+  endAt?: number;
 
   createdAt?: string;
   updatedAt?: string;
@@ -91,4 +99,24 @@ export declare interface ICampaigns {
 
   createdAt?: string;
   updatedAt?: string;
+}
+
+export declare interface IFile {
+  id?: number;
+
+  name: string;
+  type: string;
+  path: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export declare interface IInternshipTypes {
+  id?: number;
+
+  label: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }

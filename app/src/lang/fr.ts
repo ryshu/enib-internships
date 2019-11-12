@@ -1,16 +1,9 @@
 export default {
-  dialog: {
-    title: {
-      create: 'Créer',
-      edit: 'Modifier',
-    },
-  },
+  dialog: { title: { create: 'Créer', edit: 'Modifier' } },
   export: {
     additional: 'Additionelle',
     address: 'Adresse',
-    businesses: {
-      fileName: 'entreprises',
-    },
+    businesses: { fileName: 'entreprises' },
     city: 'Ville',
     country: 'Pays',
     description: 'Description',
@@ -20,33 +13,29 @@ export default {
       isInternshipAbroad: "A l'étranger ?",
       isValidated: 'Validé ?',
     },
-    mentors: {
-      fileName: 'professeurs',
-    },
+    mentors: { fileName: 'professeurs' },
+    students: { fileName: 'etudiants' },
     name: 'Nom',
     postalCode: 'Code postal',
-    students: {
-      fileName: 'etudiants',
-    },
     subject: 'Sujet',
   },
   form: {
     businesses: {
-      address: {
-        required: "L'adresse de l'entreprise est requise",
-      },
-      city: {
-        required: "La ville de l'entreprise est requise",
-      },
-      country: {
-        required: "Le pays de l'entreprise est requis",
-      },
-      name: {
-        required: "Le nom de l'entreprise est requis",
-      },
-      postalCode: {
-        required: "Le code postal de l'entreprise est requis",
-      },
+      address: { required: "L'adresse de l'entreprise est requise" },
+      city: { required: "La ville de l'entreprise est requise" },
+      country: { required: "Le pays de l'entreprise est requis" },
+      name: { required: "Le nom de l'entreprise est requis" },
+      postalCode: { required: "Le code postal de l'entreprise est requis" },
+    },
+    internships: {
+      subject: { required: 'Le sujet du stage est requis' },
+      description: { required: 'La description du stage est requise' },
+      offer: { required: 'La présentation du stage est requise' },
+      country: { required: 'Le pays du stage est requis' },
+      category: { required: 'Le type du stage est requis' },
+      city: { required: 'La ville du stage est requise' },
+      postalCode: { required: 'Le code postal du stage est requis' },
+      address: { required: "L'adresse du stage est requise" },
     },
   },
   navbar: {
@@ -158,13 +147,11 @@ export default {
       mentors: 'Professeurs',
     },
   },
-  status: {
-    no: 'Non',
-    yes: 'Oui',
-  },
+  status: { no: 'Non', yes: 'Oui' },
   table: {
     actions: 'Actions',
     add: 'Ajouter',
+    reset: 'Réinitialiser',
     businesses: {
       additional: 'Informations complémentaire',
       address: 'Adresse',
@@ -193,14 +180,20 @@ export default {
     id: 'ID',
     internships: {
       additional: 'Informations complémentaire',
+      additionalbis: 'Complément',
       address: 'Addresse',
       city: 'Ville',
       country: 'Pays',
+      category: 'Type de stage',
       description: 'Description',
-      isInternshipAbroad: 'Stage linguistique',
+      isInternshipAbroad: "Stage à l'étranger ?",
       isValidated: 'Validé',
+      isProposition: 'Proposition',
       postalCode: 'Code postal',
       subject: 'Sujets',
+      publishAt: 'Date de publication',
+      date: 'Dates de stage',
+      isPublish: 'Publié ?',
     },
     mentors: {
       firstName: 'Prénom',
@@ -216,8 +209,58 @@ export default {
       lastName: 'Nom',
       semester: 'Semester',
     },
+    checkbox: {
+      isAbroad: "Seulement ceux à l'étrangers",
+      isValidated: 'Seulement ceux validés',
+    },
+    filter: {
+      countries: 'Filtre par pays',
+      types: 'Filtre par type',
+    },
     title: 'Titre',
     update: 'Modifier',
   },
   title: 'Gestionnaire de stage',
+  suggest: {
+    title: "Proposition d'une offre de stage",
+    subTitle: {
+      description: "Description de l'offre de stage",
+      location: 'Adresse du stage',
+      settings: 'Paramètres du stage',
+    },
+    files: {
+      title: "Fichier liés à l'offre de stage",
+      offer: 'Description offre',
+      business: 'Description entreprise',
+    },
+    checkbox: {
+      abroad: "Indique si le stage est réalisé à l'étranger",
+      proposition:
+        "L'offre est une proposition ? Elle devra donc être validée avant d'être publier par un administrateur.",
+      publish:
+        "Indiquer si l'offre est publiée pour les professeurs et les étudiants",
+    },
+    placeholder: {
+      subject: 'Entrer le nom de votre offre de stage',
+      description: "Saisir l'offre de stage ici ",
+      city: 'e.g: Plouner',
+      postalCode: 'e.g: 23840',
+      address: 'e.g: 1 Rue de la Tour',
+      additonal: 'e.g: APT 3910',
+      category: 'Selectionner le type de stage',
+    },
+    progress: {
+      title: 'Publication de la proposition de stage',
+      step_1: "Création de l'offre",
+      step_2: "Téléversement de l'offre",
+      step_3: "Téléversement de la présentation de l'entreprise",
+      success: 'Publication terminée avec succès',
+    },
+  },
+
+  input: {
+    file: { placeholder: 'Selectionner un fichier', btn: 'Parcourir' },
+    select: { default: 'Selectioner la valeur' },
+  },
+  action: { close: 'Fermer' },
 };

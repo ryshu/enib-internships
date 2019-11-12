@@ -15,8 +15,11 @@ declare interface IInternshipEntity {
     // State
     isInternshipAbroad: boolean;
     isValidated: boolean;
+    isProposition: boolean;
+    isPublish: boolean;
 
     // Date
+    publishAt: number;
     startAt: number;
     endAt: number;
 
