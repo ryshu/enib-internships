@@ -66,6 +66,12 @@
 <tbody>
 <tr><td><strong>limit</strong></td><td>Number</td><td><em>no</em></td><td>Page expected (By default 1)</td></tr>
 <tr><td><strong>page</strong></td><td>Number</td><td><em>no</em></td><td>Number of row expected (By default 20)</td></tr>
+<tr><td><strong>contries</strong></td><td>String[]</td><td><em>no</em></td><td>List of reached countries</td></tr>
+<tr><td><strong>types</strong></td><td>Number[]</td><td><em>no</em></td><td>List of reached types</td></tr>
+<tr><td><strong>subject</strong></td><td>String</td><td><em>no</em></td><td>Part of subject to filter in database</td></tr>
+<tr><td><strong>mode</strong></td><td>String</td><td><em>no</em></td><td>published or propositions or self</td></tr>
+<tr><td><strong>isAbroad</strong></td><td>Number</td><td><em>no</em></td><td>Filter to get only abroad internships</td></tr>
+<tr><td><strong>isValidated</strong></td><td>Number</td><td><em>no</em></td><td>Filter to get only validated internships</td></tr>
 </tbody>
 </table>
 <h3><a class="anchor" aria-hidden="true" id="200-list-of-internships"></a><a href="#200-list-of-internships" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>200 - List of internships</h3>
@@ -108,18 +114,24 @@
 <h3><a class="anchor" aria-hidden="true" id="body"></a><a href="#body" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Body</h3>
 <table>
 <thead>
-<tr><th>Key</th><th>Type</th><th>Optional</th><th>Description</th></tr>
+<tr><th>Key</th><th>Type</th><th>Optional</th><th>Description</th><th>Access</th></tr>
 </thead>
 <tbody>
-<tr><td><strong>subject</strong></td><td>String</td><td><em>no</em></td><td>Internship subject</td></tr>
-<tr><td><strong>description</strong></td><td>String</td><td><em>no</em></td><td>Internship description</td></tr>
-<tr><td><strong>country</strong></td><td>String</td><td><em>no</em></td><td>Internship country</td></tr>
-<tr><td><strong>city</strong></td><td>String</td><td><em>no</em></td><td>Internship city</td></tr>
-<tr><td><strong>postalCode</strong></td><td>String</td><td><em>no</em></td><td>Internship postalCode</td></tr>
-<tr><td><strong>address</strong></td><td>String</td><td><em>no</em></td><td>Internship address</td></tr>
-<tr><td><strong>additional</strong></td><td>String</td><td><em>no</em></td><td>Address additional detail</td></tr>
-<tr><td><strong>isInternshipAbroad</strong></td><td>Boolean</td><td><em>yes</em></td><td>Address isInternshipAbroad detail</td></tr>
-<tr><td><strong>isValidated</strong></td><td>Boolean</td><td><em>yes</em></td><td>Address isValidated detail</td></tr>
+<tr><td><strong>subject</strong></td><td>String</td><td><em>no</em></td><td>Internship subject</td><td>*</td></tr>
+<tr><td><strong>description</strong></td><td>String</td><td><em>no</em></td><td>Internship description</td><td>*</td></tr>
+<tr><td><strong>category</strong></td><td>String</td><td><em>no</em></td><td>Internship category</td><td>*</td></tr>
+<tr><td><strong>country</strong></td><td>String</td><td><em>no</em></td><td>Internship country</td><td>*</td></tr>
+<tr><td><strong>city</strong></td><td>String</td><td><em>no</em></td><td>Internship city</td><td>*</td></tr>
+<tr><td><strong>postalCode</strong></td><td>String</td><td><em>no</em></td><td>Internship postalCode</td><td>*</td></tr>
+<tr><td><strong>address</strong></td><td>String</td><td><em>no</em></td><td>Internship address</td><td>*</td></tr>
+<tr><td><strong>additional</strong></td><td>String</td><td><em>no</em></td><td>Address additional detail</td><td>*</td></tr>
+<tr><td><strong>isInternshipAbroad</strong></td><td>Boolean</td><td><em>yes</em></td><td>Internship is abroad</td><td>*</td></tr>
+<tr><td><strong>isValidated</strong></td><td>Boolean</td><td><em>yes</em></td><td>Internship is validated</td><td>admin</td></tr>
+<tr><td><strong>isPublish</strong></td><td>Boolean</td><td><em>yes</em></td><td>Internship is publish</td><td>admin</td></tr>
+<tr><td><strong>isProposition</strong></td><td>Boolean</td><td><em>yes</em></td><td>Internship is proposition</td></tr>
+<tr><td><strong>startAt</strong></td><td>Number(timestamp)</td><td><em>yes</em></td><td>Internship start at</td><td>*</td></tr>
+<tr><td><strong>endAt</strong></td><td>Number(timestamp)</td><td><em>yes</em></td><td>Internship end at</td><td>*</td></tr>
+<tr><td><strong>publishAt</strong></td><td>Number(timestamp)</td><td><em>yes</em></td><td>Internship publish at</td><td>admin</td></tr>
 </tbody>
 </table>
 <h3><a class="anchor" aria-hidden="true" id="200-created"></a><a href="#200-created" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>200 - Created</h3>
@@ -135,6 +147,9 @@
     <span class="hljs-attr">"additional"</span>: <span class="hljs-string">"Suite 755"</span>,
     <span class="hljs-attr">"isInternshipAbroad"</span>: <span class="hljs-literal">false</span>,
     <span class="hljs-attr">"isValidated"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"isProposition"</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">"isPublish"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"publishAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>,
     <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>,
     <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>
 }
@@ -185,6 +200,9 @@
     <span class="hljs-attr">"additional"</span>: <span class="hljs-string">"Suite 755"</span>,
     <span class="hljs-attr">"isInternshipAbroad"</span>: <span class="hljs-literal">false</span>,
     <span class="hljs-attr">"isValidated"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"isProposition"</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">"isPublish"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"publishAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>,
     <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>,
     <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>
 }
@@ -235,18 +253,24 @@
 <h3><a class="anchor" aria-hidden="true" id="body-1"></a><a href="#body-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Body</h3>
 <table>
 <thead>
-<tr><th>Key</th><th>Type</th><th>Optional</th><th>Description</th></tr>
+<tr><th>Key</th><th>Type</th><th>Optional</th><th>Description</th><th>Access</th></tr>
 </thead>
 <tbody>
-<tr><td><strong>subject</strong></td><td>String</td><td><em>yes</em></td><td>Internship subject</td></tr>
-<tr><td><strong>description</strong></td><td>String</td><td><em>yes</em></td><td>Internship description</td></tr>
-<tr><td><strong>country</strong></td><td>String</td><td><em>yes</em></td><td>Internship country</td></tr>
-<tr><td><strong>city</strong></td><td>String</td><td><em>yes</em></td><td>Internship city</td></tr>
-<tr><td><strong>postalCode</strong></td><td>String</td><td><em>yes</em></td><td>Internship postalCode</td></tr>
-<tr><td><strong>address</strong></td><td>String</td><td><em>yes</em></td><td>Internship address</td></tr>
-<tr><td><strong>additional</strong></td><td>String</td><td><em>yes</em></td><td>Address additional detail</td></tr>
-<tr><td><strong>isInternshipAbroad</strong></td><td>Boolean</td><td><em>yes</em></td><td>Address isInternshipAbroad detail</td></tr>
-<tr><td><strong>isValidated</strong></td><td>Boolean</td><td><em>yes</em></td><td>Address isValidated detail</td></tr>
+<tr><td><strong>subject</strong></td><td>String</td><td><em>yes</em></td><td>Internship subject</td><td>*</td></tr>
+<tr><td><strong>description</strong></td><td>String</td><td><em>yes</em></td><td>Internship description</td><td>*</td></tr>
+<tr><td><strong>category</strong></td><td>String</td><td><em>yes</em></td><td>Internship category</td><td>*</td></tr>
+<tr><td><strong>country</strong></td><td>String</td><td><em>yes</em></td><td>Internship country</td><td>*</td></tr>
+<tr><td><strong>city</strong></td><td>String</td><td><em>yes</em></td><td>Internship city</td><td>*</td></tr>
+<tr><td><strong>postalCode</strong></td><td>String</td><td><em>yes</em></td><td>Internship postalCode</td><td>*</td></tr>
+<tr><td><strong>address</strong></td><td>String</td><td><em>yes</em></td><td>Internship address</td><td>*</td></tr>
+<tr><td><strong>additional</strong></td><td>String</td><td><em>yes</em></td><td>Address additional detail</td><td>*</td></tr>
+<tr><td><strong>isInternshipAbroad</strong></td><td>Boolean</td><td><em>yes</em></td><td>Internship is abroad</td><td>*</td></tr>
+<tr><td><strong>isValidated</strong></td><td>Boolean</td><td><em>yes</em></td><td>Internship is validated</td><td>admin</td></tr>
+<tr><td><strong>isPublish</strong></td><td>Boolean</td><td><em>yes</em></td><td>Internship is publish</td><td>admin</td></tr>
+<tr><td><strong>isProposition</strong></td><td>Boolean</td><td><em>yes</em></td><td>Internship is proposition</td><td>admin</td></tr>
+<tr><td><strong>startAt</strong></td><td>Number(timestamp)</td><td><em>yes</em></td><td>Internship start at</td><td>*</td></tr>
+<tr><td><strong>endAt</strong></td><td>Number(timestamp)</td><td><em>yes</em></td><td>Internship end at</td><td>*</td></tr>
+<tr><td><strong>publishAt</strong></td><td>Number(timestamp)</td><td><em>yes</em></td><td>Internship publish at</td><td>admin</td></tr>
 </tbody>
 </table>
 <h3><a class="anchor" aria-hidden="true" id="200-updated-internship"></a><a href="#200-updated-internship" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>200 - Updated internship</h3>
@@ -261,6 +285,9 @@
     <span class="hljs-attr">"additional"</span>: <span class="hljs-string">"Suite 755"</span>,
     <span class="hljs-attr">"isInternshipAbroad"</span>: <span class="hljs-literal">false</span>,
     <span class="hljs-attr">"isValidated"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"isProposition"</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">"isPublish"</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">"publishAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>,
     <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>,
     <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>
 }
@@ -567,18 +594,18 @@
 <h3><a class="anchor" aria-hidden="true" id="200-campaign"></a><a href="#200-campaign" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>200 - Campaign</h3>
 <pre><code class="hljs css language-json">{
     <span class="hljs-attr">"id"</span>: <span class="hljs-number">1</span>,
-    <span class="hljs-attr">"subject"</span>: <span class="hljs-string">"Sed quaerat culpa saepe fuga velit distinctio ea deleniti."</span>,
-    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque."</span>,
-    <span class="hljs-attr">"country"</span>: <span class="hljs-string">"Russian Federation"</span>,
-    <span class="hljs-attr">"city"</span>: <span class="hljs-string">"New Rocky"</span>,
-    <span class="hljs-attr">"postalCode"</span>: <span class="hljs-string">"30636-9003"</span>,
-    <span class="hljs-attr">"address"</span>: <span class="hljs-string">"15486 Genoveva Isle"</span>,
-    <span class="hljs-attr">"additional"</span>: <span class="hljs-string">"Suite 755"</span>,
-    <span class="hljs-attr">"isInternshipAbroad"</span>: <span class="hljs-literal">false</span>,
-    <span class="hljs-attr">"isValidated"</span>: <span class="hljs-literal">false</span>,
-    <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>,
-    <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2019-10-13T16:21:25.000Z"</span>
-
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"test"</span>,
+    <span class="hljs-attr">"maxProposition"</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Sed quaerat culpa saepe fuga velit distinctio ea deleniti."</span>,
+    <span class="hljs-attr">"category"</span>: {
+      <span class="hljs-attr">"id"</span>: <span class="hljs-number">1</span>,
+      <span class="hljs-attr">"label"</span>: <span class="hljs-string">"Stage ouvrier"</span>
+    },
+    <span class="hljs-attr">"semester"</span>: <span class="hljs-string">"S5"</span>,
+    <span class="hljs-attr">"startAt"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"endAt"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"updatedAt"</span>: <span class="hljs-string">"2019-09-19T22:21:24.365Z"</span>,
+    <span class="hljs-attr">"createdAt"</span>: <span class="hljs-string">"2019-09-19T22:21:24.365Z"</span>
 }
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="204-no-content-9"></a><a href="#204-no-content-9" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>204 - No content</h3>
