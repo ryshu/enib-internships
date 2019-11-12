@@ -38,8 +38,11 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     // State
     public isInternshipAbroad: boolean;
     public isValidated: boolean;
+    public isProposition: boolean;
+    public isPublish: boolean;
 
     // Date
+    public publishAt: number;
     public startAt: number;
     public endAt: number;
 
@@ -152,15 +155,30 @@ Internships.init(
             allowNull: false,
             defaultValue: false,
         },
+        isProposition: {
+            type: Sequelize.DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        isPublish: {
+            type: Sequelize.DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
 
         // Date
+        publishAt: {
+            type: Sequelize.DataTypes.BIGINT,
+            allowNull: true,
+            defaultValue: null,
+        },
         startAt: {
-            type: Sequelize.DataTypes.INTEGER,
+            type: Sequelize.DataTypes.BIGINT,
             allowNull: true,
             defaultValue: null,
         },
         endAt: {
-            type: Sequelize.DataTypes.INTEGER,
+            type: Sequelize.DataTypes.BIGINT,
             allowNull: true,
             defaultValue: null,
         },

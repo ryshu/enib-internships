@@ -28,8 +28,8 @@ Key | Type | Optional | Description
             "id": 1,
             "name": "Human Directives Administrator",
             "size": 13583,
-            "type": "png",
-            "path": "http://maxine.biz",
+            "type": "int-desc",
+            "path": "file_name.pdf",
             "createdAt": "2019-10-13T16:24:13.000Z",
             "updatedAt": "2019-10-13T16:24:13.000Z"
         },
@@ -77,16 +77,15 @@ POST /api/v1/files
 
 Key | Value | Description
 - | - | -
-**Content-Type** | application/x-www-form-urlencoded | Body encoding
+**Content-Type** | application/form-data | Body encoding
 
 ### Body
 
 Key | Type | Optional | Description
 - | - | - | -
 **name** | String | *no* | File name
-**size** | Integer | *no* | File size
 **type** | String | *no* | File type
-**path** | String | *no* | File path
+**file** | File | *no* | File to setup
 
 ### 200 - Created
 
@@ -97,8 +96,8 @@ Return created file
     "id": 1,
     "name": "Human Directives Administrator",
     "size": 13583,
-    "type": "png",
-    "path": "http://maxine.biz",
+    "type": "int-desc",
+    "path": "file_name.pdf",
     "createdAt": "2019-10-13T16:24:13.000Z",
     "updatedAt": "2019-10-13T16:24:13.000Z"
 }
@@ -147,8 +146,8 @@ Key | Type | Description
     "id": 1,
     "name": "Human Directives Administrator",
     "size": 13583,
-    "type": "png",
-    "path": "http://maxine.biz",
+    "type": "int-desc",
+    "path": "file_name.pdf",
     "createdAt": "2019-10-13T16:24:13.000Z",
     "updatedAt": "2019-10-13T16:24:13.000Z"
 }
@@ -174,16 +173,15 @@ Key | Type | Description
 
 Key | Value | Description
 - | - | -
-**Content-Type** | application/x-www-form-urlencoded | Body encoding
+**Content-Type** | application/form-data | Body encoding
 
 ### Body
 
 Key | Type | Optional | Description
 - | - | - | -
 **name** | String | *yes* | File name
-**size** | Integer | *yes* | File size
 **type** | String | *yes* | File type
-**path** | String | *yes* | File path
+**file** | File | *yes* | File to setup
 
 ### 200 - Updated file
 
@@ -192,8 +190,8 @@ Key | Type | Optional | Description
     "id": 1,
     "name": "Human Directives Administrator",
     "size": 13583,
-    "type": "png",
-    "path": "http://maxine.biz",
+    "type": "int-desc",
+    "path": "file_name.pdf",
     "createdAt": "2019-10-13T16:24:13.000Z",
     "updatedAt": "2019-10-13T16:24:13.000Z"
 }
@@ -254,6 +252,13 @@ Key | Type | Description
 - | - | -
 **id** | String | File ID
 
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**limit** | Number | *no* | Page expected (By default 1)
+**page** | Number | *no* | Number of row expected (By default 20)
+
 ### 200 - Internships
 
 ``` json
@@ -268,6 +273,9 @@ Key | Type | Description
     "additional": "Suite 755",
     "isInternshipAbroad": false,
     "isValidated": false,
+    "isProposition": true,
+    "isPublish": false,
+    "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
 }

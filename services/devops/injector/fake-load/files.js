@@ -9,7 +9,6 @@ module.exports = async function(quantity = 100, debug = false) {
     for (let i = 0; i < quantity; i++) {
         const file = {
             name: faker.name.title(),
-            size: faker.random.number({ min: 100, max: 100000 }),
             type: faker.random.arrayElement(['jpg', 'jpeg', 'png']),
             path: faker.internet.url(),
         };

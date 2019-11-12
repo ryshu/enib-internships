@@ -61,9 +61,8 @@ export const postFile = (req: Request, res: Response, next: NextFunction): void 
     // Get all data, we aren't afraid of having wrong data because we validate them before
     const file: IFileEntity = {
         name: req.body.name,
-        size: req.body.size,
         type: req.body.type,
-        path: req.body.path,
+        path: req.file.destination,
     };
     // Insert file in database
     Files.create(file)
@@ -111,9 +110,6 @@ export const putFile = (req: Request, res: Response, next: NextFunction): void =
 
             if (req.body.name) {
                 file.set('name', req.body.name);
-            }
-            if (req.body.size) {
-                file.set('size', req.body.size);
             }
             if (req.body.type) {
                 file.set('type', req.body.type);

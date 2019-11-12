@@ -14,11 +14,24 @@
         filterable
         multiple
         collapse-tags
+        :placeholder="$t('table.filter.countries')"
         style="width: 200px; margin-left: 10px;"
         class="filter-item"
         @change="handleFilter"
       >
         <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
+      </el-select>
+      <el-select
+        v-model="listQuery.types"
+        filterable
+        multiple
+        collapse-tags
+        :placeholder="$t('table.filter.types')"
+        style="width: 200px; margin-left: 10px;"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option v-for="item in types" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-button
         v-waves
@@ -43,6 +56,22 @@
         icon="el-icon-download"
         @click="handleDownload"
       >{{ $t('table.export') }}</el-button>
+      <el-checkbox
+        v-model="listQuery.isAbroad"
+        v-waves
+        style="margin-left: 10px;"
+        class="filter-item"
+        type="primary"
+        @change="handleFilter"
+      >{{ $t('table.checkbox.isAbroad') }}</el-checkbox>
+      <el-checkbox
+        v-model="listQuery.isValidated"
+        v-waves
+        style="margin-left: 10px;"
+        class="filter-item"
+        type="primary"
+        @change="handleFilter"
+      >{{ $t('table.checkbox.isValidated') }}</el-checkbox>
     </div>
 
     <!-- Table -->
@@ -60,13 +89,18 @@
           <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.internships.category')" min-width="100px">
+        <template slot-scope="{ row }">
+          <span>{{ row.category.label }}</span>
+        </template>
+      </el-table-column>
 
-      <el-table-column :label="$t('table.internships.country')" min-width="100px">
+      <el-table-column :label="$t('table.internships.country')" min-width="80px">
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.city')" min-width="100px">
+      <el-table-column :label="$t('table.internships.city')" min-width="80px">
         <template slot-scope="{ row }">
           <span>{{ row.city }}</span>
         </template>
@@ -74,7 +108,7 @@
 
       <el-table-column
         :label="$t('table.internships.isInternshipAbroad')"
-        min-width="70px"
+        min-width="85px"
         align="center"
       >
         <template slot-scope="{ row }">
@@ -84,7 +118,7 @@
           >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="70px" align="center">
+      <el-table-column :label="$t('table.internships.isValidated')" min-width="75px" align="center">
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isValidated ? 'success' : 'danger'"
@@ -149,6 +183,8 @@ import { formatJson } from '../../../utils';
 import Pagination from '../../../components/Pagination/index.vue';
 import EditInternship from '../dialog/EditInternship.vue';
 
+import { CategoriesModule } from '../../../store/modules/categories';
+
 @Component({
   name: 'InternshipsStudentList',
   components: {
@@ -167,11 +203,18 @@ export default class extends Vue {
     limit: 10,
     subject: undefined,
     countries: [],
+    types: [],
+    isAbroad: false,
+    isValidated: false,
   };
 
   private downloadLoading = false;
 
   private countryList = countryList.getNames();
+
+  private get types() {
+    return CategoriesModule.categories;
+  }
 
   public created() {
     this.getList();

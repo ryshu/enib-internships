@@ -15,11 +15,19 @@ function copyFileSync(source, target) {
     fs.writeFileSync(targetFile, fs.readFileSync(source));
 }
 
+function createIfNotExist(target) {
+    if (!fs.existsSync(target)) {
+        fs.mkdirSync(target);
+    }
+}
+
 try {
     // Copy env file
     src = path.resolve(__dirname, '../../.env');
     dest = path.resolve(__dirname, '../../dist');
     copyFileSync(src, dest);
+
+    createIfNotExist(path.resolve(__dirname, '../../dist/caches'));
 
     console.info(chalk.blue('Service initialized.'));
 } catch (error) {
