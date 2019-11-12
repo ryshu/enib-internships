@@ -73,6 +73,7 @@ describe('POST /files', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            path: expect.any(String),
             id: expect.any(Number),
         });
     });

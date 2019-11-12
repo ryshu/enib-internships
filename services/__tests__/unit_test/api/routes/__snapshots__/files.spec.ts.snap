@@ -57,7 +57,7 @@ Object {
   "createdAt": Any<String>,
   "id": Any<Number>,
   "name": "fichier",
-  "path": "/home/padeon/Bureau/enib/stages/services/src/caches",
+  "path": Any<String>,
   "type": "john.doe@enib.fr",
   "updatedAt": Any<String>,
 }
