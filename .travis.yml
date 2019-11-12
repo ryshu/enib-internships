@@ -27,6 +27,7 @@ env:
   - HASH_KEY=gLgk8Nt7ograVzCsgQz1JM05QJtpzDbk
   - INTERNSHIP_ENIB_API_VERSION=v1
   - INTERNSHIP_ENIB_API_PORT=4000
+  - BASE_STORAGE_DIR=/caches
 
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
