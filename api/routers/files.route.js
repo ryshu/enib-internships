@@ -15,10 +15,11 @@ const express_validator_1 = require("express-validator");
 const FilesCtrl = __importStar(require("../controllers/files.ctrl"));
 const generic_val_1 = require("../validators/generic.val");
 const files_val_1 = require("../validators/files.val");
+const base_1 = require("../../files-storage/base");
 const router = express_1.default.Router();
 // Files
 router.get('', express_validator_1.checkSchema(files_val_1.FileList), FilesCtrl.getFiles);
-router.post('', express_validator_1.checkSchema(files_val_1.FileCreate), FilesCtrl.postFile);
+router.post('', base_1.uploadHandler.single('file'), express_validator_1.checkSchema(files_val_1.FileCreate), FilesCtrl.postFile);
 router.get('/:id', express_validator_1.checkSchema(generic_val_1.ID), FilesCtrl.getFile);
 router.put('/:id', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, files_val_1.FileUpdate)), FilesCtrl.putFile);
 router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), FilesCtrl.deleteFile);

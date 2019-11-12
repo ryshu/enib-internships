@@ -1,7 +1,43 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const generic_val_1 = require("./generic.val");
-exports.InternshipsList = Object.assign({}, generic_val_1.paginateValidator);
+const modes = ['published', 'propositions', 'self'];
+exports.InternshipsList = Object.assign(Object.assign({}, generic_val_1.paginateValidator), { countries: {
+        in: ['query'],
+        isArray: { errorMessage: 'Country filter list must be array' },
+        optional: true,
+        toArray: true,
+    }, types: {
+        in: ['query'],
+        isArray: { errorMessage: 'Category filter list must be array' },
+        optional: true,
+        toArray: true,
+    }, subject: {
+        in: ['query'],
+        isString: { errorMessage: 'Subject should be of type string' },
+        optional: true,
+        trim: true,
+        escape: true,
+    }, mode: {
+        in: ['query'],
+        isString: { errorMessage: 'Mode should be a string' },
+        isIn: {
+            options: [modes],
+            errorMessage: `Mode should be included in [${modes.join(', ')}]`,
+        },
+        optional: true,
+        trim: true,
+    }, isAbroad: {
+        in: ['query'],
+        isBoolean: { errorMessage: 'Abroad should be of type boolean' },
+        optional: true,
+        toBoolean: true,
+    }, isValidated: {
+        in: ['query'],
+        isBoolean: { errorMessage: 'Validated should be of type boolean' },
+        optional: true,
+        toBoolean: true,
+    } });
 exports.InternshipCreate = {
     subject: {
         in: ['body'],
@@ -16,6 +52,12 @@ exports.InternshipCreate = {
         exists: { errorMessage: 'Description must be defined' },
         trim: true,
         escape: true,
+    },
+    category: {
+        in: ['body'],
+        isInt: { options: { min: 0 }, errorMessage: 'Category ID should be an integer' },
+        exists: { errorMessage: 'Category ID should be provide' },
+        toInt: true,
     },
     country: {
         in: ['body'],
@@ -63,6 +105,24 @@ exports.InternshipCreate = {
         isBoolean: { errorMessage: 'Validated must be of type boolean' },
         optional: true,
         toBoolean: true,
+    },
+    isProposition: {
+        in: ['body'],
+        isBoolean: { errorMessage: 'Proposition must be of type boolean' },
+        optional: true,
+        toBoolean: true,
+    },
+    isPublish: {
+        in: ['body'],
+        isBoolean: { errorMessage: 'Publish must be of type boolean' },
+        optional: true,
+        toBoolean: true,
+    },
+    publishAt: {
+        in: ['body'],
+        isInt: { errorMessage: 'Publish at must be a timestamp', options: { min: 0 } },
+        optional: true,
+        toInt: true,
     },
     startAt: {
         in: ['body'],

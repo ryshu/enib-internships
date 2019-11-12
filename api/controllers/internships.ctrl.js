@@ -25,6 +25,7 @@ const MentoringPropositions_1 = __importDefault(require("../../models/MentoringP
 const Mentors_1 = __importDefault(require("../../models/Mentors"));
 const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
 const pagination_helper_1 = require("../helpers/pagination.helper");
+const lodash_1 = require("lodash");
 const global_helper_1 = require("../helpers/global.helper");
 /**
  * GET /internships
@@ -37,24 +38,48 @@ exports.getInternships = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     // Retrive query data
-    const { page = 1, limit = 20, countries, subject } = req.query;
+    const { page = 1, limit = 20, countries, types, subject, mode = 'published', isAbroad, isValidated, } = req.query;
     const findOpts = {
-        where: {},
+        where: {
+            isProposition: mode === 'propositions',
+            isPublish: mode === 'published',
+        },
+        include: [{ model: InternshipTypes_1.default, as: 'category', duplicating: false }],
         group: [sequelize_1.default.col(`Internships.id`)],
     };
-    // Build count query options
-    const countOpts = { where: {} };
+    if (mode === 'self') {
+        findOpts.where.mentorId = req.session.info.id;
+    }
     if (countries) {
         // If country list is given, add it to query
         // Sequelize will translate it by "country in countries"
         findOpts.where.country = countries;
-        countOpts.where.country = countries;
+    }
+    if (types) {
+        // If category list is given, add it to query
+        // Sequelize will translate it by "category in types"
+        findOpts.where.categoryId = types;
+    }
+    if (!!isAbroad) {
+        findOpts.where.isInternshipAbroad = true;
+    }
+    if (!!isValidated) {
+        findOpts.where.isValidated = true;
+    }
+    else if (req.session.info.role !== 'admin' && mode !== 'self') {
+        // If user isn't admin and doesn't want only validated,
+        // give him only not validated internships
+        findOpts.where.isValidated = false;
     }
     if (subject) {
         // If subject filter is given, apply it using substring
         findOpts.where.subject = { [sequelize_1.default.Op.substring]: subject };
-        countOpts.where.subject = { [sequelize_1.default.Op.substring]: subject };
     }
+    // Build count query options
+    const countOpts = {
+        where: lodash_1.cloneDeep(findOpts.where),
+        include: [{ model: InternshipTypes_1.default, as: 'category', attributes: [], duplicating: false }],
+    };
     let max;
     Internships_1.default.count(countOpts)
         .then((rowNbr) => {
@@ -77,7 +102,7 @@ exports.getInternships = (req, res, next) => {
  * POST /internship
  * Used to create a new internship entry
  */
-exports.postInternship = (req, res, next) => {
+exports.postInternship = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // @see validator + router
     const errors = express_validator_1.validationResult(req);
     if (!errors.isEmpty()) {
@@ -92,14 +117,28 @@ exports.postInternship = (req, res, next) => {
         address: req.body.address,
         additional: req.body.additional,
         isInternshipAbroad: req.body.isInternshipAbroad ? true : false,
-        isValidated: req.body.isValidated ? true : false,
+        isProposition: req.body.isProposition || req.session.info.role !== 'admin' ? true : false,
+        isPublish: req.body.isPublish && req.session.info.role === 'admin' ? true : false,
+        isValidated: req.body.isValidated && req.session.info.role === 'admin' ? true : false,
+        publishAt: !req.body.publishAt || req.session.info.role !== 'admin'
+            ? null
+            : moment_1.default(req.body.publishAt).valueOf(),
         startAt: !req.body.startAt ? null : moment_1.default(req.body.startAt).valueOf(),
         endAt: !req.body.endAt ? null : moment_1.default(req.body.endAt).valueOf(),
     };
-    Internships_1.default.create(internship)
-        .then((created) => res.send(created))
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
-};
+    try {
+        const category = yield InternshipTypes_1.default.findByPk(req.body.category);
+        if (!global_helper_1.checkContent(category, next)) {
+            return undefined;
+        }
+        const created = yield Internships_1.default.create(internship);
+        yield created.setCategory(category);
+        return res.send(created);
+    }
+    catch (error) {
+        global_helper_1.UNPROCESSABLE_ENTITY(next, error);
+    }
+});
 /**
  * GET /internship/:id
  * Used to select a internship by ID
@@ -140,7 +179,7 @@ exports.putInternship = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     Internships_1.default.findByPk(req.params.id)
-        .then((internships) => {
+        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
         if (!global_helper_1.checkContent(internships, next)) {
             return undefined;
         }
@@ -149,6 +188,17 @@ exports.putInternship = (req, res, next) => {
         }
         if (req.body.description) {
             internships.set('description', req.body.description);
+        }
+        if (req.body.category) {
+            try {
+                const category = yield InternshipTypes_1.default.findByPk(req.body.category);
+                if (category) {
+                    yield internships.setCategory(category);
+                }
+            }
+            catch (_e) {
+                // Pass, don't thrown any error
+            }
         }
         if (req.body.country) {
             internships.set('country', req.body.country);
@@ -168,8 +218,11 @@ exports.putInternship = (req, res, next) => {
         if (req.body.isInternshipAbroad !== undefined) {
             internships.set('isInternshipAbroad', req.body.isInternshipAbroad ? true : false);
         }
-        if (req.body.isValidated !== undefined) {
+        if (req.body.isValidated !== undefined && req.session.info.role === 'admin') {
             internships.set('isValidated', req.body.isValidated ? true : false);
+        }
+        if (req.body.publishAt !== undefined && req.session.info.role === 'admin') {
+            internships.set('publishAt', req.body.publishAt === 0 ? null : moment_1.default(req.body.publishAt).valueOf());
         }
         if (req.body.startAt !== undefined) {
             internships.set('startAt', req.body.startAt === 0 ? null : moment_1.default(req.body.startAt).valueOf());
@@ -178,7 +231,7 @@ exports.putInternship = (req, res, next) => {
             internships.set('endAt', req.body.endAt === 0 ? null : moment_1.default(req.body.endAt).valueOf());
         }
         return internships.save();
-    })
+    }))
         .then((updated) => {
         if (updated) {
             return res.send(updated);
@@ -332,10 +385,23 @@ exports.getInternshipFiles = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Internships_1.default.findByPk(req.params.id, { include: [{ model: Files_1.default, as: 'files' }] })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.files);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { internshipId: req.params.id } };
+    let max;
+    Files_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return Files_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
+    })
+        .then((files) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(files, next)) {
+            return res.send({
+                page,
+                data: files,
+                length: files.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
@@ -447,12 +513,23 @@ exports.getInternshipPropositions = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Internships_1.default.findByPk(req.params.id, {
-        include: [{ model: MentoringPropositions_1.default, as: 'propositions' }],
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { internshipId: req.params.id } };
+    let max;
+    MentoringPropositions_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return MentoringPropositions_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.propositions);
+        .then((mps) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(mps, next)) {
+            return res.send({
+                page,
+                data: mps,
+                length: mps.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));

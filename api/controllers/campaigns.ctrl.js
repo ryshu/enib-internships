@@ -19,8 +19,9 @@ const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
 const MentoringPropositions_1 = __importDefault(require("../../models/MentoringPropositions"));
 const InternshipTypes_1 = __importDefault(require("../../models/InternshipTypes"));
 const Internships_1 = __importDefault(require("../../models/Internships"));
-const global_helper_1 = require("../helpers/global.helper");
 const Mentors_1 = __importDefault(require("../../models/Mentors"));
+const global_helper_1 = require("../helpers/global.helper");
+const pagination_helper_1 = require("../helpers/pagination.helper");
 const error_1 = require("../../utils/error");
 /**
  * GET /campaigns
@@ -175,12 +176,23 @@ exports.getCampaignMentoringPropositions = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id, {
-        include: [{ model: MentoringPropositions_1.default, as: 'propositions' }],
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { campaignId: req.params.id } };
+    let max;
+    MentoringPropositions_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return MentoringPropositions_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.propositions);
+        .then((mps) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(mps, next)) {
+            return res.send({
+                page,
+                data: mps,
+                length: mps.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
@@ -214,12 +226,23 @@ exports.getAvailableCampaignInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id, {
-        include: [{ model: Internships_1.default, as: 'availableInternships' }],
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { availableCampaignId: req.params.id } };
+    let max;
+    Internships_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.availableInternships);
+        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(internships, next)) {
+            return res.send({
+                page,
+                data: internships,
+                length: internships.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
@@ -253,17 +276,27 @@ exports.linkAvailableCampaignInternships = (req, res, next) => {
  * Used to get all validatedInternships of a campaign
  */
 exports.getValidatedCampaignInternships = (req, res, next) => {
-    // @see validator + router
     const errors = express_validator_1.validationResult(req);
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id, {
-        include: [{ model: Internships_1.default, as: 'validatedInternships' }],
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { validatedCampaignId: req.params.id } };
+    let max;
+    Internships_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.validatedInternships);
+        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(internships, next)) {
+            return res.send({
+                page,
+                data: internships,
+                length: internships.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
@@ -297,17 +330,30 @@ exports.linkValidatedCampaignInternships = (req, res, next) => {
  * Used to get all mentors of a campaign
  */
 exports.getCampaignMentors = (req, res, next) => {
-    // @see validator + router
     const errors = express_validator_1.validationResult(req);
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id, {
-        include: [{ model: Mentors_1.default, as: 'mentors' }],
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = {
+        include: [{ model: Campaigns_1.default, as: 'campaigns', attributes: [], duplicating: false }],
+        where: { '$campaigns.id$': req.params.id },
+    };
+    let max;
+    Mentors_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return Mentors_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.mentors);
+        .then((mentors) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(mentors, next)) {
+            return res.send({
+                page,
+                data: mentors,
+                length: mentors.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));

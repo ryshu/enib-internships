@@ -24,10 +24,6 @@ Files.init({
         type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
     },
-    size: {
-        type: Sequelize.DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
-    },
     type: {
         type: new Sequelize.DataTypes.STRING(20),
         allowNull: false,

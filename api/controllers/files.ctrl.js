@@ -63,9 +63,8 @@ exports.postFile = (req, res, next) => {
     // Get all data, we aren't afraid of having wrong data because we validate them before
     const file = {
         name: req.body.name,
-        size: req.body.size,
         type: req.body.type,
-        path: req.body.path,
+        path: req.file.destination,
     };
     // Insert file in database
     Files_1.default.create(file)
@@ -108,9 +107,6 @@ exports.putFile = (req, res, next) => {
         }
         if (req.body.name) {
             file.set('name', req.body.name);
-        }
-        if (req.body.size) {
-            file.set('size', req.body.size);
         }
         if (req.body.type) {
             file.set('type', req.body.type);

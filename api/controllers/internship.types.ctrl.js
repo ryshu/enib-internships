@@ -18,6 +18,7 @@ const InternshipTypes_1 = __importDefault(require("../../models/InternshipTypes"
 const Internships_1 = __importDefault(require("../../models/Internships"));
 const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
 const global_helper_1 = require("../helpers/global.helper");
+const pagination_helper_1 = require("../helpers/pagination.helper");
 /**
  * GET /internshipTypes
  * Used to GET all internship types
@@ -118,14 +119,25 @@ exports.getInternshipTypeInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipTypes_1.default.findByPk(req.params.id, {
-        include: [{ model: Internships_1.default, as: 'internships' }],
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { categoryId: req.params.id } };
+    let max;
+    Internships_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
-        .then((val) => {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.internships);
+        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(internships, next)) {
+            return res.send({
+                page,
+                data: internships,
+                length: internships.length,
+                max,
+            });
         }
-    })
+    }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -157,14 +169,25 @@ exports.getInternshipTypeCampaigns = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipTypes_1.default.findByPk(req.params.id, {
-        include: [{ model: Campaigns_1.default, as: 'campaigns' }],
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { categoryId: req.params.id } };
+    let max;
+    Campaigns_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return Campaigns_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
-        .then((val) => {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.campaigns);
+        .then((campaigns) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(campaigns, next)) {
+            return res.send({
+                page,
+                data: campaigns,
+                length: campaigns.length,
+                max,
+            });
         }
-    })
+    }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**

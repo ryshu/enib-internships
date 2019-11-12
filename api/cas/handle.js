@@ -17,6 +17,8 @@ const logger_1 = __importDefault(require("../../utils/logger"));
 const Mentors_1 = __importDefault(require("../../models/Mentors"));
 const Students_1 = __importDefault(require("../../models/Students"));
 const admin_1 = require("../../configs/data/admin");
+const handled = [];
+const wait = (ms) => new Promise((r, j) => setTimeout(r, ms));
 /**
  * @summary Method used to handle cas connection and setup user info
  * @param {Request} req Express request
@@ -30,6 +32,12 @@ function handleConnection(req) {
             // Check also if username isn't included in admin list (case when user is admin)
             const student = utils_1.isStudent(req.session.cas_user) && !admin_1.adminsCasUsername.includes(req.session.cas_user);
             const email = utils_1.getEmail(req.session.cas_user);
+            // When user create is already handled, we wait few time
+            // This is used to prevent a multi user insert
+            while (handled.includes(req.session.cas_user)) {
+                yield wait(100);
+            }
+            handled.push(req.session.cas_user);
             // Try to get our user in database
             const user = student
                 ? yield Students_1.default.findOne({ where: { email } })
@@ -40,6 +48,10 @@ function handleConnection(req) {
                 if (student) {
                     // Set student roles, avoid to store role in database
                     req.session.info.role = 'student';
+                }
+                const found1 = handled.findIndex((h) => h === req.session.cas_user);
+                if (found1 !== -1) {
+                    handled.splice(found1, 1);
                 }
                 return;
             }
@@ -55,6 +67,10 @@ function handleConnection(req) {
                 req.session.info = yield Mentors_1.default.create(newUser);
             }
             logger_1.default.info(`Inject "${req.session.cas_user}" into database after his first connection`);
+            const found2 = handled.findIndex((h) => h === req.session.cas_user);
+            if (found2 !== -1) {
+                handled.splice(found2, 1);
+            }
             return;
         }
         throw new Error('No session found in given request');

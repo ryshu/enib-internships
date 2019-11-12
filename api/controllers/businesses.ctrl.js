@@ -185,10 +185,23 @@ exports.getBusinessInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Businesses_1.default.findByPk(req.params.id, { include: [{ model: Internships_1.default, as: 'internships' }] })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.internships);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { businessId: req.params.id } };
+    let max;
+    Internships_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
+    })
+        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(internships, next)) {
+            return res.send({
+                page,
+                data: internships,
+                length: internships.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));

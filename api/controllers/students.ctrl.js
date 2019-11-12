@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
 // Import students ORM class
 const Students_1 = __importDefault(require("../../models/Students"));
 const Internships_1 = __importDefault(require("../../models/Internships"));
-const http_status_codes_1 = __importDefault(require("http-status-codes"));
 // Factorization methods to handle errors
 const global_helper_1 = require("../helpers/global.helper");
 const pagination_helper_1 = require("../helpers/pagination.helper");
@@ -152,10 +152,23 @@ exports.getStudentInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Students_1.default.findByPk(req.params.id, { include: [{ model: Internships_1.default, as: 'internships' }] })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.internships);
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { studentId: req.params.id } };
+    let max;
+    Internships_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
+    })
+        .then((mps) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(mps, next)) {
+            return res.send({
+                page,
+                data: mps,
+                length: mps.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));

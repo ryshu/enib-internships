@@ -201,12 +201,23 @@ exports.getMentorPropositions = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Mentors_1.default.findByPk(req.params.id, {
-        include: [{ model: MentoringPropositions_1.default, as: 'propositions' }],
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { mentorId: req.params.id } };
+    let max;
+    MentoringPropositions_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return MentoringPropositions_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.propositions);
+        .then((mps) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(mps, next)) {
+            return res.send({
+                page,
+                data: mps,
+                length: mps.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
@@ -245,12 +256,23 @@ exports.getMentorInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Mentors_1.default.findByPk(req.params.id, {
-        include: [{ model: Internships_1.default, as: 'internships' }],
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+    const findOpts = { where: { mentorId: req.params.id } };
+    let max;
+    Internships_1.default.count(findOpts)
+        .then((rowNbr) => {
+        max = rowNbr;
+        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
     })
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.internships);
+        .then((mps) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkArrayContent(mps, next)) {
+            return res.send({
+                page,
+                data: mps,
+                length: mps.length,
+                max,
+            });
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
