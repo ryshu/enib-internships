@@ -28,6 +28,11 @@ We use module [dotenv](https://github.com/motdotla/dotenv) to handle settings in
 | INTERNSHIP_ENIB_API_VERSION | Used to change API versionning path | v1 |
 | INTERNSHIP_ENIB_API_PORT | API port | 4000 |
 | BASE_STORAGE_DIR | Directory for files | /caches |
+| SMTP_HOST | SMTP Host | smtp.ethereal.email |
+| SMTP_PORT | SMTP Port | 587 |
+| SMTP_SECURE | SMTP Secure | false |
+| SMTP_AUTH_USER | SMTP Auth user | / |
+| SMTP_AUTH_PASS | SMTP Auth pass | / |
 
 ## Generate random seed
 
