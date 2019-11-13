@@ -17,6 +17,11 @@ export const email = new Email({
             images: true, // <--- set this as `true`
         },
     },
+    i18n: {
+        directory: path.resolve(__dirname, 'build', 'i18n'),
+        locales: ['en', 'fr'],
+        defaultLocale: 'fr',
+    },
 
     // Change default template link "emails" for "templates"
     views: { path: path.join(__dirname, 'templates') },

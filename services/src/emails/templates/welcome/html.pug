@@ -10,13 +10,11 @@ block content
                             table(style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;background-position:left bottom;", width="100%", cellspacing="0", cellpadding="0")
                                 tr(style="border-collapse:collapse;")
                                     td(align="center" style="padding:0;Margin:0;")
-                                        h1(style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:tahoma, verdana, segoe, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#212121;")
-                                            | Bienvenue sur l'interface de stage de l'ENIB!
+                                        h1(style="Margin:0;line-height:36px;mso-line-height-rule:exactly;font-family:tahoma, verdana, segoe, sans-serif;font-size:30px;font-style:normal;font-weight:bold;color:#212121;")= t('welcome_title')
 
                                 tr(style="border-collapse:collapse;")
                                     td(align="center", style="padding:0;Margin:0;padding-top:20px;")
-                                        p(style="font-family: roboto, 'helvetica neue', helvetica, arial, sans-serif;")
-                                            | Vous venez de vous connecter pour la première fois à l'interface d'administration des stages de l'ENIB et ce message confirme que vous avez bien été enregistré dans le service.
+                                        p(style="font-family: roboto, 'helvetica neue', helvetica, arial, sans-serif;")= t('welcome_subTitle')
 
         tr(style="border-collapse:collapse;")
             td(style="Margin:0;padding-top:5px;padding-bottom:5px;padding-left:30px;padding-right:30px;border-radius:0px 0px 10px 10px;background-position:left top;background-color:#FFFFFF;", align="left")
@@ -26,19 +24,12 @@ block content
                             table(width="100%", cellspacing="0", cellpadding="0", style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;")
                                 tr(style="border-collapse:collapse;")
                                     td(align="left", style="padding:10px;Margin:0;")
-                                        p(style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;color:#131313;")
-                                            | Cette interface vous permet de :
+                                        p(style="Margin:0;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;color:#131313;")= t('welcome_list')
                                 tr(style="border-collapse:collapse;")
                                     td(align="left", style="padding:0;Margin:0;")
                                         ul
-                                            li(style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;Margin-bottom:15px;color:#131313;")
-                                                | Lister les stages validés par le service relation-entreprise
-                                            li(style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;Margin-bottom:15px;color:#131313;")
-                                                | Proposer de nouveaux stages
-                                            li(style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;Margin-bottom:15px;color:#131313;")
-                                                | Suivre l'avancement et les documents à fournir pour les stages en cours
-                                            li(style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;Margin-bottom:15px;color:#131313;")
-                                                | Mettre en place des notifications pour être avertie par mail des nouveaux stages qui vous intéressent
+                                            each val in t('welcome_listContent')
+                                                li(style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-size:16px;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;line-height:24px;Margin-bottom:15px;color:#131313;")= val
 
         tr(style="border-collapse:collapse;")
             td(align="left", style="padding:0;Margin:0;padding-top:20px;padding-left:30px;padding-right:30px;")
@@ -49,8 +40,7 @@ block content
                                 tr(style="border-collapse:collapse;")
                                     td(align="center", style="padding:10px;Margin:0;")
                                         span(class="es-button-border es-button-border-2", style="border-style:solid;border-color:#2CB543;background:#FE9603 none repeat scroll 0% 0%;border-width:0px;display:inline-block;border-radius:3px;width:auto;")
-                                            a(href="https://stages.enib.fr", class="es-button es-button-1", target="_blank", style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;font-size:18px;color:#FFFFFF;border-style:solid;border-color:#FE9603;border-width:10px 20px 10px 20px;display:inline-block;background:#FE9603 none repeat scroll 0% 0%;border-radius:3px;font-weight:normal;font-style:normal;line-height:22px;width:auto;text-align:center;")
-                                                | Se rendre sur l'interface
+                                            a(href="https://stages.enib.fr", class="es-button es-button-1", target="_blank", style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:roboto, 'helvetica neue', helvetica, arial, sans-serif;font-size:18px;color:#FFFFFF;border-style:solid;border-color:#FE9603;border-width:10px 20px 10px 20px;display:inline-block;background:#FE9603 none repeat scroll 0% 0%;border-radius:3px;font-weight:normal;font-style:normal;line-height:22px;width:auto;text-align:center;")= t('welcome_btnRedirect')
                                 tr(style="border-collapse:collapse;")
                                     td(align="center", style="padding:20px;Margin:0;")
                                         table(width="100%", height="100%", cellspacing="0", cellpadding="0", border="0", style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;")

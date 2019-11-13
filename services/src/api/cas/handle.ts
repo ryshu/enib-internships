@@ -9,7 +9,7 @@ import Students from '../../models/Students';
 
 import { adminsCasUsername } from '../../configs/data/admin';
 
-import { sendWelcom } from '../../emails';
+import { sendWelcome } from '../../emails';
 
 const handled: string[] = [];
 
@@ -75,7 +75,7 @@ export async function handleConnection(req: Request) {
             req.session.info = await Mentors.create(newUser);
         }
         // Send welcom email to new user
-        await sendWelcom(email);
+        await sendWelcome(email);
 
         logger.info(`Inject "${req.session.cas_user}" into database after his first connection`);
         const found2 = handled.findIndex((h) => h === req.session.cas_user);

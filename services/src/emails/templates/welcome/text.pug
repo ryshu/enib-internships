@@ -1,16 +1,16 @@
-| Bienvenue sur l'interface de stage de l'ENIB !
+| #{t('welcome_title')}
 |
 
-| Vous venez de vous connecter pour la première fois à l'interface
-| d'administration des stages de l'ENIB et ce message confirme que vous avez bien
-| été enregistré dans le service. Cette interface vous permet de :
+| #{t('welcome_subTitle')}
 |
 
-|  * Lister les stages validés par le service relation-entreprise
-|  * Proposer de nouveaux stages
-|  * Suivre l'avancement et les documents à fournir pour les stages en cours
-|  * Mettre en place des notifications pour être avertie par mail des nouveaux
-|    stages qui vous intéressent
+| #{t('welcome_list')}
 |
 
-| Pour vous rendre sur l'interface, veuillez suivre ce lien: https://stages.enib.fr
+each val in t('welcome_listContent')
+    | * #{val}
+    |
+
+|
+
+| #{t('footer_link_raw')}

@@ -8,9 +8,7 @@
     "postinstall": "npm run install:app && npm run install:services",
     "install:app": "cd app && npm i",
     "install:services": "cd services && npm i",
-    "serve": "concurrently -k -p \"[{name}]\" -n \"App,Services\" -c \"cyan.bold,green.bold\" \"npm run serve:app\" \"npm run serve:services\"",
-    "serve:app": "cd app && npm run serve",
-    "serve:services": "cd services && npm run build && npm run serve",
+    "serve": "echo \"Error: Oscar a dit non, et pense à ton '.env' dans les services\" && exit 1",
     "lint": "npm run lint:app && npm run lint:services",
     "lint:app": "cd app && npm run lint",
     "lint:services": "cd services && npm run lint",
@@ -28,7 +26,6 @@
     "internships"
   ],
   "devDependencies": {
-    "concurrently": "^5.0.0",
     "fs-extra": "^8.1.0",
     "shelljs": "^0.8.3"
   }
