@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Emails service sendCampaignsCreate_to_fr 1`] = `
+Object {
+  "from": "no-reply@stages.enib.fr",
+  "to": Array [
+    "test@tester.fr",
+  ],
+}
+`;
+
 exports[`Emails service sendWelcome_to_fr 1`] = `
 Object {
   "from": "no-reply@stages.enib.fr",
