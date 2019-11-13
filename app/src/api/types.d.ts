@@ -92,3 +92,12 @@ export declare interface ICampaigns {
   createdAt?: string;
   updatedAt?: string;
 }
+
+declare interface IMentoringPropositions {
+  id?: number;
+
+  comment: string;
+
+  createdAt?: Date;
+  updatedAt?: Date;
+}

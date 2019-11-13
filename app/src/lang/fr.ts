@@ -184,6 +184,7 @@ export default {
     },
     cancel: 'Annuler',
     confirm: 'Confirmer',
+    validate: 'Valider',
     create: 'Créer',
     date: 'Date',
     delete: 'Supprimer',
