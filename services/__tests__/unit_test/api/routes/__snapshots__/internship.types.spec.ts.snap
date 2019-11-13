@@ -27,15 +27,6 @@ Object {
 }
 `;
 
-exports[`PUT /internshipTypes/:id InternshipTypes_200_NotAnyDataUpdated 2`] = `
-Object {
-  "createdAt": Any<String>,
-  "id": Any<Number>,
-  "label": "test",
-  "updatedAt": Any<String>,
-}
-`;
-
 exports[`PUT /internshipTypes/:id InternshipTypes_200_UpdateAllData 1`] = `
 Object {
   "createdAt": Any<String>,
