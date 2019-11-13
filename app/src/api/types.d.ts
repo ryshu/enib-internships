@@ -93,7 +93,8 @@ export declare interface ICampaigns {
   description: string;
   semester: string;
   maxProposition: number;
-
+  category?: IInternshipTypes;
+  isPublish: boolean;
   startAt: number;
   endAt: number;
 

@@ -257,7 +257,17 @@ export default {
       success: 'Publication terminée avec succès',
     },
   },
-
+  campaign : {
+    title: "Nom de la campagne",
+    description : "Description", 
+    date: "Date",
+    publish : "Publier la campagne",
+    placeholder : {
+      title : " Entrer ne nom de la campagne",
+      description : "Entrer une description de campagne",
+      maxProposition : "Entrer le nombre maximum de propositions par tuteur",
+    },
+  },
   input: {
     file: { placeholder: 'Selectionner un fichier', btn: 'Parcourir' },
     select: { default: 'Selectioner la valeur' },

@@ -8,6 +8,8 @@ export const defaultCampaignData: ICampaigns = {
   description: '',
   startAt: 0,
   endAt: 0,
+  category: undefined,
+  isPublish: false,
   semester: '',
   maxProposition: 0,
 };
