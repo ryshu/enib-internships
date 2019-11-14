@@ -15,7 +15,7 @@
         popper-append-to-body
       >
         <template slot="title">
-          <span slot="title">{{ campaign.category.label }}</span>
+          <span slot="title">{{ campaign.name }}</span>
         </template>
 
         <sidebar-item-link :to="resolvePath('dashboard', campaign.id)">

@@ -6,12 +6,14 @@ import { ICampaigns } from './types';
 export const defaultCampaignData: ICampaigns = {
   name: '',
   description: '',
-  startAt: 0,
-  endAt: 0,
   category: undefined,
+
   isPublish: false,
   semester: '',
   maxProposition: 0,
+
+  startAt: 0,
+  endAt: 0,
 };
 
 export const getCampaigns = (params?: any) =>

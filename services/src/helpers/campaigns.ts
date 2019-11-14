@@ -19,7 +19,7 @@ async function internshipInject(
 }
 
 async function mentorInject(mentor: Mentors, campaign: Campaigns, channel?: ProgressChannel) {
-    mentor.addCampaign(campaign);
+    await mentor.addCampaign(campaign);
     if (channel) {
         channel.step({
             msg: `${mentor.firstName[0].toUpperCase()}${mentor.firstName
