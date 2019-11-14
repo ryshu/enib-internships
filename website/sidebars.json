@@ -1,6 +1,7 @@
 {
   "docs": {
     "Get started": ["docs-install", "docs-settings"],
+    "Services": ["docs-mailer"],
     "Software architecture": ["docs-backend", "docs-frontend"]
   },
   "api": {
@@ -14,7 +15,8 @@
       "api-mentors",
       "api-mentoring-propostions",
       "api-students"
-    ]
+    ],
+    "Services API": [ "api-services-emails" ]
   },
   "tuto": {
     "Complete": ["tuto-mentors", "tuto-students", "tuto-setup-associations"]

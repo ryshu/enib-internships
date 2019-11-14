@@ -115,7 +115,7 @@ export const asyncRoutes: RouteConfig[] = [
         name: 'Businesses',
         meta: {
           title: 'businesses',
-          icon: 'shopping',
+          icon: 'group',
           affix: true,
           roles: ['admin', 'default'],
         },

@@ -27,6 +27,11 @@ MYSQL_PASSWORD=
 ORM_DROP_DB_ON_START=false
 ORM_LOGGING=false
 
+# CAS connection
+CAS_URL=https://my-cas-host.com/cas
+SERVICE_URL=https://my-service-host.com
+CAS_DEV_MODE=true
+
 # Put lots of randomness in these
 SESSION_SECRET=ashdfjhasdlkjfhalksdjhflak
 HASH_KEY=gLgk8Nt7ograVzCsgQz1JM05QJtpzDbk
@@ -34,6 +39,15 @@ HASH_KEY=gLgk8Nt7ograVzCsgQz1JM05QJtpzDbk
 # API Version
 INTERNSHIP_ENIB_API_VERSION=v1
 INTERNSHIP_ENIB_API_PORT=4000
+
+# Mailer
+SMTP_HOST='smtp.ethereal.email'
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_AUTH_USER=
+SMTP_AUTH_PASS=
+
+BASE_STORAGE_DIR=/caches
 ```
 
 Then you can run `npm i` or `npm install` to run install for both back and front end.

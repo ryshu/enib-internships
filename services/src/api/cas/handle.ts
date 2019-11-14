@@ -9,6 +9,8 @@ import Students from '../../models/Students';
 
 import { adminsCasUsername } from '../../configs/data/admin';
 
+import { sendWelcome } from '../../emails';
+
 const handled: string[] = [];
 
 const wait = (ms: number) => new Promise((r, j) => setTimeout(r, ms));
@@ -72,6 +74,9 @@ export async function handleConnection(req: Request) {
             // Register our new mentor and set his data in session info
             req.session.info = await Mentors.create(newUser);
         }
+        // Send welcom email to new user
+        await sendWelcome(email);
+
         logger.info(`Inject "${req.session.cas_user}" into database after his first connection`);
         const found2 = handled.findIndex((h) => h === req.session.cas_user);
         if (found2 !== -1) {
