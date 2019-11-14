@@ -3,10 +3,14 @@ declare interface ICampaignEntity {
 
     name: string;
     description: string;
-    startAt: number;
-    endAt: number;
+
     semester: string;
     maxProposition: number;
+
+    isPublish: boolean;
+
+    startAt: number;
+    endAt: number;
 
     createdAt?: Date;
     updatedAt?: Date;

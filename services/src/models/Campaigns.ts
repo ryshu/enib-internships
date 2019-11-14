@@ -20,10 +20,14 @@ class Campaigns extends Sequelize.Model implements ICampaignEntity {
 
     public name: string;
     public description: string;
-    public startAt: number;
-    public endAt: number;
+
     public semester: string;
     public maxProposition: number;
+
+    public isPublish: boolean;
+
+    public startAt: number;
+    public endAt: number;
 
     // timestamps!
     public readonly createdAt!: Date;
@@ -98,16 +102,7 @@ Campaigns.init(
             type: new Sequelize.DataTypes.TEXT(),
             allowNull: false,
         },
-        startAt: {
-            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
-            allowNull: true,
-            defaultValue: null,
-        },
-        endAt: {
-            type: Sequelize.DataTypes.INTEGER.UNSIGNED,
-            allowNull: true,
-            defaultValue: null,
-        },
+
         semester: {
             type: Sequelize.DataTypes.STRING(128),
             allowNull: false,
@@ -116,6 +111,22 @@ Campaigns.init(
             type: Sequelize.DataTypes.INTEGER.UNSIGNED,
             defaultValue: 0,
             allowNull: true,
+        },
+
+        isPublish: {
+            type: Sequelize.DataTypes.BOOLEAN,
+            defaultValue: false,
+        },
+
+        startAt: {
+            type: Sequelize.DataTypes.BIGINT,
+            allowNull: true,
+            defaultValue: null,
+        },
+        endAt: {
+            type: Sequelize.DataTypes.BIGINT,
+            allowNull: true,
+            defaultValue: null,
         },
     },
     {
