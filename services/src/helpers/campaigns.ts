@@ -6,6 +6,7 @@ import InternshipTypes from '../models/InternshipTypes';
 import Mentors from '../models/Mentors';
 
 import { ProgressChannel } from '../websocket/channels/private';
+import { sendCampaignsCreate } from '../emails';
 
 async function internshipInject(
     internship: Internships,
@@ -20,6 +21,20 @@ async function internshipInject(
 
 async function mentorInject(mentor: Mentors, campaign: Campaigns, channel?: ProgressChannel) {
     await mentor.addCampaign(campaign);
+    if (channel) {
+        channel.step({
+            msg: `${mentor.firstName[0].toUpperCase()}${mentor.firstName
+                .slice(1)
+                .toLowerCase()} ${mentor.lastName.toUpperCase()}`,
+        });
+    }
+}
+
+async function mentorSendMail(mentor: Mentors, campaign: Campaigns, channel?: ProgressChannel) {
+    if (process.env.NODE_ENV) {
+        await sendCampaignsCreate(mentor.email, campaign);
+    }
+
     if (channel) {
         channel.step({
             msg: `${mentor.firstName[0].toUpperCase()}${mentor.firstName
@@ -79,6 +94,7 @@ export function LaunchCampaign(campaign: Campaigns, channel?: ProgressChannel) {
             // Setup all mentors link
             for (const mentor of mentors) {
                 promises.push(mentorInject(mentor, campaign, channel));
+                promises.push(mentorSendMail(mentor, campaign, channel));
             }
 
             // Resolve all link setup
