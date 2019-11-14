@@ -1,0 +1,28 @@
+{
+  "STAGES": "STAGES",
+  "welcome_subject": "Première connexion",
+  "welcome_title": "Bienvenue sur l'interface de stage de l'ENIB !",
+  "welcome_subTitle": "Vous venez de vous connecter pour la première fois à l'interface d'administration des stages de l'ENIB et ce message confirme que vous avez bien été enregistré dans le service.",
+  "welcome_list": "Cette interface vous permet de :",
+  "welcome_listContent": [
+    "Lister les stages validés par le service relation-entreprise",
+    "Proposer de nouveaux stages",
+    "Suivre l'avancement et les documents à fournir pour les stages en cours",
+    "Mettre en place des notifications pour être avertie par mail des nouveaux stages qui vous intéressent"
+  ],
+  "welcome_btnRedirect": "Se rendre sur l'interface",
+  "campaignsCreate_subject": "Ouverture de la camapgne",
+  "campaignsCreate_title": "Une nouvelle campagne est disponible !",
+  "campaignsCreate_subTitle_part_1": "La campagne",
+  "campaignsCreate_subTitle_part_2": "vient d'être créée et est disponible sur l'interface d'administration des stages. Vous êtes invité à y participer en indiquant vos propositions de tutorat.",
+  "campaignsCreate_student": "Etudiants à tutorer",
+  "campaignsCreate_student_bottom": "étudiants",
+  "campaignsCreate_start": "Début de la campagne",
+  "campaignsCreate_end": "Fin de la campagne",
+  "campaignsCreate_btnRedirect": "Voir la campagne",
+
+  "footer_link_raw": "Pour vous rendre sur l'interface, veuillez suivre ce lien: https://stages.enib.fr",
+  "campaignsCreate_subTitle": "campaignsCreate_subTitle",
+  "campaignsCreate_list": "campaignsCreate_list",
+  "campaignsCreate_listContent": "campaignsCreate_listContent"
+}

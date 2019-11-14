@@ -14,7 +14,7 @@ try {
         path.resolve(__dirname, '../../src', process.env.BASE_STORAGE_DIR || 'caches'),
     );
 
-    console.info(chalk.blue('Service initialized.'));
+    console.info(chalk.blue('Tests initialized.'));
 } catch (error) {
     console.error(error);
 }

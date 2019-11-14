@@ -18,6 +18,7 @@ import './eye-off';
 import './eye-on';
 import './form';
 import './fullscreen';
+import './group';
 import './guide-2';
 import './guide';
 import './hamburger';
