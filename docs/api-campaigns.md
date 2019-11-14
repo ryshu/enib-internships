@@ -34,6 +34,7 @@ Key | Type | Optional | Description
             },
             "name": "test",
             "semester": "S5",
+            "isPublish": false,
             "startAt": 0,
             "endAt": 0,
             "updatedAt": "2019-09-19T22:21:24.365Z",
@@ -55,6 +56,15 @@ If the API doesn't have any campaign in his database, we return a status **204 -
 POST /api/v1/campaigns
 ```
 
+This endpoint is more complexe than other, when you create a new campaign and you set isPublish to true, you will trigger the created setup and the API will return 202 - Accepted.
+
+To listen to advencement of your trigger, you can setup a socket connection and listen to following events:
+
+* **campaign_create_start** Start of processing (email send, mentor and internships link)
+* **campaign_create_step** Step on process
+* **campaign_create_end** End of process
+* **campaign_create_error** Error during process
+
 ### Headers
 
 Key | Value | Description
@@ -70,6 +80,7 @@ Key | Type | Optional | Description
 **description** | String | *no* | Campaign description
 **category_id** | String | *no* | Campaign category identifier
 **semester** | String | *no* | Campaign semester
+**isPublish** | Boolean | *no* | Campaign is publish
 **startAt** | Integer | *no* | Campaign start date
 **endAt** | Integer | *no* | Campaign end date
 
@@ -88,6 +99,7 @@ Return created campaign
     "label": "Stage ouvrier"
   },
   "semester": "S5",
+  "isPublish": false,
   "startAt": 0,
   "endAt": 0,
   "updatedAt": "2019-09-19T22:21:24.365Z",
@@ -144,6 +156,7 @@ Key | Type | Description
     "label": "Stage ouvrier"
   },
   "semester": "S5",
+  "isPublish": false,
   "startAt": 0,
   "endAt": 0,
   "propositions": [],
@@ -207,6 +220,7 @@ Key | Type | Optional | Description
 **description** | String | *yes* | Campaign description
 **category_id** | String | *yes* | Campaign category identifier
 **semester** | String | *yes* | Campaign semester
+**isPublish** | Boolean | *no* | Campaign is publish
 **startAt** | Integer | *yes* | Campaign start date
 **endAt** | Integer | *yes* | Campaign end date
 
@@ -223,6 +237,7 @@ Key | Type | Optional | Description
     "label": "Stage ouvrier"
   },
   "semester": "S5",
+  "isPublish": false,
   "startAt": 0,
   "endAt": 0,
   "updatedAt": "2019-09-19T22:21:24.365Z",
@@ -288,14 +303,19 @@ Key | Type | Description
 ### 200 - Propositions list
 
 ``` json
-[
-    {
-        "id": 1,
-        "comment": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
-        "createdAt": "2019-10-13T16:21:25.000Z",
-        "updatedAt": "2019-10-13T16:21:25.000Z"
-    },
-]
+{
+    "page": "1",
+    "data": [
+        {
+            "id": 1,
+            "comment": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
+            "createdAt": "2019-10-13T16:21:25.000Z",
+            "updatedAt": "2019-10-13T16:21:25.000Z"
+        },
+    ],
+    "length": 1,
+    "max": 1
+}
 ```
 
 ### 204 - No content
@@ -400,25 +420,30 @@ Key | Type | Optional | Description
 ### 200 - Availables internships list
 
 ``` json
-[
-    {
-        "id": 1,
-        "subject": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
-        "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
-        "country": "Russian Federation",
-        "city": "New Rocky",
-        "postalCode": "30636-9003",
-        "address": "15486 Genoveva Isle",
-        "additional": "Suite 755",
-        "isInternshipAbroad": false,
-        "isValidated": false,
-        "isProposition": true,
-        "isPublish": false,
-        "publishAt": "2019-10-13T16:21:25.000Z",
-        "createdAt": "2019-10-13T16:21:25.000Z",
-        "updatedAt": "2019-10-13T16:21:25.000Z"
-    },
-]
+{
+    "page": "1",
+    "data": [
+      {
+          "id": 1,
+          "subject": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
+          "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
+          "country": "Russian Federation",
+          "city": "New Rocky",
+          "postalCode": "30636-9003",
+          "address": "15486 Genoveva Isle",
+          "additional": "Suite 755",
+          "isInternshipAbroad": false,
+          "isValidated": false,
+          "isProposition": true,
+          "isPublish": false,
+          "publishAt": "2019-10-13T16:21:25.000Z",
+          "createdAt": "2019-10-13T16:21:25.000Z",
+          "updatedAt": "2019-10-13T16:21:25.000Z"
+      },
+    ],
+    "length": 1,
+    "max": 1
+}
 ```
 
 ### 204 - No content
@@ -523,25 +548,30 @@ Key | Type | Optional | Description
 ### 200 - Validated internships list
 
 ``` json
-[
-    {
-        "id": 1,
-        "subject": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
-        "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
-        "country": "Russian Federation",
-        "city": "New Rocky",
-        "postalCode": "30636-9003",
-        "address": "15486 Genoveva Isle",
-        "additional": "Suite 755",
-        "isInternshipAbroad": false,
-        "isValidated": false,
-        "isProposition": true,
-        "isPublish": false,
-        "publishAt": "2019-10-13T16:21:25.000Z",
-        "createdAt": "2019-10-13T16:21:25.000Z",
-        "updatedAt": "2019-10-13T16:21:25.000Z"
-    },
-]
+{
+    "page": "1",
+    "data": [
+        {
+            "id": 1,
+            "subject": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
+            "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
+            "country": "Russian Federation",
+            "city": "New Rocky",
+            "postalCode": "30636-9003",
+            "address": "15486 Genoveva Isle",
+            "additional": "Suite 755",
+            "isInternshipAbroad": false,
+            "isValidated": false,
+            "isProposition": true,
+            "isPublish": false,
+            "publishAt": "2019-10-13T16:21:25.000Z",
+            "createdAt": "2019-10-13T16:21:25.000Z",
+            "updatedAt": "2019-10-13T16:21:25.000Z"
+        },
+    ],
+    "length": 1,
+    "max": 1
+}
 ```
 
 ### 204 - No content
@@ -737,21 +767,33 @@ Key | Type | Description
 - | - | -
 **id** | String | Campaign ID
 
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**limit** | Number | *no* | Page expected (By default 1)
+**page** | Number | *no* | Number of row expected (By default 20)
+
 ### 200 - Mentors list
 
 ``` json
-[
-    {
-        "id": 1,
-        "firstName": "John",
-        "lastName": "Doe",
-        "role": "default",
-        "email": "john.doe@enib.fr",
-        "semester": "S8",
-        "createdAt": "2019-09-30T11:24:50.000Z",
-        "updatedAt": "2019-09-30T11:24:50.000Z"
-    },
-]
+{
+    "page": "1",
+    "data": [
+      {
+          "id": 1,
+          "firstName": "John",
+          "lastName": "Doe",
+          "role": "default",
+          "email": "john.doe@enib.fr",
+          "semester": "S8",
+          "createdAt": "2019-09-30T11:24:50.000Z",
+          "updatedAt": "2019-09-30T11:24:50.000Z"
+      },
+    ],
+    "length": 1,
+    "max": 1
+}
 ```
 
 ### 204 - No content

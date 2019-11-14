@@ -525,20 +525,32 @@ Key | Type | Description
 - | - | -
 **id** | String | Internship ID
 
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**limit** | Number | *no* | Page expected (By default 1)
+**page** | Number | *no* | Number of row expected (By default 20)
+
 ### 200 - Files list
 
 ``` json
-[
-    {
-        "id": 1,
-        "name": "Human Directives Administrator",
-        "size": 13583,
-        "type": "png",
-        "path": "http://maxine.biz",
-        "createdAt": "2019-10-13T16:24:13.000Z",
-        "updatedAt": "2019-10-13T16:24:13.000Z"
-    },
-]
+{
+    "page": "1",
+    "data": [
+        {
+            "id": 1,
+            "name": "Human Directives Administrator",
+            "size": 13583,
+            "type": "png",
+            "path": "http://maxine.biz",
+            "createdAt": "2019-10-13T16:24:13.000Z",
+            "updatedAt": "2019-10-13T16:24:13.000Z"
+        },
+    ],
+    "length": 1,
+    "max": 1
+}
 ```
 
 ### 204 - No content
@@ -639,6 +651,7 @@ Key | Type | Description
       "label": "Stage ouvrier"
     },
     "semester": "S5",
+    "isPublish": false,
     "startAt": 0,
     "endAt": 0,
     "updatedAt": "2019-09-19T22:21:24.365Z",
@@ -736,17 +749,19 @@ Key | Type | Description
 ``` json
 {
     "id": 1,
-    "subject": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
-    "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
-    "country": "Russian Federation",
-    "city": "New Rocky",
-    "postalCode": "30636-9003",
-    "address": "15486 Genoveva Isle",
-    "additional": "Suite 755",
-    "isInternshipAbroad": false,
-    "isValidated": false,
-    "createdAt": "2019-10-13T16:21:25.000Z",
-    "updatedAt": "2019-10-13T16:21:25.000Z"
+    "name": "test",
+    "maxProposition": 2,
+    "description": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
+    "category": {
+      "id": 1,
+      "label": "Stage ouvrier"
+    },
+    "semester": "S5",
+    "isPublish": false,
+    "startAt": 0,
+    "endAt": 0,
+    "updatedAt": "2019-09-19T22:21:24.365Z",
+    "createdAt": "2019-09-19T22:21:24.365Z"
 }
 ```
 
