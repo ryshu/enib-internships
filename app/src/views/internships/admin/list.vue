@@ -108,7 +108,7 @@
 
       <el-table-column
         :label="$t('table.internships.isInternshipAbroad')"
-        min-width="85px"
+        min-width="70px"
         align="center"
       >
         <template slot-scope="{ row }">
@@ -118,7 +118,7 @@
           >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="75px" align="center">
+      <el-table-column :label="$t('table.internships.isValidated')" min-width="50px" align="center">
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isValidated ? 'success' : 'danger'"
@@ -129,7 +129,7 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="330"
+        width="100"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
@@ -137,14 +137,16 @@
             type="primary"
             size="small"
             icon="el-icon-edit"
+            circle
             @click="handleUpdate(row)"
-          >{{ $t('table.edit') }}</el-button>
+          />
           <el-button
             size="small"
             type="danger"
-            icon="el-icon-remove"
+            icon="el-icon-delete"
+            circle
             @click="handleDelete(row, 'deleted')"
-          >{{ $t('table.delete') }}</el-button>
+          />
         </template>
       </el-table-column>
     </el-table>
