@@ -7,6 +7,7 @@ Object {
   "description": "A description to test",
   "endAt": 20191012,
   "id": 1,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
@@ -22,6 +23,7 @@ Object {
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "test",
   "propositions": Array [],
@@ -34,7 +36,7 @@ Object {
 exports[`GET /campaigns/:id/internshipTypes Campaigns_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 3,
+  "id": 4,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -42,11 +44,12 @@ Object {
 
 exports[`POST /campaigns ValidCampaigns_200 1`] = `
 Object {
-  "categoryId": 1,
+  "categoryId": 2,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": false,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
@@ -58,7 +61,7 @@ Object {
 exports[`POST /campaigns/:id/internshipTypes/:internship_type_id/link Campaigns_200_WithInternshipType 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 4,
+  "id": 5,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -66,11 +69,12 @@ Object {
 
 exports[`PUT /campaigns/:id Campaigns_200_CategoryUpdated 1`] = `
 Object {
-  "categoryId": 2,
+  "categoryId": 3,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
@@ -85,6 +89,7 @@ Object {
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
@@ -100,6 +105,7 @@ Object {
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
@@ -114,6 +120,7 @@ Object {
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "additional data",
   "semester": "S5",

@@ -1,5 +1,3 @@
-import fs from 'fs';
-
 export function defaultBusiness() {
     const VALID_BUSINESS: IBusinessEntity = {
         name: 'test',
@@ -74,6 +72,7 @@ export function defaultCampaigns(): ICampaignEntity {
         endAt: 20191012,
         semester: 'S5',
         maxProposition: 2,
+        isPublish: true,
     };
 }
 

@@ -20,6 +20,9 @@ import { paginate } from '../helpers/pagination.helper';
 
 import { APIError } from '../../utils/error';
 
+import { LaunchCampaign } from '../../helpers/campaigns';
+import { ProgressChannel } from '../../websocket/channels/private';
+
 /**
  * GET /campaigns
  * Used to GET all campaigns
@@ -53,11 +56,15 @@ export const postCampaign = async (req: Request, res: Response, next: NextFuncti
 
     const campaign: ICampaignEntity = {
         name: req.body.name,
-        startAt: !req.body.startAt ? null : moment(req.body.startAt).valueOf(),
-        endAt: !req.body.endAt ? null : moment(req.body.endAt).valueOf(),
         description: req.body.description,
+
         semester: req.body.semester,
         maxProposition: req.body.maxProposition ? req.body.maxProposition : 0,
+
+        isPublish: req.body.isPublish,
+
+        startAt: !req.body.startAt ? null : moment(req.body.startAt).valueOf(),
+        endAt: !req.body.endAt ? null : moment(req.body.endAt).valueOf(),
     };
 
     try {
@@ -73,10 +80,23 @@ export const postCampaign = async (req: Request, res: Response, next: NextFuncti
             return;
         }
 
+        // Set category by default
         const created = await Campaigns.create(campaign);
         await created.setCategory(category);
 
-        res.send(created);
+        if (created.isPublish) {
+            // When campaign is directly published, launch campaign
+            // Create new websocket channel, send 202 Accepted and launch link
+            res.sendStatus(httpStatus.ACCEPTED);
+            if (req.session.socketId) {
+                const ws = new ProgressChannel('campaign_create', req.session.socketId);
+                await LaunchCampaign(created, ws);
+            } else {
+                await LaunchCampaign(created);
+            }
+        } else {
+            res.send(created);
+        }
     } catch (error) {
         UNPROCESSABLE_ENTITY(next, error);
     }

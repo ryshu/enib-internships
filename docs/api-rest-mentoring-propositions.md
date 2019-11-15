@@ -247,6 +247,7 @@ If a campaign is linked to given proposition, return this struct
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
+  "isPublish": false,
   "startAt": 0,
   "endAt": 0,
   "updatedAt": "2019-09-19T22:21:24.365Z",

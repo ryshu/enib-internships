@@ -72,8 +72,23 @@ describe('POST /campaigns', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
+    it('ValidCampaigns_202', async () => {
+        const REQ: any = defaultCampaigns();
+
+        // Create intership category
+        const VALID_INTENRSHIP_TYPES = defaultInternshipTypes();
+        const CATEGORY = await InternshipTypes.create(VALID_INTENRSHIP_TYPES);
+        REQ.category_id = CATEGORY.id;
+
+        const RESPONSE = await request(app)
+            .post(`${baseURL}/campaigns`)
+            .send(REQ);
+        expect(RESPONSE.status).toBe(202);
+    });
+
     it('ValidCampaigns_200', async () => {
         const REQ: any = defaultCampaigns();
+        REQ.isPublish = false;
 
         // Create intership category
         const VALID_INTENRSHIP_TYPES = defaultInternshipTypes();

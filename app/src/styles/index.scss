@@ -47,6 +47,7 @@ label {
   font-weight: 700;
 }
 
+.el-input-number,
 .el-date-editor.el-input,
 .el-date-editor.el-range-editor,
 .el-select {
@@ -223,4 +224,8 @@ aside {
 /* Focus */
 .file input:focus ~ .file-custom {
   box-shadow: 0 0 0 0.075rem #fff, 0 0 0 0.2rem #0074d9;
+}
+
+.hidden {
+  display: none !important;
 }

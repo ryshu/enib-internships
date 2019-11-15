@@ -20,11 +20,16 @@ import router from './configs/setup/route';
 import cas from './configs/setup/cas';
 import './configs/instances/database'; // Only import to setup
 import './configs/setup/database'; // Only import to setup
-import session from 'express-session';
+import expressSession from 'express-session';
 import { handleConnection } from './api/cas/handle';
 
 // Create Express server
 const app = express();
+export const session = expressSession({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+});
 
 // Express configuration
 app.set('port', process.env.INTERNSHIP_ENIB_API_PORT || 3000);
@@ -34,13 +39,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 app.use(flash());
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-    }),
-);
+app.use(session);
 
 // CAS Setup
 app.get('/logout', cas.logout); // Logout pass

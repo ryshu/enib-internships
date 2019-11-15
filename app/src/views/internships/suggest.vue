@@ -265,7 +265,7 @@ import { UserModule } from '../../store/modules/user';
   components: { ProgressDialog, CategorySelect },
 })
 export default class EditInternship extends Vue {
-  private internData: any = this.getDefaultDate();
+  private internData: any = this.getDefaultData();
   private countryList = countryList.getNames();
 
   private pres?: File = undefined;
@@ -281,7 +281,7 @@ export default class EditInternship extends Vue {
     return UserModule.role;
   }
 
-  public getDefaultDate() {
+  public getDefaultData() {
     const tmp: any = cloneDeep(defaultInternshipData);
     tmp.isProposition = this.role === 'admin';
 
@@ -292,7 +292,7 @@ export default class EditInternship extends Vue {
   }
 
   public reset() {
-    this.internData = this.getDefaultDate();
+    this.internData = this.getDefaultData();
 
     this.presDefined = false;
     this.pres = undefined;

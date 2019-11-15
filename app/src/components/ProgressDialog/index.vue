@@ -37,8 +37,10 @@ export default class ProgressDialog extends Vue {
   }
 
   public close() {
-    this.dialog = false;
-    this.$emit('close-after-success');
+    if (this.full()) {
+      this.dialog = false;
+      this.$emit('close-after-success');
+    }
   }
 
   public setup(title: string, step?: string) {

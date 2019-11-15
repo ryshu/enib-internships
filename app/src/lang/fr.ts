@@ -37,6 +37,17 @@ export default {
       postalCode: { required: 'Le code postal du stage est requis' },
       address: { required: "L'adresse du stage est requise" },
     },
+    campaigns: {
+      name: { required: 'Le nom de la campagne est requis' },
+      description: { required: 'La description de la campagne est requise' },
+      category: { required: 'Le type du stage est requis' },
+      date: {
+        required: 'La date du stage est requise',
+        start_to_early: "La date de publication doit être après aujourd'hui",
+        end_to_early:
+          "La date de fin de la campagne doit être après aujourd'hui",
+      },
+    },
   },
   navbar: {
     dashboard: 'Tableau de bord',
@@ -162,12 +173,17 @@ export default {
       withInternships: "N'afficher que les enteprises avec stages",
     },
     campaigns: {
-      description: 'Descriptif de la campagne',
-      endAt: 'Fin',
-      maxProposition: 'Nombre maximum de propositions',
       name: 'Nom de la campagne',
+      description: 'Descriptif de la campagne',
+
+      endAt: 'Fin',
+      maxProposition: 'Nbr max de propositions',
       semester: 'Semestre',
+      category: 'Type de stage',
+
       startAt: 'Début',
+      date: 'Periode de publication',
+      isPublish: 'Publier la campagne',
     },
     cancel: 'Annuler',
     confirm: 'Confirmer',
@@ -257,10 +273,28 @@ export default {
       success: 'Publication terminée avec succès',
     },
   },
-
   input: {
     file: { placeholder: 'Selectionner un fichier', btn: 'Parcourir' },
     select: { default: 'Selectioner la valeur' },
   },
   action: { close: 'Fermer' },
+  campaigns: {
+    placeholder: {
+      name: 'Entrer le nom de la campagne',
+      description: 'Entrer une description de campagne',
+      category: 'Selectioner le type de stage lié à la campagne',
+    },
+
+    checkbox: {
+      isPublish: 'Publier la campagne immédiatement',
+    },
+
+    progress: {
+      title: "Publication d'une campagne",
+      processing: 'En cours',
+      step_1: 'Initialization de la campagne',
+      error: 'Erreur durant la création de la campagne',
+      success: 'La campagne a bien été publier',
+    },
+  },
 };

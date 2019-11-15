@@ -65,7 +65,7 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="330"
+        width="100"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
@@ -73,14 +73,16 @@
             type="primary"
             size="small"
             icon="el-icon-edit"
+            circle
             @click="handleUpdate(row)"
-          >{{ $t('table.edit') }}</el-button>
+          />
           <el-button
             size="small"
             type="danger"
-            icon="el-icon-remove"
+            icon="el-icon-delete"
+            circle
             @click="handleDelete(row, 'deleted')"
-          >{{ $t('table.delete') }}</el-button>
+          />
         </template>
       </el-table-column>
     </el-table>
