@@ -7,6 +7,12 @@ const InternshipTypes = require('../../../dist/models/InternshipTypes').default;
 
 const categories = require('../../../dist/configs/data/categories').defaultCategories;
 
+async function inject(c) {
+    const created = await Campaigns.create(c);
+    await created.setCategory(category);
+    if (debug) console.info(chalk.white(`Inject campaign "${c.name}" in database`));
+}
+
 module.exports = async function(quantity = 100, debug = false) {
     const q = quantity > categories.length ? categories.length : quantity;
 
@@ -43,20 +49,7 @@ module.exports = async function(quantity = 100, debug = false) {
             ]),
             maxPropositions: faker.random.number(20),
         };
-        promises.push(
-            new Promise(async (resolve, reject) => {
-                try {
-                    const created = await Campaigns.create(campaign);
-                    await created.setCategory(types[i].id);
-                    if (debug)
-                        console.info(chalk.white(`Inject campaign "${campaign.name}" in database`));
-
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            }),
-        );
+        promises.push(inject(campaign, types[i].id));
     }
 
     await Promise.all(promises);

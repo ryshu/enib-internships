@@ -4,6 +4,12 @@ const chalk = require('chalk');
 faker.locale = 'fr';
 const Students = require('../../../dist/models/Students').default;
 
+async function inject(s) {
+    await Students.create(s);
+    if (debug)
+        console.info(chalk.white(`Inject students "${s.firstName} ${s.lastName}" in database`));
+}
+
 module.exports = async function(quantity = 100, debug = false) {
     const promises = [];
     for (let i = 0; i < quantity; i++) {
@@ -24,23 +30,7 @@ module.exports = async function(quantity = 100, debug = false) {
                 'S10',
             ]),
         };
-        promises.push(
-            new Promise(async (resolve, reject) => {
-                try {
-                    await Students.create(student);
-                    if (debug)
-                        console.info(
-                            chalk.white(
-                                `Inject students "${student.firstName} ${student.lastName}" in database`,
-                            ),
-                        );
-
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            }),
-        );
+        promises.push(inject(student));
     }
 
     await Promise.all(promises);

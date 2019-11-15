@@ -23,7 +23,6 @@ body {
 	line-height:100%;
 }
 .es-button {
-	mso-style-priority:100!important;
 	text-decoration:none!important;
 }
 a[x-apple-data-detectors] {
@@ -41,7 +40,6 @@ a[x-apple-data-detectors] {
 	width:0;
 	max-height:0;
 	line-height:0;
-	mso-hide:all;
 }
 .es-button-border:hover {
 	border-style:solid solid solid solid!important;

@@ -4,6 +4,11 @@ const chalk = require('chalk');
 faker.locale = 'fr';
 const Businesses = require('../../../dist/models/Businesses').default;
 
+async function inject(business) {
+    await Businesses.create(business);
+    if (debug) console.info(chalk.white(`Inject businesses "${business.name}" in database`));
+}
+
 module.exports = async function(quantity = 100, debug = false) {
     const promises = [];
     for (let i = 0; i < quantity; i++) {
@@ -15,21 +20,7 @@ module.exports = async function(quantity = 100, debug = false) {
             address: faker.address.streetAddress(),
             additional: faker.address.secondaryAddress(),
         };
-        promises.push(
-            new Promise(async (resolve, reject) => {
-                try {
-                    await Businesses.create(business);
-                    if (debug)
-                        console.info(
-                            chalk.white(`Inject businesses "${business.name}" in database`),
-                        );
-
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            }),
-        );
+        promises.push(inject(business));
     }
 
     await Promise.all(promises);
