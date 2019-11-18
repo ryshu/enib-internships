@@ -11,6 +11,8 @@ import mentorsRouter from './routers/mentors.route';
 
 import casRouter from './cas/route';
 
+import { getStatistics } from './controllers/statistics.ctrl';
+
 const router = express.Router();
 
 router.use('/businesses', businessesRouter);
@@ -21,6 +23,8 @@ router.use('/students', studentsRouter);
 router.use('/mentors', mentorsRouter);
 router.use('/files', filesRouter);
 router.use('/mentoringPropositions', mentoringPropositionsRouter);
+
+router.get('/statistics', getStatistics);
 
 router.use('/cas', casRouter);
 
