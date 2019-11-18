@@ -63,3 +63,12 @@ export const linkInternshipFile = (internshipID: string, fileID: string) =>
     url: `/internships/${internshipID}/files/${fileID}/link`,
     method: 'post',
   });
+
+export const getAvailabletInternshipCampaign = (id: number, params: any) =>
+  request({
+    url: `/internship/${id}/availableCampaign`,
+    method: 'get',
+    params,
+  });
+
+

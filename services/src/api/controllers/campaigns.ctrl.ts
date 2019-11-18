@@ -296,7 +296,7 @@ export const getAvailableCampaignInternships = (
 };
 
 /**
- * GET /campaigns/:id/availableInternships/:availableInternships_id/link
+ * POST /campaigns/:id/availableInternships/:availableInternships_id/link
  * Used to link an internship with an availableCampaign
  */
 export const linkAvailableCampaignInternships = (
