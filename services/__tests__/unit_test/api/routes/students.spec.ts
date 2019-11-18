@@ -288,7 +288,7 @@ describe('POST /students/:id/internships/:internship_id/link', () => {
         const RESPONSE = await request(app).post(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/students/${CREATED.id}/internships/20/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Students_200_WithInternship', async () => {

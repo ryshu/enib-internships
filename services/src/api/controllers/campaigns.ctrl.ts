@@ -17,11 +17,15 @@ import {
     checkContent,
 } from '../helpers/global.helper';
 import { paginate } from '../helpers/pagination.helper';
+import { updateInternshipStatus } from '../helpers/internships.helper';
 
 import { APIError } from '../../utils/error';
 
 import { LaunchCampaign } from '../../helpers/campaigns';
 import { ProgressChannel } from '../../websocket/channels/private';
+
+import cache from '../../statistics/singleton';
+import { INTERNSHIP_MODE } from '../../statistics/base';
 
 /**
  * GET /campaigns
@@ -95,6 +99,7 @@ export const postCampaign = async (req: Request, res: Response, next: NextFuncti
                 await LaunchCampaign(created);
             }
         } else {
+            cache.newCampain(created.id, {});
             res.send(created);
         }
     } catch (error) {
@@ -270,6 +275,7 @@ export const linkCampaignMentoringPropositions = (
         .then(async (val) => {
             if (checkContent(val, next)) {
                 await val.addProposition(Number(req.params.mentoring_proposition_id));
+                cache.linkProposition(Number(req.params.id));
                 return res.sendStatus(httpStatus.OK);
             }
         })
@@ -334,7 +340,13 @@ export const linkAvailableCampaignInternships = (
         .then(async (val) => {
             if (checkContent(val, next)) {
                 try {
-                    await val.addAvailableInternship(Number(req.params.internship_id));
+                    const i = await Internships.findByPk(Number(req.params.internship_id));
+                    if (!checkContent(i, next)) {
+                        return;
+                    }
+                    await val.addAvailableInternship(i);
+                    cache.stateChange(INTERNSHIP_MODE.AVAILABLE, i.state, Number(req.params.id));
+                    await updateInternshipStatus(i, INTERNSHIP_MODE.AVAILABLE);
                     return res.sendStatus(httpStatus.OK);
                 } catch (error) {
                     checkContent(null, next);
@@ -401,11 +413,59 @@ export const linkValidatedCampaignInternships = (
         .then(async (val) => {
             if (checkContent(val, next)) {
                 try {
-                    await val.addValidatedInternship(Number(req.params.internship_id));
+                    const i = await Internships.findByPk(Number(req.params.internship_id));
+                    if (!checkContent(i, next)) {
+                        return;
+                    }
+                    await val.addValidatedInternship(i);
+                    cache.stateChange(INTERNSHIP_MODE.ATTRIBUTED, i.state, Number(req.params.id));
+                    await updateInternshipStatus(i, INTERNSHIP_MODE.ATTRIBUTED);
                     return res.sendStatus(httpStatus.OK);
                 } catch (error) {
                     checkContent(null, next);
                 }
+            }
+        })
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * GET /campaigns/:id/internships
+ * Used to get all internships of a campaign
+ */
+export const getCampaignInternships = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    // Retrive query data
+    const { page = 1, limit = 20 } = req.query;
+
+    const findOpts: sequelize.FindOptions = {
+        where: {
+            [sequelize.Op.or]: [
+                { availableCampaignId: req.params.id },
+                { validatedCampaignId: req.params.id },
+            ],
+        },
+    };
+
+    let max: number;
+    Internships.count(findOpts)
+        .then((rowNbr) => {
+            max = rowNbr;
+            return Internships.findAll(paginate({ page, limit }, findOpts));
+        })
+        .then(async (internships) => {
+            if (checkArrayContent(internships, next)) {
+                return res.send({
+                    page,
+                    data: internships,
+                    length: internships.length,
+                    max,
+                });
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -464,6 +524,7 @@ export const linkCampaignMentor = (req: Request, res: Response, next: NextFuncti
             if (checkContent(val, next)) {
                 try {
                     await val.addMentor(Number(req.params.mentor_id));
+                    cache.linkMentor(Number(req.params.id));
                     return res.sendStatus(httpStatus.OK);
                 } catch (error) {
                     checkContent(null, next);

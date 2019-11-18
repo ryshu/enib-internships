@@ -2,6 +2,8 @@ import * as Sequelize from 'sequelize';
 
 import database from '../configs/instances/database';
 
+import { IInternshipEntity } from '../declarations/internship';
+
 import Internships from './Internships';
 class Students extends Sequelize.Model implements IStudentEntity {
     public static associations: {

@@ -1,3 +1,5 @@
+import { INTERNSHIP_MODE } from '../statistics/base';
+
 declare interface IInternshipEntity {
     id?: number;
 
@@ -17,6 +19,7 @@ declare interface IInternshipEntity {
     isValidated: boolean;
     isProposition: boolean;
     isPublish: boolean;
+    state: INTERNSHIP_MODE;
 
     // Date
     publishAt: number;

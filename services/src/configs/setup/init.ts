@@ -8,6 +8,8 @@ import { defaultCategories } from '../data/categories';
 import Mentors from '../../models/Mentors';
 import { adminsEmail, admins } from '../data/admin';
 
+import { setupStatistics } from './statistics';
+
 export default async function() {
     try {
         // Setup admin
@@ -44,6 +46,7 @@ export default async function() {
             }
         }
         await Promise.all(promises as any);
+        await setupStatistics();
     } catch (error) {
         // Log error and exit
         logger.error(error);

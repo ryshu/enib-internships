@@ -1,3 +1,6 @@
+import { IInternshipEntity } from '../src/declarations/internship';
+import { INTERNSHIP_MODE } from '../src/statistics/base';
+
 export function defaultBusiness() {
     const VALID_BUSINESS: IBusinessEntity = {
         name: 'test',
@@ -30,6 +33,7 @@ export function defaultInternships() {
         isValidated: false,
         isProposition: false,
         isPublish: true,
+        state: INTERNSHIP_MODE.SUGGESTED,
         publishAt: 20191012,
         startAt: 20191012,
         endAt: 20191012,
