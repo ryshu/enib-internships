@@ -104,6 +104,7 @@ Return created internship
     "isValidated": false,
     "isProposition": true,
     "isPublish": false,
+    "state": "waiting",
     "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -164,6 +165,7 @@ Key | Type | Description
     "isValidated": false,
     "isProposition": true,
     "isPublish": false,
+    "state": "waiting",
     "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -252,6 +254,7 @@ Key | Type | Optional | Description | Access
     "isValidated": false,
     "isProposition": true,
     "isPublish": false,
+    "state": "waiting",
     "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
