@@ -123,3 +123,34 @@ export declare interface IInternshipTypes {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export declare interface Statistics {
+  internships: {
+    total: number;
+    suggested: number;
+    waiting: number;
+    availables: number;
+    attributed: number;
+    validated: number;
+    archived: number;
+  };
+
+  students: number;
+  mentors: number;
+
+  propositions: number;
+}
+
+export declare interface CampaignStatistics {
+  internships: {
+    total: number;
+    availables: number;
+    attributed: number;
+  };
+
+  students: number;
+  mentors: number;
+
+  propositions: number;
+  campaign: number;
+}

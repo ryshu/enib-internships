@@ -49,14 +49,6 @@
         type="primary"
         @change="handleFilter"
       >{{ $t('table.checkbox.isAbroad') }}</el-checkbox>
-      <el-checkbox
-        v-model="listQuery.isValidated"
-        v-waves
-        style="margin-left: 10px;"
-        class="filter-item"
-        type="primary"
-        @change="handleFilter"
-      >{{ $t('table.checkbox.isValidated') }}</el-checkbox>
     </div>
 
     <!-- Table -->
@@ -103,14 +95,6 @@
           >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="75px" align="center">
-        <template slot-scope="{ row }">
-          <el-tag
-            :type="row.isValidated ? 'success' : 'danger'"
-            effect="dark"
-          >{{ $t(row.isValidated ? 'status.yes' : 'status.no') }}</el-tag>
-        </template>
-      </el-table-column>
       <el-table-column
         :label="$t('table.actions')"
         align="center"
@@ -118,26 +102,23 @@
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-button
+          <crud-btn
             type="success"
-            size="small"
             icon="el-icon-check"
-            circle
-            @click="handleAdd(row)"
+            :placeholder="$t('propositions.placeholder.add')"
+            @clicked="handlePublish(row)"
           />
-          <el-button
-            type="primary"
-            size="small"
+          <crud-btn
+            type="warning"
             icon="el-icon-edit"
-            circle
-            @click="handleUpdate(row)"
+            :placeholder="$t('propositions.placeholder.update')"
+            @clicked="handleUpdate(row)"
           />
-          <el-button
-            size="small"
+          <crud-btn
             type="danger"
             icon="el-icon-delete"
-            circle
-            @click="handleDelete(row, 'deleted')"
+            :placeholder="$t('propositions.placeholder.remove')"
+            @clicked="handleDelete(row)"
           />
         </template>
       </el-table-column>
@@ -151,50 +132,7 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :model="tempInternshipData"
-        label-position="left"
-        label-width="250px"
-        style="width: 100%; padding: 0 50px;"
-      >
-        <el-form-item :label="$t('table.internships.subject')" prop="subject">
-          <el-input v-model="tempInternshipData.subject" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.description')" prop="description">
-          <el-input v-model="tempInternshipData.description" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.country')" prop="country">
-          <el-input v-model="tempInternshipData.country" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.city')" prop="city">
-          <el-input v-model="tempInternshipData.city" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.postalCode')" prop="postalCode">
-          <el-input v-model="tempInternshipData.postalCode" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.address')" prop="address">
-          <el-input v-model="tempInternshipData.address" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.additional')" prop="additional">
-          <el-input v-model="tempInternshipData.additional" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.isInternshipAbroad')" prop="isInternshipAbroad">
-          <input v-model="tempInternshipData.isInternshipAbroad" type="checkbox" />
-        </el-form-item>
-        <el-form-item :label="$t('table.internships.isValidated')" prop="isValidated">
-          <input v-model="tempInternshipData.isValidated" type="checkbox" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus === 'create' ? createData() : updateData()"
-        >{{ $t('table.confirm') }}</el-button>
-      </div>
-    </el-dialog>
+    <edit-internship ref="EditInternship" />
   </div>
 </template>
 
@@ -212,6 +150,8 @@ import {
 import { IInternship } from '../../../api/types';
 
 import Pagination from '../../../components/Pagination/index.vue';
+import CrudBtn from '../../../components/CrudBtn/index.vue';
+import EditInternship from '../dialog/EditInternship.vue';
 
 import { CategoriesModule } from '../../../store/modules/categories';
 
@@ -219,6 +159,8 @@ import { CategoriesModule } from '../../../store/modules/categories';
   name: 'InternshipsStudentList',
   components: {
     Pagination,
+    EditInternship,
+    CrudBtn,
   },
 })
 export default class extends Vue {
@@ -235,13 +177,7 @@ export default class extends Vue {
     countries: [],
     types: [],
     isAbroad: false,
-    isValidated: false,
   };
-
-  private dialogFormVisible = false;
-  private dialogStatus = '';
-  private textMap = {};
-  private tempInternshipData = defaultInternshipData;
 
   private countryList = countryList.getNames();
 
@@ -250,9 +186,6 @@ export default class extends Vue {
   }
 
   public created() {
-    this.textMap = {
-      update: this.$t('dialog.title.edit'),
-    };
     this.getList();
   }
 
@@ -269,7 +202,24 @@ export default class extends Vue {
     this.getList();
   }
 
-  private async handleDelete(row: any, status: string) {
+  private handleUpdate(row: IInternship) {
+    (this.$refs.EditInternship as EditInternship)
+      .update(row)
+      .then(async updatedRow => {
+        if (updatedRow) {
+          const { data } = await updateInternship(updatedRow.id!, updatedRow);
+          this.getList();
+          this.$notify({
+            title: this.$t('notify.internship.update.title') as string,
+            message: this.$t('notify.internship.update.msg') as string,
+            type: 'success',
+            duration: 2000,
+          });
+        }
+      });
+  }
+
+  private async handleDelete(row: any) {
     await deleteInternship(row.id!);
     this.getList();
     this.$notify({
@@ -277,34 +227,6 @@ export default class extends Vue {
       message: this.$t('notify.internships.delete.msg') as string,
       type: 'success',
       duration: 2000,
-    });
-  }
-
-  private handleUpdate(row: any) {
-    this.tempInternshipData = Object.assign({}, row);
-    this.dialogStatus = 'update';
-    this.dialogFormVisible = true;
-    this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
-    });
-  }
-
-  private updateData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
-      if (valid) {
-        const tempData = Object.assign({}, this.tempInternshipData);
-
-        // Wait update
-        await updateInternship(tempData.id!, tempData);
-        this.getList();
-        this.dialogFormVisible = false;
-        this.$notify({
-          title: this.$t('notify.internships.update.title') as string,
-          message: this.$t('notify.internships.update.msg') as string,
-          type: 'success',
-          duration: 2000,
-        });
-      }
     });
   }
 }

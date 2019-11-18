@@ -101,7 +101,7 @@
             type="danger"
             icon="el-icon-delete"
             circle
-            @click="handleDelete(row, 'deleted')"
+            @click="handleDelete(row)"
           />
         </template>
       </el-table-column>
@@ -181,7 +181,7 @@ export default class extends Vue {
     this.getList();
   }
 
-  private async handleDelete(row: any, status: string) {
+  private async handleDelete(row: any) {
     await deleteBusiness(row.id!);
     this.getList();
     this.$notify({

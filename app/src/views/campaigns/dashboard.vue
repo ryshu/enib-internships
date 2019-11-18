@@ -1,7 +1,5 @@
 <template>
-  <div class="app-container">
-    <component :is="roleView" />
-  </div>
+  <component :is="roleView" />
 </template>
 
 <script lang="ts">
