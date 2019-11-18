@@ -23,7 +23,7 @@ import { getCampaignInternships } from '../../../../api/campaigns';
 export default class extends mixins(ResizeMixin) {
   @Prop({ default: 'chart' }) private className!: string;
   @Prop({ default: '100%' }) private width!: string;
-  @Prop({ default: '700px' }) private height!: string;
+  @Prop({ default: '600px' }) private height!: string;
 
   private list: Record<string, number> = {};
 

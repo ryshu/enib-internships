@@ -19,7 +19,12 @@
         class="filter-item"
         @change="handleFilter"
       >
-        <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
+        <el-option
+          v-for="item in countryList"
+          :key="item"
+          :label="item"
+          :value="item"
+        />
       </el-select>
       <el-select
         v-model="listQuery.types"
@@ -31,7 +36,12 @@
         class="filter-item"
         @change="handleFilter"
       >
-        <el-option v-for="item in types" :key="item.id" :label="item.label" :value="item.id" />
+        <el-option
+          v-for="item in types"
+          :key="item.id"
+          :label="item.label"
+          :value="item.id"
+        />
       </el-select>
       <el-button
         v-waves
@@ -40,7 +50,8 @@
         type="primary"
         icon="el-icon-search"
         @click="handleFilter"
-      >{{ $t('table.search') }}</el-button>
+        >{{ $t('table.search') }}</el-button
+      >
       <el-button
         v-waves
         :loading="downloadLoading"
@@ -48,7 +59,8 @@
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
-      >{{ $t('table.export') }}</el-button>
+        >{{ $t('table.export') }}</el-button
+      >
       <el-checkbox
         v-model="listQuery.isAbroad"
         v-waves
@@ -56,7 +68,8 @@
         class="filter-item"
         type="primary"
         @change="handleFilter"
-      >{{ $t('table.checkbox.isAbroad') }}</el-checkbox>
+        >{{ $t('table.checkbox.isAbroad') }}</el-checkbox
+      >
       <el-checkbox
         v-model="listQuery.isValidated"
         v-waves
@@ -64,7 +77,8 @@
         class="filter-item"
         type="primary"
         @change="handleFilter"
-      >{{ $t('table.checkbox.isValidated') }}</el-checkbox>
+        >{{ $t('table.checkbox.isValidated') }}</el-checkbox
+      >
     </div>
 
     <!-- Table -->
@@ -77,13 +91,21 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.internships.subject')" min-width="250px">
+      <el-table-column
+        :label="$t('table.internships.subject')"
+        min-width="250px"
+      >
         <template slot-scope="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{
+            row.subject
+          }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.internships.country')" min-width="70px">
+      <el-table-column
+        :label="$t('table.internships.country')"
+        min-width="70px"
+      >
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
         </template>
@@ -103,36 +125,44 @@
           <el-tag
             :type="row.isInternshipAbroad ? 'success' : 'danger'"
             effect="dark"
-          >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
+            >{{
+              $t(row.isInternshipAbroad ? 'status.yes' : 'status.no')
+            }}</el-tag
+          >
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="70px" align="center">
+      <el-table-column
+        :label="$t('table.internships.isValidated')"
+        min-width="70px"
+        align="center"
+      >
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isValidated ? 'success' : 'danger'"
             effect="dark"
-          >{{ $t(row.isValidated ? 'status.yes' : 'status.no') }}</el-tag>
+            >{{ $t(row.isValidated ? 'status.yes' : 'status.no') }}</el-tag
+          >
         </template>
       </el-table-column>
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="330"
+        width="100px"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-button
-            type="primary"
-            size="small"
+          <crud-btn
+            type="warning"
             icon="el-icon-edit"
-            @click="handleUpdate(row)"
-          >{{ $t('table.edit') }}</el-button>
-          <el-button
-            size="small"
+            :placeholder="$t('internships.placeholder.update')"
+            @clicked="handleUpdate(row)"
+          />
+          <crud-btn
             type="danger"
-            icon="el-icon-remove"
-            @click="handleDelete(row, 'deleted')"
-          >{{ $t('table.delete') }}</el-button>
+            icon="el-icon-delete"
+            :placeholder="$t('internships.placeholder.remove')"
+            @clicked="handleDelete(row)"
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -163,12 +193,16 @@ import {
 
 import { IInternship } from '../../../api/types';
 
-import { getAvailabletInternshipCampaign, getCampaigns } from '../../../api/campaigns';
+import {
+  getAvailabletInternshipCampaign,
+  getCampaigns,
+} from '../../../api/campaigns';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
 
 import Pagination from '../../../components/Pagination/index.vue';
+import CrudBtn from '../../../components/CrudBtn/index.vue';
 import EditInternship from '../../internships/dialog/EditInternship.vue';
 
 import { CategoriesModule } from '../../../store/modules/categories';
@@ -177,6 +211,7 @@ import { CategoriesModule } from '../../../store/modules/categories';
   name: 'CampaignsAdminInternships',
   components: {
     Pagination,
+    CrudBtn,
     EditInternship,
   },
 })
@@ -203,7 +238,7 @@ export default class extends Vue {
   private get types() {
     return CategoriesModule.categories;
   }
-/* req.session.info.id*/
+
   private get id() {
     return Number(this.$route.params.id);
   }
@@ -214,11 +249,13 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getAvailabletInternshipCampaign(this.id, this.listQuery).then((res: any) => {
-      this.list = res ? res.data : [];
-      this.total = res ? res.max : 0;
-      this.listLoading = false;
-    });
+    getAvailabletInternshipCampaign(this.id, this.listQuery).then(
+      (res: any) => {
+        this.list = res ? res.data : [];
+        this.total = res ? res.max : 0;
+        this.listLoading = false;
+      }
+    );
   }
 
   private handleFilter() {
@@ -280,9 +317,11 @@ export default class extends Vue {
       'isValidated',
     ];
     const data = formatJson(filterVal, this.list);
-    exportJson2Excel(tHeader, data, this.$t(
-      'export.internships.fileName'
-    ) as string);
+    exportJson2Excel(
+      tHeader,
+      data,
+      this.$t('export.internships.fileName') as string
+    );
     this.downloadLoading = false;
   }
 }
@@ -293,4 +332,3 @@ export default class extends Vue {
   width: 100%;
 }
 </style>
-
