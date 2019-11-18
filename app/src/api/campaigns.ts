@@ -50,6 +50,13 @@ export const deleteCampaign = (id: number) =>
     method: 'delete',
   });
 
+  export const getAvailabletInternshipCampaign = (id: number, params: any) =>
+  request({
+    url: `/campaigns/${id}/availableInternships`,
+    method: 'get',
+    params,
+  });
+
 export const getCampaignInternships = (id: number, params: any) =>
   request({
     url: `/campaigns/${id}/internships`,
