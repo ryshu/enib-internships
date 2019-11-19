@@ -4,7 +4,7 @@ const chalk = require('chalk');
 faker.locale = 'fr';
 const Files = require('../../../dist/models/Files').default;
 
-async function inject(f) {
+async function inject(f, debug) {
     await Files.create(f);
     if (debug) console.info(chalk.white(`Inject file "${f.name}" in database`));
 }
@@ -17,7 +17,7 @@ module.exports = async function(quantity = 100, debug = false) {
             type: faker.random.arrayElement(['jpg', 'jpeg', 'png']),
             path: faker.internet.url(),
         };
-        promises.push(inject(file));
+        promises.push(inject(file, debug));
     }
 
     await Promise.all(promises);

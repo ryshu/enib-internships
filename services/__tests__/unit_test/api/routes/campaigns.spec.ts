@@ -443,7 +443,7 @@ describe('POST /campaigns/:id/availableInternships/:internship_id/link', () => {
         const RESPONSE = await request(app).post(
             `${baseURL}/campaigns/${CREATED.id}/availableInternships/20/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Campaigns_200_WithInternship', async () => {
@@ -550,7 +550,7 @@ describe('POST /campaigns/:id/validatedInternships/:internship_id/link', () => {
         const RESPONSE = await request(app).post(
             `${baseURL}/campaigns/${CREATED.id}/validatedInternships/20/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Campaigns_200_WithInternship', async () => {
@@ -573,6 +573,50 @@ describe('POST /campaigns/:id/validatedInternships/:internship_id/link', () => {
         const validatedInternships = await CREATED_CAMPAIGN.getValidatedInternships();
         expect(validatedInternships).toHaveLength(1);
         expect(validatedInternships[0].id).toBe(CREATED_INTERNSHIP.id);
+    });
+});
+
+describe('GET /campaigns/:id/internships', () => {
+    beforeEach(async () => {
+        // Remove all
+        await Campaigns.destroy({ where: {} });
+    });
+
+    it('NoCampaign_204', async () => {
+        const RESPONSE = await request(app).get(`${baseURL}/campaigns/10/internships`);
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('BadRequest_400', async () => {
+        const RESPONSE = await request(app).get(`${baseURL}/campaigns/{falseEncoding}/internships`);
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Campaigns_204_NoLinkedData', async () => {
+        const VALID_CAMPAIGN = defaultCampaigns();
+
+        const CREATED = await Campaigns.create(VALID_CAMPAIGN);
+        const RESPONSE = await request(app).get(`${baseURL}/campaigns/${CREATED.id}/internships`);
+        expect(RESPONSE.status).toBe(204);
+    });
+
+    it('Campaigns_200_WithLinkedData', async () => {
+        const VALID_CAMPAIGN = defaultCampaigns();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        let CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
+        const CREATED_INTERNSHIP_1 = await Internships.create(VALID_INTERNSHIP);
+        const CREATED_INTERNSHIP_2 = await Internships.create(VALID_INTERNSHIP);
+
+        await CREATED_CAMPAIGN.addValidatedInternship(CREATED_INTERNSHIP_1.id);
+        await CREATED_CAMPAIGN.addAvailableInternship(CREATED_INTERNSHIP_2.id);
+        CREATED_CAMPAIGN = await Campaigns.findByPk(CREATED_CAMPAIGN.id);
+
+        const RESPONSE = await request(app).get(
+            `${baseURL}/campaigns/${CREATED_CAMPAIGN.id}/internships`,
+        );
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toHaveLength(2);
     });
 });
 

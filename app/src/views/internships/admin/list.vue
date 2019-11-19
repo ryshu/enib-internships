@@ -133,19 +133,17 @@
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-button
-            type="primary"
-            size="small"
+          <crud-btn
+            type="warning"
             icon="el-icon-edit"
-            circle
-            @click="handleUpdate(row)"
+            :placeholder="$t('internships.placeholder.update')"
+            @clicked="handleUpdate(row)"
           />
-          <el-button
-            size="small"
+          <crud-btn
             type="danger"
             icon="el-icon-delete"
-            circle
-            @click="handleDelete(row, 'deleted')"
+            :placeholder="$t('internships.placeholder.remove')"
+            @clicked="handleDelete(row)"
           />
         </template>
       </el-table-column>
@@ -183,6 +181,7 @@ import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
 
 import Pagination from '../../../components/Pagination/index.vue';
+import CrudBtn from '../../../components/CrudBtn/index.vue';
 import EditInternship from '../dialog/EditInternship.vue';
 
 import { CategoriesModule } from '../../../store/modules/categories';
@@ -191,6 +190,7 @@ import { CategoriesModule } from '../../../store/modules/categories';
   name: 'InternshipsStudentList',
   components: {
     Pagination,
+    CrudBtn,
     EditInternship,
   },
 })
@@ -231,6 +231,10 @@ export default class extends Vue {
     });
   }
 
+  private handleCreate() {
+    this.$router.push('/internships/new');
+  }
+
   private handleFilter() {
     this.getList();
   }
@@ -244,23 +248,6 @@ export default class extends Vue {
       type: 'success',
       duration: 2000,
     });
-  }
-
-  private handleCreate() {
-    (this.$refs.EditInternship as EditInternship)
-      .create()
-      .then(async (createdRow: IInternship | undefined) => {
-        if (createdRow) {
-          await createInternship(createdRow);
-          this.getList();
-          this.$notify({
-            title: this.$t('notify.internships.create.title') as string,
-            message: this.$t('notify.internships.create.msg') as string,
-            type: 'success',
-            duration: 2000,
-          });
-        }
-      });
   }
 
   private handleUpdate(row: any) {

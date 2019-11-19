@@ -58,6 +58,9 @@ router.post(
     CampaignsCtrl.linkAvailableCampaignInternships,
 );
 
+// Campaigns all internships
+router.get('/:id/internships', checkSchema(ID), CampaignsCtrl.getCampaignInternships);
+
 // Campaigns Mentors
 router.get('/:id/mentors', checkSchema(ID), CampaignsCtrl.getCampaignMentors);
 router.post(

@@ -20,6 +20,7 @@ Object {
       "postalCode": "29280",
       "publishAt": 20191012,
       "startAt": 20191012,
+      "state": "suggest",
       "subject": "test",
       "updatedAt": Any<String>,
     },
@@ -53,6 +54,7 @@ Object {
   "propositions": Array [],
   "publishAt": 20191012,
   "startAt": 20191012,
+  "state": "suggest",
   "student": null,
   "subject": "test",
   "updatedAt": Any<String>,
@@ -163,6 +165,7 @@ Object {
   "postalCode": "29280",
   "publishAt": null,
   "startAt": 20191012,
+  "state": "suggest",
   "subject": "test",
   "updatedAt": Any<String>,
 }
@@ -271,6 +274,7 @@ Object {
   "postalCode": "29280",
   "publishAt": 20191012,
   "startAt": 20191012,
+  "state": "suggest",
   "subject": "test",
   "updatedAt": Any<String>,
 }
@@ -294,6 +298,7 @@ Object {
   "postalCode": "29280",
   "publishAt": 20191012,
   "startAt": 20191012,
+  "state": "suggest",
   "subject": "test",
   "updatedAt": Any<String>,
 }

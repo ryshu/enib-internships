@@ -1,12 +1,12 @@
-import { Statistics } from './base';
+import { Statistics, CampaignStatistics, INTERNSHIP_MODE, isInternshipMode } from './base';
 
-import { getCleanStatistics } from './helper';
+import { getCleanStatistics, getCleanCampaignStatistics } from './helper';
 
 class StatisticsCache {
     public readonly statistics: Statistics;
     private _initialized: boolean;
 
-    private campaignStatistics: Record<number, Statistics>;
+    private campaignStatistics: Record<number, CampaignStatistics>;
 
     constructor() {
         this.statistics = this._defaultStatistics();
@@ -17,9 +17,24 @@ class StatisticsCache {
 
     public reset() {
         if (this._initialized) {
-            this.statistics.internships = { total: 0, availables: 0, validated: 0 };
+            this.statistics.internships = {
+                total: 0,
+                suggested: 0,
+                waiting: 0,
+                availables: 0,
+                validated: 0,
+                attributed: 0,
+                archived: 0,
+            };
             this.statistics.mentors = 0;
             this.statistics.students = 0;
+            this.statistics.propositions = 0;
+
+            for (const key in this.campaignStatistics) {
+                if (this.campaignStatistics.hasOwnProperty(key)) {
+                    delete this.campaignStatistics[key];
+                }
+            }
 
             this._initialized = false;
         }
@@ -32,20 +47,21 @@ class StatisticsCache {
     /**
      * @summary Method used to initialize the singletons
      * @param {Statistics} stats global statistics to input
-     * @param {Statistics[]} campaignStats statistics by campaigns
+     * @param {CampaignStatistics[]} campaignStats statistics by campaigns
      */
-    public init(stats: Statistics, ...campaignStats: Statistics[]) {
+    public init(stats: Statistics, ...campaignStats: CampaignStatistics[]) {
         // Check if not already _initialized
         if (!this._initialized) {
             const tmp = getCleanStatistics(stats);
             this.statistics.internships = tmp.internships;
             this.statistics.mentors = tmp.mentors;
             this.statistics.students = tmp.students;
+            this.statistics.propositions = tmp.propositions;
 
             for (const stat of campaignStats) {
                 // Check if campaign is defined
                 if (stat.campaign !== undefined && !Number.isNaN(Number(stat.campaign))) {
-                    this.campaignStatistics[stat.campaign] = getCleanStatistics(stat);
+                    this.campaignStatistics[stat.campaign] = getCleanCampaignStatistics(stat);
                 }
             }
 
@@ -54,51 +70,59 @@ class StatisticsCache {
     }
 
     /**
-     * @summary Method used to increment available internship
-     * @param {number | undefined} id Campaign id, if internship is linked to campaign directly
+     * @summary Method used to change state of an internship in cache
+     * @param {INTERNSHIP_MODE} next Next internship mode
+     * @param {INTERNSHIP_MODE | undefined} prev Previous internship mode
+     * @param {number | undefined} id Campaign id, if internship is link to a campaign
      */
-    public incInternshipAvailables(id?: number) {
-        this._incAv(id);
+    public stateChange(next: INTERNSHIP_MODE, prev?: INTERNSHIP_MODE, id?: number) {
+        if (prev && isInternshipMode(prev)) {
+            this._change(prev, -1, id);
+        }
+
+        if (isInternshipMode(next)) {
+            this._change(next, 1, id);
+        }
     }
 
     /**
-     * @summary Method used to decrement available internship
-     * @param {number | undefined} id Campaign id, if internship is linked to campaign directly
+     * @summary Method used to increase internships stats using mode and quantity
+     * @param {INTERNSHIP_MODE} state Mode for apply change
+     * @param {number} q Quantity to increase
+     * @param {number | undefined} id Campaign id, if internship is link to a campaign
      */
-    public decInternshipAvailables(id?: number) {
-        this._incAv(id, -1);
+    public stateAdd(state: INTERNSHIP_MODE, q: number, id?: number) {
+        if (isInternshipMode(state) && q > 0) {
+            this._change(state, q, id);
+        }
     }
 
     /**
-     * @summary Method used to increment validated internship
-     * @param {number | undefined} id Campaign id, if internship is linked to campaign directly
+     * @summary Method used to decrease internships stats using mode and quantity
+     * @param {INTERNSHIP_MODE} state Mode for apply change
+     * @param {number} q Quantity to decrease (q < 0)
+     * @param {number | undefined} id Campaign id, if internship is link to a campaign
      */
-    public incInternshipValidated(id?: number) {
-        this._incVal(id);
+    public stateRemove(state: INTERNSHIP_MODE, q: number, id?: number) {
+        if (isInternshipMode(state) && q < 0) {
+            this._change(state, q, id);
+        }
     }
 
     /**
-     * @summary Method used to decrement validated internship
-     * @param {number | undefined} id Campaign id, if internship is linked to campaign directly
+     * @summary Method used to increment global mentor counter
+     * @notice Use link mentor to increment campaign counters
      */
-    public decInternshipValidated(id?: number) {
-        this._incVal(id, -1);
+    public addMentor() {
+        this.statistics.mentors++;
     }
 
     /**
-     * @summary Method used to increment mentor counter
-     * @param {number | undefined} id Campaign id, if mentor is linked to campaign directly
+     * @summary Method used to decrement global mentor counter
+     * @notice Use unlink mentor to decrement campaign counters
      */
-    public addMentor(id?: number) {
-        this._incMentor(id);
-    }
-
-    /**
-     * @summary Method used to decrement mentor counter
-     * @param {number | undefined} id Campaign id, if mentor is linked to campaign directly
-     */
-    public removeMentor(id?: number) {
-        this._incMentor(id, -1);
+    public removeMentor() {
+        this.statistics.mentors--;
     }
 
     /**
@@ -106,7 +130,21 @@ class StatisticsCache {
      * @param {number} id Campaign id
      */
     public linkMentor(id: number) {
-        this._linkMentor(id);
+        if (id) {
+            this._defIfndef(id);
+            this.campaignStatistics[id].mentors++;
+        }
+    }
+
+    /**
+     * @summary Method used to decrement mentor campaign counter
+     * @param {number} id Campaign id
+     */
+    public unlinkMentor(id: number) {
+        if (id) {
+            this._defIfndef(id);
+            this.campaignStatistics[id].mentors--;
+        }
     }
 
     /**
@@ -114,7 +152,11 @@ class StatisticsCache {
      * @param {number | undefined} id Campaign id, if student is linked to campaign directly
      */
     public addStudent(id?: number) {
-        this._incStudent(id);
+        if (id) {
+            this._defIfndef(id);
+            this.campaignStatistics[id].students++;
+        }
+        this.statistics.students++;
     }
 
     /**
@@ -122,7 +164,10 @@ class StatisticsCache {
      * @param {number | undefined} id Campaign id, if student is linked to campaign directly
      */
     public removeStudent(id?: number) {
-        this._incStudent(id, -1);
+        if (id && this.isDefined(id)) {
+            this.campaignStatistics[id].students--;
+        }
+        this.statistics.students--;
     }
 
     /**
@@ -130,41 +175,62 @@ class StatisticsCache {
      * @param {number} id Campaign id
      */
     public linkStudent(id: number) {
-        this._linkStudent(id);
+        if (id) {
+            this._defIfndef(id);
+            this.campaignStatistics[id].students++;
+        }
     }
 
     /**
-     * @summary Method used to transfer validated internships to available
-     * @param {number | undefined} id Campaign id, if internship is linked to campaign
+     * @summary Method used to increment proposition counter
+     * @param {number | undefined} id Campaign id, if proposition is linked to campaign directly
      */
-    public validatedToAvailable(id?: number) {
-        this._transfer(id, -1);
+    public addProposition(id?: number) {
+        if (id) {
+            this._defIfndef(id);
+            this.campaignStatistics[id].propositions++;
+        }
+        this.statistics.propositions++;
     }
 
     /**
-     * @summary Method used to transfer available internships to validated
-     * @param {number | undefined} id Campaign id, if internship is linked to campaign
+     * @summary Method used to decrement proposition counter
+     * @param {number | undefined} id Campaign id, if proposition is linked to campaign directly
      */
-    public availableToValidated(id?: number) {
-        this._transfer(id);
+    public removeProposition(id?: number) {
+        if (id && this.isDefined(id)) {
+            this.campaignStatistics[id].propositions--;
+        }
+        this.statistics.propositions--;
+    }
+
+    /**
+     * @summary Method used to increment proposition campaign counter
+     * @param {number} id Campaign id
+     */
+    public linkProposition(id: number) {
+        if (id) {
+            this._defIfndef(id);
+            this.campaignStatistics[id].propositions++;
+        }
     }
 
     /**
      * @summary Method used to get Campaign statistics
      * @param {number} id Campaign ID
-     * @returns {Statistics | undefined} Statistics or undefined
+     * @returns {CampaignStatistics | undefined} CampaignStatistics or undefined
      */
-    public getCampaign(id: number): Statistics | undefined {
+    public getCampaign(id: number): CampaignStatistics | undefined {
         return this.isDefined(id) ? this.campaignStatistics[id] : undefined;
     }
 
     /**
      * @summary Method used to create a new campaign
      * @param {number} id Campaign id
-     * @param {Partial<Statistics>} stat Campaign's statistics
+     * @param {Partial<CampaignStatistics>} stat Campaign's statistics
      */
-    public newCampain(id: number, stat: Partial<Statistics>) {
-        this.campaignStatistics[id] = getCleanStatistics(stat);
+    public newCampain(id: number, stat: Partial<CampaignStatistics>) {
+        this.campaignStatistics[id] = getCleanCampaignStatistics(stat);
         this.campaignStatistics[id].campaign = id;
     }
 
@@ -177,95 +243,39 @@ class StatisticsCache {
         return !!this.campaignStatistics[id];
     }
 
-    private _incAv(id?: number, dir?: number) {
-        if (id) {
-            if (dir === undefined || dir > 0) {
-                this._defIfndef(id);
-                this.campaignStatistics[id].internships.availables += (dir || 1) * 1;
-                this.campaignStatistics[id].internships.total += (dir || 1) * 1;
-            } else if (this.isDefined(id)) {
-                this.campaignStatistics[id].internships.availables += dir * 1;
-                this.campaignStatistics[id].internships.total += dir * 1;
-            }
-        }
+    private _change(mode: INTERNSHIP_MODE, q: number, id?: number) {
+        switch (mode) {
+            case INTERNSHIP_MODE.ARCHIVED:
+                this.statistics.internships.archived += q;
+                break;
 
-        this.statistics.internships.availables += (dir || 1) * 1;
-        this.statistics.internships.total += (dir || 1) * 1;
-    }
+            case INTERNSHIP_MODE.ATTRIBUTED:
+                if (this.isDefined(id)) {
+                    this.campaignStatistics[id].internships.attributed += q;
+                }
+                this.statistics.internships.attributed += q;
+                break;
 
-    private _incVal(id?: number, dir?: number) {
-        if (id) {
-            if (dir === undefined || dir > 0) {
-                this._defIfndef(id);
-                this.campaignStatistics[id].internships.validated += (dir || 1) * 1;
-                this.campaignStatistics[id].internships.total += (dir || 1) * 1;
-            } else if (this.isDefined(id)) {
-                this.campaignStatistics[id].internships.validated += dir * 1;
-                this.campaignStatistics[id].internships.total += dir * 1;
-            }
-        }
+            case INTERNSHIP_MODE.AVAILABLE:
+                if (this.isDefined(id)) {
+                    this.campaignStatistics[id].internships.availables += q;
+                }
+                this.statistics.internships.availables += q;
+                break;
+            case INTERNSHIP_MODE.SUGGESTED:
+                this.statistics.internships.suggested += q;
+                break;
 
-        this.statistics.internships.validated += (dir || 1) * 1;
-        this.statistics.internships.total += (dir || 1) * 1;
-    }
+            case INTERNSHIP_MODE.VALIDATED:
+                this.statistics.internships.validated += q;
+                break;
 
-    private _incStudent(id?: number, dir?: number) {
-        if (id) {
-            if (dir === undefined || dir > 0) {
-                this._defIfndef(id);
-                this.campaignStatistics[id].students += (dir || 1) * 1;
-            } else if (this.isDefined(id)) {
-                this.campaignStatistics[id].students += dir * 1;
-            }
-        }
+            case INTERNSHIP_MODE.WAITING:
+                this.statistics.internships.waiting += q;
+                break;
 
-        this.statistics.students += (dir || 1) * 1;
-    }
-
-    private _linkStudent(id?: number, dir?: number) {
-        if (id) {
-            if (dir === undefined || dir > 0) {
-                this._defIfndef(id);
-                this.campaignStatistics[id].students += (dir || 1) * 1;
-            } else if (this.isDefined(id)) {
-                this.campaignStatistics[id].students += dir * 1;
-            }
-        }
-    }
-
-    private _incMentor(id?: number, dir?: number) {
-        if (id) {
-            if (dir === undefined || dir > 0) {
-                this._defIfndef(id);
-                this.campaignStatistics[id].mentors += (dir || 1) * 1;
-            } else if (this.isDefined(id)) {
-                this.campaignStatistics[id].mentors += dir * 1;
-            }
-        }
-
-        this.statistics.mentors += (dir || 1) * 1;
-    }
-
-    private _linkMentor(id?: number, dir?: number) {
-        if (id) {
-            if (dir === undefined || dir > 0) {
-                this._defIfndef(id);
-                this.campaignStatistics[id].mentors += (dir || 1) * 1;
-            } else if (this.isDefined(id)) {
-                this.campaignStatistics[id].mentors += dir * 1;
-            }
-        }
-    }
-
-    private _transfer(id?: number, dir?: number) {
-        if (id && this.isDefined(id) && this.campaignStatistics[id].internships.availables) {
-            this.campaignStatistics[id].internships.validated += (dir || 1) * 1;
-            this.campaignStatistics[id].internships.availables -= (dir || 1) * 1;
-        }
-
-        if (this.statistics.internships.availables) {
-            this.statistics.internships.validated += (dir || 1) * 1;
-            this.statistics.internships.availables -= (dir || 1) * 1;
+            default:
+                break;
         }
     }
 
@@ -275,19 +285,38 @@ class StatisticsCache {
         ...args: Array<string | number>
     ) {
         if (!this.isDefined(id)) {
-            this.campaignStatistics[id] = this._defaultStatistics(id);
+            this.campaignStatistics[id] = this._defaultCampaignStatistics(id);
             if (cb) {
                 cb(...args);
             }
         }
     }
 
-    private _defaultStatistics(id?: number) {
+    private _defaultStatistics(): Statistics {
         return {
-            internships: { total: 0, availables: 0, validated: 0 },
+            internships: {
+                total: 0,
+                suggested: 0,
+                waiting: 0,
+                availables: 0,
+                validated: 0,
+                attributed: 0,
+                archived: 0,
+            },
             students: 0,
             mentors: 0,
 
+            propositions: 0,
+        };
+    }
+
+    private _defaultCampaignStatistics(id: number): CampaignStatistics {
+        return {
+            internships: { total: 0, availables: 0, attributed: 0 },
+            students: 0,
+            mentors: 0,
+
+            propositions: 0,
             campaign: id,
         };
     }

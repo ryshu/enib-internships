@@ -22,6 +22,12 @@ import {
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
+import { updateInternshipStatus } from '../helpers/internships.helper';
+
+import cache from '../../statistics/singleton';
+
+import { INTERNSHIP_MODE } from '../../statistics/base';
+import { IInternshipEntity } from '../../declarations/internship';
 
 /**
  * GET /internships
@@ -127,15 +133,20 @@ export const postInternship = async (req: Request, res: Response, next: NextFunc
     const internship: IInternshipEntity = {
         subject: req.body.subject,
         description: req.body.description,
+
         country: req.body.country,
         city: req.body.city,
         postalCode: req.body.postalCode,
         address: req.body.address,
         additional: req.body.additional,
+
         isInternshipAbroad: req.body.isInternshipAbroad ? true : false,
+
+        // TODO: More controled affectation
         isProposition: req.body.isProposition || req.session.info.role !== 'admin' ? true : false,
         isPublish: req.body.isPublish && req.session.info.role === 'admin' ? true : false,
         isValidated: req.body.isValidated && req.session.info.role === 'admin' ? true : false,
+        state: _getInternshipState(req),
 
         publishAt:
             !req.body.publishAt || req.session.info.role !== 'admin'
@@ -153,6 +164,9 @@ export const postInternship = async (req: Request, res: Response, next: NextFunc
 
         const created = await Internships.create(internship);
         await created.setCategory(category);
+
+        // change stats
+        cache.stateChange(created.state);
 
         return res.send(created);
     } catch (error) {
@@ -207,6 +221,10 @@ export const putInternship = (req: Request, res: Response, next: NextFunction): 
             if (!checkContent(internships, next)) {
                 return undefined;
             }
+            const cId =
+                (internships.availableCampaign as number) ||
+                (internships.validatedCampaign as number) ||
+                undefined;
 
             if (req.body.subject) {
                 internships.set('subject', req.body.subject);
@@ -245,8 +263,30 @@ export const putInternship = (req: Request, res: Response, next: NextFunction): 
             if (req.body.isInternshipAbroad !== undefined) {
                 internships.set('isInternshipAbroad', req.body.isInternshipAbroad ? true : false);
             }
+
+            if (req.body.isProposition !== undefined && req.session.info.role === 'admin') {
+                internships.set('isProposition', req.body.isProposition ? true : false);
+                if (req.body.isProposition) {
+                    cache.stateChange(INTERNSHIP_MODE.SUGGESTED, internships.state, cId);
+                } else {
+                    cache.stateChange(INTERNSHIP_MODE.WAITING, internships.state, cId);
+                }
+            }
+
+            if (req.body.isPublish !== undefined && req.session.info.role === 'admin') {
+                internships.set('isPublish', req.body.isPublish ? true : false);
+                if (req.body.isPublish) {
+                    cache.stateChange(INTERNSHIP_MODE.AVAILABLE, internships.state, cId);
+                } else {
+                    cache.stateChange(INTERNSHIP_MODE.WAITING, internships.state, cId);
+                }
+            }
+
             if (req.body.isValidated !== undefined && req.session.info.role === 'admin') {
                 internships.set('isValidated', req.body.isValidated ? true : false);
+                if (req.body.isValidated) {
+                    cache.stateChange(INTERNSHIP_MODE.VALIDATED, internships.state, cId);
+                }
             }
 
             if (req.body.publishAt !== undefined && req.session.info.role === 'admin') {
@@ -290,7 +330,19 @@ export const deleteInternship = (req: Request, res: Response, next: NextFunction
     }
 
     Internships.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+        .then((val) => {
+            if (val) {
+                cache.stateRemove(
+                    val.state,
+                    -1,
+                    (val.availableCampaign as number) ||
+                        (val.validatedCampaign as number) ||
+                        undefined,
+                );
+                return val.destroy();
+            }
+            return undefined;
+        })
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
@@ -428,6 +480,10 @@ export const linkInternshipStudents = (req: Request, res: Response, next: NextFu
         .then(async (val) => {
             if (checkContent(val, next)) {
                 await val.addInternship(Number(req.params.id));
+                const i = await Internships.findByPk(req.params.id);
+                cache.addStudent(
+                    (i.availableCampaign as number) || (i.validatedCampaign as number) || undefined,
+                );
                 return res.sendStatus(httpStatus.OK);
             }
         })
@@ -529,11 +585,18 @@ export const linkAvailableCampaignInternships = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Campaigns.findByPk(req.params.campaign_id)
+    Internships.findByPk(req.params.id)
         .then(async (val) => {
             if (checkContent(val, next)) {
-                await val.addAvailableInternship(Number(req.params.id));
-                return res.sendStatus(httpStatus.OK);
+                try {
+                    await val.setAvailableCampaign(Number(req.params.campaign_id));
+                    await updateInternshipStatus(val, INTERNSHIP_MODE.AVAILABLE);
+                    cache.stateRemove(INTERNSHIP_MODE.AVAILABLE, 1);
+                    cache.stateAdd(INTERNSHIP_MODE.AVAILABLE, 1, Number(req.params.campaign_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -580,11 +643,18 @@ export const linkValidatedCampaignInternships = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Campaigns.findByPk(req.params.campaign_id)
+    Internships.findByPk(req.params.id)
         .then(async (val) => {
             if (checkContent(val, next)) {
-                await val.addValidatedInternship(Number(req.params.id));
-                return res.sendStatus(httpStatus.OK);
+                try {
+                    await val.setValidatedCampaign(Number(req.params.campaign_id));
+                    await updateInternshipStatus(val, INTERNSHIP_MODE.ATTRIBUTED);
+                    cache.stateRemove(INTERNSHIP_MODE.ATTRIBUTED, 1);
+                    cache.stateAdd(INTERNSHIP_MODE.ATTRIBUTED, 1, Number(req.params.campaign_id));
+                    return res.sendStatus(httpStatus.OK);
+                } catch (error) {
+                    checkContent(null, next);
+                }
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -696,3 +766,21 @@ export const linkInternshipMentor = (req: Request, res: Response, next: NextFunc
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
+
+function _getInternshipState(req: Request) {
+    let MODE = INTERNSHIP_MODE.SUGGESTED;
+
+    if (req.session.info.role === 'admin') {
+        if (req.body.isValidated) {
+            MODE = INTERNSHIP_MODE.VALIDATED;
+        } else if (req.body.isPublish) {
+            MODE = INTERNSHIP_MODE.AVAILABLE;
+        } else if (req.body.isProposition) {
+            MODE = INTERNSHIP_MODE.SUGGESTED;
+        } else {
+            MODE = INTERNSHIP_MODE.WAITING;
+        }
+    }
+
+    return MODE;
+}

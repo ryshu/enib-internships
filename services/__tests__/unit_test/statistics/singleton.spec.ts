@@ -1,23 +1,33 @@
-import { cloneDeep } from 'lodash';
-
 import cache from '../../../src/statistics/singleton';
+import { Statistics, INTERNSHIP_MODE } from '../../../src/statistics/base';
 
-const DEFAULT_STATISTICS = {
-    internships: { total: 250, availables: 150, validated: 100 },
+const DEFAULT_STATISTICS: Statistics = {
+    internships: {
+        total: 250,
+        suggested: 10,
+        waiting: 30,
+        availables: 150,
+        attributed: 50,
+        validated: 20,
+        archived: 0,
+    },
     students: 150,
     mentors: 200,
+    propositions: 300,
 };
 
-const DEFAULT_CAMPAIGN_STATISTICS = [
+const DEFAULT_CAMPAIGN_STATISTICS: any = [
     {
-        internships: { total: 250, availables: 150, validated: 100 },
+        internships: { total: 250, availables: 150, attributed: 100 },
         students: 150,
         mentors: 200,
+        propositions: 300,
     },
     {
-        internships: { total: 250, availables: 150, validated: 100 },
+        internships: { total: 250, availables: 150, attributed: 100 },
         students: 150,
         mentors: 200,
+        propositions: 300,
         campaign: 10,
     },
 ];
@@ -49,181 +59,52 @@ describe('StatisticsCache', () => {
         cache.init(DEFAULT_STATISTICS, ...DEFAULT_CAMPAIGN_STATISTICS);
     });
 
-    it('#.incInternshipAvailables', () => {
-        // Only default statistics
-        cache.incInternshipAvailables();
-
-        expect(cache.statistics.internships.availables).toEqual(
-            DEFAULT_STATISTICS.internships.availables + 1,
-        );
-        expect(cache.statistics.internships.total).toEqual(
-            DEFAULT_STATISTICS.internships.total + 1,
-        );
-
-        // Default + campaign
-        cache.incInternshipAvailables(10);
-
-        expect(cache.statistics.internships.availables).toEqual(
-            DEFAULT_STATISTICS.internships.availables + 2,
-        );
-        expect(cache.statistics.internships.total).toEqual(
-            DEFAULT_STATISTICS.internships.total + 2,
-        );
-        expect(cache.getCampaign(10)!.internships.availables).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.availables + 1,
-        );
-        expect(cache.getCampaign(10)!.internships.total).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.total + 1,
-        );
-
-        // Default + new campaign
-        cache.incInternshipAvailables(25);
-        expect(cache.getCampaign(25)).toEqual({
-            internships: { total: 1, availables: 1, validated: 0 },
-            students: 0,
-            mentors: 0,
-            campaign: 25,
-        });
+    it('#.stateChange ARCHIVED -> ATTRIBUTED', () => {
+        cache.stateChange(INTERNSHIP_MODE.ARCHIVED, INTERNSHIP_MODE.ATTRIBUTED, 10);
+        expect(cache.getCampaign(10)).toMatchSnapshot();
     });
 
-    it('#.decInternshipAvailables', () => {
-        // Only default statistics
-        cache.decInternshipAvailables();
-
-        expect(cache.statistics.internships.availables).toEqual(
-            DEFAULT_STATISTICS.internships.availables - 1,
-        );
-        expect(cache.statistics.internships.total).toEqual(
-            DEFAULT_STATISTICS.internships.total - 1,
-        );
-
-        // Default + campaign
-        cache.decInternshipAvailables(10);
-
-        expect(cache.statistics.internships.availables).toEqual(
-            DEFAULT_STATISTICS.internships.availables - 2,
-        );
-        expect(cache.statistics.internships.total).toEqual(
-            DEFAULT_STATISTICS.internships.total - 2,
-        );
-        expect(cache.getCampaign(10)!.internships.availables).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.availables - 1,
-        );
-        expect(cache.getCampaign(10)!.internships.total).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.total - 1,
-        );
-
-        // Default + new campaign
-        cache.decInternshipAvailables(78);
-        expect(cache.getCampaign(78)).toBeFalsy();
+    it('#.stateChange AVAILABLE -> VALIDATED', () => {
+        cache.stateChange(INTERNSHIP_MODE.AVAILABLE, INTERNSHIP_MODE.VALIDATED, 10);
+        expect(cache.getCampaign(10)).toMatchSnapshot();
     });
 
-    it('#.incInternshipValidated', () => {
-        // Only default statistics
-        cache.incInternshipValidated();
-
-        expect(cache.statistics.internships.validated).toEqual(
-            DEFAULT_STATISTICS.internships.validated + 1,
-        );
-        expect(cache.statistics.internships.total).toEqual(
-            DEFAULT_STATISTICS.internships.total + 1,
-        );
-
-        // Default + campaign
-        cache.incInternshipValidated(10);
-
-        expect(cache.statistics.internships.validated).toEqual(
-            DEFAULT_STATISTICS.internships.validated + 2,
-        );
-        expect(cache.statistics.internships.total).toEqual(
-            DEFAULT_STATISTICS.internships.total + 2,
-        );
-        expect(cache.getCampaign(10)!.internships.validated).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.validated + 1,
-        );
-        expect(cache.getCampaign(10)!.internships.total).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.total + 1,
-        );
-
-        // Default + new campaign
-        cache.incInternshipValidated(450);
-        expect(cache.getCampaign(450)).toEqual({
-            internships: { total: 1, availables: 0, validated: 1 },
-            students: 0,
-            mentors: 0,
-            campaign: 450,
-        });
+    it('#.stateChange AVAILABLE -> WAITING', () => {
+        cache.stateChange(INTERNSHIP_MODE.AVAILABLE, INTERNSHIP_MODE.WAITING, 10);
+        expect(cache.getCampaign(10)).toMatchSnapshot();
     });
 
-    it('#.decInternshipValidated', () => {
-        // Only default statistics
-        cache.decInternshipValidated();
+    it('#.stateChange INVALID -> WAITING', () => {
+        cache.stateChange('INVALID' as any, INTERNSHIP_MODE.WAITING, 10);
+        expect(cache.getCampaign(10)).toMatchSnapshot();
+    });
 
-        expect(cache.statistics.internships.validated).toEqual(
-            DEFAULT_STATISTICS.internships.validated - 1,
-        );
-        expect(cache.statistics.internships.total).toEqual(
-            DEFAULT_STATISTICS.internships.total - 1,
-        );
+    it('#.stateAdd INVALID', () => {
+        cache.stateAdd('INVALID' as any, 10);
+        expect(cache.getCampaign(10)).toMatchSnapshot();
+    });
 
-        // Default + campaign
-        cache.decInternshipValidated(10);
-
-        expect(cache.statistics.internships.validated).toEqual(
-            DEFAULT_STATISTICS.internships.validated - 2,
-        );
-        expect(cache.statistics.internships.total).toEqual(
-            DEFAULT_STATISTICS.internships.total - 2,
-        );
-        expect(cache.getCampaign(10)!.internships.validated).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.validated - 1,
-        );
-        expect(cache.getCampaign(10)!.internships.total).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.total - 1,
-        );
-
-        // Default + new campaign
-        cache.decInternshipValidated(79);
-        expect(cache.getCampaign(79)).toBeFalsy();
+    it('#.stateRemove INVALID', () => {
+        cache.stateRemove('INVALID' as any, 10);
+        expect(cache.getCampaign(10)).toMatchSnapshot();
     });
 
     it('#.addMentor', () => {
-        // Only default statistics
+        // Default + campaign
+        cache.addMentor();
+        cache.addMentor();
         cache.addMentor();
 
-        expect(cache.statistics.mentors).toEqual(DEFAULT_STATISTICS.mentors + 1);
-
-        // Default + campaign
-        cache.addMentor(10);
-
-        expect(cache.statistics.mentors).toEqual(DEFAULT_STATISTICS.mentors + 2);
-        expect(cache.getCampaign(10)!.mentors).toEqual(DEFAULT_CAMPAIGN_STATISTICS[1].mentors + 1);
-
-        // Default + new campaign
-        cache.addMentor(451);
-        expect(cache.getCampaign(451)).toEqual({
-            internships: { total: 0, availables: 0, validated: 0 },
-            students: 0,
-            mentors: 1,
-            campaign: 451,
-        });
+        expect(cache.statistics.mentors).toEqual(DEFAULT_STATISTICS.mentors + 3);
     });
 
     it('#.removeMentor', () => {
-        // Only default statistics
+        // Default + campaign
+        cache.removeMentor();
+        cache.removeMentor();
         cache.removeMentor();
 
-        expect(cache.statistics.mentors).toEqual(DEFAULT_STATISTICS.mentors - 1);
-
-        // Default + campaign
-        cache.removeMentor(10);
-
-        expect(cache.statistics.mentors).toEqual(DEFAULT_STATISTICS.mentors - 2);
-        expect(cache.getCampaign(10)!.mentors).toEqual(DEFAULT_CAMPAIGN_STATISTICS[1].mentors - 1);
-
-        // Default + new campaign
-        cache.removeMentor(452);
-        expect(cache.getCampaign(452)).toBeFalsy();
+        expect(cache.statistics.mentors).toEqual(DEFAULT_STATISTICS.mentors - 3);
     });
 
     it('#.linkMentor', () => {
@@ -234,11 +115,32 @@ describe('StatisticsCache', () => {
         // Default + new campaign
         cache.linkMentor(500);
         expect(cache.getCampaign(500)).toEqual({
-            internships: { total: 0, availables: 0, validated: 0 },
+            internships: { total: 0, availables: 0, attributed: 0 },
             students: 0,
             mentors: 1,
+            propositions: 0,
             campaign: 500,
         });
+
+        cache.linkMentor(null as any);
+    });
+
+    it('#.unlinkMentor', () => {
+        // Default + campaign
+        cache.unlinkMentor(10);
+        expect(cache.getCampaign(10)!.mentors).toEqual(DEFAULT_CAMPAIGN_STATISTICS[1].mentors - 1);
+
+        // Default + new campaign
+        cache.unlinkMentor(500);
+        expect(cache.getCampaign(500)).toEqual({
+            internships: { total: 0, availables: 0, attributed: 0 },
+            students: 0,
+            mentors: -1,
+            propositions: 0,
+            campaign: 500,
+        });
+
+        cache.unlinkMentor(null as any);
     });
 
     it('#.addStudent', () => {
@@ -258,9 +160,10 @@ describe('StatisticsCache', () => {
         // Default + new campaign
         cache.addStudent(453);
         expect(cache.getCampaign(453)).toEqual({
-            internships: { total: 0, availables: 0, validated: 0 },
+            internships: { total: 0, availables: 0, attributed: 0 },
             students: 1,
             mentors: 0,
+            propositions: 0,
             campaign: 453,
         });
     });
@@ -294,59 +197,78 @@ describe('StatisticsCache', () => {
         // Default + new campaign
         cache.linkStudent(501);
         expect(cache.getCampaign(501)).toEqual({
-            internships: { total: 0, availables: 0, validated: 0 },
+            internships: { total: 0, availables: 0, attributed: 0 },
             students: 1,
             mentors: 0,
+            propositions: 0,
             campaign: 501,
+        });
+
+        cache.linkStudent(null as any);
+    });
+
+    it('#.addProposition', () => {
+        // Only default statistics
+        cache.addProposition();
+
+        expect(cache.statistics.propositions).toEqual(DEFAULT_STATISTICS.propositions + 1);
+
+        // Default + campaign
+        cache.addProposition(10);
+
+        expect(cache.statistics.propositions).toEqual(DEFAULT_STATISTICS.propositions + 2);
+        expect(cache.getCampaign(10)!.propositions).toEqual(
+            DEFAULT_CAMPAIGN_STATISTICS[1].propositions + 1,
+        );
+
+        // Default + new campaign
+        cache.addProposition(200);
+        expect(cache.getCampaign(200)).toEqual({
+            internships: { total: 0, availables: 0, attributed: 0 },
+            students: 0,
+            mentors: 0,
+            propositions: 1,
+            campaign: 200,
         });
     });
 
-    it('#.validatedToAvailable', () => {
+    it('#.removeProposition', () => {
+        // Only default statistics
+        cache.removeProposition();
+
+        expect(cache.statistics.propositions).toEqual(DEFAULT_STATISTICS.propositions - 1);
+
         // Default + campaign
-        cache.validatedToAvailable(10);
+        cache.removeProposition(10);
 
-        expect(cache.getCampaign(10)!.internships.validated).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.validated - 1,
+        expect(cache.statistics.propositions).toEqual(DEFAULT_STATISTICS.propositions - 2);
+        expect(cache.getCampaign(10)!.propositions).toEqual(
+            DEFAULT_CAMPAIGN_STATISTICS[1].propositions - 1,
         );
-        expect(cache.getCampaign(10)!.internships.availables).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.availables + 1,
-        );
-
-        // Not enought availables
-        cache.newCampain(550, {});
-        const tmp = cloneDeep(cache.getCampaign(550));
-        expect(tmp).toBeTruthy();
-
-        cache.validatedToAvailable(550);
-        expect(cache.getCampaign(550)).toEqual(tmp);
 
         // Default + new campaign
-        cache.validatedToAvailable(551);
-        expect(cache.getCampaign(551)).toBeFalsy();
+        cache.removeProposition(201);
+        expect(cache.getCampaign(201)).toBeFalsy();
     });
 
-    it('#.availableToValidated', () => {
+    it('#.linkProposition', () => {
         // Default + campaign
-        cache.availableToValidated(10);
-
-        expect(cache.getCampaign(10)!.internships.validated).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.validated + 1,
+        cache.linkProposition(10);
+        expect(cache.getCampaign(10)!.propositions).toEqual(
+            DEFAULT_CAMPAIGN_STATISTICS[1].propositions + 1,
         );
-        expect(cache.getCampaign(10)!.internships.availables).toEqual(
-            DEFAULT_CAMPAIGN_STATISTICS[1].internships.availables - 1,
-        );
-
-        // Not enought availables
-        cache.newCampain(560, {});
-        const tmp = cloneDeep(cache.getCampaign(560));
-        expect(tmp).toBeTruthy();
-
-        cache.availableToValidated(560);
-        expect(cache.getCampaign(560)).toEqual(tmp);
 
         // Default + new campaign
-        cache.availableToValidated(561);
-        expect(cache.getCampaign(561)).toBeFalsy();
+        cache.linkProposition(202);
+        expect(cache.getCampaign(202)).toEqual({
+            internships: { total: 0, availables: 0, attributed: 0 },
+            students: 0,
+            mentors: 0,
+            propositions: 1,
+            campaign: 202,
+        });
+
+        cache.linkProposition(null as any);
     });
 
     it('#.getCampaign', () => {

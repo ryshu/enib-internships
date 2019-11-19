@@ -29,11 +29,17 @@
       "api-mentors": {
         "title": "Mentors"
       },
-      "api-services-emails": {
-        "title": "Emails"
+      "api-statistics": {
+        "title": "Statistics"
       },
       "api-students": {
         "title": "Students"
+      },
+      "api-services-emails": {
+        "title": "Emails"
+      },
+      "api-services-statistics": {
+        "title": "Statistics"
       },
       "docs-backend": {
         "title": "Back end part"

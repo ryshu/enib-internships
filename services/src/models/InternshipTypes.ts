@@ -5,6 +5,8 @@ import database from '../configs/instances/database';
 import Internships from './Internships';
 import Campaigns from './Campaigns';
 
+import { IInternshipEntity } from '../declarations/internship';
+
 class InternshipTypes extends Sequelize.Model implements IInternshipTypeEntity {
     public static associations: {
         internships: Sequelize.Association<InternshipTypes, Internships>;
