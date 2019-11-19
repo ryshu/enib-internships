@@ -10,6 +10,9 @@ import Mentors from './Mentors';
 import MPs from './MentoringPropositions';
 import Campaigns from './Campaigns';
 
+import { INTERNSHIP_MODE } from '../statistics/base';
+import { IInternshipEntity } from '../declarations/internship';
+
 class Internships extends Sequelize.Model implements IInternshipEntity {
     public static associations: {
         category: Sequelize.Association<Internships, InternshipTypes>;
@@ -40,6 +43,8 @@ class Internships extends Sequelize.Model implements IInternshipEntity {
     public isValidated: boolean;
     public isProposition: boolean;
     public isPublish: boolean;
+
+    public state: INTERNSHIP_MODE;
 
     // Date
     public publishAt: number;
@@ -164,6 +169,11 @@ Internships.init(
             type: Sequelize.DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,
+        },
+        state: {
+            type: Sequelize.DataTypes.STRING,
+            allowNull: false,
+            defaultValue: INTERNSHIP_MODE.SUGGESTED,
         },
 
         // Date

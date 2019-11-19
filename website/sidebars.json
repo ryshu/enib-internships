@@ -14,9 +14,10 @@
       "api-internship-types",
       "api-mentors",
       "api-mentoring-propostions",
+      "api-statistics",
       "api-students"
     ],
-    "Services API": [ "api-services-emails" ]
+    "Services API": [ "api-services-emails", "api-services-statistics" ]
   },
   "tuto": {
     "Complete": ["tuto-mentors", "tuto-students", "tuto-setup-associations"]

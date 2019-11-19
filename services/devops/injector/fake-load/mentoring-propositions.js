@@ -4,7 +4,7 @@ const chalk = require('chalk');
 faker.locale = 'fr';
 const MentoringPropositions = require('../../../dist/models/MentoringPropositions').default;
 
-async function inject(mp) {
+async function inject(mp, debug) {
     await MentoringPropositions.create(mp);
     if (debug) console.info(chalk.white(`Inject mentoring proposition in database`));
 }
@@ -15,7 +15,7 @@ module.exports = async function(quantity = 100, debug = false) {
         const mentoringProposition = {
             comment: faker.lorem.paragraph(5),
         };
-        promises.push(inject(mentoringProposition));
+        promises.push(inject(mentoringProposition, debug));
     }
 
     await Promise.all(promises);

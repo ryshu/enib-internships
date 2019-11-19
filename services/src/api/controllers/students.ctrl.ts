@@ -16,6 +16,8 @@ import {
 } from '../helpers/global.helper';
 import { paginate } from '../helpers/pagination.helper';
 
+import cache from '../../statistics/singleton';
+
 /**
  * GET /students
  * Used to GET all students
@@ -70,7 +72,10 @@ export const postStudent = (req: Request, res: Response, next: NextFunction): vo
 
     // Insert student in database
     Students.create(student)
-        .then((created) => res.send(created))
+        .then((created) => {
+            cache.addStudent();
+            return res.send(created);
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -147,7 +152,12 @@ export const deleteStudent = (req: Request, res: Response, next: NextFunction): 
     }
 
     Students.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected student
+        .then((val) => {
+            if (val) {
+                cache.removeStudent();
+                return val.destroy();
+            }
+        }) // Call destroy on selected student
         .then(() => res.sendStatus(httpStatus.OK)) // Return OK status
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
@@ -200,8 +210,21 @@ export const linkStudentInternships = (req: Request, res: Response, next: NextFu
     Students.findByPk(req.params.id)
         .then(async (val) => {
             if (checkContent(val, next)) {
-                await val.addInternship(Number(req.params.internship_id));
-                return res.sendStatus(httpStatus.OK);
+                try {
+                    await val.addInternship(Number(req.params.internship_id));
+                    const i = await Internships.findByPk(req.params.internship_id);
+                    const cId =
+                        (i.availableCampaign as number) ||
+                        (i.validatedCampaign as number) ||
+                        undefined;
+                    if (cId) {
+                        cache.linkStudent(cId);
+                    }
+
+                    return res.sendStatus(httpStatus.OK);
+                } catch (_e) {
+                    return checkContent(null, next);
+                }
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));

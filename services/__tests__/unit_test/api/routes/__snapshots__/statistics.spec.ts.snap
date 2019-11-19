@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GET /campaigns/:id/statistics Campaigns_200_NoInternship 1`] = `
+Object {
+  "campaign": 1,
+  "internships": Object {
+    "attributed": 0,
+    "availables": 0,
+    "total": 0,
+  },
+  "mentors": 0,
+  "propositions": 0,
+  "students": 0,
+}
+`;
+
+exports[`GET /statistics Default 200 Statistics 1`] = `
+Object {
+  "internships": Object {
+    "archived": 0,
+    "attributed": 0,
+    "availables": 0,
+    "suggested": 0,
+    "total": 0,
+    "validated": 0,
+    "waiting": 0,
+  },
+  "mentors": 0,
+  "propositions": 0,
+  "students": 0,
+}
+`;

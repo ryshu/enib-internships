@@ -15,6 +15,8 @@ import {
     checkContent,
 } from '../helpers/global.helper';
 
+import cache from '../../statistics/singleton';
+
 /**
  * GET /mentoringPropositions
  * Used to GET all mentoringPropositions
@@ -63,7 +65,10 @@ export const postMentoringProposition = (req: Request, res: Response, next: Next
     };
 
     MentoringPropositions.create(mentoringProposition)
-        .then((created) => res.send(created))
+        .then((created) => {
+            cache.addProposition();
+            return res.send(created);
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -136,7 +141,13 @@ export const deleteMentoringProposition = (
     }
 
     MentoringPropositions.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+        .then((val) => {
+            if (val) {
+                cache.removeProposition((val.campaign as number) || undefined);
+                return val.destroy();
+            }
+            return undefined;
+        })
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
@@ -187,6 +198,7 @@ export const linkMentoringPropositionCampaign = (
             if (checkContent(val, next)) {
                 try {
                     await val.setCampaign(Number(req.params.campaign_id));
+                    cache.linkProposition(Number(req.params.campaign_id));
                     return res.sendStatus(httpStatus.OK);
                 } catch (error) {
                     checkContent(null, next);

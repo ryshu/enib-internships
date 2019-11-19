@@ -7,7 +7,7 @@ const InternshipTypes = require('../../../dist/models/InternshipTypes').default;
 
 const categories = require('../../../dist/configs/data/categories').defaultCategories;
 
-async function inject(c) {
+async function inject(c, category, debug) {
     const created = await Campaigns.create(c);
     await created.setCategory(category);
     if (debug) console.info(chalk.white(`Inject campaign "${c.name}" in database`));
@@ -49,7 +49,7 @@ module.exports = async function(quantity = 100, debug = false) {
             ]),
             maxPropositions: faker.random.number(20),
         };
-        promises.push(inject(campaign, types[i].id));
+        promises.push(inject(campaign, types[i].id, debug));
     }
 
     await Promise.all(promises);

@@ -297,4 +297,17 @@ export default {
       success: 'La campagne a bien été publier',
     },
   },
+  propositions: {
+    placeholder: {
+      add: "Accepter l'offre",
+      update: "Editer l'offre",
+      remove: "Supprimer l'offre",
+    },
+  },
+  internships: {
+    placeholder: {
+      update: "Editer l'offre",
+      remove: "Supprimer l'offre",
+    },
+  },
 };

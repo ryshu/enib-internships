@@ -20,6 +20,8 @@ import { paginate } from '../helpers/pagination.helper';
 
 import { isMentorRole } from '../../utils/type';
 
+import cache from '../../statistics/singleton';
+
 /**
  * GET /mentors
  * Used to GET all mentors
@@ -74,7 +76,10 @@ export const postMentor = (req: Request, res: Response, next: NextFunction): voi
 
     // Insert mentor in database
     Mentors.create(mentor)
-        .then((created) => res.send(created))
+        .then((created) => {
+            cache.addMentor();
+            return res.send(created);
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -151,7 +156,18 @@ export const deleteMentor = (req: Request, res: Response, next: NextFunction): v
     }
 
     Mentors.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected mentor
+        .then(async (val) => {
+            if (val) {
+                // Remove from stats
+                const campaigns = await val.getCampaigns();
+                campaigns.forEach((c) => {
+                    cache.unlinkMentor(c.id);
+                });
+                cache.removeMentor();
+                return val.destroy();
+            }
+            return undefined;
+        }) // Call destroy on selected mentor
         .then(() => res.sendStatus(httpStatus.OK)) // Return OK status
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
@@ -194,6 +210,7 @@ export const linkMentorCampaign = (req: Request, res: Response, next: NextFuncti
             if (checkContent(val, next)) {
                 try {
                     await val.addCampaign(Number(req.params.campaign_id));
+                    cache.linkMentor(Number(req.params.campaign_id));
                     return res.sendStatus(httpStatus.OK);
                 } catch (error) {
                     checkContent(null, next);
