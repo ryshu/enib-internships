@@ -2,6 +2,7 @@ import express from 'express';
 import { checkSchema } from 'express-validator';
 
 import * as CampaignsCtrl from '../controllers/campaigns.ctrl';
+import { getCampaignStatistics } from '../controllers/statistics.ctrl';
 
 import {
     ID,
@@ -72,5 +73,7 @@ router.post(
     checkSchema(Object.assign({}, ID, InternshipTypeID)),
     CampaignsCtrl.linkCampaignInternshipType,
 );
+
+router.get('/:id/statistics', checkSchema(ID), getCampaignStatistics);
 
 export default router;

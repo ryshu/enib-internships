@@ -7,7 +7,7 @@ const InternshipTypes = require('../../../dist/models/InternshipTypes').default;
 
 const categories = require('../../../dist/configs/data/categories').defaultCategories;
 
-async function inject(c) {
+async function inject(c, category) {
     const created = await Campaigns.create(c);
     await created.setCategory(category);
     if (debug) console.info(chalk.white(`Inject campaign "${c.name}" in database`));
