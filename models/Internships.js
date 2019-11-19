@@ -71,6 +71,11 @@ Internships.init({
         allowNull: false,
         defaultValue: false,
     },
+    state: {
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "suggest" /* SUGGESTED */,
+    },
     // Date
     publishAt: {
         type: Sequelize.DataTypes.BIGINT,

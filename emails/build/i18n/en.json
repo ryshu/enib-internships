@@ -1,0 +1,22 @@
+{
+  "STAGES": "STAGES",
+  "welcome_subject": "welcome_subject",
+  "welcome_title": "welcome_title",
+  "welcome_subTitle": "welcome_subTitle",
+  "welcome_list": "welcome_list",
+  "welcome_listContent": "welcome_listContent",
+  "welcome_btnRedirect": "welcome_btnRedirect",
+  "footer_link_raw": "footer_link_raw",
+  "campaignsCreate_title": "campaignsCreate_title",
+  "campaignsCreate_subTitle": "campaignsCreate_subTitle",
+  "campaignsCreate_list": "campaignsCreate_list",
+  "campaignsCreate_listContent": "campaignsCreate_listContent",
+  "campaignsCreate_subject": "campaignsCreate_subject",
+  "campaignsCreate_subTitle_part_1": "campaignsCreate_subTitle_part_1",
+  "campaignsCreate_subTitle_part_2": "campaignsCreate_subTitle_part_2",
+  "campaignsCreate_student": "campaignsCreate_student",
+  "campaignsCreate_student_bottom": "campaignsCreate_student_bottom",
+  "campaignsCreate_start": "campaignsCreate_start",
+  "campaignsCreate_end": "campaignsCreate_end",
+  "campaignsCreate_btnRedirect": "campaignsCreate_btnRedirect"
+}

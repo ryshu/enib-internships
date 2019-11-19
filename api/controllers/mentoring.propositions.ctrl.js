@@ -20,6 +20,7 @@ const Mentors_1 = __importDefault(require("../../models/Mentors"));
 const Internships_1 = __importDefault(require("../../models/Internships"));
 const pagination_helper_1 = require("../helpers/pagination.helper");
 const global_helper_1 = require("../helpers/global.helper");
+const singleton_1 = __importDefault(require("../../statistics/singleton"));
 /**
  * GET /mentoringPropositions
  * Used to GET all mentoringPropositions
@@ -64,7 +65,10 @@ exports.postMentoringProposition = (req, res, next) => {
         comment: req.body.comment,
     };
     MentoringPropositions_1.default.create(mentoringProposition)
-        .then((created) => res.send(created))
+        .then((created) => {
+        singleton_1.default.addProposition();
+        return res.send(created);
+    })
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -125,7 +129,13 @@ exports.deleteMentoringProposition = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     MentoringPropositions_1.default.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+        .then((val) => {
+        if (val) {
+            singleton_1.default.removeProposition(val.campaign || undefined);
+            return val.destroy();
+        }
+        return undefined;
+    })
         .then(() => res.sendStatus(http_status_codes_1.default.OK))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
@@ -164,6 +174,7 @@ exports.linkMentoringPropositionCampaign = (req, res, next) => {
         if (global_helper_1.checkContent(val, next)) {
             try {
                 yield val.setCampaign(Number(req.params.campaign_id));
+                singleton_1.default.linkProposition(Number(req.params.campaign_id));
                 return res.sendStatus(http_status_codes_1.default.OK);
             }
             catch (error) {

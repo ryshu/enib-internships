@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
 const CampaignsCtrl = __importStar(require("../controllers/campaigns.ctrl"));
+const statistics_ctrl_1 = require("../controllers/statistics.ctrl");
 const generic_val_1 = require("../validators/generic.val");
 const campaigns_val_1 = require("../validators/campaigns.val");
 const router = express_1.default.Router();
@@ -31,11 +32,14 @@ router.post('/:id/validatedInternships/:internship_id/link', express_validator_1
 // Campaigns Availables Internships
 router.get('/:id/availableInternships', express_validator_1.checkSchema(generic_val_1.ID), CampaignsCtrl.getAvailableCampaignInternships);
 router.post('/:id/availableInternships/:internship_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipID)), CampaignsCtrl.linkAvailableCampaignInternships);
+// Campaigns all internships
+router.get('/:id/internships', express_validator_1.checkSchema(generic_val_1.ID), CampaignsCtrl.getCampaignInternships);
 // Campaigns Mentors
 router.get('/:id/mentors', express_validator_1.checkSchema(generic_val_1.ID), CampaignsCtrl.getCampaignMentors);
 router.post('/:id/mentors/:mentor_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.MentorID)), CampaignsCtrl.linkCampaignMentor);
 // Campaigns internship types
 router.get('/:id/internshipTypes', express_validator_1.checkSchema(generic_val_1.ID), CampaignsCtrl.getCampaignInternshipType);
 router.post('/:id/internshipTypes/:internship_type_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipTypeID)), CampaignsCtrl.linkCampaignInternshipType);
+router.get('/:id/statistics', express_validator_1.checkSchema(generic_val_1.ID), statistics_ctrl_1.getCampaignStatistics);
 exports.default = router;
 //# sourceMappingURL=campaigns.route.js.map

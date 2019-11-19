@@ -25,6 +25,7 @@ const logger_1 = __importDefault(require("../../utils/logger"));
 const categories_1 = require("../data/categories");
 const Mentors_1 = __importDefault(require("../../models/Mentors"));
 const admin_1 = require("../data/admin");
+const statistics_1 = require("./statistics");
 function default_1() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -62,6 +63,7 @@ function default_1() {
                 }
             }
             yield Promise.all(promises);
+            yield statistics_1.setupStatistics();
         }
         catch (error) {
             // Log error and exit

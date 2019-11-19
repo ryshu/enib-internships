@@ -23,6 +23,7 @@ const MentoringPropositions_1 = __importDefault(require("../../models/MentoringP
 const global_helper_1 = require("../helpers/global.helper");
 const pagination_helper_1 = require("../helpers/pagination.helper");
 const type_1 = require("../../utils/type");
+const singleton_1 = __importDefault(require("../../statistics/singleton"));
 /**
  * GET /mentors
  * Used to GET all mentors
@@ -73,7 +74,10 @@ exports.postMentor = (req, res, next) => {
     };
     // Insert mentor in database
     Mentors_1.default.create(mentor)
-        .then((created) => res.send(created))
+        .then((created) => {
+        singleton_1.default.addMentor();
+        return res.send(created);
+    })
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -143,7 +147,18 @@ exports.deleteMentor = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     Mentors_1.default.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected mentor
+        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
+        if (val) {
+            // Remove from stats
+            const campaigns = yield val.getCampaigns();
+            campaigns.forEach((c) => {
+                singleton_1.default.unlinkMentor(c.id);
+            });
+            singleton_1.default.removeMentor();
+            return val.destroy();
+        }
+        return undefined;
+    })) // Call destroy on selected mentor
         .then(() => res.sendStatus(http_status_codes_1.default.OK)) // Return OK status
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
@@ -182,6 +197,7 @@ exports.linkMentorCampaign = (req, res, next) => {
         if (global_helper_1.checkContent(val, next)) {
             try {
                 yield val.addCampaign(Number(req.params.campaign_id));
+                singleton_1.default.linkMentor(Number(req.params.campaign_id));
                 return res.sendStatus(http_status_codes_1.default.OK);
             }
             catch (error) {

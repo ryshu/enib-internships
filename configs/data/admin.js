@@ -7,6 +7,12 @@ exports.admins = [
         email: 'o5mariet@enib.fr',
         role: 'admin',
     },
+    {
+        firstName: 'Cas',
+        lastName: 'DEV',
+        email: 'cas.dev@enib.fr',
+        role: 'admin',
+    },
 ];
 exports.adminsEmail = exports.admins.map((a) => a.email);
 exports.adminsCasUsername = exports.admins.map((a) => a.email.split('@')[0]);

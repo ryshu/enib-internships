@@ -27,6 +27,8 @@ const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
 const pagination_helper_1 = require("../helpers/pagination.helper");
 const lodash_1 = require("lodash");
 const global_helper_1 = require("../helpers/global.helper");
+const internships_helper_1 = require("../helpers/internships.helper");
+const singleton_1 = __importDefault(require("../../statistics/singleton"));
 /**
  * GET /internships
  * Used to GET all internships
@@ -117,9 +119,11 @@ exports.postInternship = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         address: req.body.address,
         additional: req.body.additional,
         isInternshipAbroad: req.body.isInternshipAbroad ? true : false,
+        // TODO: More controled affectation
         isProposition: req.body.isProposition || req.session.info.role !== 'admin' ? true : false,
         isPublish: req.body.isPublish && req.session.info.role === 'admin' ? true : false,
         isValidated: req.body.isValidated && req.session.info.role === 'admin' ? true : false,
+        state: _getInternshipState(req),
         publishAt: !req.body.publishAt || req.session.info.role !== 'admin'
             ? null
             : moment_1.default(req.body.publishAt).valueOf(),
@@ -133,6 +137,8 @@ exports.postInternship = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         }
         const created = yield Internships_1.default.create(internship);
         yield created.setCategory(category);
+        // change stats
+        singleton_1.default.stateChange(created.state);
         return res.send(created);
     }
     catch (error) {
@@ -183,6 +189,9 @@ exports.putInternship = (req, res, next) => {
         if (!global_helper_1.checkContent(internships, next)) {
             return undefined;
         }
+        const cId = internships.availableCampaign ||
+            internships.validatedCampaign ||
+            undefined;
         if (req.body.subject) {
             internships.set('subject', req.body.subject);
         }
@@ -218,8 +227,29 @@ exports.putInternship = (req, res, next) => {
         if (req.body.isInternshipAbroad !== undefined) {
             internships.set('isInternshipAbroad', req.body.isInternshipAbroad ? true : false);
         }
+        if (req.body.isProposition !== undefined && req.session.info.role === 'admin') {
+            internships.set('isProposition', req.body.isProposition ? true : false);
+            if (req.body.isProposition) {
+                singleton_1.default.stateChange("suggest" /* SUGGESTED */, internships.state, cId);
+            }
+            else {
+                singleton_1.default.stateChange("waiting" /* WAITING */, internships.state, cId);
+            }
+        }
+        if (req.body.isPublish !== undefined && req.session.info.role === 'admin') {
+            internships.set('isPublish', req.body.isPublish ? true : false);
+            if (req.body.isPublish) {
+                singleton_1.default.stateChange("available" /* AVAILABLE */, internships.state, cId);
+            }
+            else {
+                singleton_1.default.stateChange("waiting" /* WAITING */, internships.state, cId);
+            }
+        }
         if (req.body.isValidated !== undefined && req.session.info.role === 'admin') {
             internships.set('isValidated', req.body.isValidated ? true : false);
+            if (req.body.isValidated) {
+                singleton_1.default.stateChange("validated" /* VALIDATED */, internships.state, cId);
+            }
         }
         if (req.body.publishAt !== undefined && req.session.info.role === 'admin') {
             internships.set('publishAt', req.body.publishAt === 0 ? null : moment_1.default(req.body.publishAt).valueOf());
@@ -250,7 +280,15 @@ exports.deleteInternship = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     Internships_1.default.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+        .then((val) => {
+        if (val) {
+            singleton_1.default.stateRemove(val.state, -1, val.availableCampaign ||
+                val.validatedCampaign ||
+                undefined);
+            return val.destroy();
+        }
+        return undefined;
+    })
         .then(() => res.sendStatus(http_status_codes_1.default.OK))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
@@ -370,6 +408,8 @@ exports.linkInternshipStudents = (req, res, next) => {
         .then((val) => __awaiter(void 0, void 0, void 0, function* () {
         if (global_helper_1.checkContent(val, next)) {
             yield val.addInternship(Number(req.params.id));
+            const i = yield Internships_1.default.findByPk(req.params.id);
+            singleton_1.default.addStudent(i.availableCampaign || i.validatedCampaign || undefined);
             return res.sendStatus(http_status_codes_1.default.OK);
         }
     }))
@@ -455,11 +495,19 @@ exports.linkAvailableCampaignInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.campaign_id)
+    Internships_1.default.findByPk(req.params.id)
         .then((val) => __awaiter(void 0, void 0, void 0, function* () {
         if (global_helper_1.checkContent(val, next)) {
-            yield val.addAvailableInternship(Number(req.params.id));
-            return res.sendStatus(http_status_codes_1.default.OK);
+            try {
+                yield val.setAvailableCampaign(Number(req.params.campaign_id));
+                yield internships_helper_1.updateInternshipStatus(val, "available" /* AVAILABLE */);
+                singleton_1.default.stateRemove("available" /* AVAILABLE */, 1);
+                singleton_1.default.stateAdd("available" /* AVAILABLE */, 1, Number(req.params.campaign_id));
+                return res.sendStatus(http_status_codes_1.default.OK);
+            }
+            catch (error) {
+                global_helper_1.checkContent(null, next);
+            }
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
@@ -494,11 +542,19 @@ exports.linkValidatedCampaignInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.campaign_id)
+    Internships_1.default.findByPk(req.params.id)
         .then((val) => __awaiter(void 0, void 0, void 0, function* () {
         if (global_helper_1.checkContent(val, next)) {
-            yield val.addValidatedInternship(Number(req.params.id));
-            return res.sendStatus(http_status_codes_1.default.OK);
+            try {
+                yield val.setValidatedCampaign(Number(req.params.campaign_id));
+                yield internships_helper_1.updateInternshipStatus(val, "attributed" /* ATTRIBUTED */);
+                singleton_1.default.stateRemove("attributed" /* ATTRIBUTED */, 1);
+                singleton_1.default.stateAdd("attributed" /* ATTRIBUTED */, 1, Number(req.params.campaign_id));
+                return res.sendStatus(http_status_codes_1.default.OK);
+            }
+            catch (error) {
+                global_helper_1.checkContent(null, next);
+            }
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
@@ -595,4 +651,22 @@ exports.linkInternshipMentor = (req, res, next) => {
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
+function _getInternshipState(req) {
+    let MODE = "suggest" /* SUGGESTED */;
+    if (req.session.info.role === 'admin') {
+        if (req.body.isValidated) {
+            MODE = "validated" /* VALIDATED */;
+        }
+        else if (req.body.isPublish) {
+            MODE = "available" /* AVAILABLE */;
+        }
+        else if (req.body.isProposition) {
+            MODE = "suggest" /* SUGGESTED */;
+        }
+        else {
+            MODE = "waiting" /* WAITING */;
+        }
+    }
+    return MODE;
+}
 //# sourceMappingURL=internships.ctrl.js.map

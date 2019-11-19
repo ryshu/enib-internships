@@ -2,12 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const generic_val_1 = require("./generic.val");
 const modes = ['published', 'propositions', 'self'];
-exports.InternshipsList = Object.assign(Object.assign({}, generic_val_1.paginateValidator), { countries: {
-        in: ['query'],
-        isArray: { errorMessage: 'Country filter list must be array' },
-        optional: true,
-        toArray: true,
-    }, types: {
+exports.InternshipsList = Object.assign(Object.assign(Object.assign({}, generic_val_1.paginateValidator), generic_val_1.contriesValidator), { types: {
         in: ['query'],
         isArray: { errorMessage: 'Category filter list must be array' },
         optional: true,
@@ -38,104 +33,58 @@ exports.InternshipsList = Object.assign(Object.assign({}, generic_val_1.paginate
         optional: true,
         toBoolean: true,
     } });
-exports.InternshipCreate = {
-    subject: {
+exports.InternshipCreate = Object.assign(Object.assign({ subject: {
         in: ['body'],
         isString: { errorMessage: 'Subject must be of type string' },
         exists: { errorMessage: 'Subject must be defined' },
         trim: true,
         escape: true,
-    },
-    description: {
+    }, description: {
         in: ['body'],
         isString: { errorMessage: 'Description must be of type string' },
         exists: { errorMessage: 'Description must be defined' },
         trim: true,
         escape: true,
-    },
-    category: {
+    }, category: {
         in: ['body'],
         isInt: { options: { min: 0 }, errorMessage: 'Category ID should be an integer' },
         exists: { errorMessage: 'Category ID should be provide' },
         toInt: true,
-    },
-    country: {
-        in: ['body'],
-        isString: { errorMessage: 'Country must be of type string' },
-        exists: { errorMessage: 'Country must be defined' },
-        trim: true,
-        escape: true,
-    },
-    city: {
-        in: ['body'],
-        isString: { errorMessage: 'City must be of type string' },
-        exists: { errorMessage: 'City must be defined' },
-        trim: true,
-        escape: true,
-    },
-    postalCode: {
-        in: ['body'],
-        isString: { errorMessage: 'Postal code must be of type string' },
-        exists: { errorMessage: 'Postal code must be defined' },
-        trim: true,
-        escape: true,
-    },
-    address: {
-        in: ['body'],
-        isString: { errorMessage: 'Address must be of type string' },
-        exists: { errorMessage: 'Address must be defined' },
-        trim: true,
-        escape: true,
-    },
-    additional: {
-        in: ['body'],
-        isString: { errorMessage: 'Additional must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    isInternshipAbroad: {
+    } }, generic_val_1.addressValidator), { isInternshipAbroad: {
         in: ['body'],
         isBoolean: { errorMessage: 'Internship abroad must be of type boolean' },
         optional: true,
         toBoolean: true,
-    },
-    isValidated: {
+    }, isValidated: {
         in: ['body'],
         isBoolean: { errorMessage: 'Validated must be of type boolean' },
         optional: true,
         toBoolean: true,
-    },
-    isProposition: {
+    }, isProposition: {
         in: ['body'],
         isBoolean: { errorMessage: 'Proposition must be of type boolean' },
         optional: true,
         toBoolean: true,
-    },
-    isPublish: {
+    }, isPublish: {
         in: ['body'],
         isBoolean: { errorMessage: 'Publish must be of type boolean' },
         optional: true,
         toBoolean: true,
-    },
-    publishAt: {
+    }, publishAt: {
         in: ['body'],
         isInt: { errorMessage: 'Publish at must be a timestamp', options: { min: 0 } },
         optional: true,
         toInt: true,
-    },
-    startAt: {
+    }, startAt: {
         in: ['body'],
         isInt: { errorMessage: 'Start at must be a timestamp', options: { min: 0 } },
         optional: true,
         toInt: true,
-    },
-    endAt: {
+    }, endAt: {
         in: ['body'],
         isInt: { errorMessage: 'End at must be a timestamp', options: { min: 0 } },
         optional: true,
         toInt: true,
-    },
-};
+    } });
 exports.InternshipUpdate = generic_val_1.replaceAllExistByOptional(exports.InternshipCreate);
 //# sourceMappingURL=internships.val.js.map

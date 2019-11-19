@@ -20,6 +20,7 @@ const Internships_1 = __importDefault(require("../../models/Internships"));
 // Factorization methods to handle errors
 const global_helper_1 = require("../helpers/global.helper");
 const pagination_helper_1 = require("../helpers/pagination.helper");
+const singleton_1 = __importDefault(require("../../statistics/singleton"));
 /**
  * GET /students
  * Used to GET all students
@@ -69,7 +70,10 @@ exports.postStudent = (req, res, next) => {
     };
     // Insert student in database
     Students_1.default.create(student)
-        .then((created) => res.send(created))
+        .then((created) => {
+        singleton_1.default.addStudent();
+        return res.send(created);
+    })
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -138,7 +142,12 @@ exports.deleteStudent = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     Students_1.default.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected student
+        .then((val) => {
+        if (val) {
+            singleton_1.default.removeStudent();
+            return val.destroy();
+        }
+    }) // Call destroy on selected student
         .then(() => res.sendStatus(http_status_codes_1.default.OK)) // Return OK status
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
@@ -186,8 +195,20 @@ exports.linkStudentInternships = (req, res, next) => {
     Students_1.default.findByPk(req.params.id)
         .then((val) => __awaiter(void 0, void 0, void 0, function* () {
         if (global_helper_1.checkContent(val, next)) {
-            yield val.addInternship(Number(req.params.internship_id));
-            return res.sendStatus(http_status_codes_1.default.OK);
+            try {
+                yield val.addInternship(Number(req.params.internship_id));
+                const i = yield Internships_1.default.findByPk(req.params.internship_id);
+                const cId = i.availableCampaign ||
+                    i.validatedCampaign ||
+                    undefined;
+                if (cId) {
+                    singleton_1.default.linkStudent(cId);
+                }
+                return res.sendStatus(http_status_codes_1.default.OK);
+            }
+            catch (_e) {
+                return global_helper_1.checkContent(null, next);
+            }
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));

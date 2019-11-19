@@ -17,18 +17,6 @@ exports.CampaignCreate = {
         trim: true,
         escape: true,
     },
-    startAt: {
-        in: ['body'],
-        isInt: { errorMessage: 'Start At must be of type timestamp', options: { min: 0 } },
-        optional: true,
-        toInt: true,
-    },
-    endAt: {
-        in: ['body'],
-        isInt: { errorMessage: 'End At must be of type timestamp', options: { min: 0 } },
-        optional: true,
-        toInt: true,
-    },
     semester: {
         in: ['body'],
         isString: { errorMessage: 'Semester must be of type string' },
@@ -39,6 +27,24 @@ exports.CampaignCreate = {
     maxProposition: {
         in: ['body'],
         isInt: { errorMessage: 'maxProposition must be an integer >= 0', options: { min: 0 } },
+        optional: true,
+        toInt: true,
+    },
+    isPublish: {
+        in: ['body'],
+        isBoolean: { errorMessage: 'Publish must be of type boolean' },
+        optional: true,
+        toBoolean: true,
+    },
+    startAt: {
+        in: ['body'],
+        isInt: { errorMessage: 'Start At must be of type timestamp', options: { min: 0 } },
+        optional: true,
+        toInt: true,
+    },
+    endAt: {
+        in: ['body'],
+        isInt: { errorMessage: 'End At must be of type timestamp', options: { min: 0 } },
         optional: true,
         toInt: true,
     },

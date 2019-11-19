@@ -1,0 +1,1 @@
+{"version":3,"file":"server.js","sourceRoot":"","sources":["../../src/websocket/server.ts"],"names":[],"mappings":";;AAEA,MAAM,eAAe;IAGjB;QACI,IAAI,CAAC,EAAE,GAAG,IAAI,CAAC;IACnB,CAAC;IAEM,KAAK,CAAC,EAAmB;QAC5B,IAAI,CAAC,EAAE,GAAG,EAAE,CAAC;IACjB,CAAC;CACJ;AAED,MAAM,GAAG,GAAG,IAAI,eAAe,EAAE,CAAC;AAClC,kBAAe,GAAG,CAAC"}

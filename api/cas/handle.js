@@ -17,6 +17,7 @@ const logger_1 = __importDefault(require("../../utils/logger"));
 const Mentors_1 = __importDefault(require("../../models/Mentors"));
 const Students_1 = __importDefault(require("../../models/Students"));
 const admin_1 = require("../../configs/data/admin");
+const emails_1 = require("../../emails");
 const handled = [];
 const wait = (ms) => new Promise((r, j) => setTimeout(r, ms));
 /**
@@ -66,6 +67,8 @@ function handleConnection(req) {
                 // Register our new mentor and set his data in session info
                 req.session.info = yield Mentors_1.default.create(newUser);
             }
+            // Send welcom email to new user
+            yield emails_1.sendWelcome(email);
             logger_1.default.info(`Inject "${req.session.cas_user}" into database after his first connection`);
             const found2 = handled.findIndex((h) => h === req.session.cas_user);
             if (found2 !== -1) {
