@@ -310,4 +310,10 @@ export default {
       remove: "Supprimer l'offre",
     },
   },
+  students: {
+    placeholder: {
+      update: "Editer l'étudiant",
+      remove: "Supprimer l'étudiant de cette campaign",
+    },
+  },
 };
