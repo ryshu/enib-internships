@@ -3,46 +3,12 @@
     <!-- Filter -->
     <div class="filter-container">
       <el-input
-        v-model="listQuery.firstName"
-        :placeholder="$t('table.students.firstName')"
+        v-model="listQuery.name"
+        :placeholder="$t('table.students.lastName')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-select
-        v-model="listQuery.lastName"
-        filterable
-        multiple
-        collapse-tags
-        :placeholder="$t('table.students.lastName')"
-        style="width: 200px; margin-left: 10px;"
-        class="filter-item"
-        @change="handleFilter"
-      >
-        <el-option
-          v-for="item in countryList"
-          :key="item"
-          :label="item"
-          :value="item"
-        />
-      </el-select>
-      <el-select
-        v-model="listQuery.email"
-        filterable
-        multiple
-        collapse-tags
-        :placeholder="$t('table.filter.email')"
-        style="width: 200px; margin-left: 10px;"
-        class="filter-item"
-        @change="handleFilter"
-      >
-        <el-option
-          v-for="item in types"
-          :key="item.id"
-          :label="item.label"
-          :value="item.id"
-        />
-      </el-select>
       <el-button
         v-waves
         style="margin-left: 10px;"
@@ -50,8 +16,7 @@
         type="primary"
         icon="el-icon-search"
         @click="handleFilter"
-        >{{ $t('table.search') }}</el-button
-      >
+      >{{ $t('table.search') }}</el-button>
 
       <el-button
         v-waves
@@ -60,8 +25,7 @@
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
-        >{{ $t('table.export') }}</el-button
-      >
+      >{{ $t('table.export') }}</el-button>
     </div>
 
     <!-- Table -->
@@ -74,30 +38,20 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column
-        :label="$t('table.students.firstname')"
-        min-width="250px"
-      >
+      <el-table-column :label="$t('table.students.firstName')" min-width="250px">
         <template slot-scope="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">{{
-            row.firstname
-          }}</span>
+          <span class="link-type" @click="handleUpdate(row)">{{row.firstName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.students.lastname')" min-width="100px">
+      <el-table-column :label="$t('table.students.lastName')" min-width="100px">
         <template slot-scope="{ row }">
-          <span>{{ row.category.label }}</span>
+          <span>{{ row.lastName }}</span>
         </template>
       </el-table-column>
 
       <el-table-column :label="$t('table.students.email')" min-width="80px">
         <template slot-scope="{ row }">
-          <span>{{ row.country }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.students.semester')" min-width="80px">
-        <template slot-scope="{ row }">
-          <span>{{ row.city }}</span>
+          <span>{{ row.email }}</span>
         </template>
       </el-table-column>
 
@@ -108,19 +62,17 @@
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-button
-            type="primary"
-            size="small"
+          <crud-btn
+            type="warning"
             icon="el-icon-edit"
-            circle
-            @click="handleUpdate(row)"
+            :placeholder="$t('students.placeholder.update')"
+            @clicked="handleUpdate(row)"
           />
-          <el-button
-            size="small"
+          <crud-btn
             type="danger"
             icon="el-icon-delete"
-            circle
-            @click="handleDelete(row, 'deleted')"
+            :placeholder="$t('students.placeholder.remove')"
+            @clicked="handleDelete(row)"
           />
         </template>
       </el-table-column>
@@ -154,14 +106,14 @@ import { IStudent } from '../../api/types';
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
 
-import Pagination from '../../../components/Pagination/index.vue';
-
-import { CategoriesModule } from '../../store/modules/categories';
+import Pagination from '../../components/Pagination/index.vue';
+import CrudBtn from '../../components/CrudBtn/index.vue';
 
 @Component({
   name: 'StudentCampaignsList',
   components: {
     Pagination,
+    CrudBtn,
   },
 })
 export default class extends Vue {
@@ -173,17 +125,10 @@ export default class extends Vue {
   private listQuery = {
     page: 1,
     limit: 10,
-    firstName: undefined,
-    lastName: [],
-    email: [],
-    semester: [],
+    name: undefined,
   };
 
   private downloadLoading = false;
-
-  private get types() {
-    return CategoriesModule.categories;
-  }
 
   public created() {
     this.getList();
@@ -206,23 +151,15 @@ export default class extends Vue {
     this.downloadLoading = true;
     const tHeader = [
       this.$t('export.id') as string,
-      this.$t('export.subject') as string,
-      this.$t('export.description') as string,
-      this.$t('export.country') as string,
-      this.$t('export.city') as string,
-      this.$t('export.postalCode') as string,
-      this.$t('export.address') as string,
-      this.$t('export.additional') as string,
-      this.$t('export.internships.isInternshipAbroad') as string,
-      this.$t('export.internships.isValidated') as string,
+      this.$t('export.firstName') as string,
+      this.$t('export.lastName') as string,
+      this.$t('export.email') as string,
     ];
-    const filterVal = ['id', 'firstName', 'lastName', 'email', 'semester'];
+    const filterVal = ['id', 'firstName', 'lastName', 'email'];
     const data = formatJson(filterVal, this.list);
-    exportJson2Excel(
-      tHeader,
-      data,
-      this.$t('export.students.fileName') as string
-    );
+    exportJson2Excel(tHeader, data, this.$t(
+      'export.students.fileName'
+    ) as string);
     this.downloadLoading = false;
   }
 }
