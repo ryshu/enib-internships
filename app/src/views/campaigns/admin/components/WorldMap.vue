@@ -92,7 +92,7 @@ export default class extends mixins(ResizeMixin) {
         max: max,
         inRange: {
           color: ['#F2A007', '#F279A6'],
-          symbolSize: [1, 50],
+          symbolSize: [5, 50],
         },
       },
       geo: {
