@@ -1,3 +1,5 @@
+import { IInternshipTypeEntity } from './internship.type';
+
 declare interface IStudentEntity {
     id?: number;
 
@@ -5,6 +7,8 @@ declare interface IStudentEntity {
     lastName: string;
     email: string;
     semester: string;
+
+    internships?: IInternshipTypeEntity[];
 
     createdAt?: Date;
     updatedAt?: Date;

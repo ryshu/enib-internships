@@ -1,5 +1,13 @@
 import { INTERNSHIP_MODE } from '../statistics/base';
 
+import { IFileEntity } from './file';
+import { IStudentEntity } from './student';
+import { IMentorEntity } from './mentor';
+import { IMentoringPropositionEntity } from './mentoring.proposition';
+import { ICampaignEntity } from './campaign';
+import { IBusinessEntity } from './businness';
+import { IInternshipTypeEntity } from './internship.type';
+
 declare interface IInternshipEntity {
     id?: number;
 
@@ -25,6 +33,15 @@ declare interface IInternshipEntity {
     publishAt: number;
     startAt: number;
     endAt: number;
+
+    // Relation
+    files?: IFileEntity[];
+    student?: IStudentEntity;
+    mentor?: IMentorEntity;
+    propositions?: IMentoringPropositionEntity[];
+    campaign?: ICampaignEntity;
+    business?: IBusinessEntity;
+    category?: IInternshipTypeEntity;
 
     createdAt?: Date;
     updatedAt?: Date;
