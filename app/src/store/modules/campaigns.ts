@@ -29,6 +29,14 @@ class Campaigns extends VuexModule {
     found !== -1 ? this.all.splice(found, 1, data) : this.all.push(data);
   }
 
+  @Mutation
+  private REMOVE_CAMPAIGN(data: ICampaigns) {
+    const found = this.all.findIndex(c => c.id === data.id);
+    if(found !== -1) {
+      this.all.splice(found, 1);
+    }
+  }
+
   @Action
   public getCampaign(id: number): ICampaigns | undefined {
     const found = this.all.findIndex(c => c.id === id);
@@ -51,6 +59,11 @@ class Campaigns extends VuexModule {
   @Action
   public addCampaign(campaign: ICampaigns) {
     this.ADD_CAMPAIGN(campaign);
+  }
+
+  @Action
+  public removeCampaign(campaign: ICampaigns) {
+    this.REMOVE_CAMPAIGN(campaign);
   }
 }
 
