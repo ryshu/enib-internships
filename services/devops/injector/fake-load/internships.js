@@ -28,12 +28,15 @@ module.exports = async function(quantity = 100, debug = false) {
         await Promise.all(todo.map((t) => InternshipTypes.create({ label: t })));
     }
 
+    // Force 70% of q to France
+    const gap = Math.round(quantity * 0.7);
+
     for (let i = 0; i < quantity; i++) {
         const publish = faker.random.boolean();
         const internship = {
             subject: faker.lorem.lines(1),
             description: faker.lorem.paragraph(5),
-            country: faker.address.country(),
+            country: i > gap ? faker.address.country() : 'France',
             city: faker.address.city(),
             postalCode: faker.address.zipCode(),
             address: faker.address.streetAddress(),
