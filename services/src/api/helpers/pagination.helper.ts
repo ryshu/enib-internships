@@ -1,6 +1,11 @@
 import { FindOptions } from 'sequelize';
 
-export function paginate(opts: { page: number; limit: number }, filter?: FindOptions): FindOptions {
+export interface PaginateOpts {
+    page: number;
+    limit: number;
+}
+
+export function paginate(opts: PaginateOpts, filter?: FindOptions): FindOptions {
     const offset = (Number(opts.page) - 1) * Number(opts.limit);
     const add = filter ? filter : {};
     if (Number(opts.page) > 0 && Number(opts.limit) !== 0) {

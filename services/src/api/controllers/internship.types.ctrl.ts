@@ -3,9 +3,9 @@ import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
 import sequelize from 'sequelize';
 
-import InternshipTypes from '../../models/InternshipTypes';
-import Internships from '../../models/Internships';
-import Campaigns from '../../models/Campaigns';
+import InternshipTypeModel from '../../models/internship.type.mode';
+import InternshipModel from '../../models/internship.model';
+import Campaigns from '../../models/sequelize/Campaigns';
 
 import {
     UNPROCESSABLE_ENTITY,
@@ -15,17 +15,16 @@ import {
 } from '../helpers/global.helper';
 import { paginate } from '../helpers/pagination.helper';
 
+import { IInternshipTypeEntity } from '../../declarations';
+import { generateGetInternships } from '../helpers/internships.helper';
+
 /**
  * GET /internshipTypes
  * Used to GET all internship types
  */
-export const getInternshipTypes = (req: Request, res: Response, next: NextFunction): void => {
-    InternshipTypes.findAll()
-        .then((it) => {
-            if (checkArrayContent(it, next)) {
-                return res.send(it);
-            }
-        })
+export const getInternshipTypes = (_req: Request, res: Response, next: NextFunction): void => {
+    InternshipTypeModel.getInternshipTypes()
+        .then((types) => (checkArrayContent(types, next) ? res.send(types) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -40,11 +39,11 @@ export const postInternshipType = (req: Request, res: Response, next: NextFuncti
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    const internship: IInternshipTypeEntity = {
+    const type: IInternshipTypeEntity = {
         label: req.body.label,
     };
 
-    InternshipTypes.create(internship)
+    InternshipTypeModel.createInternshipType(type)
         .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -59,13 +58,8 @@ export const getInternshipType = (req: Request, res: Response, next: NextFunctio
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-
-    InternshipTypes.findByPk(req.params.id)
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val);
-            }
-        })
+    InternshipTypeModel.getInternshipType(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -80,23 +74,8 @@ export const putInternshipType = (req: Request, res: Response, next: NextFunctio
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    InternshipTypes.findByPk(req.params.id)
-        .then((it) => {
-            if (!checkContent(it, next)) {
-                return undefined;
-            }
-
-            if (req.body.label) {
-                it.set('label', req.body.label);
-            }
-
-            return it.save();
-        })
-        .then((updated) => {
-            if (updated) {
-                return res.send(updated);
-            }
-        })
+    InternshipTypeModel.updateInternshipType(Number(req.params.id), req.body)
+        .then((updated) => (checkContent(updated, next) ? res.send(updated) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
 
@@ -111,8 +90,7 @@ export const deleteInternshipType = (req: Request, res: Response, next: NextFunc
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    InternshipTypes.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+    InternshipTypeModel.removeInternshipType(Number(req.params.id))
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
@@ -121,40 +99,7 @@ export const deleteInternshipType = (req: Request, res: Response, next: NextFunc
  * GET /internshipTypes/:id/internships
  * Used to select an internships type by ID and return list of internships link to it
  */
-export const getInternshipTypeInternships = (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-): void => {
-    // @see validator + router
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return BAD_REQUEST_VALIDATOR(next, errors);
-    }
-
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-
-    const findOpts: sequelize.FindOptions = { where: { categoryId: req.params.id } };
-
-    let max: number;
-    Internships.count(findOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Internships.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (internships) => {
-            if (checkArrayContent(internships, next)) {
-                return res.send({
-                    page,
-                    data: internships,
-                    length: internships.length,
-                    max,
-                });
-            }
-        })
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
-};
+export const getInternshipTypeInternships = generateGetInternships('categoryId');
 
 /**
  * POST /internshipTypes/:id/internships/:internship_id/link
@@ -171,13 +116,8 @@ export const linkInternshipTypeInternship = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    InternshipTypes.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                await val.addInternship(Number(req.params.internship_id));
-                return res.sendStatus(httpStatus.OK);
-            }
-        })
+    InternshipTypeModel.linkToInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((type) => (checkContent(type, next) ? res.send(type) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -198,6 +138,7 @@ export const getInternshipTypeCampaigns = (
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
 
+    // TODO: Setup this filter in database API
     const findOpts: sequelize.FindOptions = { where: { categoryId: req.params.id } };
 
     let max: number;
@@ -234,12 +175,7 @@ export const linkInternshipTypeCampaign = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    InternshipTypes.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                await val.addCampaign(Number(req.params.campaign_id));
-                return res.sendStatus(httpStatus.OK);
-            }
-        })
+    InternshipTypeModel.linkToCampaign(Number(req.params.id), Number(req.params.campaign_id))
+        .then((type) => (checkContent(type, next) ? res.send(type) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

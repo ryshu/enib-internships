@@ -2,122 +2,27 @@ import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
 import moment from 'moment';
-import sequelize from 'sequelize';
 
-import Internships from '../../models/Internships';
-import Businesses from '../../models/Businesses';
-import InternshipTypes from '../../models/InternshipTypes';
-import Students from '../../models/Students';
-import Files from '../../models/Files';
-import MentoringPropositions from '../../models/MentoringPropositions';
-import Mentors from '../../models/Mentors';
-import Campaigns from '../../models/Campaigns';
-
-import { paginate } from '../helpers/pagination.helper';
-import { cloneDeep } from 'lodash';
+import InternshipModel from '../../models/internship.model';
+import FileModel from '../../models/files.model';
+import MentoringPropositionModel from '../../models/mentoring.proposition.model';
 
 import {
     UNPROCESSABLE_ENTITY,
-    checkArrayContent,
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
-import { updateInternshipStatus } from '../helpers/internships.helper';
-
-import cache from '../../statistics/singleton';
+import { generateGetInternships } from '../helpers/internships.helper';
 
 import { INTERNSHIP_MODE } from '../../statistics/base';
+
 import { IInternshipEntity } from '../../declarations/internship';
 
 /**
  * GET /internships
  * Used to GET all internships
  */
-export const getInternships = (req: Request, res: Response, next: NextFunction): void => {
-    // @see validator + router
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return BAD_REQUEST_VALIDATOR(next, errors);
-    }
-
-    // Retrive query data
-    const {
-        page = 1,
-        limit = 20,
-        countries,
-        types,
-        subject,
-        mode = 'published',
-        isAbroad,
-        isValidated,
-    } = req.query;
-
-    const findOpts: sequelize.FindOptions = {
-        where: {
-            isProposition: mode === 'propositions',
-            isPublish: mode === 'published',
-        },
-        include: [{ model: InternshipTypes, as: 'category', duplicating: false }],
-        group: [sequelize.col(`Internships.id`)],
-    };
-
-    if (mode === 'self') {
-        (findOpts.where as any).mentorId = req.session.info.id;
-    }
-
-    if (countries) {
-        // If country list is given, add it to query
-        // Sequelize will translate it by "country in countries"
-        (findOpts.where as any).country = countries;
-    }
-
-    if (types) {
-        // If category list is given, add it to query
-        // Sequelize will translate it by "category in types"
-        (findOpts.where as any).categoryId = types;
-    }
-
-    if (!!isAbroad) {
-        (findOpts.where as any).isInternshipAbroad = true;
-    }
-
-    if (!!isValidated) {
-        (findOpts.where as any).isValidated = true;
-    } else if (req.session.info.role !== 'admin' && mode !== 'self') {
-        // If user isn't admin and doesn't want only validated,
-        // give him only not validated internships
-        (findOpts.where as any).isValidated = false;
-    }
-
-    if (subject) {
-        // If subject filter is given, apply it using substring
-        (findOpts.where as any).subject = { [sequelize.Op.substring]: subject };
-    }
-
-    // Build count query options
-    const countOpts: sequelize.FindOptions = {
-        where: cloneDeep(findOpts.where),
-        include: [{ model: InternshipTypes, as: 'category', attributes: [], duplicating: false }],
-    };
-
-    let max: number;
-    Internships.count(countOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Internships.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (internships) => {
-            if (checkArrayContent(internships, next)) {
-                return res.send({
-                    page,
-                    data: internships,
-                    length: internships.length,
-                    max,
-                });
-            }
-        })
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
-};
+export const getInternships = generateGetInternships();
 
 /**
  * POST /internship
@@ -156,22 +61,9 @@ export const postInternship = async (req: Request, res: Response, next: NextFunc
         endAt: !req.body.endAt ? null : moment(req.body.endAt).valueOf(),
     };
 
-    try {
-        const category = await InternshipTypes.findByPk(req.body.category);
-        if (!checkContent(category, next)) {
-            return undefined;
-        }
-
-        const created = await Internships.create(internship);
-        await created.setCategory(category);
-
-        // change stats
-        cache.stateChange(created.state);
-
-        return res.send(created);
-    } catch (error) {
-        UNPROCESSABLE_ENTITY(next, error);
-    }
+    InternshipModel.createInternship(internship)
+        .then((created) => res.send(created))
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -184,24 +76,8 @@ export const getInternship = (req: Request, res: Response, next: NextFunction): 
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-
-    Internships.findByPk(req.params.id, {
-        include: [
-            { model: Businesses, as: 'business' },
-            { model: InternshipTypes, as: 'category' },
-            { model: Campaigns, as: 'availableCampaign' },
-            { model: Campaigns, as: 'validatedCampaign' },
-            { model: Mentors, as: 'mentor' },
-            { model: MentoringPropositions, as: 'propositions' },
-            { model: Students, as: 'student' },
-            { model: Files, as: 'files' },
-        ],
-    })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val);
-            }
-        })
+    InternshipModel.getInternship(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -216,106 +92,9 @@ export const putInternship = (req: Request, res: Response, next: NextFunction): 
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id)
-        .then(async (internships) => {
-            if (!checkContent(internships, next)) {
-                return undefined;
-            }
-            const cId =
-                (internships.availableCampaign as number) ||
-                (internships.validatedCampaign as number) ||
-                undefined;
-
-            if (req.body.subject) {
-                internships.set('subject', req.body.subject);
-            }
-            if (req.body.description) {
-                internships.set('description', req.body.description);
-            }
-
-            if (req.body.category) {
-                try {
-                    const category = await InternshipTypes.findByPk(req.body.category);
-                    if (category) {
-                        await internships.setCategory(category);
-                    }
-                } catch (_e) {
-                    // Pass, don't thrown any error
-                }
-            }
-
-            if (req.body.country) {
-                internships.set('country', req.body.country);
-            }
-            if (req.body.city) {
-                internships.set('city', req.body.city);
-            }
-            if (req.body.postalCode) {
-                internships.set('postalCode', req.body.postalCode);
-            }
-            if (req.body.address) {
-                internships.set('address', req.body.address);
-            }
-            if (req.body.additional) {
-                internships.set('additional', req.body.additional);
-            }
-
-            if (req.body.isInternshipAbroad !== undefined) {
-                internships.set('isInternshipAbroad', req.body.isInternshipAbroad ? true : false);
-            }
-
-            if (req.body.isProposition !== undefined && req.session.info.role === 'admin') {
-                internships.set('isProposition', req.body.isProposition ? true : false);
-                if (req.body.isProposition) {
-                    cache.stateChange(INTERNSHIP_MODE.SUGGESTED, internships.state, cId);
-                } else {
-                    cache.stateChange(INTERNSHIP_MODE.WAITING, internships.state, cId);
-                }
-            }
-
-            if (req.body.isPublish !== undefined && req.session.info.role === 'admin') {
-                internships.set('isPublish', req.body.isPublish ? true : false);
-                if (req.body.isPublish) {
-                    cache.stateChange(INTERNSHIP_MODE.AVAILABLE, internships.state, cId);
-                } else {
-                    cache.stateChange(INTERNSHIP_MODE.WAITING, internships.state, cId);
-                }
-            }
-
-            if (req.body.isValidated !== undefined && req.session.info.role === 'admin') {
-                internships.set('isValidated', req.body.isValidated ? true : false);
-                if (req.body.isValidated) {
-                    cache.stateChange(INTERNSHIP_MODE.VALIDATED, internships.state, cId);
-                }
-            }
-
-            if (req.body.publishAt !== undefined && req.session.info.role === 'admin') {
-                internships.set(
-                    'publishAt',
-                    req.body.publishAt === 0 ? null : moment(req.body.publishAt).valueOf(),
-                );
-            }
-            if (req.body.startAt !== undefined) {
-                internships.set(
-                    'startAt',
-                    req.body.startAt === 0 ? null : moment(req.body.startAt).valueOf(),
-                );
-            }
-            if (req.body.endAt !== undefined) {
-                internships.set(
-                    'endAt',
-                    req.body.endAt === 0 ? null : moment(req.body.endAt).valueOf(),
-                );
-            }
-
-            return internships.save();
-        })
-        .then((updated) => {
-            if (updated) {
-                return res.send(updated);
-            }
-        })
-        .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+    InternshipModel.updateInternship(Number(req.params.id), req.body)
+        .then((updated) => (checkContent(updated, next) ? res.send(updated) : undefined))
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -329,22 +108,9 @@ export const deleteInternship = (req: Request, res: Response, next: NextFunction
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id)
-        .then((val) => {
-            if (val) {
-                cache.stateRemove(
-                    val.state,
-                    -1,
-                    (val.availableCampaign as number) ||
-                        (val.validatedCampaign as number) ||
-                        undefined,
-                );
-                return val.destroy();
-            }
-            return undefined;
-        })
+    InternshipModel.removeInternship(Number(req.params.id))
         .then(() => res.sendStatus(httpStatus.OK))
-        .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -358,12 +124,8 @@ export const getInternshipBusiness = (req: Request, res: Response, next: NextFun
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id, { include: [{ model: Businesses, as: 'business' }] })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.business);
-            }
-        })
+    InternshipModel.getInternship(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.business) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -378,17 +140,8 @@ export const linkInternshipBusinesses = (req: Request, res: Response, next: Next
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.setBusiness(Number(req.params.business_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    InternshipModel.linkToBusiness(Number(req.params.id), Number(req.params.business_id))
+        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -407,12 +160,8 @@ export const getInternshipInternshipType = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id, { include: [{ model: InternshipTypes, as: 'category' }] })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.category);
-            }
-        })
+    InternshipModel.getInternship(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.category) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -431,17 +180,8 @@ export const linkInternshipInternshipTypes = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.setCategory(Number(req.params.internship_type_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    InternshipModel.linkToCategory(Number(req.params.id), Number(req.params.internship_type_id))
+        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -456,17 +196,13 @@ export const getInternshipStudent = (req: Request, res: Response, next: NextFunc
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id, { include: [{ model: Students, as: 'student' }] })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.student);
-            }
-        })
+    InternshipModel.getInternship(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.student) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
- * POST /internships/:id/student/:students_id/link
+ * POST /internships/:id/student/:student_id/link
  * Used to link internship to a student
  */
 export const linkInternshipStudents = (req: Request, res: Response, next: NextFunction): void => {
@@ -476,17 +212,8 @@ export const linkInternshipStudents = (req: Request, res: Response, next: NextFu
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Students.findByPk(req.params.student_id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                await val.addInternship(Number(req.params.id));
-                const i = await Internships.findByPk(req.params.id);
-                cache.addStudent(
-                    (i.availableCampaign as number) || (i.validatedCampaign as number) || undefined,
-                );
-                return res.sendStatus(httpStatus.OK);
-            }
-        })
+    InternshipModel.linkToStudent(Number(req.params.id), Number(req.params.student_id))
+        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -503,24 +230,8 @@ export const getInternshipFiles = (req: Request, res: Response, next: NextFuncti
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
 
-    const findOpts: sequelize.FindOptions = { where: { internshipId: req.params.id } };
-
-    let max: number;
-    Files.count(findOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Files.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (files) => {
-            if (checkArrayContent(files, next)) {
-                return res.send({
-                    page,
-                    data: files,
-                    length: files.length,
-                    max,
-                });
-            }
-        })
+    FileModel.getFiles({ internshipId: Number(req.params.id) }, { page, limit })
+        .then((files) => (checkContent(files, next) ? res.send(files) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -534,13 +245,9 @@ export const linkInternshipFiles = (req: Request, res: Response, next: NextFunct
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Internships.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                await val.addFile(Number(req.params.file_id));
-                return res.sendStatus(httpStatus.OK);
-            }
-        })
+
+    InternshipModel.linkToFile(Number(req.params.id), Number(req.params.file_id))
+        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -559,14 +266,8 @@ export const getAvailabletInternshipCampaign = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id, {
-        include: [{ model: Campaigns, as: 'availableCampaign' }],
-    })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.availableCampaign);
-            }
-        })
+    InternshipModel.getInternship(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.availableCampaign) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -585,20 +286,8 @@ export const linkAvailableCampaignInternships = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.setAvailableCampaign(Number(req.params.campaign_id));
-                    await updateInternshipStatus(val, INTERNSHIP_MODE.AVAILABLE);
-                    cache.stateRemove(INTERNSHIP_MODE.AVAILABLE, 1);
-                    cache.stateAdd(INTERNSHIP_MODE.AVAILABLE, 1, Number(req.params.campaign_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    InternshipModel.linkToAvailableCampaign(Number(req.params.id), Number(req.params.campaign_id))
+        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -617,19 +306,13 @@ export const getValidatedInternshipCampaign = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id, {
-        include: [{ model: Campaigns, as: 'validatedCampaign' }],
-    })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.validatedCampaign);
-            }
-        })
+    InternshipModel.getInternship(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.validatedCampaign) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
- * POST /internships/:id/validatedCampaign/:validatedCampaign_id/link
+ * POST /internships/:id/validatedCampaign/:campaign_id/link
  * Used to link internship to a validatedCampaign
  */
 export const linkValidatedCampaignInternships = (
@@ -643,20 +326,8 @@ export const linkValidatedCampaignInternships = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.setValidatedCampaign(Number(req.params.campaign_id));
-                    await updateInternshipStatus(val, INTERNSHIP_MODE.ATTRIBUTED);
-                    cache.stateRemove(INTERNSHIP_MODE.ATTRIBUTED, 1);
-                    cache.stateAdd(INTERNSHIP_MODE.ATTRIBUTED, 1, Number(req.params.campaign_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    InternshipModel.linkToValidatedCampaign(Number(req.params.id), Number(req.params.campaign_id))
+        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -677,24 +348,13 @@ export const getInternshipPropositions = (
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
 
-    const findOpts: sequelize.FindOptions = { where: { internshipId: req.params.id } };
-
-    let max: number;
-    MentoringPropositions.count(findOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return MentoringPropositions.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (mps) => {
-            if (checkArrayContent(mps, next)) {
-                return res.send({
-                    page,
-                    data: mps,
-                    length: mps.length,
-                    max,
-                });
-            }
-        })
+    MentoringPropositionModel.getMentoringPropositions(
+        { internshipId: Number(req.params.id) },
+        { page, limit },
+    )
+        .then((propositions) =>
+            checkContent(propositions, next) ? res.send(propositions) : undefined,
+        )
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -712,13 +372,12 @@ export const linkInternshipPropositions = (
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Internships.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                await val.addProposition(Number(req.params.mentoring_proposition_id));
-                return res.sendStatus(httpStatus.OK);
-            }
-        })
+
+    InternshipModel.linkToProposition(
+        Number(req.params.id),
+        Number(req.params.mentoring_proposition_id),
+    )
+        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -733,12 +392,8 @@ export const getInternshipMentor = (req: Request, res: Response, next: NextFunct
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Internships.findByPk(req.params.id, { include: [{ model: Mentors, as: 'mentor' }] })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.mentor);
-            }
-        })
+    InternshipModel.getInternship(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.mentor) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -753,17 +408,8 @@ export const linkInternshipMentor = (req: Request, res: Response, next: NextFunc
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Mentors.findByPk(req.params.mentor_id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.addInternship(Number(req.params.id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    InternshipModel.linkToMentor(Number(req.params.id), Number(req.params.mentor_id))
+        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 

@@ -4,6 +4,7 @@ import { checkSchema } from 'express-validator';
 import * as PropositionsCtrl from '../controllers/mentoring.propositions.ctrl';
 
 import { ID, CampaignID, MentorID, InternshipID } from '../validators/generic.val';
+import { InternshipsList } from '../validators/internships.val';
 import {
     MentoringPropositionUpdate,
     MentoringPropositionCreate,
@@ -38,7 +39,11 @@ router.post(
     PropositionsCtrl.linkMentoringPropositionMentor,
 );
 
-router.get('/:id/internships', checkSchema(ID), PropositionsCtrl.getMentoringPropositionInternship);
+router.get(
+    '/:id/internships',
+    checkSchema(Object.assign({}, ID, InternshipsList)),
+    PropositionsCtrl.getMentoringPropositionInternship,
+);
 router.post(
     '/:id/internships/:internship_id/link',
     checkSchema(Object.assign({}, ID, InternshipID)),

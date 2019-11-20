@@ -5,6 +5,8 @@ import * as FilesCtrl from '../controllers/files.ctrl';
 
 import { ID, InternshipID } from '../validators/generic.val';
 import { FileUpdate, FileCreate, FileList } from '../validators/files.val';
+import { InternshipsList } from '../validators/internships.val';
+
 import { uploadHandler } from '../../files-storage/base';
 
 const router = express.Router();
@@ -17,7 +19,11 @@ router.put('/:id', checkSchema(Object.assign({}, ID, FileUpdate)), FilesCtrl.put
 router.delete('/:id', checkSchema(ID), FilesCtrl.deleteFile);
 
 // Internships' files
-router.get('/:id/internships', checkSchema(ID), FilesCtrl.getFileInternship);
+router.get(
+    '/:id/internships',
+    checkSchema(Object.assign({}, ID, InternshipsList)),
+    FilesCtrl.getFileInternship,
+);
 router.post(
     '/:id/internships/:internship_id/link',
     checkSchema(Object.assign({}, ID, InternshipID)),
