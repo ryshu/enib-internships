@@ -1,13 +1,13 @@
 import * as Sequelize from 'sequelize';
 
-import database from '../configs/instances/database';
+import database from '../../configs/instances/database';
 import Campaigns from './Campaigns';
 import MPs from './MentoringPropositions';
 import Internships from './Internships';
 
-import { IInternshipEntity } from '../declarations/internship';
+import { IInternshipEntity, IMentoringPropositionEntity } from '../../declarations';
 
-class Mentors extends Sequelize.Model implements IMentorEntity {
+class Mentors extends Sequelize.Model {
     public static associations: {
         propositions: Sequelize.Association<Mentors, MPs>;
         internships: Sequelize.Association<Mentors, Internships>;

@@ -1,10 +1,10 @@
 import * as Sequelize from 'sequelize';
 import Internships from './Internships';
-import database from '../configs/instances/database';
+import database from '../../configs/instances/database';
 
-import { IInternshipEntity } from '../declarations/internship';
+import { IInternshipEntity } from '../../declarations';
 
-class Files extends Sequelize.Model implements IFileEntity {
+class Files extends Sequelize.Model {
     public static associations: {
         internship: Sequelize.Association<Files, Internships>;
     };

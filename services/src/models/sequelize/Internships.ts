@@ -1,6 +1,6 @@
 import * as Sequelize from 'sequelize';
 
-import database from '../configs/instances/database';
+import database from '../../configs/instances/database';
 
 import Files from './Files';
 import Businesses from './Businesses';
@@ -10,10 +10,19 @@ import Mentors from './Mentors';
 import MPs from './MentoringPropositions';
 import Campaigns from './Campaigns';
 
-import { INTERNSHIP_MODE } from '../statistics/base';
-import { IInternshipEntity } from '../declarations/internship';
+import { INTERNSHIP_MODE } from '../../statistics/base';
 
-class Internships extends Sequelize.Model implements IInternshipEntity {
+import {
+    IBusinessEntity,
+    ICampaignEntity,
+    IFileEntity,
+    IInternshipTypeEntity,
+    IStudentEntity,
+    IMentorEntity,
+    IMentoringPropositionEntity,
+} from '../../declarations';
+
+class Internships extends Sequelize.Model {
     public static associations: {
         category: Sequelize.Association<Internships, InternshipTypes>;
         business: Sequelize.Association<Internships, Businesses>;
