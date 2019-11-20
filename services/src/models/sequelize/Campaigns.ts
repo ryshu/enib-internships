@@ -16,7 +16,7 @@ import {
 class Campaigns extends Sequelize.Model {
     public static associations: {
         propositions: Sequelize.Association<Campaigns, MPS>;
-        availbleInternships: Sequelize.Association<Campaigns, Internships>;
+        availableInternships: Sequelize.Association<Campaigns, Internships>;
         validatedInternships: Sequelize.Association<Campaigns, Internships>;
         mentors: Sequelize.Association<Campaigns, Mentors>;
         category: Sequelize.Association<Campaigns, InternshipTypes>;

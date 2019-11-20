@@ -1,3 +1,5 @@
+import { MentorRole } from '../declarations';
+
 /** @property {MentorRole[]} mentorRoles array of each mentors roles availables */
 export const mentorRoles: MentorRole[] = ['default', 'admin'];
 

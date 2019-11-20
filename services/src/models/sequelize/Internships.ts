@@ -210,10 +210,10 @@ Internships.init(
                 exclude: [
                     'businessId',
                     'studentId',
+                    'mentorId',
                     'categoryId',
                     'availableCampaignId',
                     'validatedCampaignId',
-                    'mentorId',
                 ],
             },
         },
