@@ -7,10 +7,14 @@ import app from '../../../../src/app';
 import dbSetup from '../../../../src/configs/setup/database';
 
 // Import model for pre-operation before asserting API methods
-import Students from '../../../../src/models/Students';
-import Internships from '../../../../src/models/Internships';
+import Students from '../../../../src/models/sequelize/Students';
+import Internships from '../../../../src/models/sequelize/Internships';
 
-import { defaultStudents, defaultInternships } from '../../../../__mocks__/mockData';
+import {
+    defaultStudents,
+    defaultInternships,
+    defaultInternshipTypes,
+} from '../../../../__mocks__/mockData';
 
 jest.setTimeout(30000);
 
@@ -238,12 +242,19 @@ describe('GET /students/:id/internships', () => {
     it('Students_200_WithLinkedData', async () => {
         const VALID_STUDENT = defaultStudents();
         const VALID_INTERNSHIP = defaultInternships();
+        const VALID_INTERNSHIP_TYPE = defaultInternshipTypes();
 
-        let CREATED_STUDENT = await Students.create(VALID_STUDENT);
-        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+        VALID_INTERNSHIP.category = VALID_INTERNSHIP_TYPE;
+        VALID_STUDENT.internships = [VALID_INTERNSHIP];
 
-        await CREATED_STUDENT.addInternship(CREATED_INTERNSHIP.id);
-        CREATED_STUDENT = await Students.findByPk(CREATED_STUDENT.id);
+        const CREATED_STUDENT = await Students.create(VALID_STUDENT, {
+            include: [
+                {
+                    association: Students.associations.internships,
+                    include: [{ association: Internships.associations.category }],
+                },
+            ],
+        });
 
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/students/${CREATED_STUDENT.id}/internships`,

@@ -2,8 +2,10 @@
 
 exports[`GET /internshipTypes/:id InternshipTypes_200 1`] = `
 Object {
+  "campaigns": Array [],
   "createdAt": Any<String>,
   "id": Any<Number>,
+  "internships": Array [],
   "label": "test",
   "updatedAt": Any<String>,
 }

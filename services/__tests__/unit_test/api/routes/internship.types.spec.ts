@@ -7,7 +7,7 @@ import app from '../../../../src/app';
 import dbSetup from '../../../../src/configs/setup/database';
 
 // Import model for pre-operation before asserting API methods
-import InternshipTypes from '../../../../src/models/InternshipTypes';
+import InternshipTypes from '../../../../src/models/sequelize/InternshipTypes';
 
 import {
     defaultInternshipTypes,
@@ -15,8 +15,8 @@ import {
     defaultCampaigns,
 } from '../../../../__mocks__/mockData';
 
-import Internships from '../../../../src/models/Internships';
-import Campaigns from '../../../../src/models/Campaigns';
+import Internships from '../../../../src/models/sequelize/Internships';
+import Campaigns from '../../../../src/models/sequelize/Campaigns';
 
 const baseURL = `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`;
 
@@ -211,11 +211,11 @@ describe('GET /internshipTypes/:id/internships', () => {
         const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
         const VALID_INTERNSHIP = defaultInternships();
 
-        let CREATED_INTERNSHIP_TYPES = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
-        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+        VALID_INTERNSHIP_TYPES.internships = [VALID_INTERNSHIP];
 
-        await CREATED_INTERNSHIP_TYPES.addInternship(CREATED_INTERNSHIP.id);
-        CREATED_INTERNSHIP_TYPES = await InternshipTypes.findByPk(CREATED_INTERNSHIP_TYPES.id);
+        const CREATED_INTERNSHIP_TYPES = await InternshipTypes.create(VALID_INTERNSHIP_TYPES, {
+            include: [{ association: InternshipTypes.associations.internships }],
+        });
 
         const RESPONSE = await request(app).get(
             `${baseURL}/internshipTypes/${CREATED_INTERNSHIP_TYPES.id}/internships`,
@@ -252,7 +252,7 @@ describe('POST /internshipTypes/:id/internships/:internship_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('InternshipTypes_200_NoInternship', async () => {
+    it('InternshipTypes_204_NoInternship', async () => {
         // In this case, we check if link a existing Bussiness and an unexisting internships work
         const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
 
@@ -260,7 +260,7 @@ describe('POST /internshipTypes/:id/internships/:internship_id/link', () => {
         const RESPONSE = await request(app).post(
             `${baseURL}/internshipTypes/${CREATED.id}/internships/20/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('InternshipTypes_200_WithInternship', async () => {
@@ -357,7 +357,7 @@ describe('POST /internshipTypes/:id/campaigns/:campaign_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('InternshipTypes_200_NoCampaign', async () => {
+    it('InternshipTypes_204_NoCampaign', async () => {
         // In this case, we check if link a existing Bussiness and an unexisting campaigns work
         const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
 
@@ -365,7 +365,7 @@ describe('POST /internshipTypes/:id/campaigns/:campaign_id/link', () => {
         const RESPONSE = await request(app).post(
             `${baseURL}/internshipTypes/${CREATED.id}/campaigns/20/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('InternshipTypes_200_WithCampaign', async () => {

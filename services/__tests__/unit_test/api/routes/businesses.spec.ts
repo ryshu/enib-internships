@@ -7,10 +7,14 @@ import app from '../../../../src/app';
 import dbSetup from '../../../../src/configs/setup/database';
 
 // Import model for pre-operation before asserting API methods
-import Businesses from '../../../../src/models/Businesses';
-import Internships from '../../../../src/models/Internships';
+import Businesses from '../../../../src/models/sequelize/Businesses';
+import Internships from '../../../../src/models/sequelize/Internships';
 
-import { defaultBusiness, defaultInternships } from '../../../../__mocks__/mockData';
+import {
+    defaultBusiness,
+    defaultInternships,
+    defaultInternshipTypes,
+} from '../../../../__mocks__/mockData';
 
 const baseURL = `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`;
 
@@ -212,12 +216,23 @@ describe('GET /businesses/:id/internships', () => {
     it('Businesses_200_WithLinkedData', async () => {
         const VALID_INTERNSHIP = defaultInternships();
         const VALID_BUSINESS = defaultBusiness();
+        const VALID_INTERNSHIP_TYPE = defaultInternshipTypes();
 
-        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
-        let CREATED_BUSINESS = await Businesses.create(VALID_BUSINESS);
+        VALID_INTERNSHIP.category = VALID_INTERNSHIP_TYPE;
+        VALID_BUSINESS.internships = [VALID_INTERNSHIP];
 
-        await CREATED_BUSINESS.addInternship(CREATED_INTERNSHIP.id);
-        CREATED_BUSINESS = await Businesses.findByPk(CREATED_BUSINESS.id);
+        const CREATED_BUSINESS = await Businesses.create(VALID_BUSINESS, {
+            include: [
+                {
+                    association: Businesses.associations.internships,
+                    include: [
+                        {
+                            association: Internships.associations.category,
+                        },
+                    ],
+                },
+            ],
+        });
 
         const RESPONSE = await request(app).get(
             `${baseURL}/businesses/${CREATED_BUSINESS.id}/internships`,
@@ -252,7 +267,7 @@ describe('POST /businesses/:id/internships/:internship_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Businesses_200_NoInternship', async () => {
+    it('Businesses_204_NoInternship', async () => {
         // In this case, we check if link a existing Bussiness and an unexisting internships work
         const VALID_BUSINESS = defaultBusiness();
 
@@ -260,7 +275,7 @@ describe('POST /businesses/:id/internships/:internship_id/link', () => {
         const RESPONSE = await request(app).post(
             `${baseURL}/businesses/${CREATED.id}/internships/20/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Businesses_200_WithInternship', async () => {

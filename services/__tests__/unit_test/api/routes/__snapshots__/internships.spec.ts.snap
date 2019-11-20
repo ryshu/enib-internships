@@ -6,7 +6,12 @@ Object {
     Object {
       "additional": null,
       "address": "TEST",
-      "category": null,
+      "category": Object {
+        "createdAt": Any<String>,
+        "id": 1,
+        "label": "test",
+        "updatedAt": Any<String>,
+      },
       "city": "Brest",
       "country": "France",
       "createdAt": Any<String>,
@@ -20,7 +25,7 @@ Object {
       "postalCode": "29280",
       "publishAt": 20191012,
       "startAt": 20191012,
-      "state": "suggest",
+      "state": "available",
       "subject": "test",
       "updatedAt": Any<String>,
     },
@@ -54,7 +59,7 @@ Object {
   "propositions": Array [],
   "publishAt": 20191012,
   "startAt": 20191012,
-  "state": "suggest",
+  "state": "available",
   "student": null,
   "subject": "test",
   "updatedAt": Any<String>,
@@ -94,7 +99,7 @@ Object {
 exports[`GET /internships/:id/internshipTypes Internships_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 3,
+  "id": 4,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -151,7 +156,6 @@ Object {
 exports[`POST /internships ValidInternships_200 1`] = `
 Object {
   "address": "TEST",
-  "categoryId": 1,
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
@@ -203,7 +207,7 @@ Object {
 exports[`POST /internships/:id/internshipTypes/:internship_type_id/link Internships_200_WithInternshipType 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 4,
+  "id": 5,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -274,7 +278,7 @@ Object {
   "postalCode": "29280",
   "publishAt": 20191012,
   "startAt": 20191012,
-  "state": "suggest",
+  "state": "available",
   "subject": "test",
   "updatedAt": Any<String>,
 }
@@ -284,7 +288,6 @@ exports[`PUT /internships/:id Internships_200_UpdateAllData 1`] = `
 Object {
   "additional": "additional data",
   "address": "TEST",
-  "categoryId": 2,
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
@@ -298,7 +301,7 @@ Object {
   "postalCode": "29280",
   "publishAt": 20191012,
   "startAt": 20191012,
-  "state": "suggest",
+  "state": "available",
   "subject": "test",
   "updatedAt": Any<String>,
 }

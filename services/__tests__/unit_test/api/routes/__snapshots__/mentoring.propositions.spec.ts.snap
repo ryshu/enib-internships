@@ -22,6 +22,8 @@ Object {
   "comment": "test",
   "createdAt": Any<String>,
   "id": Any<Number>,
+  "internship": null,
+  "mentor": null,
   "updatedAt": Any<String>,
 }
 `;
@@ -58,7 +60,7 @@ Object {
   "postalCode": "29280",
   "publishAt": 20191012,
   "startAt": 20191012,
-  "state": "suggest",
+  "state": "available",
   "subject": "test",
   "updatedAt": Any<String>,
 }
@@ -117,7 +119,7 @@ Object {
   "postalCode": "29280",
   "publishAt": 20191012,
   "startAt": 20191012,
-  "state": "suggest",
+  "state": "available",
   "subject": "test",
   "updatedAt": Any<String>,
 }

@@ -1,5 +1,14 @@
-import { IInternshipEntity } from '../src/declarations/internship';
 import { INTERNSHIP_MODE } from '../src/statistics/base';
+import {
+    IBusinessEntity,
+    IInternshipEntity,
+    IFileEntity,
+    IStudentEntity,
+    IMentorEntity,
+    IMentoringPropositionEntity,
+    IInternshipTypeEntity,
+    ICampaignEntity,
+} from 'src/declarations';
 
 export function defaultBusiness() {
     const VALID_BUSINESS: IBusinessEntity = {
@@ -33,7 +42,7 @@ export function defaultInternships() {
         isValidated: false,
         isProposition: false,
         isPublish: true,
-        state: INTERNSHIP_MODE.SUGGESTED,
+        state: INTERNSHIP_MODE.AVAILABLE,
         publishAt: 20191012,
         startAt: 20191012,
         endAt: 20191012,
@@ -77,6 +86,9 @@ export function defaultCampaigns(): ICampaignEntity {
         semester: 'S5',
         maxProposition: 2,
         isPublish: true,
+        category: {
+            label: 'TEST',
+        },
     };
 }
 

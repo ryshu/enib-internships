@@ -30,11 +30,14 @@ Object {
 
 exports[`GET /mentors/:id Mentors_200 1`] = `
 Object {
+  "campaigns": Array [],
   "createdAt": Any<String>,
   "email": "john.doe@enib.fr",
   "firstName": "John",
   "id": Any<Number>,
+  "internships": Array [],
   "lastName": "Doe",
+  "propositions": Array [],
   "role": "default",
   "updatedAt": Any<String>,
 }
