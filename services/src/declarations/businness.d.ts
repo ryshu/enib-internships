@@ -10,7 +10,7 @@ declare interface IBusinessEntity {
     address: string;
     additional?: string;
 
-    internship?: IInternshipEntity;
+    internships?: IInternshipEntity[];
 
     createdAt?: Date;
     updatedAt?: Date;

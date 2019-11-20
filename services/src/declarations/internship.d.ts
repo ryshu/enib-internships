@@ -39,7 +39,8 @@ declare interface IInternshipEntity {
     student?: IStudentEntity;
     mentor?: IMentorEntity;
     propositions?: IMentoringPropositionEntity[];
-    campaign?: ICampaignEntity;
+    validatedCampaign?: ICampaignEntity;
+    availableCampaign?: ICampaignEntity;
     business?: IBusinessEntity;
     category?: IInternshipTypeEntity;
 

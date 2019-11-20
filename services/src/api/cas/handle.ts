@@ -4,12 +4,14 @@ import { isStudent, getEmail, guessStudentFullName, guessMentorFullName } from '
 
 import logger from '../../utils/logger';
 
-import Mentors from '../../models/Mentors';
-import Students from '../../models/Students';
+import Mentors from '../../models/sequelize/Mentors';
+import Students from '../../models/sequelize/Students';
 
 import { adminsCasUsername } from '../../configs/data/admin';
 
 import { sendWelcome } from '../../emails';
+
+import { IStudentEntity, IMentorEntity } from '../../declarations';
 
 const handled: string[] = [];
 

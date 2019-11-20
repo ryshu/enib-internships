@@ -4,11 +4,11 @@ import logger from '../../utils/logger';
 
 import cache from '../../statistics/singleton';
 
-import Internships from '../../models/Internships';
-import Students from '../../models/Students';
-import Mentors from '../../models/Mentors';
-import MentoringPropositions from '../../models/MentoringPropositions';
-import Campaigns from '../../models/Campaigns';
+import Internships from '../../models/sequelize/Internships';
+import Students from '../../models/sequelize/Students';
+import Mentors from '../../models/sequelize/Mentors';
+import MentoringPropositions from '../../models/sequelize/MentoringPropositions';
+import Campaigns from '../../models/sequelize/Campaigns';
 import { CampaignStatistics } from '../../statistics/base';
 
 export async function setupStatistics() {
