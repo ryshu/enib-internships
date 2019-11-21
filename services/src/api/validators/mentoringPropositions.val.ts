@@ -1,19 +1,17 @@
 import { Schema } from 'express-validator';
 
 import { paginateValidator, replaceAllExistByOptional } from './generic.val';
+import { propositionsVal, campaignVal, mentorVal, internshipVal } from './generator.val';
 
 export const MentoringPropositionsList: Schema = {
     ...paginateValidator,
 };
 
 export const MentoringPropositionCreate: Schema = {
-    comment: {
-        in: ['body'],
-        isString: { errorMessage: 'Comment must be of type string' },
-        exists: { errorMessage: 'Comment must be defined' },
-        trim: true,
-        escape: true,
-    },
+    ...propositionsVal(),
+    ...replaceAllExistByOptional(campaignVal('campaign')),
+    ...replaceAllExistByOptional(mentorVal('mentor')),
+    ...replaceAllExistByOptional(internshipVal('internship')),
 };
 
 export const MentoringPropositionUpdate: Schema = replaceAllExistByOptional(
