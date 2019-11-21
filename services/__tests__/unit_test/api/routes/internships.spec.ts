@@ -100,7 +100,7 @@ describe('POST /internships', () => {
         const VALID_INTERNSHIP_TYPE = defaultInternshipTypes();
 
         const category = await InternshipTypes.create(VALID_INTERNSHIP_TYPE);
-        VALID_INTERNSHIP.category = category.id;
+        VALID_INTERNSHIP.category = { id: category.id };
 
         const RESPONSE = await request(app)
             .post(`${baseURL}/internships`)
@@ -108,6 +108,10 @@ describe('POST /internships', () => {
 
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
+            category: {
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+            },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             id: expect.any(Number),

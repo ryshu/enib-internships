@@ -69,7 +69,7 @@ describe('POST /campaigns', () => {
         // Create intership category
         const VALID_INTENRSHIP_TYPES = defaultInternshipTypes();
         const CATEGORY = await InternshipTypes.create(VALID_INTENRSHIP_TYPES);
-        REQ.category_id = CATEGORY.id;
+        REQ.category = { id: CATEGORY.id };
 
         const RESPONSE = await request(app)
             .post(`${baseURL}/campaigns`)

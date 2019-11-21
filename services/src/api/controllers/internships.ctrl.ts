@@ -18,6 +18,15 @@ import { INTERNSHIP_MODE } from '../../statistics/base';
 
 import { IInternshipEntity } from '../../declarations/internship';
 
+import { fullCopyBusiness } from '../processors/businesse.proc';
+import { fullCopyCampaign } from '../processors/campaign.proc';
+import { fullCopyFile } from '../processors/file.proc';
+import { fullCopyInternshipType } from '../processors/internship.type.proc';
+import { fullCopyMentor } from '../processors/mentor.proc';
+import { fullCopyMentoringProposition } from '../processors/mentoring.proposition.proc';
+import { fullCopyStudent } from '../processors/student.proc';
+import { APIError } from '../../utils/error';
+
 /**
  * GET /internships
  * Used to GET all internships
@@ -59,10 +68,46 @@ export const postInternship = async (req: Request, res: Response, next: NextFunc
                 : moment(req.body.publishAt).valueOf(),
         startAt: !req.body.startAt ? null : moment(req.body.startAt).valueOf(),
         endAt: !req.body.endAt ? null : moment(req.body.endAt).valueOf(),
+
+        business: fullCopyBusiness(req.body.business),
+        category: fullCopyInternshipType(req.body.category),
+        mentor: fullCopyMentor(req.body.mentor),
+        student: fullCopyStudent(req.body.student),
+        availableCampaign: fullCopyCampaign(req.body.availableCampaign),
+        validatedCampaign: fullCopyCampaign(req.body.validatedCampaign),
+        files:
+            req.body.files && Array.isArray(req.body.files)
+                ? req.body.files.map((i: any) => fullCopyFile(i))
+                : [],
+        propositions:
+            req.body.propositions && Array.isArray(req.body.propositions)
+                ? req.body.propositions.map((i: any) => fullCopyMentoringProposition(i))
+                : [],
     };
 
+    let categoryId: number;
+    if (!internship.category) {
+        // No category to create, check if we have any category id provide
+        if (
+            req.body.category &&
+            req.body.category.id &&
+            !Number.isNaN(Number(req.body.category.id))
+        ) {
+            categoryId = Number(req.body.category.id);
+        } else {
+            return next(new APIError('No category provide, please provide a category', 400, 12000));
+        }
+    }
+
     InternshipModel.createInternship(internship)
-        .then((created) => res.send(created))
+        .then(async (created) => {
+            if (created && !Number.isNaN(Number(categoryId))) {
+                // If category is given using an id, link internship to category before send reply
+                const updated = await InternshipModel.linkToCategory(created.id, categoryId);
+                return res.send(updated);
+            }
+            return res.send(created);
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 

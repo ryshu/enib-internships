@@ -17,6 +17,10 @@ import { isMentorRole } from '../../utils/type';
 
 import { IMentorEntity } from '../../declarations';
 
+import { fullCopyCampaign } from '../processors/campaign.proc';
+import { fullCopyMentoringProposition } from '../processors/mentoring.proposition.proc';
+import { fullCopyInternship } from '../processors/internship.proc';
+
 /**
  * GET /mentors
  * Used to GET all mentors
@@ -54,6 +58,19 @@ export const postMentor = (req: Request, res: Response, next: NextFunction): voi
         lastName: req.body.lastName,
         email: req.body.email,
         role: req.body.role && isMentorRole(req.body.role) ? req.body.role : 'default',
+
+        campaigns:
+            req.body.campaigns && Array.isArray(req.body.campaigns)
+                ? req.body.campaigns.map((i: any) => fullCopyCampaign(i))
+                : [],
+        propositions:
+            req.body.propositions && Array.isArray(req.body.propositions)
+                ? req.body.propositions.map((i: any) => fullCopyMentoringProposition(i))
+                : [],
+        internships:
+            req.body.internships && Array.isArray(req.body.internships)
+                ? req.body.internships.map((i: any) => fullCopyInternship(i))
+                : [],
     };
 
     MentorModel.createMentor(mentor)

@@ -10,6 +10,7 @@ import {
     checkContent,
 } from '../helpers/global.helper';
 import { generateGetInternships } from '../helpers/internships.helper';
+import { fullCopyInternship } from '../processors/internship.proc';
 
 import { IBusinessEntity } from '../../declarations';
 
@@ -54,6 +55,12 @@ export const postBusiness = (req: Request, res: Response, next: NextFunction): v
         postalCode: req.body.postalCode,
         address: req.body.address,
         additional: req.body.additional,
+
+        // Copy internships if provided to also create them in DB
+        internships:
+            req.body.internships && Array.isArray(req.body.internships)
+                ? req.body.internships.map((i: any) => fullCopyInternship(i))
+                : [],
     };
 
     BusinessModel.createBusiness(business)

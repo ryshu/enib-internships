@@ -14,6 +14,9 @@ import {
 import { IInternshipTypeEntity } from '../../declarations';
 import { generateGetInternships } from '../helpers/internships.helper';
 
+import { fullCopyInternship } from '../processors/internship.proc';
+import { fullCopyCampaign } from '../processors/campaign.proc';
+
 /**
  * GET /internshipTypes
  * Used to GET all internship types
@@ -37,6 +40,15 @@ export const postInternshipType = (req: Request, res: Response, next: NextFuncti
 
     const type: IInternshipTypeEntity = {
         label: req.body.label,
+
+        campaigns:
+            req.body.campaigns && Array.isArray(req.body.campaigns)
+                ? req.body.campaigns.map((i: any) => fullCopyCampaign(i))
+                : [],
+        internships:
+            req.body.internships && Array.isArray(req.body.internships)
+                ? req.body.internships.map((i: any) => fullCopyInternship(i))
+                : [],
     };
 
     InternshipTypeModel.createInternshipType(type)
@@ -131,11 +143,9 @@ export const getInternshipTypeCampaigns = (
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
 
-    InternshipTypeModel.getInternshipTypes({ campaignId: Number(req.params.id) })
-        .then((data) => (checkArrayContent(data, next) ? res.send(data) : undefined))
+    InternshipTypeModel.getInternshipType(Number(req.params.id))
+        .then((data) => (checkContent(data, next) ? res.send(data.campaigns) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 

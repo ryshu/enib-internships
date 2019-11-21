@@ -14,6 +14,8 @@ import StudentModel from '../../models/student.model';
 
 import { IStudentEntity } from '../../declarations';
 
+import { fullCopyInternship } from '../processors/internship.proc';
+
 /**
  * GET /students
  * Used to GET all students
@@ -50,6 +52,11 @@ export const postStudent = (req: Request, res: Response, next: NextFunction): vo
         lastName: req.body.lastName,
         email: req.body.email,
         semester: req.body.semester,
+
+        internships:
+            req.body.internships && Array.isArray(req.body.internships)
+                ? req.body.internships.map((i: any) => fullCopyInternship(i))
+                : [],
     };
 
     // Insert student in database

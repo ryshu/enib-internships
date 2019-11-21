@@ -12,6 +12,10 @@ import {
 
 import MentoringPropositionModel from '../../models/mentoring.proposition.model';
 
+import { fullCopyInternship } from '../processors/internship.proc';
+import { fullCopyCampaign } from '../processors/campaign.proc';
+import { fullCopyMentor } from '../processors/mentor.proc';
+
 /**
  * GET /mentoringPropositions
  * Used to GET all mentoringPropositions
@@ -45,6 +49,10 @@ export const postMentoringProposition = (req: Request, res: Response, next: Next
 
     const mentoringProposition: IMentoringPropositionEntity = {
         comment: req.body.comment,
+
+        internship: fullCopyInternship(req.body.internship),
+        campaign: fullCopyCampaign(req.body.campaign),
+        mentor: fullCopyMentor(req.body.mentor),
     };
 
     MentoringPropositionModel.createMentoringProposition(mentoringProposition)

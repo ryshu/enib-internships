@@ -493,8 +493,7 @@ describe('GET /mentors/:id/internships', () => {
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED_MENTOR.id}/internships`,
         );
-        // tslint:disable-next-line: no-console
-        console.log(CREATED_MENTOR.id);
+
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toHaveLength(1);
     });

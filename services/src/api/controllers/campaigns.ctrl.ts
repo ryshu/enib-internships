@@ -17,6 +17,13 @@ import { generateGetInternships } from '../helpers/internships.helper';
 
 import { ICampaignEntity } from '../../declarations/campaign';
 
+import { fullCopyInternshipType } from '../processors/internship.type.proc';
+import { fullCopyMentoringProposition } from '../processors/mentoring.proposition.proc';
+import { fullCopyInternship } from '../processors/internship.proc';
+import { fullCopyMentor } from '../processors/mentor.proc';
+
+import { APIError } from '../../utils/error';
+
 /**
  * GET /campaigns
  * Used to GET all campaigns
@@ -51,20 +58,57 @@ export const postCampaign = async (req: Request, res: Response, next: NextFuncti
     const campaign: ICampaignEntity = {
         name: req.body.name,
         description: req.body.description,
+        category: fullCopyInternshipType(req.body.category),
 
         semester: req.body.semester,
         maxProposition: req.body.maxProposition ? req.body.maxProposition : 0,
 
         isPublish: req.body.isPublish,
 
-        category: req.body.category,
-
         startAt: !req.body.startAt ? null : moment(req.body.startAt).valueOf(),
         endAt: !req.body.endAt ? null : moment(req.body.endAt).valueOf(),
+
+        propositions:
+            req.body.propositions && Array.isArray(req.body.propositions)
+                ? req.body.propositions.map((p: any) => fullCopyMentoringProposition(p))
+                : [],
+        availableInternships:
+            req.body.availableInternships && Array.isArray(req.body.availableInternships)
+                ? req.body.availableInternships.map((p: any) => fullCopyInternship(p))
+                : [],
+        validatedInternships:
+            req.body.validatedInternships && Array.isArray(req.body.validatedInternships)
+                ? req.body.validatedInternships.map((p: any) => fullCopyInternship(p))
+                : [],
+        mentors:
+            req.body.mentors && Array.isArray(req.body.mentors)
+                ? req.body.mentors.map((p: any) => fullCopyMentor(p))
+                : [],
     };
 
+    let categoryId: number;
+    if (!campaign.category) {
+        // No category to create, check if we have any category id provide
+        if (
+            req.body.category &&
+            req.body.category.id &&
+            !Number.isNaN(Number(req.body.category.id))
+        ) {
+            categoryId = Number(req.body.category.id);
+        } else {
+            return next(new APIError('No category provide, please provide a category', 400, 12000));
+        }
+    }
+
     CampaignModel.createCampaign(campaign)
-        .then((created) => (checkContent(created, next) ? res.send(created) : undefined))
+        .then(async (created) => {
+            if (created && !Number.isNaN(Number(categoryId))) {
+                // If category is given using an id, link internship to category before send reply
+                const updated = await CampaignModel.linkToCategory(created.id, categoryId);
+                return res.send(updated);
+            }
+            return res.send(created);
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 

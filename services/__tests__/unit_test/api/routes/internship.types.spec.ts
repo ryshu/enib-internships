@@ -292,7 +292,7 @@ describe('GET /internshipTypes/:id/campaigns', () => {
         await InternshipTypes.destroy({ where: {} });
     });
 
-    it('NoBusiness_204', async () => {
+    it('NoInternshipsType_204', async () => {
         const RESPONSE = await request(app).get(`${baseURL}/internshipTypes/10/campaigns`);
         expect(RESPONSE.status).toBe(204);
     });
@@ -304,14 +304,15 @@ describe('GET /internshipTypes/:id/campaigns', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('InternshipTypes_204_NoLinkedData', async () => {
+    it('InternshipTypes_200_NoLinkedData', async () => {
         const VALID_INTERNSHIP_TYPES = defaultInternshipTypes();
 
         const CREATED = await InternshipTypes.create(VALID_INTERNSHIP_TYPES);
         const RESPONSE = await request(app).get(
             `${baseURL}/internshipTypes/${CREATED.id}/campaigns`,
         );
-        expect(RESPONSE.status).toBe(204);
+        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.body).toEqual([]);
     });
 
     it('InternshipTypes_200_WithLinkedData', async () => {

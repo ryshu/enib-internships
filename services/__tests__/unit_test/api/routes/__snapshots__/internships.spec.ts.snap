@@ -155,23 +155,37 @@ Object {
 
 exports[`POST /internships ValidInternships_200 1`] = `
 Object {
+  "additional": null,
   "address": "TEST",
+  "availableCampaign": null,
+  "business": null,
+  "category": Object {
+    "createdAt": Any<String>,
+    "id": 2,
+    "label": "test",
+    "updatedAt": Any<String>,
+  },
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
   "description": "Stage",
   "endAt": 20191012,
+  "files": Array [],
   "id": Any<Number>,
   "isInternshipAbroad": true,
   "isProposition": true,
   "isPublish": false,
   "isValidated": false,
+  "mentor": null,
   "postalCode": "29280",
+  "propositions": Array [],
   "publishAt": null,
   "startAt": 20191012,
   "state": "suggest",
+  "student": null,
   "subject": "test",
   "updatedAt": Any<String>,
+  "validatedCampaign": null,
 }
 `;
 

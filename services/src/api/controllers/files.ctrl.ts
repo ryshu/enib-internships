@@ -14,6 +14,8 @@ import {
 
 import { IFileEntity } from '../../declarations/file';
 
+import { fullCopyInternship } from '../processors/internship.proc';
+
 /**
  * GET /files
  * Used to GET all files
@@ -52,6 +54,8 @@ export const postFile = (req: Request, res: Response, next: NextFunction): void 
         name: req.body.name,
         type: req.body.type,
         path: req.file.destination,
+
+        internship: fullCopyInternship(req.body.internship),
     };
 
     // Insert file in database
