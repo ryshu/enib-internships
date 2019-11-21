@@ -1,7 +1,7 @@
 import httpStatus from 'http-status-codes';
 
-import { getProfile } from '../../../src/api/cas/ctrl';
-import { APIError } from '../../../src/utils/error';
+import { getProfile } from '../../../../src/auth/cas/ctrl';
+import { APIError } from '../../../../src/utils/error';
 
 describe('getProfile', () => {
     it('getProfile_noSession_nextError', () => {

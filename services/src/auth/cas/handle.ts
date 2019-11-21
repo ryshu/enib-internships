@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-import { isStudent, getEmail, guessStudentFullName, guessMentorFullName } from './utils';
+import { isStudent, getEmail } from './utils';
 
 import logger from '../../utils/logger';
 
@@ -59,7 +59,8 @@ export async function handleConnection(req: Request) {
         // Else, we need to register this user, it's his first connection
         if (student) {
             const newUser: IStudentEntity = {
-                ...guessStudentFullName(req.session.cas_user),
+                firstName: 'undefined',
+                lastName: 'undefined',
                 email,
                 semester: 'S1',
             };
@@ -68,7 +69,8 @@ export async function handleConnection(req: Request) {
             req.session.info = await Students.create(newUser);
         } else {
             const newUser: IMentorEntity = {
-                ...guessMentorFullName(req.session.cas_user),
+                firstName: 'undefined',
+                lastName: 'undefined',
                 email,
                 role: 'default',
             };

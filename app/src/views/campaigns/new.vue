@@ -212,7 +212,6 @@ export default class extends Vue {
   @Socket('campaign_create_step')
   private socketStep(payload: any) {
     this.cnt++;
-    console.log(Math.round(((this.cnt / this.max) * 80 + 20) * 100) / 100);
     (this.$refs.ProgressDialog as any).step(
       Math.round(((this.cnt / this.max) * 80 + 20) * 100) / 100,
       `${this.$t('campaigns.progress.processing')}: ${payload.msg} - ${

@@ -9,7 +9,7 @@ import filesRouter from './routers/files.route';
 import mentoringPropositionsRouter from './routers/mentoring.propositions.route';
 import mentorsRouter from './routers/mentors.route';
 
-import casRouter from './cas/route';
+import casRouter from '../auth/cas/route';
 
 import { getStatistics } from './controllers/statistics.ctrl';
 
