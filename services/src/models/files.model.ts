@@ -1,15 +1,15 @@
 import sequelize, { CreateOptions, FindOptions } from 'sequelize';
 
-import { paginate, PaginateOpts } from '../api/helpers/pagination.helper';
+import { paginate, PaginateOpts } from './helpers/pagination';
 
 import Files from './sequelize/Files';
 import Internships from './sequelize/Internships';
 
 import { PaginateList } from './helpers/type';
-import { checkPartialFile, checkPartialInternship } from './helpers/check';
+import { checkPartialFile, checkPartialInternship } from '../utils/check';
 import { extractCount } from './helpers/options';
 
-import { IFileEntity } from '../declarations/file';
+import { IFileEntity } from '../declarations';
 
 /** @interface FileOpts Interface of all availables filters for files list */
 export interface FileOpts {
@@ -190,7 +190,7 @@ class FileModelStruct {
                 }
 
                 await file.setInternship(internship);
-                return resolve(file.toJSON() as IFileEntity);
+                return resolve(await this.getFile(file.id));
             } catch (error) {
                 reject(error);
             }
@@ -210,7 +210,11 @@ class FileModelStruct {
     private _buildCreateOpts(campaign: IFileEntity): CreateOptions {
         const opts: CreateOptions = { include: [] };
 
-        if (campaign.internship && checkPartialInternship(campaign.internship)) {
+        if (
+            campaign.internship &&
+            checkPartialInternship(campaign.internship) &&
+            campaign.internship.id !== undefined
+        ) {
             opts.include.push({ association: Files.associations.internship });
         }
 

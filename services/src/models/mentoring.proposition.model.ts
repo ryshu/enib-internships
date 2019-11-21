@@ -12,9 +12,9 @@ import {
     checkPartialInternship,
     checkPartialCampaign,
     checkPartialMentor,
-} from './helpers/check';
+} from '../utils/check';
 import { PaginateList } from './helpers/type';
-import { PaginateOpts, paginate } from '../api/helpers/pagination.helper';
+import { PaginateOpts, paginate } from './helpers/pagination';
 import { extractCount } from './helpers/options';
 
 /** @interface PropositionsOpts Interface of all availables filters for propositions list */
@@ -222,7 +222,7 @@ class MentoringPropositionModelStruct {
                 await proposition.setInternship(internship);
                 // TODO: Emit update on socket
 
-                return resolve(proposition.toJSON() as IMentoringPropositionEntity);
+                return resolve(await this.getMentoringProposition(proposition.id));
             } catch (error) {
                 reject(error);
             }
@@ -255,7 +255,7 @@ class MentoringPropositionModelStruct {
                 await proposition.setCampaign(campaign);
                 // TODO: Emit update on socket
 
-                return resolve(proposition.toJSON() as IMentoringPropositionEntity);
+                return resolve(await this.getMentoringProposition(proposition.id));
             } catch (error) {
                 reject(error);
             }
@@ -288,7 +288,7 @@ class MentoringPropositionModelStruct {
                 await proposition.setMentor(mentor);
                 // TODO: Emit update on socket
 
-                return resolve(proposition.toJSON() as IMentoringPropositionEntity);
+                return resolve(await this.getMentoringProposition(proposition.id));
             } catch (error) {
                 reject(error);
             }
@@ -316,13 +316,17 @@ class MentoringPropositionModelStruct {
     private _buildCreateOpts(mp: IMentoringPropositionEntity): CreateOptions {
         const opts: CreateOptions = { include: [] };
 
-        if (mp.internship && checkPartialInternship(mp.internship)) {
+        if (
+            mp.internship &&
+            checkPartialInternship(mp.internship) &&
+            mp.internship.id !== undefined
+        ) {
             opts.include.push({ association: MentoringPropositions.associations.internship });
         }
-        if (mp.campaign && checkPartialCampaign(mp.campaign)) {
+        if (mp.campaign && checkPartialCampaign(mp.campaign) && mp.campaign.id !== undefined) {
             opts.include.push({ association: MentoringPropositions.associations.campaign });
         }
-        if (mp.mentor && checkPartialMentor(mp.mentor)) {
+        if (mp.mentor && checkPartialMentor(mp.mentor) && mp.mentor.id !== undefined) {
             opts.include.push({ association: MentoringPropositions.associations.mentor });
         }
 

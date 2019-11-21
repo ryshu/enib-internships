@@ -2,12 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import moment from 'moment';
 import httpStatus from 'http-status-codes';
-import sequelize from 'sequelize';
 
-import Campaigns from '../../models/sequelize/Campaigns';
-import Mentors from '../../models/sequelize/Mentors';
 import CampaignModel from '../../models/campaigns.model';
 import MentoringPropositionModel from '../../models/mentoring.proposition.model';
+import MentorModel from '../../models/mentor.model';
 
 import {
     UNPROCESSABLE_ENTITY,
@@ -15,7 +13,6 @@ import {
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
-import { paginate } from '../helpers/pagination.helper';
 import { generateGetInternships } from '../helpers/internships.helper';
 
 import { ICampaignEntity } from '../../declarations/campaign';
@@ -174,6 +171,9 @@ export const linkCampaignMentoringPropositions = (
 /**
  * GET /campaigns/:id/availableInternships
  * Used to get all availableInternships of a campaign
+ *
+ * @notice This controller is generated using generateGetInternships method
+ * which is used to avoid repeat internship code through application
  */
 export const getAvailableCampaignInternships = generateGetInternships('availableCampaignId');
 
@@ -242,29 +242,8 @@ export const getCampaignMentors = (req: Request, res: Response, next: NextFuncti
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
 
-    // TODO: Export in database API
-
-    const findOpts: sequelize.FindOptions = {
-        include: [{ model: Campaigns, as: 'campaigns', attributes: [], duplicating: false }],
-        where: { '$campaigns.id$': req.params.id },
-    };
-
-    let max: number;
-    Mentors.count(findOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Mentors.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (mentors) => {
-            if (checkArrayContent(mentors, next)) {
-                return res.send({
-                    page,
-                    data: mentors,
-                    length: mentors.length,
-                    max,
-                });
-            }
-        })
+    MentorModel.getMentors({ campaignId: Number(req.params.id) }, { page, limit })
+        .then((data) => (checkContent(data, next) ? res.send(data) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 

@@ -5,9 +5,9 @@ import Internships from './sequelize/Internships';
 
 import { IStudentEntity } from '../declarations';
 
-import { checkPartialStudent, checkPartialInternship } from './helpers/check';
+import { checkPartialStudent, checkPartialInternship } from '../utils/check';
 import { PaginateList } from './helpers/type';
-import { PaginateOpts, paginate } from '../api/helpers/pagination.helper';
+import { PaginateOpts, paginate } from './helpers/pagination';
 
 /**
  * @interface StudentModelStruct API to handle students in database
@@ -182,7 +182,7 @@ class StudentModelStruct {
                 await student.addInternship(internship);
                 // TODO: Emit update on socket
 
-                return resolve(student.toJSON() as IStudentEntity);
+                return resolve(await this.getStudent(student.id));
             } catch (error) {
                 reject(error);
             }
@@ -195,7 +195,7 @@ class StudentModelStruct {
         if (student.internships) {
             let set = true;
             for (const internship of student.internships) {
-                if (checkPartialInternship(internship)) {
+                if (!checkPartialInternship(internship) || internship.id !== undefined) {
                     set = false;
                     break;
                 }

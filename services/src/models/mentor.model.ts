@@ -1,4 +1,4 @@
-import { CreateOptions } from 'sequelize';
+import { CreateOptions, FindOptions } from 'sequelize';
 
 import Campaigns from './sequelize/Campaigns';
 import Mentors from './sequelize/Mentors';
@@ -12,9 +12,16 @@ import {
     checkPartialProposition,
     checkPartialCampaign,
     checkPartialInternship,
-} from './helpers/check';
+} from '../utils/check';
 import { PaginateList } from './helpers/type';
-import { PaginateOpts, paginate } from '../api/helpers/pagination.helper';
+import { PaginateOpts, paginate } from './helpers/pagination';
+import { extractCount } from './helpers/options';
+
+/** @interface MentorOpts Interface of all availables filters for mentors list */
+export interface MentorOpts {
+    /** @property {number} campaignId Filter list with categoryId */
+    campaignId?: number;
+}
 
 /**
  * @interface MentorModelStruct API to handle mentors in database
@@ -23,18 +30,24 @@ import { PaginateOpts, paginate } from '../api/helpers/pagination.helper';
 class MentorModelStruct {
     /**
      * @summary Method used to retrieve mentors
+     * @param {MentorOpts} mentorOpts mentor filters
      * @param {PaginateOpts} pageOpts pagination options
      * @returns {Promise<PaginateList<IMentorEntity>>} Resolve: Paginated mentors
      * @returns {Promise<void>} Resolve: void if nothing is found
      * @returns {Promise<any>} Reject: database error
      */
-    public getMentors(pageOpts: PaginateOpts): Promise<PaginateList<IMentorEntity>> {
+    public getMentors(
+        mentorOpts: MentorOpts,
+        pageOpts: PaginateOpts,
+    ): Promise<PaginateList<IMentorEntity>> {
         return new Promise((resolve, reject) => {
+            const opts = this._buildFindOpts(mentorOpts);
+
             let max: number;
-            Mentors.count()
+            Mentors.count(extractCount(opts, opts.include || []))
                 .then((rowNbr) => {
                     max = rowNbr;
-                    return Mentors.findAll(paginate(pageOpts));
+                    return Mentors.findAll(paginate(pageOpts, opts));
                 })
                 .then(async (mentors: any) =>
                     mentors.length
@@ -180,10 +193,6 @@ class MentorModelStruct {
     public linkToInternship(mentorId: number, internshipId: number): Promise<IMentorEntity> {
         return new Promise(async (resolve, reject) => {
             try {
-                // tslint:disable-next-line: no-console
-                console.log(mentorId);
-                // tslint:disable-next-line: no-console
-                console.log(internshipId);
                 const mentor = await Mentors.findByPk(mentorId);
                 if (!mentor) {
                     return resolve();
@@ -196,7 +205,7 @@ class MentorModelStruct {
                 await mentor.addInternship(internship);
                 // TODO: Emit update on socket
 
-                return resolve(mentor.toJSON() as IMentorEntity);
+                return resolve(await this.getMentor(mentor.id));
             } catch (error) {
                 reject(error);
             }
@@ -226,7 +235,7 @@ class MentorModelStruct {
                 await mentor.addCampaign(campaign);
                 // TODO: Emit update on socket
 
-                return resolve(mentor.toJSON() as IMentorEntity);
+                return resolve(await this.getMentor(mentor.id));
             } catch (error) {
                 reject(error);
             }
@@ -256,11 +265,27 @@ class MentorModelStruct {
                 await mentor.addProposition(proposition);
                 // TODO: Emit update on socket
 
-                return resolve(mentor.toJSON() as IMentorEntity);
+                return resolve(await this.getMentor(mentor.id));
             } catch (error) {
                 reject(error);
             }
         });
+    }
+
+    private _buildFindOpts(opts: MentorOpts): FindOptions {
+        const tmp: FindOptions = { include: [], where: {} };
+
+        if (opts.campaignId) {
+            tmp.include.push({
+                model: Campaigns,
+                as: 'campaigns',
+                attributes: [],
+                duplicating: false,
+            });
+            (tmp.where as any)['$campaigns.id$'] = opts.campaignId;
+        }
+
+        return tmp;
     }
 
     private _buildCreateOpts(mentor: IMentorEntity): CreateOptions {
@@ -269,7 +294,7 @@ class MentorModelStruct {
         if (mentor.campaigns) {
             let set = true;
             for (const campaign of mentor.campaigns) {
-                if (!checkPartialCampaign(campaign)) {
+                if (!checkPartialCampaign(campaign) || campaign.id !== undefined) {
                     set = false;
                     break;
                 }
@@ -283,7 +308,7 @@ class MentorModelStruct {
         if (mentor.propositions) {
             let set = true;
             for (const proposition of mentor.propositions) {
-                if (!checkPartialProposition(proposition)) {
+                if (!checkPartialProposition(proposition) || proposition.id !== undefined) {
                     set = false;
                     break;
                 }
@@ -297,7 +322,7 @@ class MentorModelStruct {
         if (mentor.internships) {
             let set = true;
             for (const internship of mentor.internships) {
-                if (!checkPartialInternship(internship)) {
+                if (!checkPartialInternship(internship) || internship.id !== undefined) {
                     set = false;
                     break;
                 }

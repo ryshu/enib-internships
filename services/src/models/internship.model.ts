@@ -1,7 +1,7 @@
 import moment from 'moment';
 import sequelize, { CreateOptions, FindOptions } from 'sequelize';
 
-import { IInternshipEntity } from '../declarations/internship';
+import { IInternshipEntity } from '../declarations';
 
 import Internships from './sequelize/Internships';
 import InternshipTypes from './sequelize/InternshipTypes';
@@ -23,8 +23,8 @@ import {
     checkPartialMentor,
     checkPartialProposition,
     checkPartialStudent,
-} from './helpers/check';
-import { PaginateOpts, paginate } from '../api/helpers/pagination.helper';
+} from '../utils/check';
+import { PaginateOpts, paginate } from './helpers/pagination';
 
 import InternshipTypeModel from './internship.type.mode';
 
@@ -355,7 +355,8 @@ class InternshipModelStruct {
                 }
 
                 await internship.setCategory(category);
-                return resolve(internship.toJSON() as IInternshipEntity);
+
+                return resolve(await this.getInternship(internship.id));
             } catch (error) {
                 reject(error);
             }
@@ -386,7 +387,7 @@ class InternshipModelStruct {
                 }
 
                 await internship.addProposition(proposition);
-                return resolve(internship.toJSON() as IInternshipEntity);
+                return resolve(await this.getInternship(internship.id));
             } catch (error) {
                 reject(error);
             }
@@ -417,7 +418,7 @@ class InternshipModelStruct {
                 }
 
                 await internship.setAvailableCampaign(campaign);
-                return resolve(internship.toJSON() as IInternshipEntity);
+                return resolve(await this.getInternship(internship.id));
             } catch (error) {
                 reject(error);
             }
@@ -448,7 +449,7 @@ class InternshipModelStruct {
                 }
 
                 await internship.setValidatedCampaign(campaign);
-                return resolve(internship.toJSON() as IInternshipEntity);
+                return resolve(await this.getInternship(internship.id));
             } catch (error) {
                 reject(error);
             }
@@ -476,7 +477,7 @@ class InternshipModelStruct {
                 }
 
                 await internship.setMentor(mentor);
-                return resolve(internship.toJSON() as IInternshipEntity);
+                return resolve(await this.getInternship(internship.id));
             } catch (error) {
                 reject(error);
             }
@@ -504,7 +505,7 @@ class InternshipModelStruct {
                 }
 
                 await internship.setStudent(student);
-                return resolve(internship.toJSON() as IInternshipEntity);
+                return resolve(await this.getInternship(internship.id));
             } catch (error) {
                 reject(error);
             }
@@ -532,7 +533,7 @@ class InternshipModelStruct {
                 }
 
                 await internship.setBusiness(business);
-                return resolve(internship.toJSON() as IInternshipEntity);
+                return resolve(await this.getInternship(internship.id));
             } catch (error) {
                 reject(error);
             }
@@ -540,7 +541,7 @@ class InternshipModelStruct {
     }
 
     private _buildFindOpts(opts: InternshipOpts): FindOptions {
-        const tmp: sequelize.FindOptions = {
+        const tmp: FindOptions = {
             // By default, only give internship available list
             where: {},
             include: [{ model: InternshipTypes, as: 'category', duplicating: false }],
@@ -606,7 +607,7 @@ class InternshipModelStruct {
         if (internship.files) {
             let set = true;
             for (const mentor of internship.files) {
-                if (!checkPartialFile(mentor)) {
+                if (!checkPartialFile(mentor) || mentor.id !== undefined) {
                     set = false;
                     break;
                 }
@@ -620,7 +621,7 @@ class InternshipModelStruct {
         if (internship.propositions) {
             let set = true;
             for (const proposition of internship.propositions) {
-                if (!checkPartialProposition(proposition)) {
+                if (!checkPartialProposition(proposition) || proposition.id !== undefined) {
                     set = false;
                     break;
                 }
@@ -631,27 +632,51 @@ class InternshipModelStruct {
             }
         }
 
-        if (internship.category && checkPartialInternshipType(internship.category)) {
+        if (
+            internship.category &&
+            checkPartialInternshipType(internship.category) &&
+            internship.category.id !== undefined
+        ) {
             opts.include.push({ association: Internships.associations.category });
         }
 
-        if (internship.mentor && checkPartialMentor(internship.mentor)) {
+        if (
+            internship.mentor &&
+            checkPartialMentor(internship.mentor) &&
+            internship.mentor.id !== undefined
+        ) {
             opts.include.push({ association: Internships.associations.mentor });
         }
 
-        if (internship.student && checkPartialStudent(internship.student)) {
+        if (
+            internship.student &&
+            checkPartialStudent(internship.student) &&
+            internship.student.id !== undefined
+        ) {
             opts.include.push({ association: Internships.associations.student });
         }
 
-        if (internship.business && checkPartialBusiness(internship.business)) {
+        if (
+            internship.business &&
+            checkPartialBusiness(internship.business) &&
+            internship.business.id !== undefined
+        ) {
             opts.include.push({ association: Internships.associations.business });
         }
 
-        if (internship.availableCampaign && checkPartialCampaign(internship.availableCampaign)) {
+        if (
+            internship.availableCampaign &&
+            checkPartialCampaign(internship.availableCampaign) &&
+            internship.availableCampaign.id !== undefined
+        ) {
             opts.include.push({ association: Internships.associations.availableCampaign });
         }
 
-        if (internship.validatedCampaign && checkPartialCampaign(internship.validatedCampaign)) {
+        if (
+            internship.validatedCampaign &&
+            checkPartialCampaign(internship.validatedCampaign) &&
+            internship.validatedCampaign.id !== undefined
+        ) {
             opts.include.push({ association: Internships.associations.validatedCampaign });
         }
 

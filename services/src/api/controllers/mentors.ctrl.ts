@@ -33,7 +33,7 @@ export const getMentors = (req: Request, res: Response, next: NextFunction): voi
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
 
-    MentorModel.getMentors({ page, limit })
+    MentorModel.getMentors({}, { page, limit })
         .then((mentor) => (checkContent(mentor, next) ? res.send(mentor) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

@@ -8,6 +8,7 @@ declare interface ICampaignEntity {
 
     name: string;
     description: string;
+    category?: IInternshipTypeEntity;
 
     semester: string;
     maxProposition: number;
@@ -21,7 +22,6 @@ declare interface ICampaignEntity {
     availableInternships?: IInternshipEntity[];
     validatedInternships?: IInternshipEntity[];
     mentors?: IMentorEntity[];
-    category: IInternshipTypeEntity;
 
     createdAt?: Date;
     updatedAt?: Date;

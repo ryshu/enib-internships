@@ -7,7 +7,6 @@ import Internships from '../../models/sequelize/Internships';
 import { INTERNSHIP_MODE } from '../../statistics/base';
 
 import { BAD_REQUEST_VALIDATOR, checkContent, UNPROCESSABLE_ENTITY } from './global.helper';
-import { InternshipOpts } from '../../models/internship.model';
 
 const InternshipModePriority = [
     INTERNSHIP_MODE.VALIDATED,

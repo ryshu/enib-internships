@@ -5,10 +5,11 @@ import { IBusinessEntity } from '../declarations';
 import Businesses from './sequelize/Businesses';
 import Internships from './sequelize/Internships';
 
-import { paginate, PaginateOpts } from '../api/helpers/pagination.helper';
+import { paginate, PaginateOpts } from './helpers/pagination';
 import { extractCount } from './helpers/options';
 import { PaginateList } from './helpers/type';
-import { checkPartialBusiness, checkPartialInternship } from './helpers/check';
+
+import { checkPartialBusiness, checkPartialInternship } from '../utils/check';
 
 /** @interface BusinessOpts Interface of all availables filters for businesses list */
 export interface BusinessOpts {
@@ -208,7 +209,7 @@ class BusinessModelStruct {
                 }
 
                 await business.addInternship(internship);
-                return resolve(business.toJSON() as IBusinessEntity);
+                return resolve(await this.getBusiness(business.id));
             } catch (error) {
                 reject(error);
             }
@@ -248,15 +249,14 @@ class BusinessModelStruct {
         return tmp;
     }
 
-    private _buildCreateOpts(campaign: IBusinessEntity): CreateOptions {
+    private _buildCreateOpts(business: IBusinessEntity): CreateOptions {
         const opts: CreateOptions = { include: [] };
 
-        if (campaign.internships) {
+        if (business.internships) {
             let set = true;
-            for (const internship of campaign.internships) {
-                if (!checkPartialInternship(internship)) {
+            for (const internship of business.internships) {
+                if (!checkPartialInternship(internship) || internship.id !== undefined) {
                     set = false;
-                    break;
                 }
             }
             if (set) {

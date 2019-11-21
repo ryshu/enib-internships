@@ -7,67 +7,64 @@ import {
     IMentoringPropositionEntity,
     IMentorEntity,
     IStudentEntity,
-} from '../../declarations';
+} from '../declarations';
 
 export function isInt(t: number): t is number {
-    return !Number.isNaN(Number(t));
+    return !!t && !Number.isNaN(Number(t));
 }
 
 export function checkPartialBusiness(check: Partial<IBusinessEntity>): check is IBusinessEntity {
-    return !!check.name && !!check.postalCode && !!check.city && !!check.country && !!check.address;
+    return (
+        !!check &&
+        !!check.name &&
+        !!check.postalCode &&
+        !!check.city &&
+        !!check.country &&
+        !!check.address
+    );
 }
 
 export function checkPartialCampaign(check: Partial<ICampaignEntity>): check is ICampaignEntity {
     return (
-        check.name &&
-        check.description &&
-        check.semester &&
-        check.maxProposition &&
-        check.startAt !== undefined &&
-        isInt(check.startAt) &&
-        isInt(check.endAt) &&
-        !!check.category
+        !!check && !!check.name && !!check.description && !!check.semester && !!check.maxProposition
     );
 }
 
 export function checkPartialFile(check: Partial<IFileEntity>): check is IFileEntity {
-    return !!check.name && !!check.path && !!check.type;
+    return !!check && !!check.name && !!check.path && !!check.type;
 }
 
 export function checkPartialInternship(
     check: Partial<IInternshipEntity>,
 ): check is IInternshipEntity {
     return (
-        check.subject &&
-        check.description &&
-        check.country &&
-        check.city &&
-        check.postalCode &&
-        check.address &&
-        check.additional &&
-        check.state &&
-        isInt(check.publishAt) &&
-        isInt(check.startAt) &&
-        isInt(check.endAt)
+        !!check &&
+        !!check.subject &&
+        !!check.description &&
+        !!check.country &&
+        !!check.city &&
+        !!check.postalCode &&
+        !!check.address &&
+        !!check.state
     );
 }
 
 export function checkPartialInternshipType(
     check: Partial<IInternshipTypeEntity>,
 ): check is IInternshipTypeEntity {
-    return !!check.label;
+    return !!check && !!check.label;
 }
 
 export function checkPartialProposition(
     check: Partial<IMentoringPropositionEntity>,
 ): check is IMentoringPropositionEntity {
-    return !!check.comment;
+    return !!check && !!check.comment;
 }
 
 export function checkPartialMentor(check: Partial<IMentorEntity>): check is IMentorEntity {
-    return !!check.firstName && !!check.lastName && !!check.email;
+    return !!check && !!check.firstName && !!check.lastName && !!check.email;
 }
 
 export function checkPartialStudent(check: Partial<IStudentEntity>): check is IStudentEntity {
-    return !!check.firstName && !!check.lastName && !!check.email && !!check.semester;
+    return !!check && !!check.firstName && !!check.lastName && !!check.email && !!check.semester;
 }

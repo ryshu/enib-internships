@@ -1,11 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
-import sequelize from 'sequelize';
 
 import InternshipTypeModel from '../../models/internship.type.mode';
-import InternshipModel from '../../models/internship.model';
-import Campaigns from '../../models/sequelize/Campaigns';
 
 import {
     UNPROCESSABLE_ENTITY,
@@ -13,7 +10,6 @@ import {
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
-import { paginate } from '../helpers/pagination.helper';
 
 import { IInternshipTypeEntity } from '../../declarations';
 import { generateGetInternships } from '../helpers/internships.helper';
@@ -138,25 +134,8 @@ export const getInternshipTypeCampaigns = (
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
 
-    // TODO: Setup this filter in database API
-    const findOpts: sequelize.FindOptions = { where: { categoryId: req.params.id } };
-
-    let max: number;
-    Campaigns.count(findOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Campaigns.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (campaigns) => {
-            if (checkArrayContent(campaigns, next)) {
-                return res.send({
-                    page,
-                    data: campaigns,
-                    length: campaigns.length,
-                    max,
-                });
-            }
-        })
+    InternshipTypeModel.getInternshipTypes({ campaignId: Number(req.params.id) })
+        .then((data) => (checkArrayContent(data, next) ? res.send(data) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 

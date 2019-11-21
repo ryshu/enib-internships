@@ -1,15 +1,15 @@
 import moment from 'moment';
 import { CreateOptions } from 'sequelize';
 
+// Declaration
+import { ICampaignEntity } from '../declarations';
+
 // Model (sequelize)
 import Campaigns from './sequelize/Campaigns';
 import MentoringPropositions from './sequelize/MentoringPropositions';
 import InternshipTypes from './sequelize/InternshipTypes';
 import Mentors from './sequelize/Mentors';
 import Internships from './sequelize/Internships';
-
-// Declaration
-import { ICampaignEntity } from '../declarations/campaign';
 
 // Validator helpers
 import {
@@ -18,9 +18,10 @@ import {
     checkPartialProposition,
     checkPartialMentor,
     checkPartialInternship,
-} from './helpers/check';
+} from '../utils/check';
 
 import InternshipTypeModel from './internship.type.mode';
+import { IMentorEntity } from 'src/declarations';
 
 /**
  * @interface CampaignModelStruct
@@ -250,7 +251,7 @@ class CampaignModelStruct {
                 await campaign.setCategory(category);
                 // TODO: Emit update on socket
 
-                return resolve(campaign.toJSON() as ICampaignEntity);
+                return resolve(await this.getCampaign(campaign.id));
             } catch (error) {
                 reject(error);
             }
@@ -280,7 +281,7 @@ class CampaignModelStruct {
                 await campaign.addMentor(mentor);
                 // TODO: Emit update on socket
 
-                return resolve(campaign.toJSON() as ICampaignEntity);
+                return resolve(await this.getCampaign(campaign.id));
             } catch (error) {
                 reject(error);
             }
@@ -310,7 +311,7 @@ class CampaignModelStruct {
                 await campaign.addProposition(proposition);
                 // TODO: Emit update on socket
 
-                return resolve(campaign.toJSON() as ICampaignEntity);
+                return resolve(await this.getCampaign(campaign.id));
             } catch (error) {
                 reject(error);
             }
@@ -343,7 +344,7 @@ class CampaignModelStruct {
                 await campaign.addAvailableInternship(availableInternship);
                 // TODO: Emit update on socket
 
-                return resolve(campaign.toJSON() as ICampaignEntity);
+                return resolve(await this.getCampaign(campaign.id));
             } catch (error) {
                 reject(error);
             }
@@ -376,7 +377,7 @@ class CampaignModelStruct {
                 await campaign.addValidatedInternship(validatedInternship);
                 // TODO: Emit update on socket
 
-                return resolve(campaign.toJSON() as ICampaignEntity);
+                return resolve(await this.getCampaign(campaign.id));
             } catch (error) {
                 reject(error);
             }
@@ -389,7 +390,7 @@ class CampaignModelStruct {
         if (campaign.mentors) {
             let set = true;
             for (const mentor of campaign.mentors) {
-                if (!checkPartialMentor(mentor)) {
+                if (!checkPartialMentor(mentor) || mentor.id !== undefined) {
                     set = false;
                     break;
                 }
@@ -403,7 +404,7 @@ class CampaignModelStruct {
         if (campaign.propositions) {
             let set = true;
             for (const proposition of campaign.propositions) {
-                if (!checkPartialProposition(proposition)) {
+                if (!checkPartialProposition(proposition) || proposition.id !== undefined) {
                     set = false;
                     break;
                 }
@@ -414,14 +415,18 @@ class CampaignModelStruct {
             }
         }
 
-        if (campaign.category && checkPartialInternshipType(campaign.category)) {
+        if (
+            campaign.category &&
+            checkPartialInternshipType(campaign.category) &&
+            campaign.category.id !== undefined
+        ) {
             opts.include.push({ association: Campaigns.associations.category });
         }
 
         if (campaign.availableInternships) {
             let set = true;
             for (const internship of campaign.availableInternships) {
-                if (!checkPartialInternship(internship)) {
+                if (!checkPartialInternship(internship) || internship.id !== undefined) {
                     set = false;
                     break;
                 }
@@ -435,7 +440,7 @@ class CampaignModelStruct {
         if (campaign.validatedInternships) {
             let set = true;
             for (const internship of campaign.validatedInternships) {
-                if (!checkPartialInternship(internship)) {
+                if (!checkPartialInternship(internship) || internship.id !== undefined) {
                     set = false;
                     break;
                 }

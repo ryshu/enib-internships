@@ -1,3 +1,5 @@
+import { CreateOptions } from 'sequelize';
+
 import Campaigns from './sequelize/Campaigns';
 import InternshipTypes from './sequelize/InternshipTypes';
 import Internships from './sequelize/Internships';
@@ -8,8 +10,7 @@ import {
     checkPartialInternshipType,
     checkPartialCampaign,
     checkPartialInternship,
-} from './helpers/check';
-import { CreateOptions } from 'sequelize';
+} from '../utils/check';
 
 /**
  * @interface InternshipTypeModelStruct API to handle internship type in database
@@ -173,7 +174,7 @@ class InternshipTypeModelStruct {
                 await type.addInternship(internship);
                 // TODO: Emit update on socket
 
-                return resolve(type.toJSON() as IInternshipTypeEntity);
+                return resolve(await this.getInternshipType(type.id));
             } catch (error) {
                 reject(error);
             }
@@ -203,7 +204,7 @@ class InternshipTypeModelStruct {
                 await type.addCampaign(campaign);
                 // TODO: Emit update on socket
 
-                return resolve(type.toJSON() as IInternshipTypeEntity);
+                return resolve(await this.getInternshipType(type.id));
             } catch (error) {
                 reject(error);
             }
@@ -216,7 +217,7 @@ class InternshipTypeModelStruct {
         if (type.campaigns) {
             let set = true;
             for (const mentor of type.campaigns) {
-                if (!checkPartialCampaign(mentor)) {
+                if (!checkPartialCampaign(mentor) || mentor.id !== undefined) {
                     set = false;
                     break;
                 }
@@ -230,7 +231,7 @@ class InternshipTypeModelStruct {
         if (type.internships) {
             let set = true;
             for (const internship of type.internships) {
-                if (!checkPartialInternship(internship)) {
+                if (!checkPartialInternship(internship) || internship.id !== undefined) {
                     set = false;
                     break;
                 }

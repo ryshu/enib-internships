@@ -1,4 +1,4 @@
-import { paginate } from '../../../../src/api/helpers/pagination.helper';
+import { paginate } from '../../../../src/models/helpers/pagination';
 
 describe('paginate', () => {
     it('paginate_Page0_EmptyObject', () => {
