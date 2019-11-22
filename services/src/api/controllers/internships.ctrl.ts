@@ -14,8 +14,6 @@ import {
 } from '../helpers/global.helper';
 import { generateGetInternships } from '../helpers/internships.helper';
 
-import { INTERNSHIP_MODE } from '../../statistics/base';
-
 import { IInternshipEntity } from '../../declarations/internship';
 
 import { fullCopyBusiness } from '../processors/businesse.proc';
@@ -26,6 +24,8 @@ import { fullCopyMentor } from '../processors/mentor.proc';
 import { fullCopyMentoringProposition } from '../processors/mentoring.proposition.proc';
 import { fullCopyStudent } from '../processors/student.proc';
 import { APIError } from '../../utils/error';
+import { INTERNSHIP_MODE, INTERNSHIP_RESULT } from 'src/internship';
+import { InternshipHandler } from '../../internship/internship';
 
 /**
  * GET /internships
@@ -50,17 +50,14 @@ export const postInternship = async (req: Request, res: Response, next: NextFunc
 
         country: req.body.country,
         city: req.body.city,
-        postalCode: req.body.postalCode,
-        address: req.body.address,
-        additional: req.body.additional,
+        postalCode: req.body.postalCode || '',
+        address: req.body.address || '',
+        additional: req.body.additional || '',
 
         isInternshipAbroad: req.body.isInternshipAbroad ? true : false,
 
-        // TODO: More controled affectation
-        isProposition: req.body.isProposition || req.session.info.role !== 'admin' ? true : false,
-        isPublish: req.body.isPublish && req.session.info.role === 'admin' ? true : false,
-        isValidated: req.body.isValidated && req.session.info.role === 'admin' ? true : false,
-        state: _getInternshipState(req),
+        state: INTERNSHIP_MODE.WAITING,
+        result: INTERNSHIP_RESULT.UNKNOWN,
 
         publishAt:
             !req.body.publishAt || req.session.info.role !== 'admin'
@@ -101,12 +98,18 @@ export const postInternship = async (req: Request, res: Response, next: NextFunc
 
     InternshipModel.createInternship(internship)
         .then(async (created) => {
+            let result = created;
             if (created && !Number.isNaN(Number(categoryId))) {
                 // If category is given using an id, link internship to category before send reply
-                const updated = await InternshipModel.linkToCategory(created.id, categoryId);
-                return res.send(updated);
+                result = (await InternshipModel.linkToCategory(created.id, categoryId)) || created;
             }
-            return res.send(created);
+
+            if (req.body.mode === INTERNSHIP_MODE.PUBLISHED || req.session.info.role === 'admin') {
+                // If user is admin and mode need to be set to 'published', we publish this internship offer
+                result = (await new InternshipHandler(result).toPublished()).toJSON();
+            }
+
+            return res.send(result);
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -156,6 +159,107 @@ export const deleteInternship = (req: Request, res: Response, next: NextFunction
     InternshipModel.removeInternship(Number(req.params.id))
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
+};
+
+/**
+ * POST /internship/:id/fsm
+ * Used to update an internship status
+ */
+export const upadteFSMInternship = async (req: Request, res: Response, next: NextFunction) => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    // Validate query before any processing
+    const query = {
+        state: req.body.state as INTERNSHIP_MODE,
+        studentId: req.body.studentId ? Number(req.body.studentId) : undefined,
+        mentorId: req.body.mentorId ? Number(req.body.mentorId) : undefined,
+        campaignId: req.body.campaignId ? Number(req.body.campaignId) : undefined,
+        endAt: req.body.endAt ? moment(req.body.endAt).valueOf() : undefined,
+        result: req.body.result as INTERNSHIP_RESULT,
+    };
+
+    if (query.state === INTERNSHIP_MODE.ATTRIBUTED_MENTOR && !query.mentorId) {
+        next(
+            new APIError(
+                `Change to '${INTERNSHIP_MODE.ATTRIBUTED_MENTOR}' required you to provide the mentor identifier`,
+                400,
+                12000,
+            ),
+        );
+    } else if (query.state === INTERNSHIP_MODE.ATTRIBUTED_STUDENT && !query.studentId) {
+        next(
+            new APIError(
+                `Change to '${INTERNSHIP_MODE.ATTRIBUTED_STUDENT}' required you to provide the student identifier`,
+                400,
+                12000,
+            ),
+        );
+    } else if (query.state === INTERNSHIP_MODE.AVAILABLE_CAMPAIGN && !query.campaignId) {
+        next(
+            new APIError(
+                `Change to '${INTERNSHIP_MODE.AVAILABLE_CAMPAIGN}' required you to provide the campaign identifier`,
+                400,
+                12000,
+            ),
+        );
+    } else if (query.state === INTERNSHIP_MODE.ARCHIVED && !query.result) {
+        next(
+            new APIError(
+                `Change to '${INTERNSHIP_MODE.ARCHIVED}' required you to provide the result identifier`,
+                400,
+                12000,
+            ),
+        );
+    }
+
+    try {
+        const internship = await InternshipModel.getInternship(Number(req.params.id));
+        if (!checkContent(internship, next)) {
+            return;
+        }
+        const handler = new InternshipHandler(internship);
+
+        switch (query.state) {
+            case INTERNSHIP_MODE.ARCHIVED:
+                await handler.archive(query.result);
+                break;
+            case INTERNSHIP_MODE.ATTRIBUTED_MENTOR:
+                await handler.toAttributedMentor(query.mentorId);
+                break;
+            case INTERNSHIP_MODE.ATTRIBUTED_STUDENT:
+                await handler.toAttributedStudent(query.studentId);
+                break;
+            case INTERNSHIP_MODE.AVAILABLE_CAMPAIGN:
+                await handler.toCampaignAvailable(query.campaignId);
+                break;
+            case INTERNSHIP_MODE.PUBLISHED:
+                await handler.toPublished();
+                break;
+            case INTERNSHIP_MODE.RUNNING:
+                await handler.toRunning(query.endAt);
+                break;
+            case INTERNSHIP_MODE.VALIDATION:
+                await handler.toValidation();
+                break;
+            case INTERNSHIP_MODE.WAITING:
+                await handler.toWaiting();
+                break;
+            default:
+                break;
+        }
+
+        return res.send(handler.toJSON());
+    } catch (error) {
+        if (error instanceof APIError) {
+            next(error);
+        } else {
+            UNPROCESSABLE_ENTITY(next, error);
+        }
+    }
 };
 
 /**
@@ -457,21 +561,3 @@ export const linkInternshipMentor = (req: Request, res: Response, next: NextFunc
         .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
-
-function _getInternshipState(req: Request) {
-    let MODE = INTERNSHIP_MODE.SUGGESTED;
-
-    if (req.session.info.role === 'admin') {
-        if (req.body.isValidated) {
-            MODE = INTERNSHIP_MODE.VALIDATED;
-        } else if (req.body.isPublish) {
-            MODE = INTERNSHIP_MODE.AVAILABLE;
-        } else if (req.body.isProposition) {
-            MODE = INTERNSHIP_MODE.SUGGESTED;
-        } else {
-            MODE = INTERNSHIP_MODE.WAITING;
-        }
-    }
-
-    return MODE;
-}

@@ -10,7 +10,7 @@ import Mentors from './Mentors';
 import MPs from './MentoringPropositions';
 import Campaigns from './Campaigns';
 
-import { INTERNSHIP_MODE } from '../../statistics/base';
+import { INTERNSHIP_MODE, INTERNSHIP_RESULT } from '../../internship';
 
 import {
     IBusinessEntity,
@@ -43,22 +43,20 @@ class Internships extends Sequelize.Model {
     // Localisation
     public country: string;
     public city: string;
-    public postalCode: string;
-    public address: string;
+    public postalCode?: string;
+    public address?: string;
     public additional?: string;
 
     // State
     public isInternshipAbroad: boolean;
-    public isValidated: boolean;
-    public isProposition: boolean;
-    public isPublish: boolean;
 
     public state: INTERNSHIP_MODE;
+    public result: INTERNSHIP_RESULT;
 
     // Date
-    public publishAt: number;
-    public startAt: number;
-    public endAt: number;
+    public publishAt?: number;
+    public startAt?: number;
+    public endAt?: number;
 
     // timestamps!
     public readonly createdAt!: Date;
@@ -147,11 +145,11 @@ Internships.init(
         },
         postalCode: {
             type: new Sequelize.DataTypes.STRING(128),
-            allowNull: false,
+            allowNull: true,
         },
         address: {
             type: new Sequelize.DataTypes.STRING(128),
-            allowNull: false,
+            allowNull: true,
         },
         additional: {
             type: new Sequelize.DataTypes.STRING(),
@@ -164,25 +162,15 @@ Internships.init(
             allowNull: false,
             defaultValue: false,
         },
-        isValidated: {
-            type: Sequelize.DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
-        },
-        isProposition: {
-            type: Sequelize.DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
-        },
-        isPublish: {
-            type: Sequelize.DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
-        },
         state: {
             type: Sequelize.DataTypes.STRING,
             allowNull: false,
-            defaultValue: INTERNSHIP_MODE.SUGGESTED,
+            defaultValue: INTERNSHIP_MODE.WAITING,
+        },
+        result: {
+            type: Sequelize.DataTypes.STRING,
+            allowNull: false,
+            defaultValue: INTERNSHIP_RESULT.UNKNOWN,
         },
 
         // Date

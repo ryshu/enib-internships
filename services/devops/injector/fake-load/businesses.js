@@ -2,7 +2,7 @@ const faker = require('faker');
 const chalk = require('chalk');
 
 faker.locale = 'fr';
-const Businesses = require('../../../dist/models/Businesses').default;
+const Businesses = require('../../../dist/models/sequelize/Businesses').default;
 
 async function inject(business, debug) {
     await Businesses.create(business);

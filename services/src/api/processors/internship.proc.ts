@@ -2,6 +2,8 @@ import { IInternshipEntity } from '../../declarations';
 
 import { checkPartialInternship } from '../../utils/check';
 
+import { INTERNSHIP_RESULT, INTERNSHIP_MODE } from '../../internship';
+
 export function fullCopyInternship(
     data: Partial<IInternshipEntity>,
 ): IInternshipEntity | undefined {
@@ -19,11 +21,9 @@ export function fullCopyInternship(
             additional: data.additional,
 
             // State
-            isInternshipAbroad: data.isInternshipAbroad,
-            isValidated: data.isValidated,
-            isProposition: data.isProposition,
-            isPublish: data.isPublish,
-            state: data.state,
+            isInternshipAbroad: !!data.isInternshipAbroad,
+            state: data.state || INTERNSHIP_MODE.WAITING,
+            result: data.result || INTERNSHIP_RESULT.UNKNOWN,
 
             // Date
             publishAt: data.publishAt,

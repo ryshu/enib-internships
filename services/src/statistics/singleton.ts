@@ -1,6 +1,8 @@
-import { Statistics, CampaignStatistics, INTERNSHIP_MODE, isInternshipMode } from './base';
+import { Statistics, CampaignStatistics } from './base';
 
 import { getCleanStatistics, getCleanCampaignStatistics } from './helper';
+
+import { INTERNSHIP_MODE, isInternshipMode } from '../internship';
 
 class StatisticsCache {
     public readonly statistics: Statistics;
@@ -19,11 +21,13 @@ class StatisticsCache {
         if (this._initialized) {
             this.statistics.internships = {
                 total: 0,
-                suggested: 0,
                 waiting: 0,
-                availables: 0,
-                validated: 0,
-                attributed: 0,
+                published: 0,
+                attributed_student: 0,
+                available_campaign: 0,
+                attributed_mentor: 0,
+                running: 0,
+                validation: 0,
                 archived: 0,
             };
             this.statistics.mentors = 0;
@@ -115,6 +119,7 @@ class StatisticsCache {
      */
     public addMentor() {
         this.statistics.mentors++;
+        this.statistics.internships.total = this.total;
     }
 
     /**
@@ -123,6 +128,7 @@ class StatisticsCache {
      */
     public removeMentor() {
         this.statistics.mentors--;
+        this.statistics.internships.total = this.total;
     }
 
     /**
@@ -243,40 +249,60 @@ class StatisticsCache {
         return !!this.campaignStatistics[id];
     }
 
+    /**
+     * @summary Getter for total of internship
+     */
+    public get total(): number {
+        return (
+            this.statistics.internships.waiting +
+            this.statistics.internships.published +
+            this.statistics.internships.attributed_student +
+            this.statistics.internships.attributed_mentor +
+            this.statistics.internships.available_campaign +
+            this.statistics.internships.running +
+            this.statistics.internships.validation +
+            this.statistics.internships.archived
+        );
+    }
+
     private _change(mode: INTERNSHIP_MODE, q: number, id?: number) {
         switch (mode) {
             case INTERNSHIP_MODE.ARCHIVED:
                 this.statistics.internships.archived += q;
                 break;
-
-            case INTERNSHIP_MODE.ATTRIBUTED:
+            case INTERNSHIP_MODE.ATTRIBUTED_MENTOR:
                 if (this.isDefined(id)) {
                     this.campaignStatistics[id].internships.attributed += q;
                 }
-                this.statistics.internships.attributed += q;
+                this.statistics.internships.attributed_mentor += q;
                 break;
-
-            case INTERNSHIP_MODE.AVAILABLE:
+            case INTERNSHIP_MODE.ATTRIBUTED_STUDENT:
+                this.statistics.internships.attributed_student += q;
+                break;
+            case INTERNSHIP_MODE.AVAILABLE_CAMPAIGN:
                 if (this.isDefined(id)) {
                     this.campaignStatistics[id].internships.availables += q;
                 }
-                this.statistics.internships.availables += q;
+                this.statistics.internships.available_campaign += q;
                 break;
-            case INTERNSHIP_MODE.SUGGESTED:
-                this.statistics.internships.suggested += q;
-                break;
-
-            case INTERNSHIP_MODE.VALIDATED:
-                this.statistics.internships.validated += q;
-                break;
-
             case INTERNSHIP_MODE.WAITING:
                 this.statistics.internships.waiting += q;
+                break;
+            case INTERNSHIP_MODE.VALIDATION:
+                this.statistics.internships.validation += q;
+                break;
+            case INTERNSHIP_MODE.RUNNING:
+                this.statistics.internships.running += q;
+                break;
+            case INTERNSHIP_MODE.PUBLISHED:
+                this.statistics.internships.published += q;
                 break;
 
             default:
                 break;
         }
+
+        this.statistics.internships.total = this.total;
     }
 
     private _defIfndef(
@@ -296,11 +322,13 @@ class StatisticsCache {
         return {
             internships: {
                 total: 0,
-                suggested: 0,
                 waiting: 0,
-                availables: 0,
-                validated: 0,
-                attributed: 0,
+                published: 0,
+                attributed_student: 0,
+                attributed_mentor: 0,
+                available_campaign: 0,
+                running: 0,
+                validation: 0,
                 archived: 0,
             },
             students: 0,

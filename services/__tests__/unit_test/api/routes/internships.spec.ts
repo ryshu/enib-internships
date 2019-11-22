@@ -106,11 +106,16 @@ describe('POST /internships', () => {
             .post(`${baseURL}/internships`)
             .send(VALID_INTERNSHIP);
 
+        if (RESPONSE.status !== 200) {
+            // tslint:disable-next-line: no-console
+            console.log(RESPONSE.body);
+        }
+
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             category: {
-              createdAt: expect.any(String),
-              updatedAt: expect.any(String),
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
             },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),

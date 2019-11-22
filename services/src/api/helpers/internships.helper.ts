@@ -1,22 +1,36 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import InternshipModel from '../../models/internship.model';
 
-import Internships from '../../models/sequelize/Internships';
-
-import { INTERNSHIP_MODE } from '../../statistics/base';
+import { INTERNSHIP_MODE } from '../../internship';
 
 import { BAD_REQUEST_VALIDATOR, checkContent, UNPROCESSABLE_ENTITY } from './global.helper';
 
-const InternshipModePriority = [
-    INTERNSHIP_MODE.VALIDATED,
-    INTERNSHIP_MODE.ATTRIBUTED,
-    INTERNSHIP_MODE.AVAILABLE,
-    INTERNSHIP_MODE.WAITING,
-    INTERNSHIP_MODE.SUGGESTED,
+import InternshipModel, { InternshipOpts } from '../../models/internship.model';
+
+export type FilterByID =
+    | 'businessId'
+    | 'studentId'
+    | 'categoryId'
+    | 'availableCampaignId'
+    | 'validatedCampaignId'
+    | 'campaignId'
+    | 'mentorId';
+
+export const filtersByIdList: FilterByID[] = [
+    'businessId',
+    'studentId',
+    'categoryId',
+    'availableCampaignId',
+    'validatedCampaignId',
+    'campaignId',
+    'mentorId',
 ];
 
-export function generateGetInternships(filterByID?: string) {
+export function isFilterId(filterId: string): filterId is FilterByID {
+    return filtersByIdList.includes(filterId as FilterByID);
+}
+
+export function generateGetInternships(filterByID?: FilterByID) {
     return (req: Request, res: Response, next: NextFunction): void => {
         // @see validator + router
         const errors = validationResult(req);
@@ -31,18 +45,18 @@ export function generateGetInternships(filterByID?: string) {
             countries,
             types,
             subject,
-            mode = INTERNSHIP_MODE.AVAILABLE,
+            mode = [INTERNSHIP_MODE.PUBLISHED],
             isAbroad,
         } = req.query;
 
-        const opts: any = {
+        const opts: InternshipOpts = {
             countries,
             types,
             subject,
             mode,
             isAbroad,
         };
-        if (filterByID) {
+        if (filterByID && isFilterId(filterByID)) {
             opts[filterByID] = Number(req.params.id);
         }
 

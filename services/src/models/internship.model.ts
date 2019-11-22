@@ -28,7 +28,7 @@ import { PaginateOpts, paginate } from './helpers/pagination';
 
 import InternshipTypeModel from './internship.type.mode';
 
-import { INTERNSHIP_MODE } from '../statistics/base';
+import { INTERNSHIP_MODE } from '../internship';
 
 /** @interface InternshipOpts Interface of all availables filters for internship list */
 export interface InternshipOpts {
@@ -41,8 +41,8 @@ export interface InternshipOpts {
     /** @property {string} name Part of subject to apply filter on subject field (database) */
     subject?: string;
 
-    /** @property {INTERNSHIP_MODE} mode Filter internships by mode */
-    mode?: INTERNSHIP_MODE;
+    /** @property {INTERNSHIP_MODE[]} mode Filter internships by mode */
+    mode?: INTERNSHIP_MODE[];
 
     /** @property {boolean} isAbroad Select only foreign internships */
     isAbroad?: boolean;
@@ -249,32 +249,37 @@ class InternshipModelStruct {
                     internship.set('isInternshipAbroad', next.isInternshipAbroad ? true : false);
                 }
 
-                if (next.isProposition !== undefined) {
-                    internship.set('isProposition', next.isProposition ? true : false);
+                if (next.state) {
+                    internship.set('state', next.state);
                 }
 
-                if (next.isPublish !== undefined) {
-                    internship.set('isPublish', next.isPublish ? true : false);
-                }
-
-                if (next.isValidated !== undefined) {
-                    internship.set('isValidated', next.isValidated ? true : false);
+                if (next.result) {
+                    internship.set('result', next.result);
                 }
 
                 if (next.publishAt !== undefined) {
                     internship.set(
                         'publishAt',
-                        next.publishAt === 0 ? null : moment(next.publishAt).valueOf(),
+                        next.publishAt === 0 || next.publishAt === null
+                            ? null
+                            : moment(next.publishAt).valueOf(),
                     );
                 }
                 if (next.startAt !== undefined) {
                     internship.set(
                         'startAt',
-                        next.startAt === 0 ? null : moment(next.startAt).valueOf(),
+                        next.startAt === 0 || next.startAt === null
+                            ? null
+                            : moment(next.startAt).valueOf(),
                     );
                 }
                 if (next.endAt !== undefined) {
-                    internship.set('endAt', next.endAt === 0 ? null : moment(next.endAt).valueOf());
+                    internship.set(
+                        'endAt',
+                        next.endAt === 0 || next.endAt === null
+                            ? null
+                            : moment(next.endAt).valueOf(),
+                    );
                 }
 
                 const updated = await internship.save();
@@ -408,7 +413,9 @@ class InternshipModelStruct {
     ): Promise<IInternshipEntity> {
         return new Promise(async (resolve, reject) => {
             try {
-                const internship = await Internships.findByPk(internshipId);
+                const internship = await Internships.findByPk(internshipId, {
+                    include: [{ model: Campaigns, as: 'validatedCampaign' }],
+                });
                 if (!internship) {
                     return resolve();
                 }
@@ -417,7 +424,11 @@ class InternshipModelStruct {
                     return resolve();
                 }
 
-                await internship.setAvailableCampaign(campaign);
+                if (internship.validatedCampaign) {
+                    await campaign.removeValidatedInternships(internship);
+                }
+                await campaign.addAvailableInternship(internship);
+
                 return resolve(await this.getInternship(internship.id));
             } catch (error) {
                 reject(error);
@@ -439,7 +450,9 @@ class InternshipModelStruct {
     ): Promise<IInternshipEntity> {
         return new Promise(async (resolve, reject) => {
             try {
-                const internship = await Internships.findByPk(internshipId);
+                const internship = await Internships.findByPk(internshipId, {
+                    include: [{ model: Campaigns, as: 'availableCampaign' }],
+                });
                 if (!internship) {
                     return resolve();
                 }
@@ -448,7 +461,10 @@ class InternshipModelStruct {
                     return resolve();
                 }
 
-                await internship.setValidatedCampaign(campaign);
+                if (internship.availableCampaign) {
+                    await campaign.removeAvailableInternships(internship);
+                }
+                await campaign.addValidatedInternship(internship);
                 return resolve(await this.getInternship(internship.id));
             } catch (error) {
                 reject(error);
@@ -569,7 +585,7 @@ class InternshipModelStruct {
             (tmp.where as any).subject = { [sequelize.Op.substring]: opts.subject };
         }
 
-        if (opts.isAbroad !== undefined) {
+        if (opts.isAbroad) {
             (tmp.where as any).isInternshipAbroad = opts.isAbroad;
         }
 

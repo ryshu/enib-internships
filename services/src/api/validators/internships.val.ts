@@ -1,6 +1,6 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator, replaceAllExistByOptional, contriesValidator } from './generic.val';
+import { paginateValidator, replaceAllExistByOptional, contriesValidator, ID } from './generic.val';
 import {
     internshipVal,
     categoryVal,
@@ -12,43 +12,43 @@ import {
     campaignVal,
 } from './generator.val';
 
-const modes = ['published', 'propositions', 'self'];
+import { InternshipsMode, InternshipsResult } from '../../internship';
 
 export const InternshipsList: Schema = {
     ...paginateValidator,
     ...contriesValidator,
-    types: {
+    'types': {
         in: ['query'],
         isArray: { errorMessage: 'Category filter list must be array' },
         optional: true,
         toArray: true,
     },
-    subject: {
+    'subject': {
         in: ['query'],
         isString: { errorMessage: 'Subject should be of type string' },
         optional: true,
         trim: true,
         escape: true,
     },
-    mode: {
+    'mode': {
+        in: ['query'],
+        isArray: { errorMessage: 'Internship mode should be provide under array form' },
+        optional: true,
+        toArray: true,
+    },
+    'mode[*]': {
         in: ['query'],
         isString: { errorMessage: 'Mode should be a string' },
         isIn: {
-            options: [modes],
-            errorMessage: `Mode should be included in [${modes.join(', ')}]`,
+            options: [InternshipsMode],
+            errorMessage: `Mode should be included in [${InternshipsMode.join(', ')}]`,
         },
         optional: true,
         trim: true,
     },
-    isAbroad: {
+    'isAbroad': {
         in: ['query'],
         isBoolean: { errorMessage: 'Abroad should be of type boolean' },
-        optional: true,
-        toBoolean: true,
-    },
-    isValidated: {
-        in: ['query'],
-        isBoolean: { errorMessage: 'Validated should be of type boolean' },
         optional: true,
         toBoolean: true,
     },
@@ -67,3 +67,51 @@ export const InternshipCreate: Schema = {
 };
 
 export const InternshipUpdate = replaceAllExistByOptional(InternshipCreate);
+
+export const InternshipFSM: Schema = {
+    ...ID,
+    state: {
+        in: ['body'],
+        isString: { errorMessage: 'State should be a string' },
+        isIn: {
+            options: [InternshipsMode],
+            errorMessage: `State should be included in [${InternshipsMode.join(', ')}]`,
+        },
+        exists: { errorMessage: 'Should should be defined' },
+        trim: true,
+    },
+    campaignId: {
+        in: ['body'],
+        isInt: { errorMessage: `Campaign identifier must be an integer` },
+        optional: true,
+        toInt: true,
+    },
+    mentorId: {
+        in: ['body'],
+        isInt: { errorMessage: `Mentor identifier must be an integer` },
+        optional: true,
+        toInt: true,
+    },
+    studentId: {
+        in: ['body'],
+        isInt: { errorMessage: `Student must be an integer` },
+        optional: true,
+        toInt: true,
+    },
+    result: {
+        in: ['body'],
+        isString: { errorMessage: 'Result should be a string' },
+        isIn: {
+            options: [InternshipsResult],
+            errorMessage: `Result should be included in [${InternshipsResult.join(', ')}]`,
+        },
+        optional: true,
+        trim: true,
+    },
+    endAt: {
+        in: ['body'],
+        isInt: { errorMessage: `End at must be an integer` },
+        optional: true,
+        toInt: true,
+    },
+};

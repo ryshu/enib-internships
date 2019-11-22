@@ -1,4 +1,5 @@
-import { INTERNSHIP_MODE } from '../src/statistics/base';
+import { INTERNSHIP_MODE, INTERNSHIP_RESULT } from '../src/internship';
+
 import {
     IBusinessEntity,
     IInternshipEntity,
@@ -36,16 +37,9 @@ export function defaultInternships() {
         description: 'Stage',
         country: 'France',
         city: 'Brest',
-        postalCode: '29280',
-        address: 'TEST',
         isInternshipAbroad: true,
-        isValidated: false,
-        isProposition: false,
-        isPublish: true,
-        state: INTERNSHIP_MODE.AVAILABLE,
-        publishAt: 20191012,
-        startAt: 20191012,
-        endAt: 20191012,
+        state: INTERNSHIP_MODE.PUBLISHED,
+        result: INTERNSHIP_RESULT.UNKNOWN,
     };
     return VALID_INTERNSHIP;
 }

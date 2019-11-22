@@ -2,7 +2,8 @@ const faker = require('faker');
 const chalk = require('chalk');
 
 faker.locale = 'fr';
-const MentoringPropositions = require('../../../dist/models/MentoringPropositions').default;
+const MentoringPropositions = require('../../../dist/models/sequelize/MentoringPropositions')
+    .default;
 
 async function inject(mp, debug) {
     await MentoringPropositions.create(mp);

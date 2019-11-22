@@ -9,7 +9,7 @@ import Students from '../../models/sequelize/Students';
 import Mentors from '../../models/sequelize/Mentors';
 import MentoringPropositions from '../../models/sequelize/MentoringPropositions';
 import Campaigns from '../../models/sequelize/Campaigns';
-import { CampaignStatistics } from '../../statistics/base';
+import { CampaignStatistics, Statistics } from '../../statistics/base';
 
 export async function setupStatistics() {
     async function _searchCampaign(c: Campaigns): Promise<CampaignStatistics> {
@@ -31,14 +31,17 @@ export async function setupStatistics() {
             campaign: c.id,
         };
     }
-    const global = {
+
+    const global: Statistics = {
         internships: {
             total: await Internships.count(),
-            suggested: await Internships.count({ where: { state: 'suggest' } }),
             waiting: await Internships.count({ where: { state: 'waiting' } }),
-            availables: await Internships.count({ where: { state: 'available' } }),
-            validated: await Internships.count({ where: { state: 'validated' } }),
-            attributed: await Internships.count({ where: { state: 'attributed' } }),
+            published: await Internships.count({ where: { state: 'published' } }),
+            attributed_mentor: await Internships.count({ where: { state: 'attributed_mentor' } }),
+            attributed_student: await Internships.count({ where: { state: 'attributed_student' } }),
+            available_campaign: await Internships.count({ where: { state: 'available_campaign' } }),
+            running: await Internships.count({ where: { state: 'running' } }),
+            validation: await Internships.count({ where: { state: 'validation' } }),
             archived: await Internships.count({ where: { state: 'archived' } }),
         },
         students: await Students.count(),
@@ -52,6 +55,12 @@ export async function setupStatistics() {
 
     cache.reset();
     cache.init(global, ...stats);
-    logger.info(`STATISTICS - ${JSON.stringify(global, null, 4)}`);
-    stats.forEach((s) => logger.info(`STATISTICS - ${JSON.stringify(s, null, 4)}`));
+    logger.info(
+        `STATISTICS - Global (internships: ${global.internships.total},students: ${global.students}, mentors: ${global.mentors}, propositions: ${global.propositions})`,
+    );
+    stats.forEach((s) =>
+        logger.info(
+            `STATISTICS - Campaign n°${s.campaign} (internships: ${s.internships.total}, students: ${s.students}, propositions: ${s.propositions}, mentors: ${s.mentors})`,
+        ),
+    );
 }

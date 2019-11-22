@@ -67,6 +67,10 @@ class Campaigns extends Sequelize.Model {
         Internships['id']
     >;
     public createAvailableInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
+    public removeAvailableInternships: Sequelize.HasManyRemoveAssociationMixin<
+        Internships,
+        Internships['id']
+    >;
     public hasAvailableInternship: Sequelize.HasManyHasAssociationMixin<
         Internships,
         Internships['id']
@@ -81,6 +85,10 @@ class Campaigns extends Sequelize.Model {
     >;
     public createValidatedInternship: Sequelize.HasManyCreateAssociationMixin<IInternshipEntity>;
     public hasValidatedInternship: Sequelize.HasManyHasAssociationMixin<
+        Internships,
+        Internships['id']
+    >;
+    public removeValidatedInternships: Sequelize.HasManyRemoveAssociationMixin<
         Internships,
         Internships['id']
     >;

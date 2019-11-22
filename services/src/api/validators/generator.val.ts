@@ -2,6 +2,8 @@ import { Schema } from 'express-validator';
 
 import { mentorRoles } from '../../utils/type';
 
+import { InternshipsResult, InternshipsMode } from '../../internship';
+
 export function addressVal(base?: string): Schema {
     const path = base ? `${base}.` : '';
     return {
@@ -22,14 +24,14 @@ export function addressVal(base?: string): Schema {
         [`${path}postalCode`]: {
             in: ['body'],
             isString: { errorMessage: 'Postal code must be of type string' },
-            exists: { errorMessage: 'Postal code must be defined' },
+            optional: true,
             trim: true,
             escape: true,
         },
         [`${path}address`]: {
             in: ['body'],
             isString: { errorMessage: 'Address must be of type string' },
-            exists: { errorMessage: 'Address must be defined' },
+            optional: true,
             trim: true,
             escape: true,
         },
@@ -168,23 +170,27 @@ export function internshipVal(base?: string): Schema {
             optional: true,
             toBoolean: true,
         },
-        [`${path}isValidated`]: {
+        [`${path}state`]: {
             in: ['body'],
-            isBoolean: { errorMessage: 'Validated must be of type boolean' },
+            isString: { errorMessage: 'Internship state must be of type string' },
+            isIn: {
+                options: [InternshipsMode],
+                errorMessage: `State should be included in [${InternshipsMode.join(', ')}]`,
+            },
             optional: true,
-            toBoolean: true,
+            trim: true,
+            escape: true,
         },
-        [`${path}isProposition`]: {
+        [`${path}result`]: {
             in: ['body'],
-            isBoolean: { errorMessage: 'Proposition must be of type boolean' },
+            isString: { errorMessage: 'Internship abroad must be of type string' },
+            isIn: {
+                options: [InternshipsResult],
+                errorMessage: `Result should be included in [${InternshipsResult.join(', ')}]`,
+            },
             optional: true,
-            toBoolean: true,
-        },
-        [`${path}isPublish`]: {
-            in: ['body'],
-            isBoolean: { errorMessage: 'Publish must be of type boolean' },
-            optional: true,
-            toBoolean: true,
+            trim: true,
+            escape: true,
         },
 
         [`${path}publishAt`]: {

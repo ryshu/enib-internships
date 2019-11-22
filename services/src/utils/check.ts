@@ -9,9 +9,7 @@ import {
     IStudentEntity,
 } from '../declarations';
 
-export function isInt(t: number): t is number {
-    return !!t && !Number.isNaN(Number(t));
-}
+// TODO: Documentation
 
 export function checkPartialBusiness(check: Partial<IBusinessEntity>): check is IBusinessEntity {
     return (
@@ -37,16 +35,7 @@ export function checkPartialFile(check: Partial<IFileEntity>): check is IFileEnt
 export function checkPartialInternship(
     check: Partial<IInternshipEntity>,
 ): check is IInternshipEntity {
-    return (
-        !!check &&
-        !!check.subject &&
-        !!check.description &&
-        !!check.country &&
-        !!check.city &&
-        !!check.postalCode &&
-        !!check.address &&
-        !!check.state
-    );
+    return !!check && !!check.subject && !!check.description && !!check.country;
 }
 
 export function checkPartialInternshipType(
