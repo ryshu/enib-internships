@@ -32,7 +32,7 @@ export default class extends mixins(ResizeMixin) {
   }
 
   mounted() {
-    getCampaignInternships(this.id, { limit: 0 }).then(res => {
+    getCampaignInternships(this.id, { limit: 0, page: 1 }).then(res => {
       if (res && res.data && Array.isArray(res.data)) {
         this.list = {};
         for (const d of res.data) {

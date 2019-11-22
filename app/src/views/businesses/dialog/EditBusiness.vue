@@ -75,10 +75,11 @@
 import countryList from 'country-list';
 import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
+import { cloneDeep } from 'lodash';
 
 import { defaultBusinessData } from '../../../api/businesses';
-import { IBusiness } from '../../../api/types';
-import { cloneDeep } from 'lodash';
+
+import { IBusinessEntity } from '../../../declarations';
 
 @Component({
   name: 'EditBusiness',
@@ -90,7 +91,7 @@ export default class EditBusiness extends Vue {
   private dialogStatus = '';
   private textMap = {};
 
-  private resolve: (value?: IBusiness) => void = () => {};
+  private resolve: (value?: IBusinessEntity) => void = () => {};
   private reject: (error?: any) => void = () => {};
 
   public created() {
@@ -100,7 +101,7 @@ export default class EditBusiness extends Vue {
     };
   }
 
-  public update(item: IBusiness) {
+  public update(item: IBusinessEntity) {
     this.tempBusinessData = cloneDeep(item);
     this.dialogStatus = 'update';
     return this.setup();
@@ -119,7 +120,10 @@ export default class EditBusiness extends Vue {
     });
 
     return new Promise(
-      (resolve: (value?: IBusiness) => void, reject: (error?: any) => void) => {
+      (
+        resolve: (value?: IBusinessEntity) => void,
+        reject: (error?: any) => void
+      ) => {
         this.resolve = resolve;
         this.reject = reject;
       }

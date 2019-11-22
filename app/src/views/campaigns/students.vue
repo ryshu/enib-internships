@@ -96,12 +96,12 @@ import { Form } from 'element-ui';
 import { cloneDeep } from 'lodash';
 
 import {
-  getStudents,
   updateStudent,
   defaultStudentData,
+  getCampaignStudents,
 } from '../../api/students';
 
-import { IStudent } from '../../api/types';
+import { IStudentEntity, INTERNSHIP_MODE } from '../../declarations';
 
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
@@ -118,7 +118,7 @@ import CrudBtn from '../../components/CrudBtn/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IStudent[] = [];
+  private list: IStudentEntity[] = [];
   private total = 0;
 
   private listLoading = true;
@@ -134,9 +134,13 @@ export default class extends Vue {
     this.getList();
   }
 
+  private get id() {
+    return Number(this.$route.params.id);
+  }
+
   private getList() {
     this.listLoading = true;
-    getStudents(this.listQuery).then((res: any) => {
+    getCampaignStudents(this.id, this.listQuery).then(res => {
       this.list = res ? res.data : [];
       this.total = res ? res.max : 0;
       this.listLoading = false;

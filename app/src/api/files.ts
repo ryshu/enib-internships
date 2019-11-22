@@ -1,7 +1,6 @@
 import request from '@/utils/request';
-import { AxiosPromise } from 'axios';
 
-import { IFile } from './types';
+import { IFileEntity } from '../declarations';
 
 /**
  * @summary Method used to prepare file form
@@ -15,10 +14,10 @@ export const sendFile = (file: File, name: string, type: string) => {
   form.set('name', name);
   form.set('type', type);
 
-  return request({
+  return (request({
     url: '/files',
     method: 'post',
     data: form,
     headers: { 'Content-Type': 'multipart/form-data' },
-  }) as AxiosPromise<IFile>;
+  }) as any) as Promise<IFileEntity>;
 };

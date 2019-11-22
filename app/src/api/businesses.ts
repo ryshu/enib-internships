@@ -1,9 +1,8 @@
 import request from '@/utils/request';
 
-import { AxiosPromise } from 'axios';
-import { IBusiness } from './types';
+import { IBusinessEntity, BusinessOpts, PaginateList } from '../declarations';
 
-export const defaultBusinessData: IBusiness = {
+export const defaultBusinessData: IBusinessEntity = {
   name: '',
   country: 'France',
   city: '',
@@ -12,36 +11,35 @@ export const defaultBusinessData: IBusiness = {
   additional: '',
 };
 
-export const getBusinesses = (params: any) =>
-  request({
+export const getBusinesses = (params: BusinessOpts) =>
+  (request({
     url: '/businesses',
     method: 'get',
     params,
-  });
+  }) as any) as Promise<PaginateList<IBusinessEntity>>;
 
-export const getBusiness = (id: number, params: any) =>
-  request({
+export const getBusiness = (id: number) =>
+  (request({
     url: `/businesses/${id}`,
     method: 'get',
-    params,
-  });
+  }) as any) as Promise<IBusinessEntity>;
 
-export const createBusiness = (data: any) =>
-  request({
+export const createBusiness = (data: IBusinessEntity) =>
+  (request({
     url: '/businesses',
     method: 'post',
     data,
-  }) as AxiosPromise<IBusiness>;
+  }) as any) as Promise<IBusinessEntity>;
 
-export const updateBusiness = (id: number, data: any) =>
-  request({
+export const updateBusiness = (id: number, data: Partial<IBusinessEntity>) =>
+  (request({
     url: `/businesses/${id}`,
     method: 'put',
     data,
-  });
+  }) as any) as Promise<IBusinessEntity>;
 
 export const deleteBusiness = (id: number) =>
-  request({
+  (request({
     url: `/businesses/${id}`,
     method: 'delete',
-  });
+  }) as any) as Promise<void>;

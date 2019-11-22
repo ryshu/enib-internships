@@ -19,12 +19,7 @@
         class="filter-item"
         @change="handleFilter"
       >
-        <el-option
-          v-for="item in countryList"
-          :key="item"
-          :label="item"
-          :value="item"
-        />
+        <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
       </el-select>
       <el-select
         v-model="listQuery.types"
@@ -36,12 +31,7 @@
         class="filter-item"
         @change="handleFilter"
       >
-        <el-option
-          v-for="item in types"
-          :key="item.id"
-          :label="item.label"
-          :value="item.id"
-        />
+        <el-option v-for="item in types" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-button
         v-waves
@@ -50,8 +40,7 @@
         type="primary"
         icon="el-icon-search"
         @click="handleFilter"
-        >{{ $t('table.search') }}</el-button
-      >
+      >{{ $t('table.search') }}</el-button>
       <el-button
         v-waves
         :loading="downloadLoading"
@@ -59,8 +48,7 @@
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
-        >{{ $t('table.export') }}</el-button
-      >
+      >{{ $t('table.export') }}</el-button>
       <el-checkbox
         v-model="listQuery.isAbroad"
         v-waves
@@ -68,17 +56,7 @@
         class="filter-item"
         type="primary"
         @change="handleFilter"
-        >{{ $t('table.checkbox.isAbroad') }}</el-checkbox
-      >
-      <el-checkbox
-        v-model="listQuery.isValidated"
-        v-waves
-        style="margin-left: 10px;"
-        class="filter-item"
-        type="primary"
-        @change="handleFilter"
-        >{{ $t('table.checkbox.isValidated') }}</el-checkbox
-      >
+      >{{ $t('table.checkbox.isAbroad') }}</el-checkbox>
     </div>
 
     <!-- Table -->
@@ -91,21 +69,17 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column
-        :label="$t('table.internships.subject')"
-        min-width="250px"
-      >
+      <el-table-column :label="$t('table.internships.subject')" min-width="250px">
         <template slot-scope="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">{{
+          <span class="link-type" @click="handleUpdate(row)">
+            {{
             row.subject
-          }}</span>
+            }}
+          </span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        :label="$t('table.internships.country')"
-        min-width="70px"
-      >
+      <el-table-column :label="$t('table.internships.country')" min-width="70px">
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
         </template>
@@ -125,23 +99,7 @@
           <el-tag
             :type="row.isInternshipAbroad ? 'success' : 'danger'"
             effect="dark"
-            >{{
-              $t(row.isInternshipAbroad ? 'status.yes' : 'status.no')
-            }}</el-tag
-          >
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('table.internships.isValidated')"
-        min-width="70px"
-        align="center"
-      >
-        <template slot-scope="{ row }">
-          <el-tag
-            :type="row.isValidated ? 'success' : 'danger'"
-            effect="dark"
-            >{{ $t(row.isValidated ? 'status.yes' : 'status.no') }}</el-tag
-          >
+          >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -191,7 +149,7 @@ import {
   defaultInternshipData,
 } from '../../../api/internships';
 
-import { IInternship } from '../../../api/types';
+import { IInternshipEntity, InternshipOpts } from '../../../declarations';
 
 import {
   getAvailabletInternshipCampaign,
@@ -217,18 +175,17 @@ import { CategoriesModule } from '../../../store/modules/categories';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IInternship[] = [];
+  private list: IInternshipEntity[] = [];
   private total = 0;
 
   private listLoading = true;
-  private listQuery = {
+  private listQuery: InternshipOpts = {
     page: 1,
     limit: 10,
     subject: undefined,
     countries: [],
     types: [],
     isAbroad: false,
-    isValidated: false,
   };
 
   private downloadLoading = false;
@@ -276,9 +233,9 @@ export default class extends Vue {
   private handleUpdate(row: any) {
     (this.$refs.EditInternship as EditInternship)
       .update(row)
-      .then(async (updatedRow: IInternship | undefined) => {
+      .then(async (updatedRow: IInternshipEntity | undefined) => {
         if (updatedRow) {
-          const { data } = await updateInternship(updatedRow.id!, updatedRow);
+          await updateInternship(updatedRow.id!, updatedRow);
           this.getList();
           this.$notify({
             title: this.$t('notify.internships.update.title') as string,
@@ -317,11 +274,9 @@ export default class extends Vue {
       'isValidated',
     ];
     const data = formatJson(filterVal, this.list);
-    exportJson2Excel(
-      tHeader,
-      data,
-      this.$t('export.internships.fileName') as string
-    );
+    exportJson2Excel(tHeader, data, this.$t(
+      'export.internships.fileName'
+    ) as string);
     this.downloadLoading = false;
   }
 }

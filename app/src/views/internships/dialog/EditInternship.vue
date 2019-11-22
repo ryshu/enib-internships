@@ -171,8 +171,8 @@ import { cloneDeep } from 'lodash';
 import CategorySelect from '@/components/CategorySelect/index.vue';
 
 import { defaultInternshipData } from '../../../api/internships';
-import { IInternship } from '../../../api/types';
-function getData(item: IInternship) {
+import { IInternshipEntity } from '../../../declarations/internship';
+function getData(item: IInternshipEntity) {
   const tmp: any = cloneDeep(item);
   tmp.category = tmp.category ? tmp.category.id : null;
   tmp.publishAt = tmp.publishAt ? moment(tmp.publishAt).format('LL') : '';
@@ -193,12 +193,12 @@ export default class EditInternship extends Vue {
   private dialogFormVisible = false;
   private countryList = countryList.getNames();
 
-  private resolve: (value?: IInternship) => void = () => {};
+  private resolve: (value?: IInternshipEntity) => void = () => {};
   private reject: (error?: any) => void = () => {};
 
   public created() {}
 
-  public update(item: IInternship) {
+  public update(item: IInternshipEntity) {
     // Glitch to update category select
     this.internData.category = 1111111111;
 
@@ -211,7 +211,7 @@ export default class EditInternship extends Vue {
 
     return new Promise(
       (
-        resolve: (value?: IInternship) => void,
+        resolve: (value?: IInternshipEntity) => void,
         reject: (error?: any) => void
       ) => {
         this.resolve = resolve;
