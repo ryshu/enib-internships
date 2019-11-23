@@ -37,7 +37,7 @@
         :rules="[{ required: true, message: $t('form.internships.category.required'), trigger: 'blur' }]"
       >
         <category-select
-          v-model="internData.category"
+          v-model="internData.category.id"
           :placeholder="$t('suggest.placeholder.category')"
         />
       </el-form-item>

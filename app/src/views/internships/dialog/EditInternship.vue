@@ -132,16 +132,6 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item :label="$t('table.internships.isPublish')" prop="isPublish">
-            <el-switch
-              v-model="internData.isPublish"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
-            />
-            <span style="padding-left: 10px;">{{ $t('suggest.checkbox.publish')}}</span>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
           <el-form-item :label="$t('table.internships.isInternshipAbroad')" prop="isAbroad">
             <el-switch
               v-model="internData.isAbroad"

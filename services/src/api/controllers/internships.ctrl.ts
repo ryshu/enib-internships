@@ -104,7 +104,7 @@ export const postInternship = async (req: Request, res: Response, next: NextFunc
                 result = (await InternshipModel.linkToCategory(created.id, categoryId)) || created;
             }
 
-            if (req.body.mode === INTERNSHIP_MODE.PUBLISHED || req.session.info.role === 'admin') {
+            if (req.body.state === INTERNSHIP_MODE.PUBLISHED && req.session.info.role === 'admin') {
                 // If user is admin and mode need to be set to 'published', we publish this internship offer
                 result = (await new InternshipHandler(result).toPublished()).toJSON();
             }

@@ -18,7 +18,7 @@ export const defaultInternshipData: IInternshipEntity = {
   address: '',
   additional: '',
 
-  category: undefined,
+  category: { id: undefined, label: '' },
 
   isInternshipAbroad: false,
   state: INTERNSHIP_MODE.WAITING,
@@ -73,6 +73,20 @@ export const linkInternshipFile = (internshipID: string, fileID: string) =>
 
 export const getAvailabletInternshipCampaign = (id: number) =>
   (request({
-    url: `/internship/${id}/availableCampaign`,
+    url: `/internships/${id}/availableCampaign`,
     method: 'get',
   }) as any) as Promise<ICampaignEntity>;
+
+export const publishInternship = (id: number) =>
+  (request({
+    url: `/internships/${id}/fsm`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.PUBLISHED },
+  }) as any) as Promise<IInternshipEntity>;
+
+export const unpublishInternship = (id: number) =>
+  (request({
+    url: `/internships/${id}/fsm`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.WAITING },
+  }) as any) as Promise<IInternshipEntity>;

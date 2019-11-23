@@ -104,20 +104,20 @@
         <template slot-scope="{ row }">
           <crud-btn
             type="success"
-            icon="el-icon-check"
-            :placeholder="$t('propositions.placeholder.add')"
+            icon="el-icon-upload2"
+            :placeholder="$t('internships.placeholder.publish')"
             @clicked="handlePublish(row)"
           />
           <crud-btn
             type="warning"
             icon="el-icon-edit"
-            :placeholder="$t('propositions.placeholder.update')"
+            :placeholder="$t('internships.placeholder.update')"
             @clicked="handleUpdate(row)"
           />
           <crud-btn
             type="danger"
             icon="el-icon-delete"
-            :placeholder="$t('propositions.placeholder.remove')"
+            :placeholder="$t('internships.placeholder.remove')"
             @clicked="handleDelete(row)"
           />
         </template>
@@ -146,6 +146,7 @@ import {
   updateInternship,
   deleteInternship,
   defaultInternshipData,
+  publishInternship,
 } from '../../../api/internships';
 import {
   IInternshipEntity,
@@ -206,6 +207,17 @@ export default class extends Vue {
     this.getList();
   }
 
+  private async handlePublish(row: IInternshipEntity) {
+    await publishInternship(row.id);
+    this.getList();
+    this.$notify({
+      title: this.$t('notify.internships.publish.title') as string,
+      message: this.$t('notify.internships.publish.msg') as string,
+      type: 'success',
+      duration: 2000,
+    });
+  }
+
   private handleUpdate(row: IInternshipEntity) {
     (this.$refs.EditInternship as EditInternship)
       .update(row)
@@ -223,7 +235,7 @@ export default class extends Vue {
       });
   }
 
-  private async handleDelete(row: any) {
+  private async handleDelete(row: IInternshipEntity) {
     await deleteInternship(row.id!);
     this.getList();
     this.$notify({
