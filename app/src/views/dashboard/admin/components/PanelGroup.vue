@@ -75,7 +75,7 @@ import {
   getGlobalStatistics,
   getDefaultStats,
 } from '../../../../api/statistics';
-import { Statistics } from '../../../../api/types';
+import { Statistics } from '../../../../declarations';
 
 @Component({
   name: 'PanelGroup',

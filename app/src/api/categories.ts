@@ -1,7 +1,7 @@
 import request from '@/utils/request';
-import { IInternshipTypes } from './types';
+import { IInternshipTypeEntity } from '../declarations';
 
-export const defaultCategoryData: IInternshipTypes = {
+export const defaultCategoryData: IInternshipTypeEntity = {
   label: '',
 };
 

@@ -37,7 +37,7 @@
         :rules="[{ required: true, message: $t('form.internships.category.required'), trigger: 'blur' }]"
       >
         <category-select
-          v-model="internData.category"
+          v-model="internData.category.id"
           :placeholder="$t('suggest.placeholder.category')"
         />
       </el-form-item>
@@ -96,11 +96,7 @@
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item
-            :label="$t('table.internships.postalCode')"
-            prop="postalCode"
-            :rules="[{ required: true, message: $t('form.internships.postalCode.required'), trigger: 'blur' }]"
-          >
+          <el-form-item :label="$t('table.internships.postalCode')" prop="postalCode">
             <el-input
               v-model="internData.postalCode"
               :placeholder="$t('suggest.placeholder.postalCode')"
@@ -108,11 +104,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item
-            :label="$t('table.internships.address')"
-            prop="address"
-            :rules="[{ required: true, message: $t('form.internships.address.required'), trigger: 'blur' }]"
-          >
+          <el-form-item :label="$t('table.internships.address')" prop="address">
             <el-input
               v-model="internData.address"
               :placeholder="$t('suggest.placeholder.address')"
@@ -156,42 +148,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item :label="$t('table.internships.isPublish')" prop="isPublish">
-              <el-switch
-                v-model="internData.isPublish"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-              />
-              <span style="padding-left: 10px;">{{ $t('suggest.checkbox.publish')}}</span>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item :label="$t('table.internships.isValidated')" prop="isValidated">
-              <el-switch
-                v-model="internData.isValidated"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-              />
-              <span style="padding-left: 10px;">{{ $t('suggest.checkbox.abroad')}}</span>
-            </el-form-item>
-          </el-col>
-        </el-row>
       </div>
-
-      <el-form-item
-        v-if="role === 'admin'"
-        :label="$t('table.internships.isProposition')"
-        prop="isProposition"
-      >
-        <el-switch
-          v-model="internData.isProposition"
-          active-color="#13ce66"
-          inactive-color="#ff4949"
-        />
-        <span style="padding-left: 10px;">{{ $t('suggest.checkbox.proposition')}}</span>
-      </el-form-item>
 
       <h2 style="padding-bottom: 20px;">{{ $t('suggest.files.title')}}</h2>
 
@@ -252,7 +209,6 @@ import {
   createInternship,
   linkInternshipFile,
 } from '../../api/internships';
-import { IInternship } from '../../api/types';
 import { sendFile } from '../../api/files';
 
 import CategorySelect from '@/components/CategorySelect/index.vue';

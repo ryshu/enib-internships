@@ -7,24 +7,24 @@ import {
 } from 'vuex-module-decorators';
 import store from '@/store';
 
-import { IInternshipTypes } from '@/api/types';
+import { IInternshipTypeEntity } from '@/declarations';
 import { getCategories } from '@/api/categories';
 
 @Module({ dynamic: true, store, name: 'categories' })
 class Categories extends VuexModule {
-  private all: IInternshipTypes[] = [];
+  private all: IInternshipTypeEntity[] = [];
 
   public get categories() {
     return this.all || [];
   }
 
   @Mutation
-  private SET_CATEGORIES(data: IInternshipTypes[]) {
+  private SET_CATEGORIES(data: IInternshipTypeEntity[]) {
     this.all = data;
   }
 
   @Action
-  public getCategory(id: number): IInternshipTypes | undefined {
+  public getCategory(id: number): IInternshipTypeEntity | undefined {
     const found = this.all.findIndex(c => c.id === id);
     if (found !== -1) return this.all[found];
     return undefined;

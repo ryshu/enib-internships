@@ -1,3 +1,5 @@
+import { IMentorEntity } from '../../declarations';
+
 export const admins: IMentorEntity[] = [
     {
         firstName: 'Oscar',

@@ -2,8 +2,8 @@ const faker = require('faker');
 const chalk = require('chalk');
 
 faker.locale = 'fr';
-const Campaigns = require('../../../dist/models/Campaigns').default;
-const InternshipTypes = require('../../../dist/models/InternshipTypes').default;
+const Campaigns = require('../../../dist/models/sequelize/Campaigns').default;
+const InternshipTypes = require('../../../dist/models/sequelize/InternshipTypes').default;
 
 const categories = require('../../../dist/configs/data/categories').defaultCategories;
 

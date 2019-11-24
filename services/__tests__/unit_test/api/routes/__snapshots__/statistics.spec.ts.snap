@@ -18,11 +18,13 @@ exports[`GET /statistics Default 200 Statistics 1`] = `
 Object {
   "internships": Object {
     "archived": 0,
-    "attributed": 0,
-    "availables": 0,
-    "suggested": 0,
+    "attributed_mentor": 0,
+    "attributed_student": 0,
+    "available_campaign": 0,
+    "published": 0,
+    "running": 0,
     "total": 0,
-    "validated": 0,
+    "validation": 0,
     "waiting": 0,
   },
   "mentors": 0,

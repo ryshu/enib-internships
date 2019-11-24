@@ -2,7 +2,7 @@ const faker = require('faker');
 const chalk = require('chalk');
 
 faker.locale = 'fr';
-const Mentors = require('../../../dist/models/Mentors').default;
+const Mentors = require('../../../dist/models/sequelize/Mentors').default;
 
 async function inject(m, debug) {
     await Mentors.create(m);

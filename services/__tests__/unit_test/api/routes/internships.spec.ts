@@ -7,14 +7,14 @@ import app from '../../../../src/app';
 import dbSetup from '../../../../src/configs/setup/database';
 
 // Import model for pre-operation before asserting API methods
-import Internships from '../../../../src/models/Internships';
-import Businesses from '../../../../src/models/Businesses';
-import Students from '../../../../src/models/Students';
-import InternshipTypes from '../../../../src/models/InternshipTypes';
-import Files from '../../../../src/models/Files';
-import Campaigns from '../../../../src/models/Campaigns';
-import MentoringPropositions from '../../../../src/models/MentoringPropositions';
-import Mentors from '../../../../src/models/Mentors';
+import Internships from '../../../../src/models/sequelize/Internships';
+import Businesses from '../../../../src/models/sequelize/Businesses';
+import Students from '../../../../src/models/sequelize/Students';
+import InternshipTypes from '../../../../src/models/sequelize/InternshipTypes';
+import Files from '../../../../src/models/sequelize/Files';
+import Campaigns from '../../../../src/models/sequelize/Campaigns';
+import MentoringPropositions from '../../../../src/models/sequelize/MentoringPropositions';
+import Mentors from '../../../../src/models/sequelize/Mentors';
 
 import {
     defaultCampaigns,
@@ -53,14 +53,24 @@ describe('GET /internships', () => {
 
     it('Internships_200', async () => {
         const VALID_INTERNSHIP = defaultInternships();
+        const VALID_INTERNSHIP_TYPE = defaultInternshipTypes();
 
-        await Internships.create(VALID_INTERNSHIP);
+        VALID_INTERNSHIP.category = VALID_INTERNSHIP_TYPE;
+
+        await Internships.create(VALID_INTERNSHIP, {
+            include: [{ association: Internships.associations.category }],
+        });
         const RESPONSE = await request(app).get(`${baseURL}/internships`);
+
         expect(RESPONSE.status).toBe(200);
         expect(Array.isArray(RESPONSE.body.data)).toBeTruthy();
         expect(RESPONSE.body).toMatchSnapshot({
             data: [
                 {
+                    category: {
+                        createdAt: expect.any(String),
+                        updatedAt: expect.any(String),
+                    },
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
                 },
@@ -90,14 +100,23 @@ describe('POST /internships', () => {
         const VALID_INTERNSHIP_TYPE = defaultInternshipTypes();
 
         const category = await InternshipTypes.create(VALID_INTERNSHIP_TYPE);
-        VALID_INTERNSHIP.category = category.id;
+        VALID_INTERNSHIP.category = { id: category.id };
 
         const RESPONSE = await request(app)
             .post(`${baseURL}/internships`)
             .send(VALID_INTERNSHIP);
 
+        if (RESPONSE.status !== 200) {
+            // tslint:disable-next-line: no-console
+            console.log(RESPONSE.body);
+        }
+
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
+            category: {
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+            },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             id: expect.any(Number),
@@ -241,7 +260,6 @@ describe('GET /internships/:id/businesses', () => {
         const CREATED = await Internships.create(VALID_INTERNSHIP);
         const RESPONSE = await request(app).get(`${baseURL}/internships/${CREATED.id}/businesses`);
         expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual({});
     });
 
     it('Internships_200_WithLinkedData', async () => {
@@ -352,7 +370,6 @@ describe('GET /internships/:id/students', () => {
         const CREATED = await Internships.create(VALID_INTERNSHIP);
         const RESPONSE = await request(app).get(`${baseURL}/internships/${CREATED.id}/students`);
         expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual({});
     });
 
     it('Internships_200_WithLinkedData', async () => {
@@ -467,7 +484,6 @@ describe('GET /internships/:id/internshipTypes', () => {
             `${baseURL}/internships/${CREATED.id}/internshipTypes`,
         );
         expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual({});
     });
 
     it('Internships_200_WithLinkedData', async () => {
@@ -625,7 +641,7 @@ describe('POST /internships/:id/files/:file_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Internships_200_NoFile', async () => {
+    it('Internships_204_NoFile', async () => {
         // In this case, we check if link a existing Bussiness and an unexisting internships work
         const VALID_INTERNSHIP = defaultInternships();
 
@@ -633,7 +649,7 @@ describe('POST /internships/:id/files/:file_id/link', () => {
         const RESPONSE = await request(app).post(
             `${baseURL}/internships/${CREATED.id}/files/20/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Internships_200_WithInternship', async () => {
@@ -685,7 +701,6 @@ describe('GET /internships/:id/availableCampaigns', () => {
             `${baseURL}/internships/${CREATED.id}/availableCampaigns`,
         );
         expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual({});
     });
 
     it('Internships_200_WithLinkedData', async () => {
@@ -802,7 +817,6 @@ describe('GET /internships/:id/validatedCampaigns', () => {
             `${baseURL}/internships/${CREATED.id}/validatedCampaigns`,
         );
         expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual({});
     });
 
     it('Internships_200_WithLinkedData', async () => {
@@ -969,7 +983,7 @@ describe('POST /internships/:id/propositions/:mentoring_proposition_id/link', ()
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Internships_200_NoPropositions', async () => {
+    it('Internships_204_NoPropositions', async () => {
         // In this case, we check if link a existing internships and an unexisting propositions work
         const VALID_INTERNSHIP = defaultInternships();
 
@@ -977,7 +991,7 @@ describe('POST /internships/:id/propositions/:mentoring_proposition_id/link', ()
         const RESPONSE = await request(app).post(
             `${baseURL}/internships/${CREATED.id}/propositions/2231565610/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Internships_200_WithPropositions', async () => {
@@ -1031,7 +1045,6 @@ describe('GET /internships/:id/mentors', () => {
         const CREATED = await Internships.create(VALID_INTERNSHIP);
         const RESPONSE = await request(app).get(`${baseURL}/internships/${CREATED.id}/mentors`);
         expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual({});
     });
 
     it('Internships_200_WithLinkedData', async () => {

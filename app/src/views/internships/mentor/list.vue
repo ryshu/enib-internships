@@ -3,7 +3,7 @@
     <!-- Filter -->
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.subject"
         :placeholder="$t('table.internships.subject')"
         style="width: 200px;"
         class="filter-item"
@@ -112,7 +112,11 @@ import { Component, Vue } from 'vue-property-decorator';
 import countryList from 'country-list';
 
 import { getInternships } from '../../../api/internships';
-import { IInternship } from '../../../api/types';
+import {
+  IInternshipEntity,
+  InternshipOpts,
+  INTERNSHIP_MODE,
+} from '../../../declarations';
 
 import Pagination from '../../../components/Pagination/index.vue';
 
@@ -126,16 +130,17 @@ import { CategoriesModule } from '../../../store/modules/categories';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IInternship[] = [];
+  private list: IInternshipEntity[] = [];
 
   private total = 0;
   private listLoading = true;
-  private listQuery = {
+  private listQuery: InternshipOpts = {
     page: 1,
     limit: 10,
-    title: undefined,
+    subject: undefined,
     countries: [],
     types: [],
+    mode: [INTERNSHIP_MODE.AVAILABLE_CAMPAIGN],
     isAbroad: false,
   };
 

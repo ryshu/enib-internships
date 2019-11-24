@@ -1,26 +1,25 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
-import sequelize from 'sequelize';
 
-// Import mentors ORM class
-import Campaigns from '../../models/Campaigns';
-import Internships from '../../models/Internships';
-import Mentors from '../../models/Mentors';
-import MentoringPropositions from '../../models/MentoringPropositions';
+import MentorModel from '../../models/mentor.model';
+import MentoringPropositionModel from '../../models/mentoring.proposition.model';
 
 // Factorization methods to handle errors
 import {
     UNPROCESSABLE_ENTITY,
-    checkArrayContent,
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
-import { paginate } from '../helpers/pagination.helper';
+import { generateGetInternships } from '../helpers/internships.helper';
 
 import { isMentorRole } from '../../utils/type';
 
-import cache from '../../statistics/singleton';
+import { IMentorEntity } from '../../declarations';
+
+import { fullCopyCampaign } from '../processors/campaign.proc';
+import { fullCopyMentoringProposition } from '../processors/mentoring.proposition.proc';
+import { fullCopyInternship } from '../processors/internship.proc';
 
 /**
  * GET /mentors
@@ -37,22 +36,9 @@ export const getMentors = (req: Request, res: Response, next: NextFunction): voi
     // Retrieve all mentors from database
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
-    let max: number;
-    Mentors.count()
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Mentors.findAll(paginate({ page, limit }));
-        })
-        .then((mentors) => {
-            if (checkArrayContent(mentors, next)) {
-                return res.send({
-                    page,
-                    data: mentors,
-                    length: mentors.length,
-                    max,
-                });
-            }
-        })
+
+    MentorModel.getMentors({}, { page, limit })
+        .then((mentor) => (checkContent(mentor, next) ? res.send(mentor) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -72,14 +58,23 @@ export const postMentor = (req: Request, res: Response, next: NextFunction): voi
         lastName: req.body.lastName,
         email: req.body.email,
         role: req.body.role && isMentorRole(req.body.role) ? req.body.role : 'default',
+
+        campaigns:
+            req.body.campaigns && Array.isArray(req.body.campaigns)
+                ? req.body.campaigns.map((i: any) => fullCopyCampaign(i))
+                : [],
+        propositions:
+            req.body.propositions && Array.isArray(req.body.propositions)
+                ? req.body.propositions.map((i: any) => fullCopyMentoringProposition(i))
+                : [],
+        internships:
+            req.body.internships && Array.isArray(req.body.internships)
+                ? req.body.internships.map((i: any) => fullCopyInternship(i))
+                : [],
     };
 
-    // Insert mentor in database
-    Mentors.create(mentor)
-        .then((created) => {
-            cache.addMentor();
-            return res.send(created);
-        })
+    MentorModel.createMentor(mentor)
+        .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -95,13 +90,8 @@ export const getMentor = (req: Request, res: Response, next: NextFunction): void
     }
 
     // Select mentor by ID into database
-    Mentors.findByPk(req.params.id)
-        .then((val) => {
-            // Check if we have content, and if so return it
-            if (checkContent(val, next)) {
-                return res.send(val);
-            }
-        })
+    MentorModel.getMentor(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -115,33 +105,9 @@ export const putMentor = (req: Request, res: Response, next: NextFunction): void
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Mentors.findByPk(req.params.id)
-        .then((mentor) => {
-            if (!checkContent(mentor, next)) {
-                return undefined;
-            }
-
-            if (req.body.firstName) {
-                mentor.set('firstName', req.body.firstName);
-            }
-            if (req.body.lastName) {
-                mentor.set('lastName', req.body.lastName);
-            }
-            if (req.body.email) {
-                mentor.set('email', req.body.email);
-            }
-            if (req.body.role && isMentorRole(req.body.role)) {
-                mentor.set('role', req.body.role);
-            }
-
-            return mentor.save();
-        })
-        .then((updated) => {
-            if (updated) {
-                return res.send(updated);
-            }
-        })
-        .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+    MentorModel.updateMentor(Number(req.params.id), req.body)
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -155,19 +121,7 @@ export const deleteMentor = (req: Request, res: Response, next: NextFunction): v
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Mentors.findByPk(req.params.id)
-        .then(async (val) => {
-            if (val) {
-                // Remove from stats
-                const campaigns = await val.getCampaigns();
-                campaigns.forEach((c) => {
-                    cache.unlinkMentor(c.id);
-                });
-                cache.removeMentor();
-                return val.destroy();
-            }
-            return undefined;
-        }) // Call destroy on selected mentor
+    MentorModel.removeMentor(Number(req.params.id))
         .then(() => res.sendStatus(httpStatus.OK)) // Return OK status
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
@@ -183,14 +137,8 @@ export const getMentorCampaigns = (req: Request, res: Response, next: NextFuncti
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Mentors.findByPk(req.params.id, {
-        include: [{ model: Campaigns, as: 'campaigns' }],
-    })
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.campaigns);
-            }
-        })
+    MentorModel.getMentor(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.campaigns) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -205,18 +153,8 @@ export const linkMentorCampaign = (req: Request, res: Response, next: NextFuncti
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Mentors.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.addCampaign(Number(req.params.campaign_id));
-                    cache.linkMentor(Number(req.params.campaign_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    MentorModel.linkToCampaign(Number(req.params.id), Number(req.params.campaign_id))
+        .then((mentor) => (checkContent(mentor, next) ? res.send(mentor) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -234,24 +172,13 @@ export const getMentorPropositions = (req: Request, res: Response, next: NextFun
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
 
-    const findOpts: sequelize.FindOptions = { where: { mentorId: req.params.id } };
-
-    let max: number;
-    MentoringPropositions.count(findOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return MentoringPropositions.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (mps) => {
-            if (checkArrayContent(mps, next)) {
-                return res.send({
-                    page,
-                    data: mps,
-                    length: mps.length,
-                    max,
-                });
-            }
-        })
+    MentoringPropositionModel.getMentoringPropositions(
+        { mentorId: Number(req.params.id) },
+        { page, limit },
+    )
+        .then((propositions) =>
+            checkContent(propositions, next) ? res.send(propositions) : undefined,
+        )
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -266,17 +193,11 @@ export const linkMentorProposition = (req: Request, res: Response, next: NextFun
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Mentors.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.addProposition(Number(req.params.mentoring_proposition_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    MentorModel.linkToProposition(
+        Number(req.params.id),
+        Number(req.params.mentoring_proposition_id),
+    )
+        .then((mentor) => (checkContent(mentor, next) ? res.send(mentor) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -284,36 +205,7 @@ export const linkMentorProposition = (req: Request, res: Response, next: NextFun
  * GET /mentors/:id/internships
  * Used to get all internships of a mentor
  */
-export const getMentorInternships = (req: Request, res: Response, next: NextFunction): void => {
-    // @see validator + router
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return BAD_REQUEST_VALIDATOR(next, errors);
-    }
-
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-
-    const findOpts: sequelize.FindOptions = { where: { mentorId: req.params.id } };
-
-    let max: number;
-    Internships.count(findOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Internships.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (mps) => {
-            if (checkArrayContent(mps, next)) {
-                return res.send({
-                    page,
-                    data: mps,
-                    length: mps.length,
-                    max,
-                });
-            }
-        })
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
-};
+export const getMentorInternships = generateGetInternships('mentorId');
 
 /**
  * GET /mentors/:id/internships/:internship_id/link
@@ -326,16 +218,7 @@ export const linkMentorInternship = (req: Request, res: Response, next: NextFunc
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Mentors.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.addInternship(Number(req.params.internship_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    MentorModel.linkToInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((mentor) => (checkContent(mentor, next) ? res.send(mentor) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

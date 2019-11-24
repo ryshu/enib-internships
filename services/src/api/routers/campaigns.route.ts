@@ -12,6 +12,7 @@ import {
     InternshipID,
 } from '../validators/generic.val';
 import { CampaignUpdate, CampaignCreate, CampaignList } from '../validators/campaigns.val';
+import { InternshipsList } from '../validators/internships.val';
 
 const router = express.Router();
 
@@ -37,7 +38,7 @@ router.post(
 // Campaigns Validated internships
 router.get(
     '/:id/validatedInternships',
-    checkSchema(ID),
+    checkSchema(Object.assign({}, ID, InternshipsList)),
     CampaignsCtrl.getValidatedCampaignInternships,
 );
 router.post(
@@ -49,7 +50,7 @@ router.post(
 // Campaigns Availables Internships
 router.get(
     '/:id/availableInternships',
-    checkSchema(ID),
+    checkSchema(Object.assign({}, ID, InternshipsList)),
     CampaignsCtrl.getAvailableCampaignInternships,
 );
 router.post(
@@ -59,7 +60,11 @@ router.post(
 );
 
 // Campaigns all internships
-router.get('/:id/internships', checkSchema(ID), CampaignsCtrl.getCampaignInternships);
+router.get(
+    '/:id/internships',
+    checkSchema(Object.assign({}, ID, InternshipsList)),
+    CampaignsCtrl.getCampaignInternships,
+);
 
 // Campaigns Mentors
 router.get('/:id/mentors', checkSchema(ID), CampaignsCtrl.getCampaignMentors);

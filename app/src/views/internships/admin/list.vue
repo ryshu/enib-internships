@@ -64,14 +64,6 @@
         type="primary"
         @change="handleFilter"
       >{{ $t('table.checkbox.isAbroad') }}</el-checkbox>
-      <el-checkbox
-        v-model="listQuery.isValidated"
-        v-waves
-        style="margin-left: 10px;"
-        class="filter-item"
-        type="primary"
-        @change="handleFilter"
-      >{{ $t('table.checkbox.isValidated') }}</el-checkbox>
     </div>
 
     <!-- Table -->
@@ -116,14 +108,6 @@
             :type="row.isInternshipAbroad ? 'success' : 'danger'"
             effect="dark"
           >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="50px" align="center">
-        <template slot-scope="{ row }">
-          <el-tag
-            :type="row.isValidated ? 'success' : 'danger'"
-            effect="dark"
-          >{{ $t(row.isValidated ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -175,7 +159,11 @@ import {
   defaultInternshipData,
 } from '../../../api/internships';
 
-import { IInternship } from '../../../api/types';
+import {
+  IInternshipEntity,
+  InternshipOpts,
+  INTERNSHIP_MODE,
+} from '../../../declarations';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
@@ -196,18 +184,25 @@ import { CategoriesModule } from '../../../store/modules/categories';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IInternship[] = [];
+  private list: IInternshipEntity[] = [];
   private total = 0;
 
   private listLoading = true;
-  private listQuery = {
+  private listQuery: InternshipOpts = {
     page: 1,
     limit: 10,
     subject: undefined,
     countries: [],
     types: [],
+    mode: [
+      INTERNSHIP_MODE.PUBLISHED,
+      INTERNSHIP_MODE.ATTRIBUTED_STUDENT,
+      INTERNSHIP_MODE.AVAILABLE_CAMPAIGN,
+      INTERNSHIP_MODE.ATTRIBUTED_MENTOR,
+      INTERNSHIP_MODE.RUNNING,
+      INTERNSHIP_MODE.VALIDATION,
+    ],
     isAbroad: false,
-    isValidated: false,
   };
 
   private downloadLoading = false;
@@ -253,9 +248,9 @@ export default class extends Vue {
   private handleUpdate(row: any) {
     (this.$refs.EditInternship as EditInternship)
       .update(row)
-      .then(async (updatedRow: IInternship | undefined) => {
+      .then(async (updatedRow: IInternshipEntity | undefined) => {
         if (updatedRow) {
-          const { data } = await updateInternship(updatedRow.id!, updatedRow);
+          await updateInternship(updatedRow.id!, updatedRow);
           this.getList();
           this.$notify({
             title: this.$t('notify.internships.update.title') as string,

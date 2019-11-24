@@ -133,7 +133,7 @@ import {
   deleteMentor,
   defaultMentorData,
 } from '../../api/mentors';
-import { IMentor } from '../../api/types';
+import { IMentorEntity } from '../../declarations';
 
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
@@ -148,12 +148,12 @@ import Pagination from '../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IMentor[] = [];
+  private list: IMentorEntity[] = [];
   private total = 0;
   private listLoading = true;
 
   // Filter for query, this will not be used until we add pagination
-  private listQuery = {
+  private listQuery: any = {
     page: 1,
     limit: 10,
     firstName: undefined,

@@ -1,46 +1,17 @@
 import { Schema } from 'express-validator';
 
 import { paginateValidator, replaceAllExistByOptional } from './generic.val';
-
-import { mentorRoles } from '../../utils/type';
+import { mentorVal, campaignVal, internshipVal, propositionsVal } from './generator.val';
 
 export const MentorList: Schema = {
     ...paginateValidator,
 };
 
 export const MentorCreate: Schema = {
-    firstName: {
-        in: ['body'],
-        isString: { errorMessage: 'First name must be of type string' },
-        exists: { errorMessage: 'First name must be defined' },
-        trim: true,
-        escape: true,
-    },
-    lastName: {
-        in: ['body'],
-        isString: { errorMessage: 'Last name must be of type string' },
-        exists: { errorMessage: 'Last name must be defined' },
-        trim: true,
-        escape: true,
-    },
-    email: {
-        in: ['body'],
-        isString: { errorMessage: 'Email must be of type string' },
-        isEmail: { errorMessage: 'Email must complain to email struct' },
-        exists: { errorMessage: 'Email must be defined' },
-        trim: true,
-        escape: true,
-    },
-    role: {
-        in: ['body'],
-        isString: { errorMessage: 'Role must be of type string' },
-        isIn: {
-            options: [mentorRoles],
-            errorMessage: `Role must be in [${mentorRoles.join(', ')}]`,
-        },
-        optional: true,
-        trim: true,
-    },
+    ...mentorVal(),
+    ...replaceAllExistByOptional(campaignVal('campaigns[*]')),
+    ...replaceAllExistByOptional(internshipVal('internships[*]')),
+    ...replaceAllExistByOptional(propositionsVal('propositions[*]')),
 };
 
 export const MentorUpdate = replaceAllExistByOptional(MentorCreate);
