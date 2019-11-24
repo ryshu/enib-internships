@@ -235,7 +235,7 @@ export default class extends Vue {
   }
 
   private async handleUnpublish(row: IInternshipEntity) {
-    await unpublishInternship(row.id);
+    await unpublishInternship(row.id!);
     this.getList();
     this.$notify({
       title: this.$t('notify.internships.unpublish.title') as string,

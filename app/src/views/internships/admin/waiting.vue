@@ -208,7 +208,7 @@ export default class extends Vue {
   }
 
   private async handlePublish(row: IInternshipEntity) {
-    await publishInternship(row.id);
+    await publishInternship(row.id!);
     this.getList();
     this.$notify({
       title: this.$t('notify.internships.publish.title') as string,
