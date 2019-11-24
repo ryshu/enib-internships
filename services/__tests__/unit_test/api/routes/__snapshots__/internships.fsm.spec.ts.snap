@@ -1,0 +1,169 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`POST /internships/:id/fsm ChangeState_ARCHIVED_200 1`] = `
+Object {
+  "additional": null,
+  "address": null,
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "description": "Stage",
+  "endAt": null,
+  "id": Any<Number>,
+  "isInternshipAbroad": true,
+  "postalCode": null,
+  "publishAt": null,
+  "result": "validated",
+  "startAt": null,
+  "state": "archived",
+  "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/fsm ChangeState_ATTRIBUTED_MENTOR_200 1`] = `
+Object {
+  "additional": null,
+  "address": null,
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "description": "Stage",
+  "endAt": null,
+  "id": Any<Number>,
+  "isInternshipAbroad": true,
+  "postalCode": null,
+  "publishAt": null,
+  "result": "unknown",
+  "startAt": null,
+  "state": "attributed_mentor",
+  "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/fsm ChangeState_ATTRIBUTED_STUDENT_200 1`] = `
+Object {
+  "additional": null,
+  "address": null,
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "description": "Stage",
+  "endAt": null,
+  "id": Any<Number>,
+  "isInternshipAbroad": true,
+  "postalCode": null,
+  "publishAt": null,
+  "result": "unknown",
+  "startAt": null,
+  "state": "attributed_student",
+  "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/fsm ChangeState_CAMPAIGN_AVAILABLE_200 1`] = `
+Object {
+  "additional": null,
+  "address": null,
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "description": "Stage",
+  "endAt": null,
+  "id": Any<Number>,
+  "isInternshipAbroad": true,
+  "postalCode": null,
+  "publishAt": null,
+  "result": "unknown",
+  "startAt": null,
+  "state": "available_campaign",
+  "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/fsm ChangeState_PUBLISHED_200 1`] = `
+Object {
+  "additional": null,
+  "address": null,
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "description": "Stage",
+  "endAt": null,
+  "id": Any<Number>,
+  "isInternshipAbroad": true,
+  "postalCode": null,
+  "publishAt": Any<Number>,
+  "result": "unknown",
+  "startAt": null,
+  "state": "published",
+  "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/fsm ChangeState_RUNNING_200 1`] = `
+Object {
+  "additional": null,
+  "address": null,
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "description": "Stage",
+  "endAt": 21356456125645,
+  "id": Any<Number>,
+  "isInternshipAbroad": true,
+  "postalCode": null,
+  "publishAt": null,
+  "result": "unknown",
+  "startAt": Any<Number>,
+  "state": "running",
+  "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/fsm ChangeState_VALIDATION_200 1`] = `
+Object {
+  "additional": null,
+  "address": null,
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "description": "Stage",
+  "endAt": null,
+  "id": Any<Number>,
+  "isInternshipAbroad": true,
+  "postalCode": null,
+  "publishAt": null,
+  "result": "unknown",
+  "startAt": null,
+  "state": "archived",
+  "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`POST /internships/:id/fsm ChangeState_WAITING_200 1`] = `
+Object {
+  "additional": null,
+  "address": null,
+  "city": "Brest",
+  "country": "France",
+  "createdAt": Any<String>,
+  "description": "Stage",
+  "endAt": null,
+  "id": Any<Number>,
+  "isInternshipAbroad": true,
+  "postalCode": null,
+  "publishAt": null,
+  "result": "unknown",
+  "startAt": null,
+  "state": "waiting",
+  "subject": "test",
+  "updatedAt": Any<String>,
+}
+`;

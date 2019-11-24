@@ -1,7 +1,7 @@
 import path from 'path';
 import moment from 'moment';
 
-import Campaigns from '../models/Campaigns';
+import Campaigns from '../models/sequelize/Campaigns';
 
 import { email } from './config';
 

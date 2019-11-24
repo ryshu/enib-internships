@@ -98,6 +98,14 @@ export default {
         msg: 'Le stage a bien été modifié',
         title: "Modification d'un stage",
       },
+      publish: {
+        msg: 'Le stage a bien été publié',
+        title: "Publication d'un stage",
+      },
+      unpublish: {
+        msg: 'Le stage a bien été retiré des stages publiés',
+        title: "Dépublication d'un stage",
+      },
     },
     mentors: {
       create: {
@@ -134,8 +142,9 @@ export default {
     internships: {
       title: 'Stages',
       list: 'Liste des stages',
-      propositions: "Propositions d'ajouts",
-      mentored: 'Stages tutorés',
+      waiting: 'Stages en attente',
+      published: 'Stages publiés',
+      mentored: 'Mes stages',
       favourites: 'Favoris',
       suggest: 'Proposer un stage',
       new: 'Ajouter un stage',
@@ -306,6 +315,8 @@ export default {
   },
   internships: {
     placeholder: {
+      publish: "Publier l'offre",
+      unpublish: "Dépublier l'offre",
       update: "Editer l'offre",
       remove: "Supprimer l'offre",
     },

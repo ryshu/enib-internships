@@ -3,7 +3,7 @@
     <!-- Filter -->
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.subject"
         :placeholder="$t('table.internships.subject')"
         style="width: 200px;"
         class="filter-item"
@@ -58,14 +58,6 @@
           >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="70px" align="center">
-        <template slot-scope="{ row }">
-          <el-tag
-            :type="row.isValidated ? 'success' : 'danger'"
-            effect="dark"
-          >{{ $t(row.isValidated ? 'status.yes' : 'status.no') }}</el-tag>
-        </template>
-      </el-table-column>
     </el-table>
 
     <pagination
@@ -82,7 +74,11 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 import { getInternships } from '../../api/internships';
-import { IInternship } from '../../api/types';
+import {
+  IInternshipEntity,
+  InternshipOpts,
+  INTERNSHIP_MODE,
+} from '../../declarations';
 
 import Pagination from '../../components/Pagination/index.vue';
 
@@ -94,16 +90,19 @@ import Pagination from '../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IInternship[] = [];
+  private list: IInternshipEntity[] = [];
 
   private total = 0;
   private listLoading = true;
-  private listQuery = {
+  private listQuery: InternshipOpts = {
     page: 1,
     limit: 10,
-    title: undefined,
-    isValidated: false,
-    mode: 'self',
+    subject: undefined,
+    mode: [
+      INTERNSHIP_MODE.ATTRIBUTED_MENTOR,
+      INTERNSHIP_MODE.RUNNING,
+      INTERNSHIP_MODE.VALIDATION,
+    ],
   };
 
   public created() {

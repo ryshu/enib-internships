@@ -21,7 +21,7 @@ import cas from './configs/setup/cas';
 import './configs/instances/database'; // Only import to setup
 import './configs/setup/database'; // Only import to setup
 import expressSession from 'express-session';
-import { handleConnection } from './api/cas/handle';
+import { handleConnection } from './auth/cas/handle';
 
 // Create Express server
 const app = express();

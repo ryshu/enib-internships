@@ -140,7 +140,7 @@ import {
   defaultStudentData,
   deleteStudent,
 } from '../../api/students';
-import { IStudent } from '../../api/types';
+import { IStudentEntity } from '../../declarations';
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
 import Pagination from '../../components/Pagination/index.vue';
@@ -153,7 +153,7 @@ import Pagination from '../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IStudent[] = [];
+  private list: IStudentEntity[] = [];
   private total = 0;
   private listLoading = true;
   private listQuery = {

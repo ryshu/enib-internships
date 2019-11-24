@@ -75,7 +75,7 @@ import {
   getCampaignStatistics,
   getDefaultCampaignStats,
 } from '../../../../api/statistics';
-import { CampaignStatistics } from '../../../../api/types';
+import { CampaignStatistics } from '../../../../declarations';
 
 @Component({
   name: 'PanelGroup',

@@ -1,11 +1,8 @@
 import { Schema } from 'express-validator';
 
-import {
-    paginateValidator,
-    replaceAllExistByOptional,
-    contriesValidator,
-    addressValidator,
-} from './generic.val';
+import { paginateValidator, replaceAllExistByOptional, contriesValidator } from './generic.val';
+
+import { businessVal, internshipVal, categoryVal } from './generator.val';
 
 export const BusinessesList: Schema = {
     ...paginateValidator,
@@ -20,15 +17,8 @@ export const BusinessesList: Schema = {
 };
 
 export const BusinessCreate: Schema = {
-    name: {
-        in: ['body'],
-        isString: { errorMessage: 'Name must be of type string' },
-        exists: { errorMessage: 'Name must be defined' },
-        trim: true,
-        escape: true,
-    },
-
-    ...addressValidator,
+    ...businessVal(),
+    ...replaceAllExistByOptional(internshipVal('internships[*]')),
+    ...replaceAllExistByOptional(categoryVal('internships[*].category')),
 };
-
 export const BusinessUpdate = replaceAllExistByOptional(BusinessCreate);

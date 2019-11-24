@@ -7,17 +7,17 @@ import app from '../../../../src/app';
 import dbSetup from '../../../../src/configs/setup/database';
 
 // Import model for pre-operation before asserting API methods
-import Mentors from '../../../../src/models/Mentors';
-import Campaigns from '../../../../src/models/Campaigns';
+import Mentors from '../../../../src/models/sequelize/Mentors';
+import Campaigns from '../../../../src/models/sequelize/Campaigns';
 
 import {
     defaultMentors,
     defaultCampaigns,
     defaultMentoringPropositions,
 } from '../../../../__mocks__/mockData';
-import MentoringPropositions from '../../../../src/models/MentoringPropositions';
-import Internships from '../../../../src/models/Internships';
-import { defaultInternships } from '../../../../__mocks__/mockData';
+import MentoringPropositions from '../../../../src/models/sequelize/MentoringPropositions';
+import Internships from '../../../../src/models/sequelize/Internships';
+import { defaultInternships, defaultInternshipTypes } from '../../../../__mocks__/mockData';
 
 jest.setTimeout(30000);
 
@@ -407,7 +407,7 @@ describe('POST /mentors/:id/propositions/:mentoring_propositions_id/link', () =>
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Mentors_200_NoPropositions', async () => {
+    it('Mentors_204_NoPropositions', async () => {
         // In this case, we check if link a existing Bussiness and an unexisting propositions work
         const VALID_MENTOR = defaultMentors();
 
@@ -415,7 +415,7 @@ describe('POST /mentors/:id/propositions/:mentoring_propositions_id/link', () =>
         const RESPONSE = await request(app).post(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED.id}/propositions/20/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Mentors_200_WithPropositions', async () => {
@@ -476,16 +476,24 @@ describe('GET /mentors/:id/internships', () => {
     it('Mentors_200_WithLinkedData', async () => {
         const VALID_MENTOR = defaultMentors();
         const VALID_INTERNSHIP = defaultInternships();
+        const VALID_INTERNSHIP_TYPE = defaultInternshipTypes();
 
-        let CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
-        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+        VALID_INTERNSHIP.category = VALID_INTERNSHIP_TYPE;
+        VALID_MENTOR.internships = [VALID_INTERNSHIP];
 
-        await CREATED_MENTOR.addInternship(CREATED_INTERNSHIP.id);
-        CREATED_MENTOR = await Mentors.findByPk(CREATED_MENTOR.id);
+        const CREATED_MENTOR = await Mentors.create(VALID_MENTOR, {
+            include: [
+                {
+                    association: Mentors.associations.internships,
+                    include: [{ association: Internships.associations.category }],
+                },
+            ],
+        });
 
         const RESPONSE = await request(app).get(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED_MENTOR.id}/internships`,
         );
+
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toHaveLength(1);
     });
@@ -518,7 +526,7 @@ describe('POST /mentors/:id/internships/:internship_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Mentors_200_NoInternship', async () => {
+    it('Mentors_204_NoInternship', async () => {
         // In this case, we check if link a existing Bussiness and an unexisting internships work
         const VALID_MENTOR = defaultMentors();
 
@@ -526,7 +534,7 @@ describe('POST /mentors/:id/internships/:internship_id/link', () => {
         const RESPONSE = await request(app).post(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED.id}/internships/20/link`,
         );
-        expect(RESPONSE.status).toBe(200);
+        expect(RESPONSE.status).toBe(204);
     });
 
     it('Mentors_200_WithInternship', async () => {

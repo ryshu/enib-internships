@@ -1,14 +1,18 @@
 import cache from '../../../src/statistics/singleton';
-import { Statistics, INTERNSHIP_MODE } from '../../../src/statistics/base';
+import { Statistics } from '../../../src/statistics/base';
+
+import { INTERNSHIP_MODE } from '../../../src/internship';
 
 const DEFAULT_STATISTICS: Statistics = {
     internships: {
         total: 250,
-        suggested: 10,
         waiting: 30,
-        availables: 150,
-        attributed: 50,
-        validated: 20,
+        published: 120,
+        attributed_student: 50,
+        available_campaign: 0,
+        attributed_mentor: 0,
+        running: 30,
+        validation: 20,
         archived: 0,
     },
     students: 150,
@@ -57,21 +61,6 @@ describe('StatisticsCache', () => {
         expect(cache.statistics).toEqual(DEFAULT_STATISTICS);
         expect(cache.getCampaign(10)).toEqual(DEFAULT_CAMPAIGN_STATISTICS[1]);
         cache.init(DEFAULT_STATISTICS, ...DEFAULT_CAMPAIGN_STATISTICS);
-    });
-
-    it('#.stateChange ARCHIVED -> ATTRIBUTED', () => {
-        cache.stateChange(INTERNSHIP_MODE.ARCHIVED, INTERNSHIP_MODE.ATTRIBUTED, 10);
-        expect(cache.getCampaign(10)).toMatchSnapshot();
-    });
-
-    it('#.stateChange AVAILABLE -> VALIDATED', () => {
-        cache.stateChange(INTERNSHIP_MODE.AVAILABLE, INTERNSHIP_MODE.VALIDATED, 10);
-        expect(cache.getCampaign(10)).toMatchSnapshot();
-    });
-
-    it('#.stateChange AVAILABLE -> WAITING', () => {
-        cache.stateChange(INTERNSHIP_MODE.AVAILABLE, INTERNSHIP_MODE.WAITING, 10);
-        expect(cache.getCampaign(10)).toMatchSnapshot();
     });
 
     it('#.stateChange INVALID -> WAITING', () => {

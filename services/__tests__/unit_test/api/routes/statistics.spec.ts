@@ -6,7 +6,7 @@ import app from '../../../../src/app';
 // Include database connection
 import dbSetup from '../../../../src/configs/setup/database';
 
-import Campaigns from '../../../../src/models/Campaigns';
+import Campaigns from '../../../../src/models/sequelize/Campaigns';
 
 import cache from '../../../../src/statistics/singleton';
 

@@ -13,7 +13,12 @@ import {
     MentoringPropositionID,
     MentorID,
 } from '../validators/generic.val';
-import { InternshipUpdate, InternshipCreate, InternshipsList } from '../validators/internships.val';
+import {
+    InternshipUpdate,
+    InternshipCreate,
+    InternshipsList,
+    InternshipFSM,
+} from '../validators/internships.val';
 
 const router = express.Router();
 
@@ -27,6 +32,9 @@ router.put(
     InternshipsCtrl.putInternship,
 );
 router.delete('/:id', checkSchema(ID), InternshipsCtrl.deleteInternship);
+
+// FSM
+router.post('/:id/fsm', checkSchema(InternshipFSM), InternshipsCtrl.upadteFSMInternship);
 
 // Routes for internships-businesses association
 router.get('/:id/businesses', checkSchema(ID), InternshipsCtrl.getInternshipBusiness);

@@ -1,9 +1,9 @@
 import sequelize = require('sequelize');
 
-import Campaigns from '../models/Campaigns';
-import Internships from '../models/Internships';
-import InternshipTypes from '../models/InternshipTypes';
-import Mentors from '../models/Mentors';
+import Campaigns from '../models/sequelize/Campaigns';
+import Internships from '../models/sequelize/Internships';
+import InternshipTypes from '../models/sequelize/InternshipTypes';
+import Mentors from '../models/sequelize/Mentors';
 
 import { ProgressChannel } from '../websocket/channels/private';
 import { sendCampaignsCreate } from '../emails';

@@ -5,6 +5,7 @@ import * as StudentsCtrl from '../controllers/students.ctrl';
 
 import { ID, InternshipID } from '../validators/generic.val';
 import { StudentUpdate, StudentCreate, StudentList } from '../validators/students.val';
+import { InternshipsList } from '../validators/internships.val';
 
 const router = express.Router();
 
@@ -16,7 +17,11 @@ router.put('/:id', checkSchema(Object.assign({}, ID, StudentUpdate)), StudentsCt
 router.delete('/:id', checkSchema(ID), StudentsCtrl.deleteStudent);
 
 // Students internships
-router.get('/:id/internships', checkSchema(ID), StudentsCtrl.getStudentInternships);
+router.get(
+    '/:id/internships',
+    checkSchema(Object.assign({}, ID, InternshipsList)),
+    StudentsCtrl.getStudentInternships,
+);
 router.post(
     '/:id/internships/:internship_id/link',
     checkSchema(Object.assign({}, ID, InternshipID)),

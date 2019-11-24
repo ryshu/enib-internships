@@ -1,5 +1,15 @@
-import { IInternshipEntity } from '../src/declarations/internship';
-import { INTERNSHIP_MODE } from '../src/statistics/base';
+import { INTERNSHIP_MODE, INTERNSHIP_RESULT } from '../src/internship';
+
+import {
+    IBusinessEntity,
+    IInternshipEntity,
+    IFileEntity,
+    IStudentEntity,
+    IMentorEntity,
+    IMentoringPropositionEntity,
+    IInternshipTypeEntity,
+    ICampaignEntity,
+} from 'src/declarations';
 
 export function defaultBusiness() {
     const VALID_BUSINESS: IBusinessEntity = {
@@ -27,16 +37,9 @@ export function defaultInternships() {
         description: 'Stage',
         country: 'France',
         city: 'Brest',
-        postalCode: '29280',
-        address: 'TEST',
         isInternshipAbroad: true,
-        isValidated: false,
-        isProposition: false,
-        isPublish: true,
-        state: INTERNSHIP_MODE.SUGGESTED,
-        publishAt: 20191012,
-        startAt: 20191012,
-        endAt: 20191012,
+        state: INTERNSHIP_MODE.PUBLISHED,
+        result: INTERNSHIP_RESULT.UNKNOWN,
     };
     return VALID_INTERNSHIP;
 }
@@ -77,6 +80,9 @@ export function defaultCampaigns(): ICampaignEntity {
         semester: 'S5',
         maxProposition: 2,
         isPublish: true,
+        category: {
+            label: 'TEST',
+        },
     };
 }
 
