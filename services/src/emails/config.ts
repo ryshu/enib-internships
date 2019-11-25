@@ -24,5 +24,5 @@ export const email = new Email({
     },
 
     // Change default template link "emails" for "templates"
-    views: { path: path.join(__dirname, 'templates') },
+    views: { root: path.join(__dirname, 'templates') },
 });
