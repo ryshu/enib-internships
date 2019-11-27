@@ -64,7 +64,7 @@
     "@types/express-validator": "^3.0.0",
     "@types/faker": "^4.1.7",
     "@types/jest": "^24.0.23",
-    "@types/lodash": "^4.14.148",
+    "@types/lodash": "^4.14.149",
     "@types/lusca": "^1.5.0",
     "@types/method-override": "0.0.31",
     "@types/moment": "^2.13.0",
