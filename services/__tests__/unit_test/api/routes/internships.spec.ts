@@ -72,9 +72,11 @@ describe('GET /internships', () => {
                     category: {
                         createdAt: expect.any(String),
                         updatedAt: expect.any(String),
+                        id: expect.any(Number),
                     },
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
+                    id: expect.any(Number),
                 },
             ],
         });
@@ -118,6 +120,7 @@ describe('POST /internships', () => {
             category: {
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
+                id: expect.any(Number),
             },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
@@ -281,6 +284,7 @@ describe('GET /internships/:id/businesses', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -346,6 +350,7 @@ describe('POST /internships/:id/businesses/:business_id/link', () => {
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -391,6 +396,7 @@ describe('GET /internships/:id/students', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -456,6 +462,7 @@ describe('POST /internships/:id/students/:student_id/link', () => {
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -505,6 +512,7 @@ describe('GET /internships/:id/internshipTypes', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -572,6 +580,7 @@ describe('POST /internships/:id/internshipTypes/:internship_type_id/link', () =>
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -722,6 +731,7 @@ describe('GET /internships/:id/availableCampaigns', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -804,6 +814,7 @@ describe('POST /internships/:id/availableCampaigns/:campaign_id/link', () => {
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -853,6 +864,7 @@ describe('GET /internships/:id/validatedCampaigns', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -902,6 +914,7 @@ describe('GET /internships/:id/propositions', () => {
         expect(RESPONSE.body.data[0]).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -969,6 +982,7 @@ describe('POST /internships/:id/propositions/:mentoring_proposition_id/link', ()
         expect(data[0]).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -1014,6 +1028,7 @@ describe('GET /internships/:id/mentors', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -1072,7 +1087,9 @@ describe('POST /internships/:id/mentors/:mentor_id/link', () => {
         });
 
         const RESPONSE = await request(app).post(
-            `${baseURL}/internships/${CREATED_INTERNSHIP.id}/mentors/${(CREATED_INTERNSHIP.mentor as any).id}/link`,
+            `${baseURL}/internships/${CREATED_INTERNSHIP.id}/mentors/${
+                (CREATED_INTERNSHIP.mentor as any).id
+            }/link`,
         );
 
         // Should answer 200
@@ -1089,6 +1106,7 @@ describe('POST /internships/:id/mentors/:mentor_id/link', () => {
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });

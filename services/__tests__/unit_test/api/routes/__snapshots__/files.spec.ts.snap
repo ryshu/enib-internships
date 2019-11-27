@@ -5,7 +5,8 @@ Object {
   "data": Array [
     Object {
       "createdAt": Any<String>,
-      "id": 1,
+      "deletedAt": null,
+      "id": Any<Number>,
       "name": "fichier",
       "path": "S10",
       "type": "john.doe@enib.fr",
@@ -21,6 +22,7 @@ Object {
 exports[`GET /files/:id Files_200 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "internship": null,
   "name": "fichier",
@@ -37,9 +39,10 @@ Object {
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
   "endAt": null,
-  "id": 1,
+  "id": Any<Number>,
   "isInternshipAbroad": true,
   "postalCode": null,
   "publishAt": null,
@@ -69,9 +72,10 @@ Object {
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
   "endAt": null,
-  "id": 2,
+  "id": Any<Number>,
   "isInternshipAbroad": true,
   "postalCode": null,
   "publishAt": null,
@@ -86,6 +90,7 @@ Object {
 exports[`PUT /files/:id Files_200_NotAnyDataUpdated 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "name": "fichier",
   "path": "S10",
@@ -97,6 +102,7 @@ Object {
 exports[`PUT /files/:id Files_200_UpdateAllData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "name": "fichier",
   "path": "250",

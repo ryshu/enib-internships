@@ -26,9 +26,9 @@ export const getBusinesses = (req: Request, res: Response, next: NextFunction): 
     }
 
     // Retrive query data
-    const { page = 1, limit = 20, countries, name } = req.query;
+    const { page = 1, limit = 20, countries, name, archived } = req.query;
 
-    BusinessModel.getBusinesses({ name, countries }, { page, limit })
+    BusinessModel.getBusinesses({ name, countries, archived }, { page, limit })
         .then(async (data) => {
             if (checkContent(data, next)) {
                 return res.send(data);
@@ -79,7 +79,7 @@ export const getBusiness = (req: Request, res: Response, next: NextFunction): vo
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    BusinessModel.getBusiness(Number(req.params.id))
+    BusinessModel.getBusiness(Number(req.params.id), req.query.archived)
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val);

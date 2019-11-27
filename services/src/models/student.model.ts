@@ -1,4 +1,4 @@
-import { CreateOptions } from 'sequelize';
+import { CreateOptions, FindOptions } from 'sequelize';
 
 import Students from './sequelize/Students';
 import Internships from './sequelize/Internships';
@@ -8,6 +8,13 @@ import { IStudentEntity } from '../declarations';
 import { checkPartialStudent, checkPartialInternship } from '../utils/check';
 import { PaginateList } from './helpers/type';
 import { PaginateOpts, paginate } from './helpers/pagination';
+import { extractCount } from './helpers/options';
+
+/** @interface StudentOpts Interface of all availables filters for students list */
+export declare interface StudentOpts {
+    /** @property {boolean} archived Show only archived students */
+    archived?: boolean;
+}
 
 /**
  * @interface StudentModelStruct API to handle students in database
@@ -16,18 +23,24 @@ import { PaginateOpts, paginate } from './helpers/pagination';
 class StudentModelStruct {
     /**
      * @summary Method used to retrieve students
+     * @param {StudentOpts} studentOpts students find options
      * @param {PaginateOpts} pageOpts pagination options
      * @returns {Promise<PaginateList<IStudentEntity>>} Resolve: Paginated students
      * @returns {Promise<void>} Resolve: void if nothing is found
      * @returns {Promise<any>} Reject: database error
      */
-    public getStudents(pageOpts: PaginateOpts): Promise<PaginateList<IStudentEntity>> {
+    public getStudents(
+        studentOpts: StudentOpts,
+        pageOpts: PaginateOpts,
+    ): Promise<PaginateList<IStudentEntity>> {
         return new Promise((resolve, reject) => {
+            const opts = this._buildFindOpts(studentOpts);
+
             let max: number;
-            Students.count()
+            Students.count(extractCount(opts))
                 .then((rowNbr) => {
                     max = rowNbr;
-                    return Students.findAll(paginate(pageOpts));
+                    return Students.findAll(paginate(pageOpts, opts));
                 })
                 .then(async (students: any) =>
                     students.length
@@ -77,14 +90,16 @@ class StudentModelStruct {
     /**
      * @summary Method used to get a student by his identifier
      * @param {number} id student identifier
+     * @param {boolean | undefined} archived is archived
      * @returns {Promise<IStudentEntity>} Resolve: student
      * @returns {Promise<void>} Resolve: not found
      * @returns {Promise<any>} Reject: database error
      */
-    public getStudent(id: number): Promise<IStudentEntity> {
+    public getStudent(id: number, archived?: boolean): Promise<IStudentEntity> {
         return new Promise((resolve, reject) => {
             Students.findByPk(id, {
-                include: [{ model: Internships, as: 'internships' }],
+                include: [{ model: Internships, as: 'internships', paranoid: !archived }],
+                paranoid: !archived,
             })
                 .then((student) =>
                     resolve(student ? (student.toJSON() as IStudentEntity) : undefined),
@@ -187,6 +202,16 @@ class StudentModelStruct {
                 reject(error);
             }
         });
+    }
+
+    private _buildFindOpts(opts: StudentOpts): FindOptions {
+        const tmp: FindOptions = {};
+
+        if (opts.archived) {
+            tmp.paranoid = false;
+        }
+
+        return tmp;
     }
 
     private _buildCreateOpts(student: IStudentEntity): CreateOptions {

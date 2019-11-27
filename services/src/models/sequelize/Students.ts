@@ -59,6 +59,8 @@ Students.init(
     {
         tableName: 'students',
         sequelize: database,
+        timestamps: true,
+        paranoid: true,
     },
 );
 

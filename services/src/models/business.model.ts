@@ -6,7 +6,7 @@ import Businesses from './sequelize/Businesses';
 import Internships from './sequelize/Internships';
 
 import { paginate, PaginateOpts } from './helpers/pagination';
-import { extractCount } from './helpers/options';
+import { extractCount, setFindOptsArchived } from './helpers/options';
 import { PaginateList } from './helpers/type';
 
 import { checkPartialBusiness, checkPartialInternship } from '../utils/check';
@@ -18,6 +18,9 @@ export interface BusinessOpts {
 
     /** @property {string} name Part of name to apply filter on name field (database) */
     name?: string;
+
+    /** @property {boolean} archived Show only archived businesses */
+    archived?: boolean;
 }
 
 /**
@@ -45,6 +48,7 @@ class BusinessModelStruct {
             Businesses.count(extractCount(opts))
                 .then((rowNbr) => {
                     max = rowNbr;
+
                     return Businesses.findAll(paginate(pageOpts, opts));
                 })
                 .then(async (businesses: any) =>
@@ -99,13 +103,15 @@ class BusinessModelStruct {
      * @summary Method used to retrieve a business by his identifier
      * @notice Include internships by default
      * @param {number} id Business identifier
+     * @param {boolean | undefined} archived is archived
      * @returns {Promise<IBusinessEntity>} Resolve: IBusinessEntity
      * @returns {Promise<void>} Resolve: void if nothing is found
      * @returns {Promise<any>} Reject: database error
      */
-    public getBusiness(id: number): Promise<IBusinessEntity> {
+    public getBusiness(id: number, archived?: boolean): Promise<IBusinessEntity> {
         return new Promise((resolve, reject) => {
-            Businesses.findByPk(id, { include: [{ model: Internships, as: 'internships' }] })
+            const opts = { include: [{ model: Internships, as: 'internships' }] };
+            Businesses.findByPk(id, archived ? setFindOptsArchived(opts) : opts)
                 .then((val) => resolve(val ? (val.toJSON() as IBusinessEntity) : undefined))
                 .catch((e) => reject(e));
         });
@@ -217,19 +223,14 @@ class BusinessModelStruct {
     }
 
     private _buildFindOpts(opts: BusinessOpts): FindOptions {
-        const tmp: FindOptions = {
+        let tmp: FindOptions = {
             attributes: {
                 include: [
                     [sequelize.fn('count', sequelize.col(`internships.businessId`)), 'count'],
                 ],
             },
             include: [
-                {
-                    model: Internships,
-                    as: 'internships',
-                    attributes: [],
-                    duplicating: false,
-                },
+                { model: Internships, as: 'internships', attributes: [], duplicating: false },
             ],
             where: {},
             group: [sequelize.col(`Businesses.id`)],
@@ -244,6 +245,10 @@ class BusinessModelStruct {
         if (opts.name) {
             // If name filter is given, apply it using substring
             (tmp.where as any).name = { [sequelize.Op.substring]: opts.name };
+        }
+
+        if (opts.archived) {
+            tmp = setFindOptsArchived(tmp);
         }
 
         return tmp;

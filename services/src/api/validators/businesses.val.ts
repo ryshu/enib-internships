@@ -1,12 +1,18 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator, replaceAllExistByOptional, contriesValidator } from './generic.val';
+import {
+    paginateValidator,
+    replaceAllExistByOptional,
+    contriesValidator,
+    archivedValidator,
+} from './generic.val';
 
 import { businessVal, internshipVal, categoryVal } from './generator.val';
 
 export const BusinessesList: Schema = {
     ...paginateValidator,
     ...contriesValidator,
+    ...archivedValidator,
     name: {
         in: ['query'],
         isString: { errorMessage: 'Name filter must be of type string' },

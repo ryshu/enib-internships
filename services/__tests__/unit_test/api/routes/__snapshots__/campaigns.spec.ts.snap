@@ -3,9 +3,10 @@
 exports[`GET /campaigns Campaigns_200 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
-  "id": 1,
+  "id": Any<Number>,
   "isPublish": true,
   "maxProposition": 2,
   "name": "test",
@@ -20,6 +21,7 @@ Object {
   "availableInternships": Array [],
   "category": null,
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
@@ -38,6 +40,7 @@ Object {
 exports[`GET /campaigns/:id/internshipTypes Campaigns_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": 9,
   "label": "test",
   "updatedAt": Any<String>,
@@ -49,11 +52,13 @@ Object {
   "availableInternships": Array [],
   "category": Object {
     "createdAt": Any<String>,
-    "id": 1,
+    "deletedAt": null,
+    "id": Any<Number>,
     "label": "test",
     "updatedAt": Any<String>,
   },
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
@@ -72,7 +77,8 @@ Object {
 exports[`POST /campaigns/:id/internshipTypes/:internship_type_id/link Campaigns_200_WithInternshipType 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 10,
+  "deletedAt": null,
+  "id": Any<Number>,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -81,6 +87,7 @@ Object {
 exports[`PUT /campaigns/:id Campaigns_200_CategoryUpdated 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
@@ -96,6 +103,7 @@ Object {
 exports[`PUT /campaigns/:id Campaigns_200_NotAnyDataUpdated 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
@@ -111,6 +119,7 @@ Object {
 exports[`PUT /campaigns/:id Campaigns_200_UndefinedCategoryUpdate 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
@@ -127,6 +136,7 @@ exports[`PUT /campaigns/:id Campaigns_200_UpdateAllData 1`] = `
 Object {
   "categoryId": 2,
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,

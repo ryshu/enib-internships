@@ -56,6 +56,7 @@ describe('GET /students', () => {
                 {
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
+                    id: expect.any(Number),
                 },
             ],
         });

@@ -128,7 +128,7 @@ export const getInternship = (req: Request, res: Response, next: NextFunction): 
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipModel.getInternship(Number(req.params.id))
+    InternshipModel.getInternship(Number(req.params.id), req.query.archived)
         .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

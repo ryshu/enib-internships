@@ -72,6 +72,8 @@ Businesses.init(
     {
         tableName: 'businesses',
         sequelize: database,
+        timestamps: true,
+        paranoid: true,
     },
 );
 

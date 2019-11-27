@@ -130,6 +130,7 @@ describe('POST /internships/:id/fsm', () => {
             student: {
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
+                id: expect.any(Number),
             },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
@@ -153,6 +154,7 @@ describe('POST /internships/:id/fsm', () => {
             availableCampaign: {
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
+                id: expect.any(Number),
             },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
@@ -179,10 +181,12 @@ describe('POST /internships/:id/fsm', () => {
             validatedCampaign: {
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
+                id: expect.any(Number),
             },
             mentor: {
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
+                id: expect.any(Number),
             },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),

@@ -1,6 +1,13 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator, replaceAllExistByOptional, contriesValidator, ID } from './generic.val';
+import {
+    paginateValidator,
+    replaceAllExistByOptional,
+    contriesValidator,
+    ID,
+    archivedValidator,
+} from './generic.val';
+
 import {
     internshipVal,
     categoryVal,
@@ -29,6 +36,7 @@ const InternshipAvailableIncludes = [
 export const InternshipsList: Schema = {
     ...paginateValidator,
     ...contriesValidator,
+    ...archivedValidator,
     'types': {
         in: ['query'],
         isArray: { errorMessage: 'Category filter list must be array' },

@@ -6,7 +6,8 @@ Object {
     Object {
       "comment": "test",
       "createdAt": Any<String>,
-      "id": 1,
+      "deletedAt": null,
+      "id": Any<Number>,
       "updatedAt": Any<String>,
     },
   ],
@@ -21,6 +22,7 @@ Object {
   "campaign": null,
   "comment": "test",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "internship": null,
   "mentor": null,
@@ -31,9 +33,10 @@ Object {
 exports[`GET /mentoringPropositions/:id/campaigns MentoringPropositions_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
-  "id": 1,
+  "id": Any<Number>,
   "isPublish": true,
   "maxProposition": 2,
   "name": "test",
@@ -50,9 +53,10 @@ Object {
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
   "endAt": null,
-  "id": 1,
+  "id": Any<Number>,
   "isInternshipAbroad": true,
   "postalCode": null,
   "publishAt": null,
@@ -67,9 +71,10 @@ Object {
 exports[`GET /mentoringPropositions/:id/mentors MentoringPropositions_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
-  "id": 2,
+  "id": Any<Number>,
   "lastName": "Doe",
   "role": "default",
   "updatedAt": Any<String>,
@@ -88,9 +93,10 @@ Object {
 exports[`POST /mentoringPropositions/:id/campaigns/:internship_type_id/link MentoringPropositions_200_WithBusiness 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
-  "id": 2,
+  "id": Any<Number>,
   "isPublish": true,
   "maxProposition": 2,
   "name": "test",
@@ -107,9 +113,10 @@ Object {
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
   "endAt": null,
-  "id": 2,
+  "id": Any<Number>,
   "isInternshipAbroad": true,
   "postalCode": null,
   "publishAt": null,
@@ -124,9 +131,10 @@ Object {
 exports[`POST /mentoringPropositions/:id/mentors/:mentor_id/link MentoringPropositions_200_WithMentor 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
-  "id": 3,
+  "id": Any<Number>,
   "lastName": "Doe",
   "role": "default",
   "updatedAt": Any<String>,
@@ -137,6 +145,7 @@ exports[`PUT /mentoringPropositions/:id MentoringPropositions_200_NotAnyDataUpda
 Object {
   "comment": "test",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "updatedAt": Any<String>,
 }
@@ -146,6 +155,7 @@ exports[`PUT /mentoringPropositions/:id MentoringPropositions_200_UpdateAllData 
 Object {
   "comment": "additional data",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "updatedAt": Any<String>,
 }

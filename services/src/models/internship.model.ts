@@ -13,7 +13,7 @@ import Students from './sequelize/Students';
 import Files from './sequelize/Files';
 
 import { PaginateList } from './helpers/type';
-import { extractCount } from './helpers/options';
+import { extractCount, setFindOptsArchived } from './helpers/options';
 import {
     checkPartialBusiness,
     checkPartialCampaign,
@@ -73,6 +73,9 @@ export interface InternshipOpts {
 
     /** @property {string[]} includes Filter to include and populate given associations */
     includes?: string[];
+
+    /** @property {boolean} archived Show only archived internship */
+    archived?: boolean;
 }
 
 /**
@@ -159,13 +162,14 @@ class InternshipModelStruct {
      * @summary Method used to retrieve a internship by his identifier
      * @notice Include sub-struct by default
      * @param {number} id Internship identifier
+     * @param {boolean} archived if archived
      * @returns {Promise<IInternshipEntity>} Resolve: IInternshipEntity
      * @returns {Promise<void>} Resolve: void if nothing is found
      * @returns {Promise<any>} Reject: database error
      */
-    public getInternship(id: number): Promise<IInternshipEntity> {
+    public getInternship(id: number, archived?: boolean): Promise<IInternshipEntity> {
         return new Promise((resolve, reject) => {
-            Internships.findByPk(id, {
+            const opts = {
                 include: [
                     { model: Businesses, as: 'business' },
                     { model: InternshipTypes, as: 'category' },
@@ -176,7 +180,8 @@ class InternshipModelStruct {
                     { model: Students, as: 'student' },
                     { model: Files, as: 'files' },
                 ],
-            })
+            };
+            Internships.findByPk(id, archived ? setFindOptsArchived(opts) : opts)
                 .then((val) => resolve(val ? (val.toJSON() as IInternshipEntity) : undefined))
                 .catch((e) => reject(e));
         });
@@ -463,7 +468,7 @@ class InternshipModelStruct {
     }
 
     private _buildFindOpts(opts: InternshipOpts): FindOptions {
-        const tmp: FindOptions = {
+        let tmp: FindOptions = {
             // By default, only give internship available list
             where: {},
             include: [{ model: InternshipTypes, as: 'category', duplicating: false }],
@@ -547,6 +552,10 @@ class InternshipModelStruct {
                     tmp.include.push({ model: InternshipTypes, association: 'category' });
                 }
             }
+        }
+
+        if (opts.archived) {
+            tmp = setFindOptsArchived(tmp);
         }
 
         return tmp;

@@ -54,6 +54,8 @@ InternshipTypes.init(
     {
         tableName: 'internship-types',
         sequelize: database,
+        timestamps: true,
+        paranoid: true,
     },
 );
 

@@ -193,6 +193,8 @@ Internships.init(
     {
         tableName: 'internships',
         sequelize: database,
+        timestamps: true,
+        paranoid: true,
         defaultScope: {
             attributes: {
                 exclude: [
