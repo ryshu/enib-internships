@@ -1,23 +1,28 @@
 import moment from 'moment';
-import { cloneDeep } from 'lodash';
-
-import { IInternshipEntity } from '../declarations';
 
 import { INTERNSHIP_RESULT, isInternshipResult } from './internship.result';
 import { INTERNSHIP_MODE, isInternshipMode } from './internship.mode';
 
-import InternshipModel from '../models/internship.model';
+import Internships from '../models/sequelize/Internships';
+import Students from '../models/sequelize/Students';
+import Businesses from '../models/sequelize/Businesses';
+import InternshipTypes from '../models/sequelize/InternshipTypes';
+import Campaigns from '../models/sequelize/Campaigns';
+import Mentors from '../models/sequelize/Mentors';
+import MentoringPropositions from '../models/sequelize/MentoringPropositions';
+import Files from '../models/sequelize/Files';
 
 import { APIError } from '../utils/error';
+import { IInternshipEntity, ICampaignEntity } from '../declarations';
 
 function isInt(t: number): t is number {
     return t && !Number.isNaN(Number(t));
 }
 
 export class InternshipHandler {
-    private _internship: IInternshipEntity;
+    private _internship: Internships;
 
-    public constructor(internship: IInternshipEntity) {
+    public constructor(internship: Internships) {
         this._internship = internship;
     }
 
@@ -64,16 +69,20 @@ export class InternshipHandler {
                     return reject(this._buildForbiddenError(INTERNSHIP_MODE.ATTRIBUTED_STUDENT));
                 }
 
-                if (isInt(studentId)) {
-                    this._internship = await InternshipModel.linkToStudent(
-                        this._internship.id,
-                        studentId,
-                    );
+                if (!isInt(studentId)) {
+                    // TODO: Reject params val
+                    return resolve(this);
                 }
+                const student = await Students.findByPk(studentId);
+                if (!student) {
+                    return resolve(this);
+                }
+
+                await this._internship.setStudent(student);
                 this._internship.state = INTERNSHIP_MODE.ATTRIBUTED_STUDENT;
                 await this.save();
 
-                resolve();
+                resolve(this);
             } catch (error) {
                 reject(error);
             }
@@ -87,12 +96,20 @@ export class InternshipHandler {
                     return reject(this._buildForbiddenError(INTERNSHIP_MODE.AVAILABLE_CAMPAIGN));
                 }
 
-                if (isInt(campaignId)) {
-                    this._internship = await InternshipModel.linkToAvailableCampaign(
-                        this._internship.id,
-                        campaignId,
-                    );
+                if (!isInt(campaignId)) {
+                    // TODO: Reject params val
+                    return resolve(this);
                 }
+
+                const campaign = await Campaigns.findByPk(campaignId);
+                if (!campaign) {
+                    return resolve();
+                }
+
+                if (this._internship.validatedCampaign) {
+                    await campaign.removeValidatedInternships(this._internship);
+                }
+                await campaign.addAvailableInternship(this._internship);
                 this._internship.state = INTERNSHIP_MODE.AVAILABLE_CAMPAIGN;
                 await this.save();
 
@@ -110,16 +127,32 @@ export class InternshipHandler {
                     return reject(this._buildForbiddenError(INTERNSHIP_MODE.ATTRIBUTED_MENTOR));
                 }
 
-                if (isInt(mentorId)) {
-                    this._internship = await InternshipModel.linkToMentor(
-                        this._internship.id,
-                        mentorId,
-                    );
-                    this._internship = await InternshipModel.linkToValidatedCampaign(
-                        this._internship.id,
-                        this._internship.availableCampaign.id,
-                    );
+                if (
+                    !isInt(mentorId) ||
+                    !this._internship.availableCampaign ||
+                    !isInt((this._internship.availableCampaign as ICampaignEntity).id)
+                ) {
+                    // TODO: Reject params val
+                    return resolve(this);
                 }
+
+                const campaign = await Campaigns.findByPk(
+                    (this._internship.availableCampaign as ICampaignEntity).id,
+                );
+                if (!campaign) {
+                    return resolve(this);
+                }
+
+                const mentor = await Mentors.findByPk(mentorId);
+                if (!mentor) {
+                    return resolve(this);
+                }
+
+                await this._internship.setMentor(mentor);
+
+                await campaign.removeAvailableInternships(this._internship);
+                await campaign.addValidatedInternship(this._internship);
+
                 this._internship.state = INTERNSHIP_MODE.ATTRIBUTED_MENTOR;
                 await this.save();
 
@@ -189,10 +222,8 @@ export class InternshipHandler {
     public save(): Promise<InternshipHandler> {
         return new Promise(async (resolve, reject) => {
             try {
-                this._internship = await InternshipModel.updateInternship(
-                    this._internship.id,
-                    cloneDeep(this._internship),
-                );
+                await this._internship.save();
+                await this._sync();
                 resolve(this);
             } catch (error) {
                 reject(error);
@@ -201,7 +232,7 @@ export class InternshipHandler {
     }
 
     public toJSON(): IInternshipEntity {
-        return this._internship;
+        return this._internship.toJSON() as IInternshipEntity;
     }
 
     public get state() {
@@ -210,6 +241,21 @@ export class InternshipHandler {
 
     public get nextState() {
         return this._nextState(this.state);
+    }
+
+    private async _sync() {
+        this._internship = (await Internships.findByPk(this._internship.id, {
+            include: [
+                { model: Businesses, as: 'business' },
+                { model: InternshipTypes, as: 'category' },
+                { model: Campaigns, as: 'availableCampaign' },
+                { model: Campaigns, as: 'validatedCampaign' },
+                { model: Mentors, as: 'mentor' },
+                { model: MentoringPropositions, as: 'propositions' },
+                { model: Students, as: 'student' },
+                { model: Files, as: 'files' },
+            ],
+        })) as Internships;
     }
 
     private _nextState(tested: INTERNSHIP_MODE) {

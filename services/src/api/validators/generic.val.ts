@@ -46,6 +46,15 @@ export const paginateValidator: Schema = {
     },
 };
 
+export const archivedValidator: Schema = {
+    archived: {
+        in: ['query'],
+        isBoolean: { errorMessage: 'Archived field must be a boolean' },
+        optional: true,
+        toBoolean: true,
+    },
+};
+
 export const contriesValidator: Schema = {
     countries: {
         in: ['query'],

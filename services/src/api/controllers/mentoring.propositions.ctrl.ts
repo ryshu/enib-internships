@@ -27,9 +27,9 @@ export const getMentoringPropositions = (req: Request, res: Response, next: Next
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, archived } = req.query;
 
-    MentoringPropositionModel.getMentoringPropositions({}, { page, limit })
+    MentoringPropositionModel.getMentoringPropositions({ archived }, { page, limit })
         .then((propositions) =>
             checkContent(propositions, next) ? res.send(propositions) : undefined,
         )
@@ -71,7 +71,7 @@ export const getMentoringProposition = (req: Request, res: Response, next: NextF
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositionModel.getMentoringProposition(Number(req.params.id))
+    MentoringPropositionModel.getMentoringProposition(Number(req.params.id), req.query.archived)
         .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

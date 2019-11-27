@@ -17,6 +17,7 @@ Key | Type | Optional | Description
 - | - | - | -
 **limit** | Number | *no* | Page expected (By default 1)
 **page** | Number | *no* | Number of row expected (By default 20)
+**archived** | Boolean | *yes* | Only archived documents
 
 ### 200 - List of mentoring propositions
 
@@ -106,6 +107,12 @@ GET /api/v1/mentoringPropositions/:id
 Key | Type | Description
 - | - | -
 **id** | String | Mentoring proposition ID
+
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**archived** | Boolean | *yes* | Only archived document
 
 ### 200 - Mentoring proposition
 

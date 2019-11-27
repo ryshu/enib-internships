@@ -146,6 +146,8 @@ Campaigns.init(
     {
         tableName: 'campaigns',
         sequelize: database,
+        timestamps: true,
+        paranoid: true,
         defaultScope: {
             attributes: { exclude: ['categoryId'] },
         },

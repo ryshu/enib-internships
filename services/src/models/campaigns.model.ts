@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { CreateOptions } from 'sequelize';
+import { CreateOptions, FindOptions } from 'sequelize';
 
 // Declaration
 import { ICampaignEntity } from '../declarations';
@@ -21,7 +21,13 @@ import {
 } from '../utils/check';
 
 import InternshipTypeModel from './internship.type.mode';
-import { IMentorEntity } from 'src/declarations';
+import { setFindOptsArchived } from './helpers/options';
+
+/** @interface CampaignOpts Interface of all availables filters for campaigns list */
+export declare interface CampaignOpts {
+    /** @property {boolean} archived Show only archived campaigns */
+    archived?: boolean;
+}
 
 /**
  * @interface CampaignModelStruct
@@ -32,15 +38,17 @@ import { IMentorEntity } from 'src/declarations';
 class CampaignModelStruct {
     /**
      * @summary Method used to retrieve campaigns
+     * @param {CampaignOpts} campaignOpts campaigns filter options
      * @returns {Promise<ICampaignEntity[]>} Resolve: ICampaignEntity[]
      * @returns {Promise<void>} Resolve: void if nothing is found
      * @returns {Promise<any>} Reject: database error
      */
-    public getCampaigns(): Promise<ICampaignEntity[]> {
+    public getCampaigns(campaignOpts?: CampaignOpts): Promise<ICampaignEntity[]> {
         return new Promise((resolve, reject) => {
+            const opts = this._buildFindOpts(campaignOpts);
             // TODO: Add filter by type + archived
 
-            Campaigns.findAll()
+            Campaigns.findAll(opts)
                 .then((campaigns: any) =>
                     resolve(campaigns.length ? (campaigns as ICampaignEntity[]) : undefined),
                 )
@@ -89,14 +97,14 @@ class CampaignModelStruct {
      * @summary Method used to retrieve a campaign by his identifier
      * @notice Include linked data by default
      * @param {number} id Business identifier
+     * @param {boolean | undefined} archived is archived
      * @returns {Promise<ICampaignEntity>} Resolve: ICampaignEntity
      * @returns {Promise<void>} Resolve: void if nothing is found
      * @returns {Promise<any>} Reject: database error
      */
-    public getCampaign(id: number): Promise<ICampaignEntity> {
+    public getCampaign(id: number, archived?: boolean): Promise<ICampaignEntity> {
         return new Promise((resolve, reject) => {
-            // Includes all campaigns link
-            Campaigns.findByPk(id, {
+            const opts = {
                 include: [
                     { model: MentoringPropositions, as: 'propositions' },
                     { model: Mentors, as: 'mentors' },
@@ -104,7 +112,9 @@ class CampaignModelStruct {
                     { model: Internships, as: 'validatedInternships' },
                     { model: Internships, as: 'availableInternships' },
                 ],
-            })
+            };
+            // Includes all campaigns link
+            Campaigns.findByPk(id, archived ? setFindOptsArchived(opts) : opts)
                 .then((campaign: any) => resolve(campaign as ICampaignEntity))
                 .catch((e) => reject(e));
         });
@@ -382,6 +392,16 @@ class CampaignModelStruct {
                 reject(error);
             }
         });
+    }
+
+    private _buildFindOpts(opts: CampaignOpts): FindOptions {
+        let tmp: FindOptions = {};
+
+        if (opts.archived) {
+            tmp = setFindOptsArchived(tmp);
+        }
+
+        return tmp;
     }
 
     private _buildCreateOpts(campaign: ICampaignEntity): CreateOptions {

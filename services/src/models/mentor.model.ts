@@ -1,4 +1,4 @@
-import { CreateOptions, FindOptions } from 'sequelize';
+import { CreateOptions, FindOptions, IncludeOptions } from 'sequelize';
 
 import Campaigns from './sequelize/Campaigns';
 import Mentors from './sequelize/Mentors';
@@ -13,14 +13,18 @@ import {
     checkPartialCampaign,
     checkPartialInternship,
 } from '../utils/check';
+
 import { PaginateList } from './helpers/type';
 import { PaginateOpts, paginate } from './helpers/pagination';
-import { extractCount } from './helpers/options';
+import { extractCount, setFindOptsArchived } from './helpers/options';
 
 /** @interface MentorOpts Interface of all availables filters for mentors list */
 export interface MentorOpts {
     /** @property {number} campaignId Filter list with categoryId */
     campaignId?: number;
+
+    /** @property {boolean} archived Show only archived mentors */
+    archived?: boolean;
 }
 
 /**
@@ -44,7 +48,7 @@ class MentorModelStruct {
             const opts = this._buildFindOpts(mentorOpts);
 
             let max: number;
-            Mentors.count(extractCount(opts, opts.include || []))
+            Mentors.count(extractCount(opts, opts.include as IncludeOptions[]))
                 .then((rowNbr) => {
                     max = rowNbr;
                     return Mentors.findAll(paginate(pageOpts, opts));
@@ -97,19 +101,21 @@ class MentorModelStruct {
     /**
      * @summary Method used to get a mentor by his identifier
      * @param {number} id mentor identifier
+     * @param {boolean | undefined} archived is archived
      * @returns {Promise<IMentorEntity>} Resolve: mentor
      * @returns {Promise<void>} Resolve: not found
      * @returns {Promise<any>} Reject: database error
      */
-    public getMentor(id: number): Promise<IMentorEntity> {
+    public getMentor(id: number, archived?: boolean): Promise<IMentorEntity> {
         return new Promise((resolve, reject) => {
-            Mentors.findByPk(id, {
+            const opts = {
                 include: [
                     { model: Internships, as: 'internships' },
                     { model: Campaigns, as: 'campaigns' },
                     { model: MentoringPropositions, as: 'propositions' },
                 ],
-            })
+            };
+            Mentors.findByPk(id, archived ? setFindOptsArchived(opts) : opts)
                 .then((mentor) => resolve(mentor ? (mentor.toJSON() as IMentorEntity) : undefined))
                 .catch((e) => reject(e));
         });
@@ -273,7 +279,7 @@ class MentorModelStruct {
     }
 
     private _buildFindOpts(opts: MentorOpts): FindOptions {
-        const tmp: FindOptions = { include: [], where: {} };
+        let tmp: FindOptions = { include: [], where: {} };
 
         if (opts.campaignId) {
             tmp.include.push({
@@ -283,6 +289,10 @@ class MentorModelStruct {
                 duplicating: false,
             });
             (tmp.where as any)['$campaigns.id$'] = opts.campaignId;
+        }
+
+        if (opts.archived) {
+            tmp = setFindOptsArchived(tmp);
         }
 
         return tmp;

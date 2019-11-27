@@ -20,7 +20,7 @@ const internshipsRouter = {
       path: 'waiting',
       component: () => import('@/views/internships/admin/waiting.vue'),
       name: 'internships.waiting',
-      meta: { title: 'internships.waiting' },
+      meta: { title: 'internships.waiting', roles: ['admin'] },
     },
     {
       path: 'published',

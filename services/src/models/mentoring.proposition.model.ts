@@ -27,6 +27,9 @@ export interface PropositionsOpts {
 
     /** @property {number} mentorId Filter propositions by mentor */
     mentorId?: number;
+
+    /** @property {boolean} archived Show only archived propositions */
+    archived?: boolean;
 }
 
 /**
@@ -112,18 +115,23 @@ class MentoringPropositionModelStruct {
     /**
      * @summary Method used to get a mentoring propostion by his identifier
      * @param {number} id proposition identifier
+     * @param {boolean | undefined} archived is archived
      * @returns {Promise<IMentoringPropositionEntity>} Resolve: mentoring propostion
      * @returns {Promise<void>} Resolve: not found
      * @returns {Promise<any>} Reject: database error
      */
-    public getMentoringProposition(id: number): Promise<IMentoringPropositionEntity> {
+    public getMentoringProposition(
+        id: number,
+        archived?: boolean,
+    ): Promise<IMentoringPropositionEntity> {
         return new Promise((resolve, reject) => {
             MentoringPropositions.findByPk(id, {
                 include: [
-                    { model: Internships, as: 'internship' },
-                    { model: Campaigns, as: 'campaign' },
-                    { model: Mentors, as: 'mentor' },
+                    { model: Internships, as: 'internship', paranoid: !archived },
+                    { model: Campaigns, as: 'campaign', paranoid: !archived },
+                    { model: Mentors, as: 'mentor', paranoid: !archived },
                 ],
+                paranoid: !archived,
             })
                 .then((mp) =>
                     resolve(mp ? (mp.toJSON() as IMentoringPropositionEntity) : undefined),
@@ -308,6 +316,10 @@ class MentoringPropositionModelStruct {
 
         if (opts.campaignId !== undefined) {
             (tmp.where as any).campaignId = opts.campaignId;
+        }
+
+        if (opts.archived) {
+            tmp.paranoid = false;
         }
 
         return tmp;

@@ -1,10 +1,11 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator, replaceAllExistByOptional } from './generic.val';
+import { paginateValidator, replaceAllExistByOptional, archivedValidator } from './generic.val';
 import { mentorVal, campaignVal, internshipVal, propositionsVal } from './generator.val';
 
 export const MentorList: Schema = {
     ...paginateValidator,
+    ...archivedValidator,
 };
 
 export const MentorCreate: Schema = {

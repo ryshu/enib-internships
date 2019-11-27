@@ -8,16 +8,18 @@ Object {
       "address": null,
       "category": Object {
         "createdAt": Any<String>,
-        "id": 1,
+        "deletedAt": null,
+        "id": Any<Number>,
         "label": "test",
         "updatedAt": Any<String>,
       },
       "city": "Brest",
       "country": "France",
       "createdAt": Any<String>,
+      "deletedAt": null,
       "description": "Stage",
       "endAt": null,
-      "id": 1,
+      "id": Any<Number>,
       "isInternshipAbroad": true,
       "postalCode": null,
       "publishAt": null,
@@ -44,6 +46,7 @@ Object {
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
   "endAt": null,
   "files": Array [],
@@ -66,9 +69,10 @@ Object {
 exports[`GET /internships/:id/availableCampaigns Internships_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
-  "id": 1,
+  "id": Any<Number>,
   "isPublish": true,
   "maxProposition": 2,
   "name": "test",
@@ -85,7 +89,8 @@ Object {
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
-  "id": 1,
+  "deletedAt": null,
+  "id": Any<Number>,
   "name": "test",
   "postalCode": "29200",
   "updatedAt": Any<String>,
@@ -95,7 +100,8 @@ Object {
 exports[`GET /internships/:id/internshipTypes Internships_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 4,
+  "deletedAt": null,
+  "id": Any<Number>,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -104,9 +110,10 @@ Object {
 exports[`GET /internships/:id/mentors Internships_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
-  "id": 2,
+  "id": Any<Number>,
   "lastName": "Doe",
   "role": "default",
   "updatedAt": Any<String>,
@@ -117,7 +124,8 @@ exports[`GET /internships/:id/propositions Internships_200_WithLinkedData 1`] = 
 Object {
   "comment": "test",
   "createdAt": Any<String>,
-  "id": 1,
+  "deletedAt": null,
+  "id": Any<Number>,
   "updatedAt": Any<String>,
 }
 `;
@@ -125,9 +133,10 @@ Object {
 exports[`GET /internships/:id/students Internships_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
-  "id": 1,
+  "id": Any<Number>,
   "lastName": "Doe",
   "semester": "S10",
   "updatedAt": Any<String>,
@@ -137,9 +146,10 @@ Object {
 exports[`GET /internships/:id/validatedCampaigns Internships_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
-  "id": 3,
+  "id": Any<Number>,
   "isPublish": true,
   "maxProposition": 2,
   "name": "test",
@@ -157,13 +167,15 @@ Object {
   "business": null,
   "category": Object {
     "createdAt": Any<String>,
-    "id": 2,
+    "deletedAt": null,
+    "id": Any<Number>,
     "label": "test",
     "updatedAt": Any<String>,
   },
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
   "endAt": null,
   "files": Array [],
@@ -186,9 +198,10 @@ Object {
 exports[`POST /internships/:id/availableCampaigns/:campaign_id/link Internships_200_WithCampaign 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "A description to test",
   "endAt": 20191012,
-  "id": 2,
+  "id": Any<Number>,
   "isPublish": true,
   "maxProposition": 2,
   "name": "test",
@@ -205,7 +218,8 @@ Object {
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
-  "id": 2,
+  "deletedAt": null,
+  "id": Any<Number>,
   "name": "test",
   "postalCode": "29200",
   "updatedAt": Any<String>,
@@ -215,7 +229,8 @@ Object {
 exports[`POST /internships/:id/internshipTypes/:internship_type_id/link Internships_200_WithInternshipType 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 5,
+  "deletedAt": null,
+  "id": Any<Number>,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -224,9 +239,10 @@ Object {
 exports[`POST /internships/:id/mentors/:mentor_id/link Internships_200_WithMentor 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
-  "id": 3,
+  "id": Any<Number>,
   "lastName": "Doe",
   "role": "default",
   "updatedAt": Any<String>,
@@ -237,7 +253,8 @@ exports[`POST /internships/:id/propositions/:mentoring_proposition_id/link Inter
 Object {
   "comment": "test",
   "createdAt": Any<String>,
-  "id": 2,
+  "deletedAt": null,
+  "id": Any<Number>,
   "updatedAt": Any<String>,
 }
 `;
@@ -245,26 +262,12 @@ Object {
 exports[`POST /internships/:id/students/:student_id/link Internships_200_WithStudent 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
-  "id": 2,
+  "id": Any<Number>,
   "lastName": "Doe",
   "semester": "S10",
-  "updatedAt": Any<String>,
-}
-`;
-
-exports[`POST /internships/:id/validatedCampaigns/:campaign_id/link Internships_200_WithCampaign 1`] = `
-Object {
-  "createdAt": Any<String>,
-  "description": "A description to test",
-  "endAt": 20191012,
-  "id": 4,
-  "isPublish": true,
-  "maxProposition": 2,
-  "name": "test",
-  "semester": "S5",
-  "startAt": 0,
   "updatedAt": Any<String>,
 }
 `;
@@ -276,6 +279,7 @@ Object {
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
   "endAt": null,
   "id": Any<Number>,
@@ -297,6 +301,7 @@ Object {
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
   "endAt": null,
   "id": Any<Number>,

@@ -13,7 +13,7 @@ import Students from './sequelize/Students';
 import Files from './sequelize/Files';
 
 import { PaginateList } from './helpers/type';
-import { extractCount } from './helpers/options';
+import { extractCount, setFindOptsArchived } from './helpers/options';
 import {
     checkPartialBusiness,
     checkPartialCampaign,
@@ -27,8 +27,11 @@ import {
 import { PaginateOpts, paginate } from './helpers/pagination';
 
 import InternshipTypeModel from './internship.type.mode';
-
 import { INTERNSHIP_MODE } from '../internship';
+import { InternshipHandler } from '../internship/internship';
+
+import { APIError } from '../utils/error';
+import httpStatus from 'http-status-codes';
 
 /** @interface InternshipOpts Interface of all availables filters for internship list */
 export interface InternshipOpts {
@@ -67,6 +70,12 @@ export interface InternshipOpts {
 
     /** @property {number} mentorId Filter list with mentorId */
     mentorId?: number;
+
+    /** @property {string[]} includes Filter to include and populate given associations */
+    includes?: string[];
+
+    /** @property {boolean} archived Show only archived internship */
+    archived?: boolean;
 }
 
 /**
@@ -153,13 +162,14 @@ class InternshipModelStruct {
      * @summary Method used to retrieve a internship by his identifier
      * @notice Include sub-struct by default
      * @param {number} id Internship identifier
+     * @param {boolean} archived if archived
      * @returns {Promise<IInternshipEntity>} Resolve: IInternshipEntity
      * @returns {Promise<void>} Resolve: void if nothing is found
      * @returns {Promise<any>} Reject: database error
      */
-    public getInternship(id: number): Promise<IInternshipEntity> {
+    public getInternship(id: number, archived?: boolean): Promise<IInternshipEntity> {
         return new Promise((resolve, reject) => {
-            Internships.findByPk(id, {
+            const opts = {
                 include: [
                     { model: Businesses, as: 'business' },
                     { model: InternshipTypes, as: 'category' },
@@ -170,7 +180,8 @@ class InternshipModelStruct {
                     { model: Students, as: 'student' },
                     { model: Files, as: 'files' },
                 ],
-            })
+            };
+            Internships.findByPk(id, archived ? setFindOptsArchived(opts) : opts)
                 .then((val) => resolve(val ? (val.toJSON() as IInternshipEntity) : undefined))
                 .catch((e) => reject(e));
         });
@@ -247,14 +258,6 @@ class InternshipModelStruct {
 
                 if (next.isInternshipAbroad !== undefined) {
                     internship.set('isInternshipAbroad', next.isInternshipAbroad ? true : false);
-                }
-
-                if (next.state) {
-                    internship.set('state', next.state);
-                }
-
-                if (next.result) {
-                    internship.set('result', next.result);
                 }
 
                 if (next.publishAt !== undefined) {
@@ -400,135 +403,6 @@ class InternshipModelStruct {
     }
 
     /**
-     * @summary Method used to link internship and available campaign
-     * @param {number} internshipId internship identifier
-     * @param {number} campaignId campaign identifier
-     * @returns {Promise<IInternshipEntity>} Resolve: linked entity
-     * @returns {Promise<void>} Resolve: nothing found to link
-     * @returns {Promise<any>} Reject: database error
-     */
-    public linkToAvailableCampaign(
-        internshipId: number,
-        campaignId: number,
-    ): Promise<IInternshipEntity> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const internship = await Internships.findByPk(internshipId, {
-                    include: [{ model: Campaigns, as: 'validatedCampaign' }],
-                });
-                if (!internship) {
-                    return resolve();
-                }
-                const campaign = await Campaigns.findByPk(campaignId);
-                if (!campaign) {
-                    return resolve();
-                }
-
-                if (internship.validatedCampaign) {
-                    await campaign.removeValidatedInternships(internship);
-                }
-                await campaign.addAvailableInternship(internship);
-
-                return resolve(await this.getInternship(internship.id));
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    /**
-     * @summary Method used to link internship and validated campaign
-     * @param {number} internshipId internship identifier
-     * @param {number} campaignId campaign identifier
-     * @returns {Promise<IInternshipEntity>} Resolve: linked entity
-     * @returns {Promise<void>} Resolve: nothing found to link
-     * @returns {Promise<any>} Reject: database error
-     */
-    public linkToValidatedCampaign(
-        internshipId: number,
-        campaignId: number,
-    ): Promise<IInternshipEntity> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const internship = await Internships.findByPk(internshipId, {
-                    include: [{ model: Campaigns, as: 'availableCampaign' }],
-                });
-                if (!internship) {
-                    return resolve();
-                }
-                const campaign = await Campaigns.findByPk(campaignId);
-                if (!campaign) {
-                    return resolve();
-                }
-
-                if (internship.availableCampaign) {
-                    await campaign.removeAvailableInternships(internship);
-                }
-                await campaign.addValidatedInternship(internship);
-                return resolve(await this.getInternship(internship.id));
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    /**
-     * @summary Method used to link internship and mentor
-     * @param {number} internshipId internship identifier
-     * @param {number} mentorId mentor identifier
-     * @returns {Promise<IInternshipEntity>} Resolve: linked entity
-     * @returns {Promise<void>} Resolve: nothing found to link
-     * @returns {Promise<any>} Reject: database error
-     */
-    public linkToMentor(internshipId: number, mentorId: number): Promise<IInternshipEntity> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const internship = await Internships.findByPk(internshipId);
-                if (!internship) {
-                    return resolve();
-                }
-                const mentor = await Mentors.findByPk(mentorId);
-                if (!mentor) {
-                    return resolve();
-                }
-
-                await internship.setMentor(mentor);
-                return resolve(await this.getInternship(internship.id));
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    /**
-     * @summary Method used to link internship and student
-     * @param {number} internshipId internship identifier
-     * @param {number} studentId student identifier
-     * @returns {Promise<IInternshipEntity>} Resolve: linked entity
-     * @returns {Promise<void>} Resolve: nothing found to link
-     * @returns {Promise<any>} Reject: database error
-     */
-    public linkToStudent(internshipId: number, studentId: number): Promise<IInternshipEntity> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const internship = await Internships.findByPk(internshipId);
-                if (!internship) {
-                    return resolve();
-                }
-                const student = await Students.findByPk(studentId);
-                if (!student) {
-                    return resolve();
-                }
-
-                await internship.setStudent(student);
-                return resolve(await this.getInternship(internship.id));
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    /**
      * @summary Method used to link internship and business
      * @param {number} internshipId internship identifier
      * @param {number} businessId business identifier
@@ -556,8 +430,45 @@ class InternshipModelStruct {
         });
     }
 
+    public getHandler(internship: number | IInternshipEntity): Promise<InternshipHandler> {
+        return new Promise(async (resolve, reject) => {
+            let id;
+            if (!Number.isNaN(Number(internship))) {
+                id = Number(internship);
+            } else if (!Number.isNaN(Number((internship as IInternshipEntity).id))) {
+                id = Number((internship as IInternshipEntity).id);
+            } else {
+                return reject(
+                    new APIError(
+                        'No internship id provide to get handler',
+                        httpStatus.BAD_REQUEST,
+                        1200,
+                    ),
+                );
+            }
+
+            const val = await Internships.findByPk(id, {
+                include: [
+                    { model: Businesses, as: 'business' },
+                    { model: InternshipTypes, as: 'category' },
+                    { model: Campaigns, as: 'availableCampaign' },
+                    { model: Campaigns, as: 'validatedCampaign' },
+                    { model: Mentors, as: 'mentor' },
+                    { model: MentoringPropositions, as: 'propositions' },
+                    { model: Students, as: 'student' },
+                    { model: Files, as: 'files' },
+                ],
+            });
+            if (!val) {
+                return resolve();
+            }
+
+            resolve(new InternshipHandler(val));
+        });
+    }
+
     private _buildFindOpts(opts: InternshipOpts): FindOptions {
-        const tmp: FindOptions = {
+        let tmp: FindOptions = {
             // By default, only give internship available list
             where: {},
             include: [{ model: InternshipTypes, as: 'category', duplicating: false }],
@@ -612,6 +523,39 @@ class InternshipModelStruct {
                 { availableCampaignId: opts.campaignId },
                 { validatedCampaignId: opts.campaignId },
             ];
+        }
+
+        if (opts.includes !== undefined) {
+            for (const inc of opts.includes) {
+                if (inc === 'files') {
+                    tmp.include.push({ model: Files, association: 'files' });
+                }
+                if (inc === 'student') {
+                    tmp.include.push({ model: Students, association: 'student' });
+                }
+                if (inc === 'mentor') {
+                    tmp.include.push({ model: Mentors, association: 'mentor' });
+                }
+                if (inc === 'propositions') {
+                    tmp.include.push({ model: MentoringPropositions, association: 'propositions' });
+                }
+                if (inc === 'validatedCampaign') {
+                    tmp.include.push({ model: Campaigns, association: 'validatedCampaign' });
+                }
+                if (inc === 'availableCampaign') {
+                    tmp.include.push({ model: Campaigns, association: 'availableCampaign' });
+                }
+                if (inc === 'business') {
+                    tmp.include.push({ model: Businesses, association: 'business' });
+                }
+                if (inc === 'category') {
+                    tmp.include.push({ model: InternshipTypes, association: 'category' });
+                }
+            }
+        }
+
+        if (opts.archived) {
+            tmp = setFindOptsArchived(tmp);
         }
 
         return tmp;

@@ -1,16 +1,23 @@
-import { CreateOptions } from 'sequelize';
+import { CreateOptions, FindOptions } from 'sequelize';
 
 import Campaigns from './sequelize/Campaigns';
 import InternshipTypes from './sequelize/InternshipTypes';
 import Internships from './sequelize/Internships';
 
 import { IInternshipTypeEntity } from '../declarations';
+import { setFindOptsArchived } from './helpers/options';
 
 import {
     checkPartialInternshipType,
     checkPartialCampaign,
     checkPartialInternship,
 } from '../utils/check';
+
+/** @interface InternshipTypeOpts Interface of all availables filters for categories list */
+export declare interface InternshipTypeOpts {
+    /** @property {boolean} archived Show only archived categories */
+    archived?: boolean;
+}
 
 /**
  * @interface InternshipTypeModelStruct API to handle internship type in database
@@ -19,12 +26,17 @@ import {
 class InternshipTypeModelStruct {
     /**
      * @summary Method used to retrieve all internship types
+     * @param {internshipTypeOpts} internshipTypeOpts Find options
      * @returns {Promise<IInternshipTypeEntity[]>} Resolve: internship types list
      * @returns {Promise<any>} Reject: database error
      */
-    public getInternshipTypes(): Promise<IInternshipTypeEntity[]> {
+    public getInternshipTypes(
+        internshipTypeOpts?: InternshipTypeOpts,
+    ): Promise<IInternshipTypeEntity[]> {
         return new Promise((resolve, reject) => {
-            InternshipTypes.findAll()
+            const opts = this._buildFindOpts(internshipTypeOpts);
+
+            InternshipTypes.findAll(opts)
                 .then((types: any) =>
                     resolve(types.length ? (types as IInternshipTypeEntity[]) : undefined),
                 )
@@ -66,18 +78,20 @@ class InternshipTypeModelStruct {
     /**
      * @summary Method used to get an internship type by his identifier
      * @param {number} id type identifier
+     * @param {boolean | undefined} archived is archived
      * @returns {Promise<IInternshipTypeEntity>} Resolve: internship type
      * @returns {Promise<void>} Resolve: not found
      * @returns {Promise<any>} Reject: database error
      */
-    public getInternshipType(id: number): Promise<IInternshipTypeEntity> {
+    public getInternshipType(id: number, archived?: boolean): Promise<IInternshipTypeEntity> {
         return new Promise((resolve, reject) => {
-            InternshipTypes.findByPk(id, {
+            const opts = {
                 include: [
                     { model: Internships, as: 'internships' },
                     { model: Campaigns, as: 'campaigns' },
                 ],
-            })
+            };
+            InternshipTypes.findByPk(id, archived ? setFindOptsArchived(opts) : opts)
                 .then((internship) =>
                     resolve(
                         internship ? (internship.toJSON() as IInternshipTypeEntity) : undefined,
@@ -209,6 +223,16 @@ class InternshipTypeModelStruct {
                 reject(error);
             }
         });
+    }
+
+    private _buildFindOpts(opts: InternshipTypeOpts): FindOptions {
+        let tmp: FindOptions = {};
+
+        if (opts.archived) {
+            tmp = setFindOptsArchived(tmp);
+        }
+
+        return tmp;
     }
 
     private _buildCreateOpts(type: IInternshipTypeEntity): CreateOptions {

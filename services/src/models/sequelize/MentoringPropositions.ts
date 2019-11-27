@@ -58,6 +58,8 @@ MentoringPropositions.init(
     {
         tableName: 'mentoring-propositions',
         sequelize: database,
+        timestamps: true,
+        paranoid: true,
         defaultScope: {
             attributes: { exclude: ['campaignId', 'mentorId', 'internshipId'] },
         },

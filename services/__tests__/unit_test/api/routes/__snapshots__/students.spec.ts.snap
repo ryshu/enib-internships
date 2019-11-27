@@ -5,9 +5,10 @@ Object {
   "data": Array [
     Object {
       "createdAt": Any<String>,
+      "deletedAt": null,
       "email": "john.doe@enib.fr",
       "firstName": "John",
-      "id": 1,
+      "id": Any<Number>,
       "lastName": "Doe",
       "semester": "S10",
       "updatedAt": Any<String>,
@@ -22,6 +23,7 @@ Object {
 exports[`GET /students/:id Students_200 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
   "id": Any<Number>,
@@ -48,6 +50,7 @@ Object {
 exports[`PUT /students/:id Students_200_NotAnyDataUpdated 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
   "id": Any<Number>,
@@ -60,6 +63,7 @@ Object {
 exports[`PUT /students/:id Students_200_UpdateAllData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
   "id": Any<Number>,

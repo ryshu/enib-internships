@@ -46,6 +46,7 @@ describe('GET /files', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             data: [
                 {
+                    id: expect.any(Number),
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
                 },
@@ -226,6 +227,7 @@ describe('GET /files/:id/internships', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -291,6 +293,7 @@ describe('POST /files/:id/internships/:internship_id/link', () => {
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
