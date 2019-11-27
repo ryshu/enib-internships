@@ -226,6 +226,10 @@ export default {
       lastName: 'Nom',
       email: 'Email',
     },
+    propositions: {
+      id: 'Id',
+      comment: 'Comment',
+    },
     publish: 'Publier',
     search: 'Recherche',
     status: 'Status',

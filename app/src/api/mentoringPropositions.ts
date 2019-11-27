@@ -1,9 +1,9 @@
 import request from '@/utils/request';
 
 import { AxiosPromise } from 'axios';
-import { IMentoringPropositions } from './types';
+import { IMentoringPropositionEntity } from '../declarations';
 
-export const defaultMentoringPropositionData: IMentoringPropositions = {
+export const defaultMentoringPropositionData: IMentoringPropositionEntity = {
   comment: '',
 };
 

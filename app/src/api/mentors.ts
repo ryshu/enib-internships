@@ -24,7 +24,7 @@ export const getMentorsByCampaign = (id:number, params: any) =>
   });
 
 export const getMentor = (id: number, params: any) =>
-  request({
+  (request({
     url: `/mentors/${id}`,
     method: 'get',
   }) as any) as Promise<IMentorEntity>;

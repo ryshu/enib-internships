@@ -132,7 +132,7 @@ import {
   deleteMentor,
   defaultMentorData,
 } from '../../../api/mentors';
-import { IMentor } from '../../../api/types';
+import { IMentorEntity } from '../../../declarations';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
@@ -147,7 +147,7 @@ import Pagination from '../../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IMentor[] = [];
+  private list: IMentorEntity[] = [];
   private total = 0;
   private listLoading = true;
 

@@ -104,7 +104,7 @@ import {
   deleteMentoringProposition,
   defaultMentoringPropositionData,
 } from '../../../api/mentoringPropositions';
-import { IMentoringPropositions } from '../../../api/types';
+import { IMentoringPropositionEntity } from '../../../declarations';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
@@ -119,7 +119,7 @@ import Pagination from '../../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IMentoringPropositions[] = [];
+  private list: IMentoringPropositionEntity[] = [];
   private total = 0;
   private listLoading = true;
 
