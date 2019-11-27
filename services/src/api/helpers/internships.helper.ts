@@ -47,6 +47,7 @@ export function generateGetInternships(filterByID?: FilterByID) {
             subject,
             mode = [INTERNSHIP_MODE.PUBLISHED],
             isAbroad,
+            includes,
         } = req.query;
 
         const opts: InternshipOpts = {
@@ -55,6 +56,7 @@ export function generateGetInternships(filterByID?: FilterByID) {
             subject,
             mode,
             isAbroad,
+            includes,
         };
         if (filterByID && isFilterId(filterByID)) {
             opts[filterByID] = Number(req.params.id);

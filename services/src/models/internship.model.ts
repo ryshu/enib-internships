@@ -67,6 +67,9 @@ export interface InternshipOpts {
 
     /** @property {number} mentorId Filter list with mentorId */
     mentorId?: number;
+
+    /** @property {string[]} includes Filter to include and populate given associations */
+    includes?: string[];
 }
 
 /**
@@ -612,6 +615,35 @@ class InternshipModelStruct {
                 { availableCampaignId: opts.campaignId },
                 { validatedCampaignId: opts.campaignId },
             ];
+        }
+
+        if (opts.includes !== undefined) {
+            for (const inc of opts.includes) {
+                if (inc === 'files') {
+                    tmp.include.push({ model: Files, association: 'files' });
+                }
+                if (inc === 'student') {
+                    tmp.include.push({ model: Students, association: 'student' });
+                }
+                if (inc === 'mentor') {
+                    tmp.include.push({ model: Mentors, association: 'mentor' });
+                }
+                if (inc === 'propositions') {
+                    tmp.include.push({ model: MentoringPropositions, association: 'propositions' });
+                }
+                if (inc === 'validatedCampaign') {
+                    tmp.include.push({ model: Campaigns, association: 'validatedCampaign' });
+                }
+                if (inc === 'availableCampaign') {
+                    tmp.include.push({ model: Campaigns, association: 'availableCampaign' });
+                }
+                if (inc === 'business') {
+                    tmp.include.push({ model: Businesses, association: 'business' });
+                }
+                if (inc === 'category') {
+                    tmp.include.push({ model: InternshipTypes, association: 'category' });
+                }
+            }
         }
 
         return tmp;
