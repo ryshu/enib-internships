@@ -65,7 +65,7 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="330"
+        width="100"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
@@ -73,14 +73,16 @@
             type="primary"
             size="small"
             icon="el-icon-edit"
+            circle
             @click="handleUpdate(row)"
-          >{{ $t('table.edit') }}</el-button>
+          />
           <el-button
             size="small"
             type="danger"
-            icon="el-icon-remove"
+            icon="el-icon-delete"
+            circle
             @click="handleDelete(row, 'deleted')"
-          >{{ $t('table.delete') }}</el-button>
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -138,7 +140,7 @@ import {
   defaultStudentData,
   deleteStudent,
 } from '../../api/students';
-import { IStudent } from '../../api/types';
+import { IStudentEntity } from '../../declarations';
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
 import Pagination from '../../components/Pagination/index.vue';
@@ -151,7 +153,7 @@ import Pagination from '../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IStudent[] = [];
+  private list: IStudentEntity[] = [];
   private total = 0;
   private listLoading = true;
   private listQuery = {

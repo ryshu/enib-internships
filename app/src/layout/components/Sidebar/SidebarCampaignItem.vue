@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="campaigns && campaigns.length !== 0"
+    v-if="(campaigns && campaigns.length !== 0) || checkPermission(['admin'])"
     class="menu-wrapper full-mode first-level"
   >
     <el-submenu :index="resolvePath('dashboard')" popper-append-to-body>
@@ -15,7 +15,7 @@
         popper-append-to-body
       >
         <template slot="title">
-          <span slot="title">{{ campaign.category.label }}</span>
+          <span slot="title">{{ campaign.name }}</span>
         </template>
 
         <sidebar-item-link :to="resolvePath('dashboard', campaign.id)">
@@ -42,7 +42,10 @@
             <span slot="title">{{ $t('route.campaigns.students') }}</span>
           </el-menu-item>
         </sidebar-item-link>
-        <sidebar-item-link v-if="checkPermission(['admin'])" :to="resolvePath('mentors', campaign.id)">
+        <sidebar-item-link
+          v-if="checkPermission(['admin'])"
+          :to="resolvePath('mentors', campaign.id)"
+        >
           <el-menu-item
             :index="resolvePath('mentors', campaign.id)"
             class="submenu-title-noDropdown"
@@ -58,7 +61,10 @@
             <span slot="title">{{ $t('route.campaigns.propositions') }}</span>
           </el-menu-item>
         </sidebar-item-link>
-        <sidebar-item-link v-if="checkPermission(['admin'])" :to="resolvePath('settings', campaign.id)">
+        <sidebar-item-link
+          v-if="checkPermission(['admin'])"
+          :to="resolvePath('settings', campaign.id)"
+        >
           <el-menu-item
             :index="resolvePath('settings', campaign.id)"
             class="submenu-title-noDropdown"
@@ -95,18 +101,19 @@ import { CampaignsModule } from '../../../store/modules/campaigns';
   components: { SidebarItemLink },
 })
 export default class extends Vue {
-  @Prop({ required: true }) private item!: RouteConfig
+  @Prop({ required: true }) private item!: RouteConfig;
 
   private prev: number = -1;
   private checkPermission = checkPermission;
 
   public get campaigns() {
-    console.log(CampaignsModule.campaigns);
     return CampaignsModule.campaigns;
   }
 
   private resolvePath(routePath: string, id?: number) {
-    return id? path.resolve('campaigns', routePath, String(id)) : path.resolve('campaigns', routePath);
+    return id
+      ? path.resolve('campaigns', routePath, String(id))
+      : path.resolve('campaigns', routePath);
   }
 
   private generateTitle(label: string) {

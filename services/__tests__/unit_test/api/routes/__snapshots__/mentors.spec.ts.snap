@@ -15,9 +15,9 @@ Object {
     Object {
       "createdAt": Any<String>,
       "email": "cas.dev@enib.fr",
-      "firstName": "Cas",
+      "firstName": "undefined",
       "id": Any<Number>,
-      "lastName": "DEV",
+      "lastName": "undefined",
       "role": "default",
       "updatedAt": Any<String>,
     },
@@ -30,11 +30,14 @@ Object {
 
 exports[`GET /mentors/:id Mentors_200 1`] = `
 Object {
+  "campaigns": Array [],
   "createdAt": Any<String>,
   "email": "john.doe@enib.fr",
   "firstName": "John",
   "id": Any<Number>,
+  "internships": Array [],
   "lastName": "Doe",
+  "propositions": Array [],
   "role": "default",
   "updatedAt": Any<String>,
 }
@@ -42,11 +45,14 @@ Object {
 
 exports[`POST /mentors ValidMentors_200 1`] = `
 Object {
+  "campaigns": Array [],
   "createdAt": Any<String>,
   "email": "john.doe@enib.fr",
   "firstName": "John",
   "id": Any<Number>,
+  "internships": Array [],
   "lastName": "Doe",
+  "propositions": Array [],
   "role": "default",
   "updatedAt": Any<String>,
 }

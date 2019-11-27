@@ -3,12 +3,36 @@
     <!-- Filter -->
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
+        v-model="listQuery.subject"
         :placeholder="$t('table.internships.subject')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
+      <el-select
+        v-model="listQuery.countries"
+        filterable
+        multiple
+        collapse-tags
+        :placeholder="$t('table.filter.countries')"
+        style="width: 200px; margin-left: 10px;"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
+      </el-select>
+      <el-select
+        v-model="listQuery.types"
+        filterable
+        multiple
+        collapse-tags
+        :placeholder="$t('table.filter.types')"
+        style="width: 200px; margin-left: 10px;"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option v-for="item in types" :key="item.id" :label="item.label" :value="item.id" />
+      </el-select>
       <el-button
         v-waves
         style="margin-left: 10px;"
@@ -17,6 +41,14 @@
         icon="el-icon-search"
         @click="handleFilter"
       >{{ $t('table.search') }}</el-button>
+      <el-checkbox
+        v-model="listQuery.isAbroad"
+        v-waves
+        style="margin-left: 10px;"
+        class="filter-item"
+        type="primary"
+        @change="handleFilter"
+      >{{ $t('table.checkbox.isAbroad') }}</el-checkbox>
     </div>
 
     <!-- Table -->
@@ -34,6 +66,11 @@
           <span>{{ row.subject }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.internships.category')" min-width="100px">
+        <template slot-scope="{ row }">
+          <span>{{ row.category.label }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column :label="$t('table.internships.country')" min-width="70px">
         <template slot-scope="{ row }">
@@ -46,7 +83,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.internships.isInternshipAbroad')" min-width="50px" align="center">
+      <el-table-column
+        :label="$t('table.internships.isInternshipAbroad')"
+        min-width="70px"
+        align="center"
+      >
         <template slot-scope="{ row }">
           <el-tag
             :type="row.isInternshipAbroad ? 'success' : 'danger'"
@@ -83,9 +124,18 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import countryList from 'country-list';
+
 import { getInternships } from '../../../api/internships';
-import { IInternship } from '../../../api/types';
+import {
+  IInternshipEntity,
+  InternshipOpts,
+  INTERNSHIP_MODE,
+} from '../../../declarations';
+
 import Pagination from '../../../components/Pagination/index.vue';
+
+import { CategoriesModule } from '../../../store/modules/categories';
 
 @Component({
   name: 'InternshipsStudentList',
@@ -95,15 +145,25 @@ import Pagination from '../../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IInternship[] = [];
+  private list: IInternshipEntity[] = [];
   private total = 0;
 
   private listLoading = true;
-  private listQuery = {
+  private listQuery: InternshipOpts = {
     page: 1,
     limit: 10,
-    title: undefined,
+    subject: undefined,
+    countries: [],
+    types: [],
+    mode: [INTERNSHIP_MODE.PUBLISHED],
+    isAbroad: false,
   };
+
+  private countryList = countryList.getNames();
+
+  private get types() {
+    return CategoriesModule.categories;
+  }
 
   public created() {
     this.getList();

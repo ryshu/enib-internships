@@ -17,8 +17,8 @@
         :label="$t('table.businesses.name')"
         prop="name"
         :rules="[
-            { required: true, message: $t('form.businesses.name.required'), trigger: 'blur' },
-          ]"
+          { required: true, message: $t('form.businesses.name.required'), trigger: 'blur' },
+        ]"
       >
         <el-input v-model="tempBusinessData.name" />
       </el-form-item>
@@ -26,8 +26,8 @@
         :label="$t('table.businesses.country')"
         prop="country"
         :rules="[
-            { required: true, message: $t('form.businesses.country.required'), trigger: 'blur' },
-          ]"
+          { required: true, message: $t('form.businesses.country.required'), trigger: 'blur' },
+        ]"
       >
         <el-select v-model="tempBusinessData.country" filterable>
           <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
@@ -37,8 +37,8 @@
         :label="$t('table.businesses.city')"
         prop="city"
         :rules="[
-            { required: true, message: $t('form.businesses.city.required'), trigger: 'blur' },
-          ]"
+          { required: true, message: $t('form.businesses.city.required'), trigger: 'blur' },
+        ]"
       >
         <el-input v-model="tempBusinessData.city" />
       </el-form-item>
@@ -46,8 +46,8 @@
         :label="$t('table.businesses.postalCode')"
         prop="postalCode"
         :rules="[
-            { required: true, message: $t('form.businesses.postalCode.required'), trigger: 'blur' },
-          ]"
+          { required: true, message: $t('form.businesses.postalCode.required'), trigger: 'blur' },
+        ]"
       >
         <el-input v-model="tempBusinessData.postalCode" />
       </el-form-item>
@@ -55,8 +55,8 @@
         :label="$t('table.businesses.address')"
         prop="address"
         :rules="[
-            { required: true, message: $t('form.businesses.address.required'), trigger: 'blur' },
-          ]"
+          { required: true, message: $t('form.businesses.address.required'), trigger: 'blur' },
+        ]"
       >
         <el-input v-model="tempBusinessData.address" />
       </el-form-item>
@@ -75,10 +75,11 @@
 import countryList from 'country-list';
 import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
+import { cloneDeep } from 'lodash';
 
 import { defaultBusinessData } from '../../../api/businesses';
-import { IBusiness } from '../../../api/types';
-import { cloneDeep } from 'lodash';
+
+import { IBusinessEntity } from '../../../declarations';
 
 @Component({
   name: 'EditBusiness',
@@ -90,7 +91,7 @@ export default class EditBusiness extends Vue {
   private dialogStatus = '';
   private textMap = {};
 
-  private resolve: (value?: IBusiness) => void = () => {};
+  private resolve: (value?: IBusinessEntity) => void = () => {};
   private reject: (error?: any) => void = () => {};
 
   public created() {
@@ -100,7 +101,7 @@ export default class EditBusiness extends Vue {
     };
   }
 
-  public update(item: IBusiness) {
+  public update(item: IBusinessEntity) {
     this.tempBusinessData = cloneDeep(item);
     this.dialogStatus = 'update';
     return this.setup();
@@ -119,7 +120,10 @@ export default class EditBusiness extends Vue {
     });
 
     return new Promise(
-      (resolve: (value?: IBusiness) => void, reject: (error?: any) => void) => {
+      (
+        resolve: (value?: IBusinessEntity) => void,
+        reject: (error?: any) => void
+      ) => {
         this.resolve = resolve;
         this.reject = reject;
       }

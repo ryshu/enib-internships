@@ -1,5 +1,8 @@
 import Vue, { DirectiveOptions } from 'vue';
 
+import VueSocketIOExt from 'vue-socket.io-extended';
+import io from 'socket.io-client';
+
 import 'normalize.css';
 import ElementUI from 'element-ui';
 import SvgIcon from 'vue-svgicon';
@@ -28,6 +31,9 @@ Vue.use(SvgIcon, {
   defaultWidth: '1em',
   defaultHeight: '1em',
 });
+
+const socket = io();
+Vue.use(VueSocketIOExt, socket);
 
 // Register global directives
 Object.keys(directives).forEach(key => {

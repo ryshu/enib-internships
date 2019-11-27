@@ -1,3 +1,5 @@
+import { IInternshipEntity } from './internship';
+
 declare interface IBusinessEntity {
     id?: number;
 
@@ -7,6 +9,8 @@ declare interface IBusinessEntity {
     postalCode: string;
     address: string;
     additional?: string;
+
+    internships?: IInternshipEntity[];
 
     createdAt?: Date;
     updatedAt?: Date;

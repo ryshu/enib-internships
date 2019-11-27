@@ -36,6 +36,9 @@ const MentoringPropositionsLoader = require('./fake-load/mentoring-propositions'
 const StudentsLoader = require('./fake-load/students');
 const FilesLoader = require('./fake-load/files');
 
+// TODO: Handle multiple state for internships
+// TODO: Add a demo setup CMD
+
 Promise.resolve().then(async () => {
     try {
         if (program.businesses) await BusinessesLoader(program.quantity, program.verbose);

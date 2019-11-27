@@ -1,8 +1,16 @@
+import { IMentorEntity } from '../../declarations';
+
 export const admins: IMentorEntity[] = [
     {
         firstName: 'Oscar',
         lastName: 'Marie--Taillefer',
         email: 'o5mariet@enib.fr',
+        role: 'admin',
+    },
+    {
+        firstName: 'Cas',
+        lastName: 'DEV',
+        email: 'cas.dev@enib.fr',
         role: 'admin',
     },
 ];

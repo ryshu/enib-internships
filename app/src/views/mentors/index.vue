@@ -62,7 +62,7 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="330"
+        width="100"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
@@ -70,14 +70,16 @@
             type="primary"
             size="small"
             icon="el-icon-edit"
+            circle
             @click="handleUpdate(row)"
-          >{{ $t('table.edit') }}</el-button>
+          />
           <el-button
             size="small"
             type="danger"
-            icon="el-icon-remove"
+            icon="el-icon-delete"
+            circle
             @click="handleDelete(row, 'deleted')"
-          >{{ $t('table.delete') }}</el-button>
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -131,7 +133,7 @@ import {
   deleteMentor,
   defaultMentorData,
 } from '../../api/mentors';
-import { IMentor } from '../../api/types';
+import { IMentorEntity } from '../../declarations';
 
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
@@ -146,12 +148,12 @@ import Pagination from '../../components/Pagination/index.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IMentor[] = [];
+  private list: IMentorEntity[] = [];
   private total = 0;
   private listLoading = true;
 
   // Filter for query, this will not be used until we add pagination
-  private listQuery = {
+  private listQuery: any = {
     page: 1,
     limit: 10,
     firstName: undefined,

@@ -5,6 +5,9 @@
     "previous": "Previous",
     "tagline": "Application to manage ENIB internships system",
     "docs": {
+      "api-index": {
+        "title": "Internships manager API"
+      },
       "api-businesses": {
         "title": "Businesses"
       },
@@ -13,9 +16,6 @@
       },
       "api-files": {
         "title": "Files"
-      },
-      "api-index": {
-        "title": "Internships manager API"
       },
       "api-internship-types": {
         "title": "InternshipTypes"
@@ -29,8 +29,17 @@
       "api-mentors": {
         "title": "Mentors"
       },
+      "api-statistics": {
+        "title": "Statistics"
+      },
       "api-students": {
         "title": "Students"
+      },
+      "api-services-emails": {
+        "title": "Emails"
+      },
+      "api-services-statistics": {
+        "title": "Statistics"
       },
       "docs-backend": {
         "title": "Back end part"
@@ -40,6 +49,9 @@
       },
       "docs-install": {
         "title": "Installation"
+      },
+      "docs-mailer": {
+        "title": "Mailer service"
       },
       "docs-settings": {
         "title": "Settings"
@@ -63,9 +75,11 @@
     },
     "categories": {
       "Get started": "Get started",
+      "Services": "Services",
       "Software architecture": "Software architecture",
       "Introduction": "Introduction",
       "REST API": "REST API",
+      "Services API": "Services API",
       "Complete": "Complete"
     }
   },

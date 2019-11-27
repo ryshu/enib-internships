@@ -2,7 +2,13 @@ const faker = require('faker');
 const chalk = require('chalk');
 
 faker.locale = 'fr';
-const Students = require('../../../dist/models/Students').default;
+const Students = require('../../../dist/models/sequelize/Students').default;
+
+async function inject(s, debug) {
+    await Students.create(s);
+    if (debug)
+        console.info(chalk.white(`Inject students "${s.firstName} ${s.lastName}" in database`));
+}
 
 module.exports = async function(quantity = 100, debug = false) {
     const promises = [];
@@ -24,23 +30,7 @@ module.exports = async function(quantity = 100, debug = false) {
                 'S10',
             ]),
         };
-        promises.push(
-            new Promise(async (resolve, reject) => {
-                try {
-                    await Students.create(student);
-                    if (debug)
-                        console.info(
-                            chalk.white(
-                                `Inject students "${student.firstName} ${student.lastName}" in database`,
-                            ),
-                        );
-
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            }),
-        );
+        promises.push(inject(student, debug));
     }
 
     await Promise.all(promises);

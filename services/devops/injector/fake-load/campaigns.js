@@ -2,10 +2,16 @@ const faker = require('faker');
 const chalk = require('chalk');
 
 faker.locale = 'fr';
-const Campaigns = require('../../../dist/models/Campaigns').default;
-const InternshipTypes = require('../../../dist/models/InternshipTypes').default;
+const Campaigns = require('../../../dist/models/sequelize/Campaigns').default;
+const InternshipTypes = require('../../../dist/models/sequelize/InternshipTypes').default;
 
 const categories = require('../../../dist/configs/data/categories').defaultCategories;
+
+async function inject(c, category, debug) {
+    const created = await Campaigns.create(c);
+    await created.setCategory(category);
+    if (debug) console.info(chalk.white(`Inject campaign "${c.name}" in database`));
+}
 
 module.exports = async function(quantity = 100, debug = false) {
     const q = quantity > categories.length ? categories.length : quantity;
@@ -43,20 +49,7 @@ module.exports = async function(quantity = 100, debug = false) {
             ]),
             maxPropositions: faker.random.number(20),
         };
-        promises.push(
-            new Promise(async (resolve, reject) => {
-                try {
-                    const created = await Campaigns.create(campaign);
-                    await created.setCategory(types[i].id);
-                    if (debug)
-                        console.info(chalk.white(`Inject campaign "${campaign.name}" in database`));
-
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            }),
-        );
+        promises.push(inject(campaign, types[i].id, debug));
     }
 
     await Promise.all(promises);

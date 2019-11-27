@@ -1,47 +1,70 @@
 import request from '@/utils/request';
 
-import { AxiosPromise } from 'axios';
-import { ICampaigns } from './types';
+import {
+  ICampaignEntity,
+  InternshipOpts,
+  PaginateList,
+  IInternshipEntity,
+} from '../declarations';
 
-export const defaultCampaignData: ICampaigns = {
+export const defaultCampaignData: ICampaignEntity = {
   name: '',
   description: '',
-  startAt: 0,
-  endAt: 0,
+  category: undefined,
+
+  isPublish: false,
   semester: '',
   maxProposition: 0,
+
+  startAt: 0,
+  endAt: 0,
 };
 
-export const getCampaigns = (params?: any) =>
-  request({
+export const getCampaigns = () =>
+  (request({
     url: '/campaigns',
     method: 'get',
-    params,
-  });
+  }) as any) as Promise<ICampaignEntity[]>;
 
-export const getCampaign = (id: number, params: any) =>
-  request({
+export const getCampaign = (id: number) =>
+  (request({
     url: `/campaigns/${id}`,
     method: 'get',
-    params,
-  });
+  }) as any) as Promise<ICampaignEntity>;
 
-export const createCampaign = (data: any) =>
-  request({
+export const createCampaign = (data: ICampaignEntity) =>
+  (request({
     url: '/campaigns',
     method: 'post',
     data,
-  }) as AxiosPromise<ICampaigns>;
+  }) as any) as Promise<ICampaignEntity>;
 
-export const updateCampaign = (id: number, data: any) =>
-  request({
+export const updateCampaign = (id: number, data: Partial<ICampaignEntity>) =>
+  (request({
     url: `/campaigns/${id}`,
     method: 'put',
     data,
-  });
+  }) as any) as Promise<ICampaignEntity>;
 
 export const deleteCampaign = (id: number) =>
-  request({
+  (request({
     url: `/campaigns/${id}`,
     method: 'delete',
-  });
+  }) as any) as Promise<void>;
+
+export const getAvailabletInternshipCampaign = (
+  id: number,
+  params: InternshipOpts
+) =>
+  (request({
+    url: `/campaigns/${id}/availableInternships`,
+    method: 'get',
+    params,
+  }) as any) as Promise<PaginateList<IInternshipEntity>>;
+
+export const getCampaignInternships = (id: number, params: InternshipOpts) =>
+  (request({
+    url: `/campaigns/${id}/internships`,
+    method: 'get',
+    params,
+  }) as any) as Promise<PaginateList<IInternshipEntity>>;

@@ -19,6 +19,7 @@ website/build
 
 # Coverage reports
 coverage
+caches
 
 # Configuration file, avoid leek on git of secrets
 .env

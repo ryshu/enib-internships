@@ -46,6 +46,15 @@ export const paginateValidator: Schema = {
     },
 };
 
+export const contriesValidator: Schema = {
+    countries: {
+        in: ['query'],
+        isArray: { errorMessage: 'Country filter list must be array' },
+        optional: true,
+        toArray: true,
+    },
+};
+
 /**
  * @summary Method used to prevent code duplication in REST API
  * @param {Schema} schema see express-validator schema

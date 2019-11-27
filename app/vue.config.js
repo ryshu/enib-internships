@@ -18,13 +18,17 @@ module.exports = {
     proxy: {
       // change xxx-api/login => /api/v1/login
       // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
+      '/api/v1': {
         target: `http://localhost:${mockServerPort}/api/v1`,
         changeOrigin: true, // needed for virtual hosted sites
         ws: true, // proxy websockets
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: '',
         },
+      },
+      '/socket.io': {
+        target: `http://localhost:${mockServerPort}/socket.io`,
+        ws: true, // proxy websockets
       },
     },
   },

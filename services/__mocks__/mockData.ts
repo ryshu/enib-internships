@@ -1,3 +1,16 @@
+import { INTERNSHIP_MODE, INTERNSHIP_RESULT } from '../src/internship';
+
+import {
+    IBusinessEntity,
+    IInternshipEntity,
+    IFileEntity,
+    IStudentEntity,
+    IMentorEntity,
+    IMentoringPropositionEntity,
+    IInternshipTypeEntity,
+    ICampaignEntity,
+} from 'src/declarations';
+
 export function defaultBusiness() {
     const VALID_BUSINESS: IBusinessEntity = {
         name: 'test',
@@ -12,7 +25,6 @@ export function defaultBusiness() {
 export function defaultFiles() {
     const VALID_FILE: IFileEntity = {
         name: 'fichier',
-        size: 150,
         type: 'john.doe@enib.fr',
         path: 'S10',
     };
@@ -25,12 +37,9 @@ export function defaultInternships() {
         description: 'Stage',
         country: 'France',
         city: 'Brest',
-        postalCode: '29280',
-        address: 'TEST',
         isInternshipAbroad: true,
-        isValidated: false,
-        startAt: 20191012,
-        endAt: 20191012,
+        state: INTERNSHIP_MODE.PUBLISHED,
+        result: INTERNSHIP_RESULT.UNKNOWN,
     };
     return VALID_INTERNSHIP;
 }
@@ -70,6 +79,10 @@ export function defaultCampaigns(): ICampaignEntity {
         endAt: 20191012,
         semester: 'S5',
         maxProposition: 2,
+        isPublish: true,
+        category: {
+            label: 'TEST',
+        },
     };
 }
 
@@ -78,4 +91,8 @@ export function defaultInternshipTypes() {
         label: 'test',
     };
     return VALID_INTERNSHIP_TYPES;
+}
+
+export function getPdfSampleDir() {
+    return `${__dirname}/sample.pdf`;
 }

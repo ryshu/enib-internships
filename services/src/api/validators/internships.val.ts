@@ -1,85 +1,117 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator, replaceAllExistByOptional } from './generic.val';
+import { paginateValidator, replaceAllExistByOptional, contriesValidator, ID } from './generic.val';
+import {
+    internshipVal,
+    categoryVal,
+    studentVal,
+    fileVal,
+    mentorVal,
+    businessVal,
+    propositionsVal,
+    campaignVal,
+} from './generator.val';
+
+import { InternshipsMode, InternshipsResult } from '../../internship';
 
 export const InternshipsList: Schema = {
     ...paginateValidator,
+    ...contriesValidator,
+    'types': {
+        in: ['query'],
+        isArray: { errorMessage: 'Category filter list must be array' },
+        optional: true,
+        toArray: true,
+    },
+    'subject': {
+        in: ['query'],
+        isString: { errorMessage: 'Subject should be of type string' },
+        optional: true,
+        trim: true,
+        escape: true,
+    },
+    'mode': {
+        in: ['query'],
+        isArray: { errorMessage: 'Internship mode should be provide under array form' },
+        optional: true,
+        toArray: true,
+    },
+    'mode[*]': {
+        in: ['query'],
+        isString: { errorMessage: 'Mode should be a string' },
+        isIn: {
+            options: [InternshipsMode],
+            errorMessage: `Mode should be included in [${InternshipsMode.join(', ')}]`,
+        },
+        optional: true,
+        trim: true,
+    },
+    'isAbroad': {
+        in: ['query'],
+        isBoolean: { errorMessage: 'Abroad should be of type boolean' },
+        optional: true,
+        toBoolean: true,
+    },
 };
 
 export const InternshipCreate: Schema = {
-    subject: {
+    ...internshipVal(),
+    ...replaceAllExistByOptional(categoryVal('category')),
+    ...replaceAllExistByOptional(studentVal('student')),
+    ...replaceAllExistByOptional(fileVal('files[*]')),
+    ...replaceAllExistByOptional(mentorVal('mentor')),
+    ...replaceAllExistByOptional(businessVal('business')),
+    ...replaceAllExistByOptional(propositionsVal('propositions[*]')),
+    ...replaceAllExistByOptional(campaignVal('validatedCampaign')),
+    ...replaceAllExistByOptional(campaignVal('availableCampaign')),
+};
+
+export const InternshipUpdate = replaceAllExistByOptional(InternshipCreate);
+
+export const InternshipFSM: Schema = {
+    ...ID,
+    state: {
         in: ['body'],
-        isString: { errorMessage: 'Subject must be of type string' },
-        exists: { errorMessage: 'Subject must be defined' },
+        isString: { errorMessage: 'State should be a string' },
+        isIn: {
+            options: [InternshipsMode],
+            errorMessage: `State should be included in [${InternshipsMode.join(', ')}]`,
+        },
+        exists: { errorMessage: 'Should should be defined' },
         trim: true,
-        escape: true,
     },
-    description: {
+    campaignId: {
         in: ['body'],
-        isString: { errorMessage: 'Description must be of type string' },
-        exists: { errorMessage: 'Description must be defined' },
-        trim: true,
-        escape: true,
-    },
-    country: {
-        in: ['body'],
-        isString: { errorMessage: 'Country must be of type string' },
-        exists: { errorMessage: 'Country must be defined' },
-        trim: true,
-        escape: true,
-    },
-    city: {
-        in: ['body'],
-        isString: { errorMessage: 'City must be of type string' },
-        exists: { errorMessage: 'City must be defined' },
-        trim: true,
-        escape: true,
-    },
-    postalCode: {
-        in: ['body'],
-        isString: { errorMessage: 'Postal code must be of type string' },
-        exists: { errorMessage: 'Postal code must be defined' },
-        trim: true,
-        escape: true,
-    },
-    address: {
-        in: ['body'],
-        isString: { errorMessage: 'Address must be of type string' },
-        exists: { errorMessage: 'Address must be defined' },
-        trim: true,
-        escape: true,
-    },
-    additional: {
-        in: ['body'],
-        isString: { errorMessage: 'Additional must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
-    },
-    isInternshipAbroad: {
-        in: ['body'],
-        isBoolean: { errorMessage: 'Internship abroad must be of type boolean' },
-        optional: true,
-        toBoolean: true,
-    },
-    isValidated: {
-        in: ['body'],
-        isBoolean: { errorMessage: 'Validated must be of type boolean' },
-        optional: true,
-        toBoolean: true,
-    },
-    startAt: {
-        in: ['body'],
-        isInt: { errorMessage: 'Start at must be a timestamp', options: { min: 0 } },
+        isInt: { errorMessage: `Campaign identifier must be an integer` },
         optional: true,
         toInt: true,
     },
+    mentorId: {
+        in: ['body'],
+        isInt: { errorMessage: `Mentor identifier must be an integer` },
+        optional: true,
+        toInt: true,
+    },
+    studentId: {
+        in: ['body'],
+        isInt: { errorMessage: `Student must be an integer` },
+        optional: true,
+        toInt: true,
+    },
+    result: {
+        in: ['body'],
+        isString: { errorMessage: 'Result should be a string' },
+        isIn: {
+            options: [InternshipsResult],
+            errorMessage: `Result should be included in [${InternshipsResult.join(', ')}]`,
+        },
+        optional: true,
+        trim: true,
+    },
     endAt: {
         in: ['body'],
-        isInt: { errorMessage: 'End at must be a timestamp', options: { min: 0 } },
+        isInt: { errorMessage: `End at must be an integer` },
         optional: true,
         toInt: true,
     },
 };
-
-export const InternshipUpdate = replaceAllExistByOptional(InternshipCreate);

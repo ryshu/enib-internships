@@ -2,7 +2,13 @@ const faker = require('faker');
 const chalk = require('chalk');
 
 faker.locale = 'fr';
-const MentoringPropositions = require('../../../dist/models/MentoringPropositions').default;
+const MentoringPropositions = require('../../../dist/models/sequelize/MentoringPropositions')
+    .default;
+
+async function inject(mp, debug) {
+    await MentoringPropositions.create(mp);
+    if (debug) console.info(chalk.white(`Inject mentoring proposition in database`));
+}
 
 module.exports = async function(quantity = 100, debug = false) {
     const promises = [];
@@ -10,19 +16,7 @@ module.exports = async function(quantity = 100, debug = false) {
         const mentoringProposition = {
             comment: faker.lorem.paragraph(5),
         };
-        promises.push(
-            new Promise(async (resolve, reject) => {
-                try {
-                    await MentoringPropositions.create(mentoringProposition);
-                    if (debug)
-                        console.info(chalk.white(`Inject mentoring proposition in database`));
-
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            }),
-        );
+        promises.push(inject(mentoringProposition, debug));
     }
 
     await Promise.all(promises);

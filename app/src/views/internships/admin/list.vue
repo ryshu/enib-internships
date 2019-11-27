@@ -14,11 +14,24 @@
         filterable
         multiple
         collapse-tags
+        :placeholder="$t('table.filter.countries')"
         style="width: 200px; margin-left: 10px;"
         class="filter-item"
         @change="handleFilter"
       >
         <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
+      </el-select>
+      <el-select
+        v-model="listQuery.types"
+        filterable
+        multiple
+        collapse-tags
+        :placeholder="$t('table.filter.types')"
+        style="width: 200px; margin-left: 10px;"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option v-for="item in types" :key="item.id" :label="item.label" :value="item.id" />
       </el-select>
       <el-button
         v-waves
@@ -43,6 +56,14 @@
         icon="el-icon-download"
         @click="handleDownload"
       >{{ $t('table.export') }}</el-button>
+      <el-checkbox
+        v-model="listQuery.isAbroad"
+        v-waves
+        style="margin-left: 10px;"
+        class="filter-item"
+        type="primary"
+        @change="handleFilter"
+      >{{ $t('table.checkbox.isAbroad') }}</el-checkbox>
     </div>
 
     <!-- Table -->
@@ -60,13 +81,18 @@
           <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.internships.category')" min-width="100px">
+        <template slot-scope="{ row }">
+          <span>{{ row.category.label }}</span>
+        </template>
+      </el-table-column>
 
-      <el-table-column :label="$t('table.internships.country')" min-width="100px">
+      <el-table-column :label="$t('table.internships.country')" min-width="80px">
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.city')" min-width="100px">
+      <el-table-column :label="$t('table.internships.city')" min-width="80px">
         <template slot-scope="{ row }">
           <span>{{ row.city }}</span>
         </template>
@@ -84,33 +110,25 @@
           >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.internships.isValidated')" min-width="70px" align="center">
-        <template slot-scope="{ row }">
-          <el-tag
-            :type="row.isValidated ? 'success' : 'danger'"
-            effect="dark"
-          >{{ $t(row.isValidated ? 'status.yes' : 'status.no') }}</el-tag>
-        </template>
-      </el-table-column>
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="330"
+        width="100"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-button
-            type="primary"
-            size="small"
+          <crud-btn
+            type="warning"
             icon="el-icon-edit"
-            @click="handleUpdate(row)"
-          >{{ $t('table.edit') }}</el-button>
-          <el-button
-            size="small"
+            :placeholder="$t('internships.placeholder.update')"
+            @clicked="handleUpdate(row)"
+          />
+          <crud-btn
             type="danger"
-            icon="el-icon-remove"
-            @click="handleDelete(row, 'deleted')"
-          >{{ $t('table.delete') }}</el-button>
+            icon="el-icon-delete"
+            :placeholder="$t('internships.placeholder.remove')"
+            @clicked="handleDelete(row)"
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -141,37 +159,59 @@ import {
   defaultInternshipData,
 } from '../../../api/internships';
 
-import { IInternship } from '../../../api/types';
+import {
+  IInternshipEntity,
+  InternshipOpts,
+  INTERNSHIP_MODE,
+} from '../../../declarations';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
 
 import Pagination from '../../../components/Pagination/index.vue';
+import CrudBtn from '../../../components/CrudBtn/index.vue';
 import EditInternship from '../dialog/EditInternship.vue';
+
+import { CategoriesModule } from '../../../store/modules/categories';
 
 @Component({
   name: 'InternshipsStudentList',
   components: {
     Pagination,
+    CrudBtn,
     EditInternship,
   },
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IInternship[] = [];
+  private list: IInternshipEntity[] = [];
   private total = 0;
 
   private listLoading = true;
-  private listQuery = {
+  private listQuery: InternshipOpts = {
     page: 1,
     limit: 10,
     subject: undefined,
     countries: [],
+    types: [],
+    mode: [
+      INTERNSHIP_MODE.PUBLISHED,
+      INTERNSHIP_MODE.ATTRIBUTED_STUDENT,
+      INTERNSHIP_MODE.AVAILABLE_CAMPAIGN,
+      INTERNSHIP_MODE.ATTRIBUTED_MENTOR,
+      INTERNSHIP_MODE.RUNNING,
+      INTERNSHIP_MODE.VALIDATION,
+    ],
+    isAbroad: false,
   };
 
   private downloadLoading = false;
 
   private countryList = countryList.getNames();
+
+  private get types() {
+    return CategoriesModule.categories;
+  }
 
   public created() {
     this.getList();
@@ -184,6 +224,10 @@ export default class extends Vue {
       this.total = res ? res.max : 0;
       this.listLoading = false;
     });
+  }
+
+  private handleCreate() {
+    this.$router.push('/internships/new');
   }
 
   private handleFilter() {
@@ -201,29 +245,12 @@ export default class extends Vue {
     });
   }
 
-  private handleCreate() {
-    (this.$refs.EditInternship as EditInternship)
-      .create()
-      .then(async (createdRow: IInternship | undefined) => {
-        if (createdRow) {
-          await createInternship(createdRow);
-          this.getList();
-          this.$notify({
-            title: this.$t('notify.internships.create.title') as string,
-            message: this.$t('notify.internships.create.msg') as string,
-            type: 'success',
-            duration: 2000,
-          });
-        }
-      });
-  }
-
   private handleUpdate(row: any) {
     (this.$refs.EditInternship as EditInternship)
       .update(row)
-      .then(async (updatedRow: IInternship | undefined) => {
+      .then(async (updatedRow: IInternshipEntity | undefined) => {
         if (updatedRow) {
-          const { data } = await updateInternship(updatedRow.id!, updatedRow);
+          await updateInternship(updatedRow.id!, updatedRow);
           this.getList();
           this.$notify({
             title: this.$t('notify.internships.update.title') as string,

@@ -2,18 +2,19 @@ import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
 
-import MentoringPropositions from '../../models/MentoringPropositions';
-import Campaigns from '../../models/Campaigns';
-import Mentors from '../../models/Mentors';
-import Internships from '../../models/Internships';
+import { IMentoringPropositionEntity } from '../../declarations';
 
-import { paginate } from '../helpers/pagination.helper';
 import {
     UNPROCESSABLE_ENTITY,
-    checkArrayContent,
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
+
+import MentoringPropositionModel from '../../models/mentoring.proposition.model';
+
+import { fullCopyInternship } from '../processors/internship.proc';
+import { fullCopyCampaign } from '../processors/campaign.proc';
+import { fullCopyMentor } from '../processors/mentor.proc';
 
 /**
  * GET /mentoringPropositions
@@ -26,24 +27,12 @@ export const getMentoringPropositions = (req: Request, res: Response, next: Next
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
     const { page = 1, limit = 20 } = req.query;
-    let max: number;
-    MentoringPropositions.count()
-        .then((rowNbr) => {
-            max = rowNbr;
-            return MentoringPropositions.findAll(paginate({ page, limit }));
-        })
-        .then((mentoringPropositions) => {
-            if (checkArrayContent(mentoringPropositions, next)) {
-                return res.send({
-                    page,
-                    data: mentoringPropositions,
-                    length: mentoringPropositions.length,
-                    max,
-                });
-            }
-        })
+
+    MentoringPropositionModel.getMentoringPropositions({}, { page, limit })
+        .then((propositions) =>
+            checkContent(propositions, next) ? res.send(propositions) : undefined,
+        )
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -60,9 +49,13 @@ export const postMentoringProposition = (req: Request, res: Response, next: Next
 
     const mentoringProposition: IMentoringPropositionEntity = {
         comment: req.body.comment,
+
+        internship: fullCopyInternship(req.body.internship),
+        campaign: fullCopyCampaign(req.body.campaign),
+        mentor: fullCopyMentor(req.body.mentor),
     };
 
-    MentoringPropositions.create(mentoringProposition)
+    MentoringPropositionModel.createMentoringProposition(mentoringProposition)
         .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -78,14 +71,8 @@ export const getMentoringProposition = (req: Request, res: Response, next: NextF
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositions.findByPk(req.params.id, {
-        include: [{ model: Campaigns, as: 'campaign' }],
-    })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val);
-            }
-        })
+    MentoringPropositionModel.getMentoringProposition(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -100,24 +87,9 @@ export const putMentoringProposition = (req: Request, res: Response, next: NextF
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositions.findByPk(req.params.id)
-        .then((mentoringProposition) => {
-            if (!checkContent(mentoringProposition, next)) {
-                return undefined;
-            }
-
-            if (req.body.comment) {
-                mentoringProposition.set('comment', req.body.comment);
-            }
-
-            return mentoringProposition.save();
-        })
-        .then((updated) => {
-            if (updated) {
-                return res.send(updated);
-            }
-        })
-        .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+    MentoringPropositionModel.updateMentoringProposition(Number(req.params.id), req.body)
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -135,8 +107,7 @@ export const deleteMentoringProposition = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositions.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+    MentoringPropositionModel.removeMentoringProposition(Number(req.params.id))
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
@@ -155,15 +126,8 @@ export const getMentoringPropositionCampaigns = (
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-
-    MentoringPropositions.findByPk(req.params.id, {
-        include: [{ model: Campaigns, as: 'campaign' }],
-    })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.campaign);
-            }
-        })
+    MentoringPropositionModel.getMentoringProposition(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.campaign) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -182,17 +146,8 @@ export const linkMentoringPropositionCampaign = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositions.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.setCampaign(Number(req.params.campaign_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    MentoringPropositionModel.linkToCampaign(Number(req.params.id), Number(req.params.campaign_id))
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -211,14 +166,8 @@ export const getMentoringPropositionMentor = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositions.findByPk(req.params.id, {
-        include: [{ model: Mentors, as: 'mentor' }],
-    })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.mentor);
-            }
-        })
+    MentoringPropositionModel.getMentoringProposition(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.mentor) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -237,17 +186,8 @@ export const linkMentoringPropositionMentor = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositions.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.setMentor(Number(req.params.mentor_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    MentoringPropositionModel.linkToMentor(Number(req.params.id), Number(req.params.mentor_id))
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -266,14 +206,8 @@ export const getMentoringPropositionInternship = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositions.findByPk(req.params.id, {
-        include: [{ model: Internships, as: 'internship' }],
-    })
-        .then((val) => {
-            if (checkContent(val, next)) {
-                return res.send(val.internship);
-            }
-        })
+    MentoringPropositionModel.getMentoringProposition(Number(req.params.id))
+        .then((val) => (checkContent(val, next) ? res.send(val.internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -292,16 +226,10 @@ export const linkMentoringPropositionInternship = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    MentoringPropositions.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.setInternship(Number(req.params.internship_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    MentoringPropositionModel.linkToInternship(
+        Number(req.params.id),
+        Number(req.params.internship_id),
+    )
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

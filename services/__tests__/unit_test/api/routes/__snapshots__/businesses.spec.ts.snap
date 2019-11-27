@@ -44,6 +44,7 @@ Object {
   "country": "France",
   "createdAt": Any<String>,
   "id": Any<Number>,
+  "internships": Array [],
   "name": "test",
   "postalCode": "29200",
   "updatedAt": Any<String>,

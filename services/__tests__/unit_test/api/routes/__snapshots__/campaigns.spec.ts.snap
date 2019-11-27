@@ -2,11 +2,11 @@
 
 exports[`GET /campaigns Campaigns_200 1`] = `
 Object {
-  "category": null,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
   "id": 1,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
@@ -17,24 +17,28 @@ Object {
 
 exports[`GET /campaigns/:id Campaigns_200 1`] = `
 Object {
+  "availableInternships": Array [],
   "category": null,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
+  "mentors": Array [],
   "name": "test",
   "propositions": Array [],
   "semester": "S5",
   "startAt": 0,
   "updatedAt": Any<String>,
+  "validatedInternships": Array [],
 }
 `;
 
 exports[`GET /campaigns/:id/internshipTypes Campaigns_200_WithLinkedData 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 3,
+  "id": 9,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -42,23 +46,33 @@ Object {
 
 exports[`POST /campaigns ValidCampaigns_200 1`] = `
 Object {
-  "categoryId": 1,
+  "availableInternships": Array [],
+  "category": Object {
+    "createdAt": Any<String>,
+    "id": 1,
+    "label": "test",
+    "updatedAt": Any<String>,
+  },
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": false,
   "maxProposition": 2,
+  "mentors": Array [],
   "name": "test",
+  "propositions": Array [],
   "semester": "S5",
   "startAt": null,
   "updatedAt": Any<String>,
+  "validatedInternships": Array [],
 }
 `;
 
 exports[`POST /campaigns/:id/internshipTypes/:internship_type_id/link Campaigns_200_WithInternshipType 1`] = `
 Object {
   "createdAt": Any<String>,
-  "id": 4,
+  "id": 10,
   "label": "test",
   "updatedAt": Any<String>,
 }
@@ -66,11 +80,11 @@ Object {
 
 exports[`PUT /campaigns/:id Campaigns_200_CategoryUpdated 1`] = `
 Object {
-  "categoryId": 2,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
@@ -85,6 +99,7 @@ Object {
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
@@ -95,11 +110,11 @@ Object {
 
 exports[`PUT /campaigns/:id Campaigns_200_UndefinedCategoryUpdate 1`] = `
 Object {
-  "categoryId": 1,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "test",
   "semester": "S5",
@@ -110,14 +125,16 @@ Object {
 
 exports[`PUT /campaigns/:id Campaigns_200_UpdateAllData 1`] = `
 Object {
+  "categoryId": 2,
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
   "id": Any<Number>,
+  "isPublish": true,
   "maxProposition": 2,
   "name": "additional data",
   "semester": "S5",
-  "startAt": 0,
+  "startAt": null,
   "updatedAt": Any<String>,
 }
 `;

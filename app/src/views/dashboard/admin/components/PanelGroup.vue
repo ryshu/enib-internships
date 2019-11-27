@@ -7,7 +7,12 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Etudiants</div>
-          <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
+          <count-to
+            :start-val="0"
+            :end-val="stats.students"
+            :duration="2600"
+            class="card-panel-num"
+          />
         </div>
       </div>
     </el-col>
@@ -18,7 +23,12 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Stages disponnibles</div>
-          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
+          <count-to
+            :start-val="0"
+            :end-val="stats.internships.availables"
+            :duration="3000"
+            class="card-panel-num"
+          />
         </div>
       </div>
     </el-col>
@@ -29,7 +39,12 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Stages validées</div>
-          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
+          <count-to
+            :start-val="0"
+            :end-val="stats.internships.validated"
+            :duration="3200"
+            class="card-panel-num"
+          />
         </div>
       </div>
     </el-col>
@@ -39,8 +54,13 @@
           <svg-icon name="international" class="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">Entreprise</div>
-          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" />
+          <div class="card-panel-text">Professeurs</div>
+          <count-to
+            :start-val="0"
+            :end-val="stats.mentors"
+            :duration="3600"
+            class="card-panel-num"
+          />
         </div>
       </div>
     </el-col>
@@ -51,6 +71,12 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import CountTo from 'vue-count-to';
 
+import {
+  getGlobalStatistics,
+  getDefaultStats,
+} from '../../../../api/statistics';
+import { Statistics } from '../../../../declarations';
+
 @Component({
   name: 'PanelGroup',
   components: {
@@ -58,8 +84,23 @@ import CountTo from 'vue-count-to';
   },
 })
 export default class extends Vue {
+  stats: Statistics = getDefaultStats();
+
   private handleSetLineChartData(type: string) {
     this.$emit('handleSetLineChartData', type);
+  }
+
+  created() {
+    this.getStat();
+  }
+
+  public getStat() {
+    this.stats = getDefaultStats();
+    getGlobalStatistics().then(res => {
+      if (res) {
+        this.stats = res as any;
+      }
+    });
   }
 }
 </script>

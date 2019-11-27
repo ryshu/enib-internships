@@ -14,9 +14,9 @@
         filterable
         multiple
         collapse-tags
-        @change="handleFilter"
         style="width: 200px; margin-left: 10px;"
         class="filter-item"
+        @change="handleFilter"
       >
         <el-option v-for="item in countryList" :key="item" :label="item" :value="item" />
       </el-select>
@@ -78,7 +78,7 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="330"
+        width="150px"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
@@ -86,20 +86,23 @@
             type="success"
             size="small"
             icon="el-icon-search"
+            circle
             @click="handleUpdate(row)"
-          >{{ $t('table.detail') }}</el-button>
+          />
           <el-button
             type="primary"
             size="small"
             icon="el-icon-edit"
+            circle
             @click="handleUpdate(row)"
-          >{{ $t('table.edit') }}</el-button>
+          />
           <el-button
             size="small"
             type="danger"
-            icon="el-icon-remove"
-            @click="handleDelete(row, 'deleted')"
-          >{{ $t('table.delete') }}</el-button>
+            icon="el-icon-delete"
+            circle
+            @click="handleDelete(row)"
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -129,7 +132,7 @@ import {
   deleteBusiness,
   defaultBusinessData,
 } from '../../api/businesses';
-import { IBusiness } from '../../api/types';
+import { IBusinessEntity } from '../../declarations';
 
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
@@ -146,7 +149,7 @@ import EditBusiness from './dialog/EditBusiness.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IBusiness[] = [];
+  private list: IBusinessEntity[] = [];
   private total = 0;
   private listLoading = true;
   private listQuery = {
@@ -178,7 +181,7 @@ export default class extends Vue {
     this.getList();
   }
 
-  private async handleDelete(row: any, status: string) {
+  private async handleDelete(row: any) {
     await deleteBusiness(row.id!);
     this.getList();
     this.$notify({
@@ -192,7 +195,7 @@ export default class extends Vue {
   private handleCreate() {
     (this.$refs.EditBusiness as EditBusiness)
       .create()
-      .then(async (createdRow: IBusiness | undefined) => {
+      .then(async (createdRow: IBusinessEntity | undefined) => {
         if (createdRow) {
           await createBusiness(createdRow);
           this.getList();
@@ -209,9 +212,9 @@ export default class extends Vue {
   private handleUpdate(row: any) {
     (this.$refs.EditBusiness as EditBusiness)
       .update(row)
-      .then(async (updatedRow: IBusiness | undefined) => {
+      .then(async updatedRow => {
         if (updatedRow) {
-          const { data } = await updateBusiness(updatedRow.id!, updatedRow);
+          await updateBusiness(updatedRow.id!, updatedRow);
           this.getList();
           this.$notify({
             title: this.$t('notify.businesses.update.title') as string,

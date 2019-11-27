@@ -14,13 +14,19 @@ const internshipsRouter = {
       path: 'list',
       component: () => import('@/views/internships/list.vue'),
       name: 'internships.list',
-      meta: { title: 'internships.list' },
+      meta: { title: 'internships.list', roles: ['student', 'default'] },
     },
     {
-      path: 'propositions',
-      component: () => import('@/views/internships/admin/propositions.vue'),
-      name: 'internships.propositions',
-      meta: { title: 'internships.propositions', roles: ['admin'] },
+      path: 'waiting',
+      component: () => import('@/views/internships/admin/waiting.vue'),
+      name: 'internships.waiting',
+      meta: { title: 'internships.waiting' },
+    },
+    {
+      path: 'published',
+      component: () => import('@/views/internships/admin/published.vue'),
+      name: 'internships.published',
+      meta: { title: 'internships.published', roles: ['admin'] },
     },
     {
       path: 'mentored',
@@ -42,7 +48,7 @@ const internshipsRouter = {
     },
     {
       path: 'new',
-      component: () => import('@/views/internships/admin/new.vue'),
+      component: () => import('@/views/internships/suggest.vue'),
       name: 'internships.new',
       meta: { title: 'internships.new', roles: ['admin'] },
     },
