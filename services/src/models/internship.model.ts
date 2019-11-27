@@ -27,8 +27,11 @@ import {
 import { PaginateOpts, paginate } from './helpers/pagination';
 
 import InternshipTypeModel from './internship.type.mode';
-
 import { INTERNSHIP_MODE } from '../internship';
+import { InternshipHandler } from '../internship/internship';
+
+import { APIError } from '../utils/error';
+import httpStatus from 'http-status-codes';
 
 /** @interface InternshipOpts Interface of all availables filters for internship list */
 export interface InternshipOpts {
@@ -252,14 +255,6 @@ class InternshipModelStruct {
                     internship.set('isInternshipAbroad', next.isInternshipAbroad ? true : false);
                 }
 
-                if (next.state) {
-                    internship.set('state', next.state);
-                }
-
-                if (next.result) {
-                    internship.set('result', next.result);
-                }
-
                 if (next.publishAt !== undefined) {
                     internship.set(
                         'publishAt',
@@ -403,135 +398,6 @@ class InternshipModelStruct {
     }
 
     /**
-     * @summary Method used to link internship and available campaign
-     * @param {number} internshipId internship identifier
-     * @param {number} campaignId campaign identifier
-     * @returns {Promise<IInternshipEntity>} Resolve: linked entity
-     * @returns {Promise<void>} Resolve: nothing found to link
-     * @returns {Promise<any>} Reject: database error
-     */
-    public linkToAvailableCampaign(
-        internshipId: number,
-        campaignId: number,
-    ): Promise<IInternshipEntity> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const internship = await Internships.findByPk(internshipId, {
-                    include: [{ model: Campaigns, as: 'validatedCampaign' }],
-                });
-                if (!internship) {
-                    return resolve();
-                }
-                const campaign = await Campaigns.findByPk(campaignId);
-                if (!campaign) {
-                    return resolve();
-                }
-
-                if (internship.validatedCampaign) {
-                    await campaign.removeValidatedInternships(internship);
-                }
-                await campaign.addAvailableInternship(internship);
-
-                return resolve(await this.getInternship(internship.id));
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    /**
-     * @summary Method used to link internship and validated campaign
-     * @param {number} internshipId internship identifier
-     * @param {number} campaignId campaign identifier
-     * @returns {Promise<IInternshipEntity>} Resolve: linked entity
-     * @returns {Promise<void>} Resolve: nothing found to link
-     * @returns {Promise<any>} Reject: database error
-     */
-    public linkToValidatedCampaign(
-        internshipId: number,
-        campaignId: number,
-    ): Promise<IInternshipEntity> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const internship = await Internships.findByPk(internshipId, {
-                    include: [{ model: Campaigns, as: 'availableCampaign' }],
-                });
-                if (!internship) {
-                    return resolve();
-                }
-                const campaign = await Campaigns.findByPk(campaignId);
-                if (!campaign) {
-                    return resolve();
-                }
-
-                if (internship.availableCampaign) {
-                    await campaign.removeAvailableInternships(internship);
-                }
-                await campaign.addValidatedInternship(internship);
-                return resolve(await this.getInternship(internship.id));
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    /**
-     * @summary Method used to link internship and mentor
-     * @param {number} internshipId internship identifier
-     * @param {number} mentorId mentor identifier
-     * @returns {Promise<IInternshipEntity>} Resolve: linked entity
-     * @returns {Promise<void>} Resolve: nothing found to link
-     * @returns {Promise<any>} Reject: database error
-     */
-    public linkToMentor(internshipId: number, mentorId: number): Promise<IInternshipEntity> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const internship = await Internships.findByPk(internshipId);
-                if (!internship) {
-                    return resolve();
-                }
-                const mentor = await Mentors.findByPk(mentorId);
-                if (!mentor) {
-                    return resolve();
-                }
-
-                await internship.setMentor(mentor);
-                return resolve(await this.getInternship(internship.id));
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    /**
-     * @summary Method used to link internship and student
-     * @param {number} internshipId internship identifier
-     * @param {number} studentId student identifier
-     * @returns {Promise<IInternshipEntity>} Resolve: linked entity
-     * @returns {Promise<void>} Resolve: nothing found to link
-     * @returns {Promise<any>} Reject: database error
-     */
-    public linkToStudent(internshipId: number, studentId: number): Promise<IInternshipEntity> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const internship = await Internships.findByPk(internshipId);
-                if (!internship) {
-                    return resolve();
-                }
-                const student = await Students.findByPk(studentId);
-                if (!student) {
-                    return resolve();
-                }
-
-                await internship.setStudent(student);
-                return resolve(await this.getInternship(internship.id));
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    /**
      * @summary Method used to link internship and business
      * @param {number} internshipId internship identifier
      * @param {number} businessId business identifier
@@ -556,6 +422,43 @@ class InternshipModelStruct {
             } catch (error) {
                 reject(error);
             }
+        });
+    }
+
+    public getHandler(internship: number | IInternshipEntity): Promise<InternshipHandler> {
+        return new Promise(async (resolve, reject) => {
+            let id;
+            if (!Number.isNaN(Number(internship))) {
+                id = Number(internship);
+            } else if (!Number.isNaN(Number((internship as IInternshipEntity).id))) {
+                id = Number((internship as IInternshipEntity).id);
+            } else {
+                return reject(
+                    new APIError(
+                        'No internship id provide to get handler',
+                        httpStatus.BAD_REQUEST,
+                        1200,
+                    ),
+                );
+            }
+
+            const val = await Internships.findByPk(id, {
+                include: [
+                    { model: Businesses, as: 'business' },
+                    { model: InternshipTypes, as: 'category' },
+                    { model: Campaigns, as: 'availableCampaign' },
+                    { model: Campaigns, as: 'validatedCampaign' },
+                    { model: Mentors, as: 'mentor' },
+                    { model: MentoringPropositions, as: 'propositions' },
+                    { model: Students, as: 'student' },
+                    { model: Files, as: 'files' },
+                ],
+            });
+            if (!val) {
+                return resolve();
+            }
+
+            resolve(new InternshipHandler(val));
         });
     }
 

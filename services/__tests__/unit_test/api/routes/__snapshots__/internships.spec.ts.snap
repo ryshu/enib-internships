@@ -139,7 +139,7 @@ Object {
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
-  "id": 3,
+  "id": 4,
   "isPublish": true,
   "maxProposition": 2,
   "name": "test",
@@ -188,7 +188,7 @@ Object {
   "createdAt": Any<String>,
   "description": "A description to test",
   "endAt": 20191012,
-  "id": 2,
+  "id": 3,
   "isPublish": true,
   "maxProposition": 2,
   "name": "test",
@@ -250,21 +250,6 @@ Object {
   "id": 2,
   "lastName": "Doe",
   "semester": "S10",
-  "updatedAt": Any<String>,
-}
-`;
-
-exports[`POST /internships/:id/validatedCampaigns/:campaign_id/link Internships_200_WithCampaign 1`] = `
-Object {
-  "createdAt": Any<String>,
-  "description": "A description to test",
-  "endAt": 20191012,
-  "id": 4,
-  "isPublish": true,
-  "maxProposition": 2,
-  "name": "test",
-  "semester": "S5",
-  "startAt": 0,
   "updatedAt": Any<String>,
 }
 `;

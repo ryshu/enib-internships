@@ -27,6 +27,8 @@ import {
     defaultMentors,
 } from '../../../../__mocks__/mockData';
 
+import { INTERNSHIP_MODE } from '../../../../src/internship';
+
 const baseURL = `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}`;
 
 jest.setTimeout(30000);
@@ -418,7 +420,7 @@ describe('POST /internships/:id/students/:student_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Internships_204_NoStudent', async () => {
+    it('Internships_200_NoStudent', async () => {
         // In this case, we check if link a existing internships and an unexisting students work
         const VALID_INTERNSHIP = defaultInternships();
 
@@ -426,7 +428,7 @@ describe('POST /internships/:id/students/:student_id/link', () => {
         const RESPONSE = await request(app).post(
             `${baseURL}/internships/${CREATED.id}/students/20/link`,
         );
-        expect(RESPONSE.status).toBe(204);
+        expect(RESPONSE.status).toBe(200);
     });
 
     it('Internships_200_WithStudent', async () => {
@@ -751,20 +753,36 @@ describe('POST /internships/:id/availableCampaigns/:campaign_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Internships_204_NoCampaign', async () => {
+    it('Internships_400_NotGoodPrevState', async () => {
+        const VALID_CAMPAIGN = defaultCampaigns();
+        const VALID_INTERNSHIP = defaultInternships();
+
+        const CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
+        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+
+        const RESPONSE = await request(app).post(
+            `${baseURL}/internships/${CREATED_INTERNSHIP.id}/availableCampaigns/${CREATED_CAMPAIGN.id}/link`,
+        );
+
+        expect(RESPONSE.status).toBe(400);
+    });
+
+    it('Internships_200_NoCampaign', async () => {
         // In this case, we check if link a existing internships and an unexisting availableCampaigns work
         const VALID_INTERNSHIP = defaultInternships();
+        VALID_INTERNSHIP.state = INTERNSHIP_MODE.ATTRIBUTED_STUDENT;
 
         const CREATED = await Internships.create(VALID_INTERNSHIP);
         const RESPONSE = await request(app).post(
             `${baseURL}/internships/${CREATED.id}/availableCampaigns/20/link`,
         );
-        expect(RESPONSE.status).toBe(204);
+        expect(RESPONSE.status).toBe(200);
     });
 
     it('Internships_200_WithCampaign', async () => {
         const VALID_CAMPAIGN = defaultCampaigns();
         const VALID_INTERNSHIP = defaultInternships();
+        VALID_INTERNSHIP.state = INTERNSHIP_MODE.ATTRIBUTED_STUDENT;
 
         const CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
         let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
@@ -773,7 +791,6 @@ describe('POST /internships/:id/availableCampaigns/:campaign_id/link', () => {
             `${baseURL}/internships/${CREATED_INTERNSHIP.id}/availableCampaigns/${CREATED_CAMPAIGN.id}/link`,
         );
 
-        // Should answer 200
         expect(RESPONSE.status).toBe(200);
 
         // check if availableCampaign and internship are linked
@@ -834,73 +851,6 @@ describe('GET /internships/:id/validatedCampaigns', () => {
         );
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-        });
-    });
-});
-
-describe('POST /internships/:id/validatedCampaigns/:campaign_id/link', () => {
-    beforeEach(async () => {
-        // Remove all
-        await Internships.destroy({ where: {} });
-    });
-
-    it('NoInternship_204', async () => {
-        const RESPONSE = await request(app).post(
-            `${baseURL}/internships/10/validatedCampaigns/20/link`,
-        );
-        expect(RESPONSE.status).toBe(204);
-    });
-
-    it('BadRequest_400_WrongID', async () => {
-        const RESPONSE = await request(app).post(
-            `${baseURL}/internships/{falseEncoding}/validatedCampaigns/10/link`,
-        );
-        expect(RESPONSE.status).toBe(400);
-    });
-
-    it('BadRequest_400_WrongCampaignID', async () => {
-        const RESPONSE = await request(app).post(
-            `${baseURL}/internships/10/validatedCampaigns/{falseEncoding}/link`,
-        );
-        expect(RESPONSE.status).toBe(400);
-    });
-
-    it('Internships_204_NoCampaign', async () => {
-        // In this case, we check if link a existing internships and an unexisting validatedCampaigns work
-        const VALID_INTERNSHIP = defaultInternships();
-
-        const CREATED = await Internships.create(VALID_INTERNSHIP);
-        const RESPONSE = await request(app).post(
-            `${baseURL}/internships/${CREATED.id}/validatedCampaigns/20/link`,
-        );
-        expect(RESPONSE.status).toBe(204);
-    });
-
-    it('Internships_200_WithCampaign', async () => {
-        const VALID_CAMPAIGN = defaultCampaigns();
-        const VALID_INTERNSHIP = defaultInternships();
-
-        const CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
-        let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
-
-        const RESPONSE = await request(app).post(
-            `${baseURL}/internships/${CREATED_INTERNSHIP.id}/validatedCampaigns/${CREATED_CAMPAIGN.id}/link`,
-        );
-
-        // Should answer 200
-        expect(RESPONSE.status).toBe(200);
-
-        // check if validatedCampaign and internship are linked
-        CREATED_INTERNSHIP = await Internships.findByPk(CREATED_INTERNSHIP.id, {
-            include: [{ model: Campaigns, as: 'validatedCampaign' }],
-        });
-
-        const data = JSON.parse(JSON.stringify(CREATED_INTERNSHIP.validatedCampaign)) as any;
-
-        expect(CREATED_INTERNSHIP.validatedCampaign).toBeTruthy();
-        expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
         });
@@ -1093,26 +1043,36 @@ describe('POST /internships/:id/mentors/:mentor_id/link', () => {
         expect(RESPONSE.status).toBe(400);
     });
 
-    it('Internships_204_NoMentor', async () => {
+    it('Internships_200_NoMentor', async () => {
         // In this case, we check if link a existing internships and an unexisting mentors work
         const VALID_INTERNSHIP = defaultInternships();
+        VALID_INTERNSHIP.state = INTERNSHIP_MODE.AVAILABLE_CAMPAIGN;
 
         const CREATED = await Internships.create(VALID_INTERNSHIP);
         const RESPONSE = await request(app).post(
             `${baseURL}/internships/${CREATED.id}/mentors/20/link`,
         );
-        expect(RESPONSE.status).toBe(204);
+        expect(RESPONSE.status).toBe(200);
     });
 
     it('Internships_200_WithMentor', async () => {
         const VALID_MENTOR = defaultMentors();
         const VALID_INTERNSHIP = defaultInternships();
+        const VALID_CAMPAIGN = defaultCampaigns();
 
-        const CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
-        let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+        VALID_INTERNSHIP.state = INTERNSHIP_MODE.AVAILABLE_CAMPAIGN;
+        VALID_INTERNSHIP.availableCampaign = VALID_CAMPAIGN;
+        VALID_INTERNSHIP.mentor = VALID_MENTOR;
+
+        let CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP, {
+            include: [
+                { association: Internships.associations.mentor },
+                { association: Internships.associations.availableCampaign },
+            ],
+        });
 
         const RESPONSE = await request(app).post(
-            `${baseURL}/internships/${CREATED_INTERNSHIP.id}/mentors/${CREATED_MENTOR.id}/link`,
+            `${baseURL}/internships/${CREATED_INTERNSHIP.id}/mentors/${(CREATED_INTERNSHIP.mentor as any).id}/link`,
         );
 
         // Should answer 200

@@ -127,6 +127,10 @@ describe('POST /internships/:id/fsm', () => {
             .send(QUERY);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
+            student: {
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+            },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             id: expect.any(Number),
@@ -146,6 +150,10 @@ describe('POST /internships/:id/fsm', () => {
             .send(QUERY);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
+            availableCampaign: {
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+            },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             id: expect.any(Number),
@@ -168,6 +176,14 @@ describe('POST /internships/:id/fsm', () => {
             .send(QUERY);
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
+            validatedCampaign: {
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+            },
+            mentor: {
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+            },
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
             id: expect.any(Number),
