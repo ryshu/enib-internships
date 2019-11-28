@@ -15,6 +15,8 @@ import Files from '../models/sequelize/Files';
 import { APIError } from '../utils/error';
 import { IInternshipEntity, ICampaignEntity } from '../declarations';
 
+import cache from '../statistics/singleton';
+
 function isInt(t: number): t is number {
     return t && !Number.isNaN(Number(t));
 }
@@ -37,6 +39,8 @@ export class InternshipHandler {
                 this._internship.state = INTERNSHIP_MODE.WAITING;
                 await this.save();
 
+                this._updateStatistics(INTERNSHIP_MODE.PUBLISHED, INTERNSHIP_MODE.WAITING);
+
                 resolve(this);
             } catch (error) {
                 reject(error);
@@ -53,6 +57,9 @@ export class InternshipHandler {
 
                 this._internship.publishAt = moment().valueOf();
                 this._internship.state = INTERNSHIP_MODE.PUBLISHED;
+
+                this._updateStatistics(INTERNSHIP_MODE.WAITING, INTERNSHIP_MODE.PUBLISHED);
+
                 await this.save();
 
                 resolve(this);
@@ -82,6 +89,11 @@ export class InternshipHandler {
                 this._internship.state = INTERNSHIP_MODE.ATTRIBUTED_STUDENT;
                 await this.save();
 
+                this._updateStatistics(
+                    INTERNSHIP_MODE.PUBLISHED,
+                    INTERNSHIP_MODE.ATTRIBUTED_STUDENT,
+                );
+
                 resolve(this);
             } catch (error) {
                 reject(error);
@@ -103,7 +115,7 @@ export class InternshipHandler {
 
                 const campaign = await Campaigns.findByPk(campaignId);
                 if (!campaign) {
-                    return resolve();
+                    return resolve(this);
                 }
 
                 if (this._internship.validatedCampaign) {
@@ -112,6 +124,11 @@ export class InternshipHandler {
                 await campaign.addAvailableInternship(this._internship);
                 this._internship.state = INTERNSHIP_MODE.AVAILABLE_CAMPAIGN;
                 await this.save();
+
+                this._updateStatistics(
+                    INTERNSHIP_MODE.ATTRIBUTED_STUDENT,
+                    INTERNSHIP_MODE.AVAILABLE_CAMPAIGN,
+                );
 
                 resolve();
             } catch (error) {
@@ -156,6 +173,11 @@ export class InternshipHandler {
                 this._internship.state = INTERNSHIP_MODE.ATTRIBUTED_MENTOR;
                 await this.save();
 
+                this._updateStatistics(
+                    INTERNSHIP_MODE.AVAILABLE_CAMPAIGN,
+                    INTERNSHIP_MODE.ATTRIBUTED_MENTOR,
+                );
+
                 resolve(this);
             } catch (error) {
                 reject(error);
@@ -179,6 +201,8 @@ export class InternshipHandler {
 
                 await this.save();
 
+                this._updateStatistics(INTERNSHIP_MODE.ATTRIBUTED_MENTOR, INTERNSHIP_MODE.RUNNING);
+
                 resolve(this);
             } catch (error) {
                 reject(error);
@@ -193,9 +217,11 @@ export class InternshipHandler {
                     throw this._buildForbiddenError(INTERNSHIP_MODE.VALIDATION);
                 }
 
-                this._internship.state = INTERNSHIP_MODE.ARCHIVED;
+                this._internship.state = INTERNSHIP_MODE.VALIDATION;
 
                 await this.save();
+
+                this._updateStatistics(INTERNSHIP_MODE.RUNNING, INTERNSHIP_MODE.VALIDATION);
                 resolve(this);
             } catch (error) {
                 reject(error);
@@ -206,11 +232,14 @@ export class InternshipHandler {
     public archive(result?: INTERNSHIP_RESULT): Promise<InternshipHandler> {
         return new Promise(async (resolve, reject) => {
             try {
+                const prev = this._internship.state;
                 this._internship.state = INTERNSHIP_MODE.ARCHIVED;
                 this._internship.result = isInternshipResult(result)
                     ? INTERNSHIP_RESULT.VALIDATED
                     : INTERNSHIP_RESULT.UNKNOWN;
                 await this.save();
+
+                this._updateStatistics(prev, INTERNSHIP_MODE.ARCHIVED);
 
                 resolve(this);
             } catch (error) {
@@ -300,5 +329,22 @@ export class InternshipHandler {
             400,
             12000,
         );
+    }
+
+    private _updateStatistics(prev: INTERNSHIP_MODE, next: INTERNSHIP_MODE) {
+        let campaignId: number;
+
+        if (this._internship.availableCampaign) {
+            campaignId =
+                typeof this._internship.availableCampaign === 'string'
+                    ? this._internship.availableCampaign
+                    : (this._internship.availableCampaign as Campaigns).id;
+        } else if (this._internship.validatedCampaign) {
+            campaignId =
+                typeof this._internship.validatedCampaign === 'string'
+                    ? this._internship.validatedCampaign
+                    : (this._internship.validatedCampaign as Campaigns).id;
+        }
+        cache.stateChange(next, prev, campaignId);
     }
 }
