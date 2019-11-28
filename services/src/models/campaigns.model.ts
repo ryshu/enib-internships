@@ -20,8 +20,12 @@ import {
     checkPartialInternship,
 } from '../utils/check';
 
-import InternshipTypeModel from './internship.type.mode';
 import { setFindOptsArchived } from './helpers/options';
+
+import InternshipTypeModel from './internship.type.mode';
+import InternshipModel from './internship.model';
+
+import cache from '../statistics/singleton';
 
 /** @interface CampaignOpts Interface of all availables filters for campaigns list */
 export declare interface CampaignOpts {
@@ -78,15 +82,28 @@ class CampaignModelStruct {
                 }
 
                 // Else, create new campaign
-                const created: any = await Campaigns.create(
-                    campaign,
-                    this._buildCreateOpts(campaign),
-                );
+                const created = await Campaigns.create(campaign, this._buildCreateOpts(campaign));
+
+                cache.newCampain(created.id, {
+                    internships: {
+                        total:
+                            created.availableInternships.length +
+                                created.validatedInternships.length || 0,
+                        availables: created.availableInternships.length || 0,
+                        attributed: created.validatedInternships.length || 0,
+                    },
+
+                    students:
+                        created.availableInternships.length + created.validatedInternships.length ||
+                        0,
+                    mentors: created.mentors.length || 0,
+
+                    propositions: created.propositions.length || 0,
+                });
 
                 // TODO: Add socket channel + create emit
-                // TODO: Update counter for this create;
 
-                resolve(created as ICampaignEntity);
+                resolve(created.toJSON() as ICampaignEntity);
             } catch (error) {
                 reject(error);
             }
@@ -194,7 +211,6 @@ class CampaignModelStruct {
                 }
 
                 // TODO: Add socket edit + emit
-                // TODO: Update counter for this update;
 
                 const updated: any = await campaign.save();
                 resolve(updated as ICampaignEntity);
@@ -221,14 +237,18 @@ class CampaignModelStruct {
 
                 // Remove all propositions linked
                 const propositions = await campaign.getPropositions();
-                await Promise.all(propositions.map((p) => p.destroy()));
-                // TODO: Change this to map destory + socket destroy emit + counter
+                await Promise.all(
+                    propositions.map((p) => {
+                        cache.removeProposition(campaign.id);
+                        return p.destroy();
+                    }),
+                );
+                // TODO: Change this to map destory + socket destroy emit
 
-                // TODO: Setup archives
+                cache.removeCampaign(campaign.id);
+
                 // TODO: Add archives function for internships
-
                 // TODO: Add socket remove + emit;
-                // TODO: Update counter for this remove;
 
                 await campaign.destroy();
                 resolve();
@@ -289,6 +309,7 @@ class CampaignModelStruct {
                 }
 
                 await campaign.addMentor(mentor);
+                cache.linkMentor(campaign.id);
                 // TODO: Emit update on socket
 
                 return resolve(await this.getCampaign(campaign.id));
@@ -319,6 +340,7 @@ class CampaignModelStruct {
                 }
 
                 await campaign.addProposition(proposition);
+                cache.linkProposition(campaign.id);
                 // TODO: Emit update on socket
 
                 return resolve(await this.getCampaign(campaign.id));
@@ -342,52 +364,15 @@ class CampaignModelStruct {
     ): Promise<ICampaignEntity> {
         return new Promise(async (resolve, reject) => {
             try {
-                const campaign = await Campaigns.findByPk(campaignId);
-                if (!campaign) {
-                    return resolve();
-                }
-                const availableInternship = await Internships.findByPk(availableInternshipId);
-                if (!availableInternship) {
+                const handler = await InternshipModel.getHandler(availableInternshipId);
+                if (!handler) {
                     return resolve();
                 }
 
-                await campaign.addAvailableInternship(availableInternship);
-                // TODO: Emit update on socket
+                // Use handler to setup to campaign available state
+                await handler.toCampaignAvailable(campaignId);
 
-                return resolve(await this.getCampaign(campaign.id));
-            } catch (error) {
-                reject(error);
-            }
-        });
-    }
-
-    /**
-     * @summary Method used to setup link between campaign and his validatedInternship
-     * @param {number} campaignId campaign identifier
-     * @param {number} validatedInternshipId validatedInternship identifier
-     * @returns {Promise<ICampaignEntity>} Resolve: ICampaignEntity
-     * @returns {Promise<void>} Resolve: void if something hasn't been found
-     * @returns {Promise<any>} Reject: database error
-     */
-    public linkToValidatedInternship(
-        campaignId: number,
-        validatedInternshipId: number,
-    ): Promise<ICampaignEntity> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const campaign = await Campaigns.findByPk(campaignId);
-                if (!campaign) {
-                    return resolve();
-                }
-                const validatedInternship = await Internships.findByPk(validatedInternshipId);
-                if (!validatedInternship) {
-                    return resolve();
-                }
-
-                await campaign.addValidatedInternship(validatedInternship);
-                // TODO: Emit update on socket
-
-                return resolve(await this.getCampaign(campaign.id));
+                return resolve(await this.getCampaign(campaignId));
             } catch (error) {
                 reject(error);
             }
