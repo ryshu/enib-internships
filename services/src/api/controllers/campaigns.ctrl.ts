@@ -250,26 +250,6 @@ export const linkAvailableCampaignInternships = (
 export const getValidatedCampaignInternships = generateGetInternships('validatedCampaignId');
 
 /**
- * GET /campaigns/:id/validatedCampaigns/:internship_id/link
- * Used to link an internship with a ValidatedCampaign
- */
-export const linkValidatedCampaignInternships = (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-): void => {
-    // @see validator + router
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return BAD_REQUEST_VALIDATOR(next, errors);
-    }
-
-    CampaignModel.linkToValidatedInternship(Number(req.params.id), Number(req.params.internship_id))
-        .then((campaign) => (checkContent(campaign, next) ? res.send(campaign) : undefined))
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
-};
-
-/**
  * GET /campaigns/:id/internships
  * Used to get all internships of a campaign
  */
@@ -294,7 +274,7 @@ export const getCampaignMentors = (req: Request, res: Response, next: NextFuncti
 };
 
 /**
- * GET /campaigns/:id/mentors/:mentor_id/link
+ * POST /campaigns/:id/mentors/:mentor_id/link
  * Used to link a mentor with a campaign
  */
 export const linkCampaignMentor = (req: Request, res: Response, next: NextFunction): void => {
