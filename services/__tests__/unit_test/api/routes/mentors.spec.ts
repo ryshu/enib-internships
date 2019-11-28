@@ -17,6 +17,9 @@ import {
 } from '../../../../__mocks__/mockData';
 import MentoringPropositions from '../../../../src/models/sequelize/MentoringPropositions';
 import Internships from '../../../../src/models/sequelize/Internships';
+
+import { INTERNSHIP_MODE } from '../../../../src/internship';
+
 import { defaultInternships, defaultInternshipTypes } from '../../../../__mocks__/mockData';
 
 jest.setTimeout(30000);
@@ -540,9 +543,13 @@ describe('POST /mentors/:id/internships/:internship_id/link', () => {
     it('Mentors_200_WithInternship', async () => {
         const VALID_MENTOR = defaultMentors();
         const VALID_INTERNSHIP = defaultInternships();
+        VALID_INTERNSHIP.state = INTERNSHIP_MODE.AVAILABLE_CAMPAIGN;
+        VALID_INTERNSHIP.availableCampaign = defaultCampaigns();
 
         let CREATED_MENTOR = await Mentors.create(VALID_MENTOR);
-        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
+        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP, {
+            include: [{ association: Internships.associations.availableCampaign }],
+        });
 
         const RESPONSE = await request(app).post(
             `/api/${process.env.INTERNSHIP_ENIB_API_VERSION}/mentors/${CREATED_MENTOR.id}/internships/${CREATED_INTERNSHIP.id}/link`,
