@@ -39,7 +39,7 @@ class Campaigns extends VuexModule {
 
   @Action
   public getCampaign(id: number): ICampaigns | undefined {
-    const found = this.all.findIndex(c => c.id === id);
+    const found = this.all.findIndex(c => Number(c.id) === id);
     if (found !== -1) return this.all[found];
     return undefined;
   }

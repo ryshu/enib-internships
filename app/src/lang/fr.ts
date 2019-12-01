@@ -194,6 +194,7 @@ export default {
     delete: 'Supprimer',
     edit: 'Modifier',
     export: 'Exporter',
+    archive : 'Archiver',
     detail: 'Détail',
     id: 'ID',
     internships: {
