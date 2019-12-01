@@ -2,7 +2,7 @@
   <div class="action-container">
     <el-form
       ref="dataForm"
-      :model="tempData"
+      :model="tmpData"
       label-position="left"
       label-width="200px"
       status-icon
@@ -24,7 +24,7 @@
         ]"
       >
         <el-input
-          v-model="tempData.name"
+          v-model="tmpData.name"
           :placeholder="$t('campaigns.placeholder.name')"
         />
       </el-form-item>
@@ -41,7 +41,7 @@
       >
         <el-input
           type="textarea"
-          v-model="tempData.description"
+          v-model="tmpData.description"
           :placeholder="$t('campaigns.placeholder.description')"
         />
       </el-form-item>
@@ -52,11 +52,12 @@
         <el-col :span="12">
           <el-form-item
             :label="$t('table.campaigns.isVisible')"
+            :data="$t('table.campaigns.isPublish')"
             prop="maxProposition"
           >
             <el-switch
               style="padding : 10px;"
-              v-model="tempData.isPublish"
+              v-model="tmpData.isPublish"
               active-color="#13ce66"
               inactive-color="#ff4949"
             />
@@ -72,7 +73,7 @@
             ]"
           >
             <el-date-picker
-              v-model="tempData.endAt"
+              v-model="tmpData.endAt"
               placeholder="Date de fin"
               type="date"
             />
@@ -88,7 +89,7 @@
             <el-input-number
               :min="0"
               :max="50"
-              v-model="tempData.maxProposition"
+              v-model="tmpData.maxProposition"
             />
           </el-form-item>
         </el-col>
@@ -97,11 +98,9 @@
       <div class="dialog-footer">
         <el-button type="danger" @click="archive">{{ $t('table.archive') }}</el-button>
         <el-button @click="reset">{{ $t('table.reset') }}</el-button>
-        <el-button type="primary" @click="updateData">{{ $t('table.confirm') }}</el-button>
+        <el-button type="primary" @click="updateData">{{ $t('table.save') }}</el-button>
       </div>
     </el-form>
-
-    <progress-dialog ref="ProgressDialog" @close-after-success="reset" />
   </div>
 </template>
 <script lang="ts">
@@ -112,18 +111,15 @@ import { cloneDeep } from 'lodash';
 import { Form } from 'element-ui';
 
 import { defaultCampaignData, createCampaign, deleteCampaign, getCampaign, updateCampaign } from '../../api/campaigns';
-import CategorySelect from '@/components/CategorySelect/index.vue';
-import ProgressDialog from '@/components/ProgressDialog/index.vue';
 import { CampaignsModule } from '../../store/modules/campaigns';
 
 
 @Component({ 
   name: 'CampaignsSettings' ,
-  components: { ProgressDialog, CategorySelect },
 })
 
 export default class extends Vue {
-  private tempData: any = defaultCampaignData; 
+  private tmpData: any = defaultCampaignData; 
   
   private cnt: number = 0;
   private max: number = 1;
@@ -146,18 +142,18 @@ export default class extends Vue {
     }
     tmp = cloneDeep(tmp || defaultCampaignData);
 
-    this.tempData = tmp;
+    this.tmpData = tmp;
   }
 
   private updateData() {
      (this.$refs['dataForm'] as Form).validate(async valid => {
        if (valid) {
-         const temp = Object.assign({}, this.tempData);
+         const tmp = cloneDeep(this.tmpData);
 
-         temp.endAt= moment(temp.endAt).valueOf();
-         delete temp.startAt;
+         tmp.endAt = tmp.endAt ? moment(tmp.endAt).valueOf() : 0;
+         delete tmp.startAt;
 
-         await updateCampaign(temp.id!, temp);
+         await updateCampaign(tmp.id!, tmp);
         this.$notify({
           title: this.$t('notify.campaigns.update.title') as string,
           message: this.$t('notify.campaigns.update.msg') as string,
@@ -169,9 +165,9 @@ export default class extends Vue {
    });
   }
   private async archive(){
-    // const res: any= await getCampaign(this.id, []); 
-    // CampaignsModule.removeCampaign(res);
+    const res: any= await getCampaign(this.id); 
     await deleteCampaign(this.id!);
+    CampaignsModule.removeCampaign(res);
   
     this.$notify({
       title: this.$t('notify.campaigns.delete.title') as string,
@@ -179,6 +175,7 @@ export default class extends Vue {
       type: 'success',
       duration: 2000,
     });
+    this.$router.push(`/`); 
   }
   private reset() {
     this.setupCampaign();
@@ -190,10 +187,10 @@ export default class extends Vue {
 
   public dateValidator(rule: any, value: any, cb: any) {
     
-      if (!this.tempData.endAt) {
+      if (!this.tmpData.endAt) {
         cb(new Error(this.$t('form.campaigns.date.required') as string));
       } else if (
-        moment(this.tempData.endAt).valueOf() < moment().valueOf()
+        moment(this.tmpData.endAt).valueOf() < moment().valueOf()
       ) {
         cb(new Error(this.$t('form.campaigns.date.end_to_early') as string));
       } else {

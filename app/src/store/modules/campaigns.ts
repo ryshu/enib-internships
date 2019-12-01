@@ -30,7 +30,7 @@ class Campaigns extends VuexModule {
   }
 
   @Mutation
-  private REMOVE_CAMPAIGN(data: ICampaigns) {
+  private REMOVE_CAMPAIGN(data: ICampaignEntity) {
     const found = this.all.findIndex(c => c.id === data.id);
     if(found !== -1) {
       this.all.splice(found, 1);
@@ -38,7 +38,7 @@ class Campaigns extends VuexModule {
   }
 
   @Action
-  public getCampaign(id: number): ICampaigns | undefined {
+  public getCampaign(id: number): ICampaignEntity | undefined {
     const found = this.all.findIndex(c => Number(c.id) === id);
     if (found !== -1) return this.all[found];
     return undefined;
@@ -62,7 +62,7 @@ class Campaigns extends VuexModule {
   }
 
   @Action
-  public removeCampaign(campaign: ICampaigns) {
+  public removeCampaign(campaign: ICampaignEntity) {
     this.REMOVE_CAMPAIGN(campaign);
   }
 }

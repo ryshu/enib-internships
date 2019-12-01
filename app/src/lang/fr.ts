@@ -205,6 +205,7 @@ export default {
     export: 'Exporter',
     archive : 'Archiver',
     detail: 'Détail',
+    save : 'Sauvegarder',
     id: 'ID',
     internships: {
       additional: 'Informations complémentaire',
