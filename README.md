@@ -1,6 +1,6 @@
 # [Internships manager](https://ryshu.github.io/enib-internships/)
 
-[![Build Status](https://travis-ci.org/ryshu/enib-internships.svg?branch=master)](https://travis-ci.org/ryshu/enib-internships) [![Greenkeeper badge](https://badges.greenkeeper.io/ryshu/enib-internships.svg)](https://greenkeeper.io/)  [![codecov](https://codecov.io/gh/ryshu/enib-internships/branch/master/graph/badge.svg)](https://codecov.io/gh/ryshu/enib-internships)
+[![Build Status](https://travis-ci.org/ryshu/enib-internships.svg?branch=master)](https://travis-ci.org/ryshu/enib-internships) [![codecov](https://codecov.io/gh/ryshu/enib-internships/branch/master/graph/badge.svg)](https://codecov.io/gh/ryshu/enib-internships)
 
 **Sonar - backend**: [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=enib.internships.backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=enib.internships.backend) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=enib.internships.backend&metric=coverage)](https://sonarcloud.io/dashboard?id=enib.internships.backend) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=enib.internships.backend&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=enib.internships.backend) [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=enib.internships.backend&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=enib.internships.backend) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=enib.internships.backend&metric=security_rating)](https://sonarcloud.io/dashboard?id=enib.internships.backend)
 
@@ -18,7 +18,6 @@
   * [CMD](#front-end-cmd)
 * [Documentation](#documentation)
 * [Contribution](#contribution)
-* [Credits](#credits)
 * [Licence](#licence)
 * [Usefull links](#usefull-links)
 
@@ -53,13 +52,27 @@ Under the back-end directory `services`, you will be able to find the following 
   * **api/** (all API files)
     * **controllers/** (Declare methods to handle each endpoints)
     * **helpers/** (Declare methods to factorize)
+    * **processors/** (Declare methods to process given data)
     * **routers/** (Declare route of API for each endpoints)
     * **validators/** (Declare schema for validate given data)
 
+  * **auth/** (all files link to authentication)
+    * **cas/** (all files link to authentication via [CAS](https://apereo.github.io/cas/6.1.x/index.html))
+
   * **configs/** (files used for configuration and setup of the server)
   * **declarations/** (Declaration of all interfaces used in projects)
+  * **emails/** (Email services)
+    * **build/** (Files use during templates builds)
+    * **templates/** (All emails templates, 1 directory = 1 template)
+
+  * **files-storage/** (Files storages service)
+  * **helpers/** (Global helpers)
+  * **internship/** (Internship service, including FSM)
   * **models/** (Every models used to isolate database from code, coded for [Sequelize](https://sequelize.org/master/manual/typescript.html) )
+    * **sequelize/** (All sequelizes models)
+
   * **utils/** (Every utility files)
+  * **websocket/** (Websocket service, see [socket.io](https://socket.io/))
   * *app.ts* (application file, prepare the application without running it)
   * *server.ts* (run server entry point)
 
@@ -136,14 +149,38 @@ Available [here](https://ryshu.github.io/enib-internships/)
 
 * Oscar MARIE--TAILLEFER <oscar@leeap.cash>
 
-## Credits
-
-TODO
-
 ## Licence
 
-TODO
+MIT License
+
+Copyright (c) 2019 Oscar MARIE--TAILLEFER
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ## Usefull links
 
-TODO
+* Base template: [Vue Typescript Admin Template](https://github.com/Armour/vue-typescript-admin-template)
+* Vue framework: [Element](https://element.eleme.io/#/fr-FR/component/installation)
+* Vue JS documentation: [VueJS](https://vuejs.org/v2/guide/)
+* Test framework: [Jest](https://jestjs.io/docs/en/getting-started)
+* [Typescript](https://www.typescriptlang.org/docs/home.html)
+* Mailer documentation: [Nodemailer](https://nodemailer.com/about/) and [email-templates](https://www.npmjs.com/package/email-templates)
+* CAS authentication: [cas-authentication](https://www.npmjs.com/package/cas-authentication)
+* Websocket: [socket-io](https://socket.io/)
+* Web visualisation: [Echarts](https://echarts.apache.org/en/index.html)

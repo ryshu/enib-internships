@@ -4,12 +4,17 @@ import { checkSchema } from 'express-validator';
 import * as InternshipTypesCtrl from '../controllers/internship.types.ctrl';
 
 import { ID, InternshipID, CampaignID } from '../validators/generic.val';
-import { InternshipTypeUpdate, InternshipTypeCreate } from '../validators/internshipTypes.val';
+import {
+    InternshipTypeUpdate,
+    InternshipTypeCreate,
+    InternshipTypeList,
+} from '../validators/internshipTypes.val';
+import { InternshipsList } from '../validators/internships.val';
 
 const router = express.Router();
 
 // Internships types
-router.get('', InternshipTypesCtrl.getInternshipTypes);
+router.get('', checkSchema(InternshipTypeList), InternshipTypesCtrl.getInternshipTypes);
 router.post('', checkSchema(InternshipTypeCreate), InternshipTypesCtrl.postInternshipType);
 router.get('/:id', checkSchema(ID), InternshipTypesCtrl.getInternshipType);
 router.put(
@@ -20,7 +25,11 @@ router.put(
 router.delete('/:id', checkSchema(ID), InternshipTypesCtrl.deleteInternshipType);
 
 // Internships types link to internships
-router.get('/:id/internships', checkSchema(ID), InternshipTypesCtrl.getInternshipTypeInternships);
+router.get(
+    '/:id/internships',
+    checkSchema(Object.assign({}, ID, InternshipsList)),
+    InternshipTypesCtrl.getInternshipTypeInternships,
+);
 router.post(
     '/:id/internships/:internship_id/link',
     checkSchema(Object.assign({}, ID, InternshipID)),

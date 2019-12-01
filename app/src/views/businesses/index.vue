@@ -101,7 +101,7 @@
             type="danger"
             icon="el-icon-delete"
             circle
-            @click="handleDelete(row, 'deleted')"
+            @click="handleDelete(row)"
           />
         </template>
       </el-table-column>
@@ -132,7 +132,7 @@ import {
   deleteBusiness,
   defaultBusinessData,
 } from '../../api/businesses';
-import { IBusiness } from '../../api/types';
+import { IBusinessEntity } from '../../declarations';
 
 import { exportJson2Excel } from '../../utils/excel';
 import { formatJson } from '../../utils';
@@ -149,7 +149,7 @@ import EditBusiness from './dialog/EditBusiness.vue';
 })
 export default class extends Vue {
   private tableKey = 0;
-  private list: IBusiness[] = [];
+  private list: IBusinessEntity[] = [];
   private total = 0;
   private listLoading = true;
   private listQuery = {
@@ -181,7 +181,7 @@ export default class extends Vue {
     this.getList();
   }
 
-  private async handleDelete(row: any, status: string) {
+  private async handleDelete(row: any) {
     await deleteBusiness(row.id!);
     this.getList();
     this.$notify({
@@ -195,7 +195,7 @@ export default class extends Vue {
   private handleCreate() {
     (this.$refs.EditBusiness as EditBusiness)
       .create()
-      .then(async (createdRow: IBusiness | undefined) => {
+      .then(async (createdRow: IBusinessEntity | undefined) => {
         if (createdRow) {
           await createBusiness(createdRow);
           this.getList();
@@ -212,9 +212,9 @@ export default class extends Vue {
   private handleUpdate(row: any) {
     (this.$refs.EditBusiness as EditBusiness)
       .update(row)
-      .then(async (updatedRow: IBusiness | undefined) => {
+      .then(async updatedRow => {
         if (updatedRow) {
-          const { data } = await updateBusiness(updatedRow.id!, updatedRow);
+          await updateBusiness(updatedRow.id!, updatedRow);
           this.getList();
           this.$notify({
             title: this.$t('notify.businesses.update.title') as string,

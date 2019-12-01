@@ -15,9 +15,10 @@ GET /api/v1/businesses
 
 Key | Type | Optional | Description
 - | - | - | -
-**limit** | Number | *no* | Page expected (By default 1)
-**page** | Number | *no* | Number of row expected (By default 20)
-**contries** | String[] | *no* | List of reached countries
+**limit** | Number | *yes* | Page expected (By default 1)
+**page** | Number | *yes* | Number of row expected (By default 20)
+**contries** | String[] | *yes* | List of reached countries
+**archived** | Boolean | *yes* | Only archived documents
 
 ### 200 - List of businesses
 
@@ -143,6 +144,12 @@ GET /api/v1/businesses/:id
 Key | Type | Description
 - | - | -
 **id** | String | Business ID
+
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**archived** | Boolean | *yes* | Only archived document
 
 ### 200 - Business
 
@@ -313,6 +320,7 @@ Key | Type | Optional | Description
             "isValidated": false,
             "isProposition": true,
             "isPublish": false,
+            "state": "waiting",
             "publishAt": "2019-10-13T16:21:25.000Z",
             "createdAt": "2019-10-13T16:21:25.000Z",
             "updatedAt": "2019-10-13T16:21:25.000Z"

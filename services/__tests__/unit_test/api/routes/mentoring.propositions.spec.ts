@@ -5,12 +5,12 @@ import app from '../../../../src/app';
 
 // Include database connection
 import dbSetup from '../../../../src/configs/setup/database';
-import Campaigns from '../../../../src/models/Campaigns';
-import Mentors from '../../../../src/models/Mentors';
+import Campaigns from '../../../../src/models/sequelize/Campaigns';
+import Mentors from '../../../../src/models/sequelize/Mentors';
 
 // Import model for pre-operation before asserting API methods
-import MentoringPropositions from '../../../../src/models/MentoringPropositions';
-import Internships from '../../../../src/models/Internships';
+import MentoringPropositions from '../../../../src/models/sequelize/MentoringPropositions';
+import Internships from '../../../../src/models/sequelize/Internships';
 
 import {
     defaultMentoringPropositions,
@@ -55,6 +55,7 @@ describe('GET /mentoringPropositions', () => {
                 {
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
+                    id: expect.any(Number),
                 },
             ],
         });
@@ -227,14 +228,11 @@ describe('GET /mentoringPropositions/:id/campaigns', () => {
         const VALID_CAMPAIGN = defaultCampaigns();
         const VALID_MENTORING_PROPOSITIONS = defaultMentoringPropositions();
 
-        const CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
-        let CREATED_MENTORING_PROPOSITION = await MentoringPropositions.create(
-            VALID_MENTORING_PROPOSITIONS,
-        );
+        VALID_MENTORING_PROPOSITIONS.campaign = VALID_CAMPAIGN;
 
-        await CREATED_MENTORING_PROPOSITION.setCampaign(CREATED_CAMPAIGN.id);
-        CREATED_MENTORING_PROPOSITION = await MentoringPropositions.findByPk(
-            CREATED_MENTORING_PROPOSITION.id,
+        const CREATED_MENTORING_PROPOSITION = await MentoringPropositions.create(
+            VALID_MENTORING_PROPOSITIONS,
+            { include: [{ association: MentoringPropositions.associations.campaign }] },
         );
 
         const RESPONSE = await request(app).get(
@@ -244,6 +242,7 @@ describe('GET /mentoringPropositions/:id/campaigns', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -316,6 +315,7 @@ describe('POST /mentoringPropositions/:id/campaigns/:internship_type_id/link', (
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -370,6 +370,7 @@ describe('GET /mentoringPropositions/:id/mentors', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -442,6 +443,7 @@ describe('POST /mentoringPropositions/:id/mentors/:mentor_id/link', () => {
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -478,15 +480,11 @@ describe('GET /mentoringPropositions/:id/internships', () => {
     it('MentoringPropositions_200_WithLinkedData', async () => {
         const VALID_INTERNSHIP = defaultInternships();
         const VALID_MENTORING_PROPOSITIONS = defaultMentoringPropositions();
+        VALID_MENTORING_PROPOSITIONS.internship = VALID_INTERNSHIP;
 
-        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
-        let CREATED_MENTORING_PROPOSITION = await MentoringPropositions.create(
+        const CREATED_MENTORING_PROPOSITION = await MentoringPropositions.create(
             VALID_MENTORING_PROPOSITIONS,
-        );
-
-        await CREATED_MENTORING_PROPOSITION.setInternship(CREATED_INTERNSHIP.id);
-        CREATED_MENTORING_PROPOSITION = await MentoringPropositions.findByPk(
-            CREATED_MENTORING_PROPOSITION.id,
+            { include: [{ association: MentoringPropositions.associations.internship }] },
         );
 
         const RESPONSE = await request(app).get(
@@ -496,6 +494,7 @@ describe('GET /mentoringPropositions/:id/internships', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -568,6 +567,7 @@ describe('POST /mentoringPropositions/:id/internships/:internship_type_id/link',
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });

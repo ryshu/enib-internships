@@ -5,7 +5,8 @@ Object {
   "data": Array [
     Object {
       "createdAt": Any<String>,
-      "id": 1,
+      "deletedAt": null,
+      "id": Any<Number>,
       "name": "fichier",
       "path": "S10",
       "type": "john.doe@enib.fr",
@@ -21,6 +22,7 @@ Object {
 exports[`GET /files/:id Files_200 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "internship": null,
   "name": "fichier",
@@ -33,20 +35,20 @@ Object {
 exports[`GET /files/:id/internships Files_200_WithLinkedData 1`] = `
 Object {
   "additional": null,
-  "address": "TEST",
+  "address": null,
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
-  "endAt": 20191012,
-  "id": 1,
+  "endAt": null,
+  "id": Any<Number>,
   "isInternshipAbroad": true,
-  "isProposition": false,
-  "isPublish": true,
-  "isValidated": false,
-  "postalCode": "29280",
-  "publishAt": 20191012,
-  "startAt": 20191012,
+  "postalCode": null,
+  "publishAt": null,
+  "result": "unknown",
+  "startAt": null,
+  "state": "published",
   "subject": "test",
   "updatedAt": Any<String>,
 }
@@ -66,20 +68,20 @@ Object {
 exports[`POST /files/:id/internships/:internship_id/link Files_200_WithInternship 1`] = `
 Object {
   "additional": null,
-  "address": "TEST",
+  "address": null,
   "city": "Brest",
   "country": "France",
   "createdAt": Any<String>,
+  "deletedAt": null,
   "description": "Stage",
-  "endAt": 20191012,
-  "id": 2,
+  "endAt": null,
+  "id": Any<Number>,
   "isInternshipAbroad": true,
-  "isProposition": false,
-  "isPublish": true,
-  "isValidated": false,
-  "postalCode": "29280",
-  "publishAt": 20191012,
-  "startAt": 20191012,
+  "postalCode": null,
+  "publishAt": null,
+  "result": "unknown",
+  "startAt": null,
+  "state": "published",
   "subject": "test",
   "updatedAt": Any<String>,
 }
@@ -88,6 +90,7 @@ Object {
 exports[`PUT /files/:id Files_200_NotAnyDataUpdated 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "name": "fichier",
   "path": "S10",
@@ -99,6 +102,7 @@ Object {
 exports[`PUT /files/:id Files_200_UpdateAllData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "name": "fichier",
   "path": "250",

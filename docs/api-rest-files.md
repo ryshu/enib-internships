@@ -17,6 +17,7 @@ Key | Type | Optional | Description
 - | - | - | -
 **limit** | Number | *no* | Page expected (By default 1)
 **page** | Number | *no* | Number of row expected (By default 20)
+**archived** | Boolean | *yes* | Only archived documents
 
 ### 200 - List of files
 
@@ -138,6 +139,12 @@ GET /api/v1/files/:id
 Key | Type | Description
 - | - | -
 **id** | String | File ID
+
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**archived** | Boolean | *yes* | Only archived document
 
 ### 200 - File
 
@@ -275,6 +282,7 @@ Key | Type | Optional | Description
     "isValidated": false,
     "isProposition": true,
     "isPublish": false,
+    "state": "waiting",
     "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"

@@ -1,12 +1,13 @@
 import sequelize = require('sequelize');
 
-import Campaigns from '../models/Campaigns';
-import Internships from '../models/Internships';
-import InternshipTypes from '../models/InternshipTypes';
-import Mentors from '../models/Mentors';
+import Campaigns from '../models/sequelize/Campaigns';
+import Internships from '../models/sequelize/Internships';
+import InternshipTypes from '../models/sequelize/InternshipTypes';
+import Mentors from '../models/sequelize/Mentors';
 
 import { ProgressChannel } from '../websocket/channels/private';
 import { sendCampaignsCreate } from '../emails';
+import cache from '../statistics/singleton';
 
 async function internshipInject(
     internship: Internships,
@@ -99,6 +100,16 @@ export function LaunchCampaign(campaign: Campaigns, channel?: ProgressChannel) {
 
             // Resolve all link setup
             await Promise.all(promises);
+            cache.newCampain(campaign.id, {
+                internships: {
+                    total: internships.length,
+                    availables: internships.length,
+                    attributed: 0,
+                },
+                mentors: mentors.length,
+                students: internships.length,
+                campaign: campaign.id,
+            });
 
             if (channel) {
                 channel.end();
@@ -109,6 +120,7 @@ export function LaunchCampaign(campaign: Campaigns, channel?: ProgressChannel) {
             if (channel) {
                 channel.error(error);
             }
+            cache.newCampain(campaign.id, {});
             reject(error);
         }
     });

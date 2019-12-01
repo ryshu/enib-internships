@@ -18,13 +18,27 @@ Under the back-end directory `services`, you will be able to find the following 
   * **api/** (all API files)
     * **controllers/** (Declare methods to handle each endpoints)
     * **helpers/** (Declare methods to factorize)
+    * **processors/** (Declare methods to process given data)
     * **routers/** (Declare route of API for each endpoints)
     * **validators/** (Declare schema for validate given data)
 
+  * **auth/** (all files link to authentication)
+    * **cas/** (all files link to authentication via [CAS](https://apereo.github.io/cas/6.1.x/index.html))
+
   * **configs/** (files used for configuration and setup of the server)
   * **declarations/** (Declaration of all interfaces used in projects)
+  * **emails/** (Email services)
+    * **build/** (Files use during templates builds)
+    * **templates/** (All emails templates, 1 directory = 1 template)
+
+  * **files-storage/** (Files storages service)
+  * **helpers/** (Global helpers)
+  * **internship/** (Internship service, including FSM)
   * **models/** (Every models used to isolate database from code, coded for [Sequelize](https://sequelize.org/master/manual/typescript.html) )
+    * **sequelize/** (All sequelizes models)
+
   * **utils/** (Every utility files)
+  * **websocket/** (Websocket service, see [socket.io](https://socket.io/))
   * *app.ts* (application file, prepare the application without running it)
   * *server.ts* (run server entry point)
 

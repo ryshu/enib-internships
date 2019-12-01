@@ -3,17 +3,18 @@ import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
 
 // Import files ORM class
-import Files from '../../models/Files';
-import Internships from '../../models/Internships';
+import FileModel from '../../models/files.model';
 
 // Factorization methods to handle errors
 import {
     UNPROCESSABLE_ENTITY,
-    checkArrayContent,
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
-import { paginate } from '../helpers/pagination.helper';
+
+import { IFileEntity } from '../../declarations/file';
+
+import { fullCopyInternship } from '../processors/internship.proc';
 
 /**
  * GET /files
@@ -27,22 +28,12 @@ export const getFiles = (req: Request, res: Response, next: NextFunction): void 
     }
 
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    let max: number;
+    const { page = 1, limit = 20, archived } = req.query;
 
-    Files.count()
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Files.findAll(paginate({ page, limit }));
-        })
-        .then((files) => {
-            if (checkArrayContent(files, next)) {
-                return res.send({
-                    page,
-                    data: files,
-                    length: files.length,
-                    max,
-                });
+    FileModel.getFiles({ archived }, { page, limit })
+        .then((data) => {
+            if (checkContent(data, next)) {
+                return res.send(data);
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -63,9 +54,12 @@ export const postFile = (req: Request, res: Response, next: NextFunction): void 
         name: req.body.name,
         type: req.body.type,
         path: req.file.destination,
+
+        internship: fullCopyInternship(req.body.internship),
     };
+
     // Insert file in database
-    Files.create(file)
+    FileModel.createFile(file)
         .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -81,7 +75,7 @@ export const getFile = (req: Request, res: Response, next: NextFunction): void =
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Files.findByPk(req.params.id, { include: [{ model: Internships, as: 'internship' }] })
+    FileModel.getFile(Number(req.params.id), req.query.archived)
         .then((val) => {
             // Check if we have content, and if so return it
             if (checkContent(val, next)) {
@@ -102,30 +96,13 @@ export const putFile = (req: Request, res: Response, next: NextFunction): void =
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Files.findByPk(req.params.id)
-        .then((file) => {
-            if (!checkContent(file, next)) {
-                return undefined;
-            }
-
-            if (req.body.name) {
-                file.set('name', req.body.name);
-            }
-            if (req.body.type) {
-                file.set('type', req.body.type);
-            }
-            if (req.body.path) {
-                file.set('path', req.body.path);
-            }
-
-            return file.save();
-        })
+    FileModel.updateFile(Number(req.params.id), req.body)
         .then((updated) => {
-            if (updated) {
+            if (checkContent(updated, next)) {
                 return res.send(updated);
             }
         })
-        .catch((e) => UNPROCESSABLE_ENTITY(e, next));
+        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
@@ -139,8 +116,7 @@ export const deleteFile = (req: Request, res: Response, next: NextFunction): voi
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Files.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected file
+    FileModel.removeFile(Number(req.params.id))
         .then(() => res.sendStatus(httpStatus.OK)) // Return OK status
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
@@ -155,7 +131,7 @@ export const getFileInternship = (req: Request, res: Response, next: NextFunctio
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Files.findByPk(req.params.id, { include: [{ model: Internships, as: 'internship' }] })
+    FileModel.getFile(Number(req.params.id))
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val.internship);
@@ -175,16 +151,7 @@ export const linkFilesInternship = (req: Request, res: Response, next: NextFunct
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Files.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                try {
-                    await val.setInternship(Number(req.params.internship_id));
-                    return res.sendStatus(httpStatus.OK);
-                } catch (error) {
-                    checkContent(null, next);
-                }
-            }
-        })
+    FileModel.linkToInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

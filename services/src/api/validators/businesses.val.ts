@@ -4,12 +4,15 @@ import {
     paginateValidator,
     replaceAllExistByOptional,
     contriesValidator,
-    addressValidator,
+    archivedValidator,
 } from './generic.val';
+
+import { businessVal, internshipVal, categoryVal } from './generator.val';
 
 export const BusinessesList: Schema = {
     ...paginateValidator,
     ...contriesValidator,
+    ...archivedValidator,
     name: {
         in: ['query'],
         isString: { errorMessage: 'Name filter must be of type string' },
@@ -20,15 +23,8 @@ export const BusinessesList: Schema = {
 };
 
 export const BusinessCreate: Schema = {
-    name: {
-        in: ['body'],
-        isString: { errorMessage: 'Name must be of type string' },
-        exists: { errorMessage: 'Name must be defined' },
-        trim: true,
-        escape: true,
-    },
-
-    ...addressValidator,
+    ...businessVal(),
+    ...replaceAllExistByOptional(internshipVal('internships[*]')),
+    ...replaceAllExistByOptional(categoryVal('internships[*].category')),
 };
-
 export const BusinessUpdate = replaceAllExistByOptional(BusinessCreate);

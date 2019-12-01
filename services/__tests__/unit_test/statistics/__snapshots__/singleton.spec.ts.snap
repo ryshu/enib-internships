@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StatisticsCache #.stateAdd INVALID 1`] = `
+Object {
+  "campaign": 10,
+  "internships": Object {
+    "attributed": 100,
+    "availables": 150,
+    "total": 250,
+  },
+  "mentors": 200,
+  "propositions": 300,
+  "students": 150,
+}
+`;
+
+exports[`StatisticsCache #.stateChange INVALID -> WAITING 1`] = `
+Object {
+  "campaign": 10,
+  "internships": Object {
+    "attributed": 100,
+    "availables": 150,
+    "total": 250,
+  },
+  "mentors": 200,
+  "propositions": 300,
+  "students": 150,
+}
+`;
+
+exports[`StatisticsCache #.stateRemove INVALID 1`] = `
+Object {
+  "campaign": 10,
+  "internships": Object {
+    "attributed": 100,
+    "availables": 150,
+    "total": 250,
+  },
+  "mentors": 200,
+  "propositions": 300,
+  "students": 150,
+}
+`;

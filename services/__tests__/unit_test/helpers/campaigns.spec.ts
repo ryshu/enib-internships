@@ -2,9 +2,9 @@
 import dbSetup from '../../../src/configs/setup/database';
 
 // Import model for pre-operation before asserting API methods
-import Campaigns from '../../../src/models/Campaigns';
-import Internships from '../../../src/models/Internships';
-import InternshipTypes from '../../../src/models/InternshipTypes';
+import Campaigns from '../../../src/models/sequelize/Campaigns';
+import Internships from '../../../src/models/sequelize/Internships';
+import InternshipTypes from '../../../src/models/sequelize/InternshipTypes';
 
 import { LaunchCampaign } from '../../../src/helpers/campaigns';
 

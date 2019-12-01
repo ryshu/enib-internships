@@ -1,9 +1,7 @@
-import { AxiosPromise } from 'axios';
-
 import request from '@/utils/request';
-import { IStudent } from './types';
+import { IStudentEntity, PaginateList } from '../declarations';
 
-export const defaultStudentData: IStudent = {
+export const defaultStudentData: IStudentEntity = {
   firstName: '',
   lastName: '',
   email: '',
@@ -11,35 +9,41 @@ export const defaultStudentData: IStudent = {
 };
 
 export const getStudents = (params: any) =>
-  request({
+  (request({
     url: '/students',
     method: 'get',
     params,
-  });
+  }) as any) as Promise<PaginateList<IStudentEntity>>;
 
-export const getStudent = (id: number, params: any) =>
-  request({
+export const getStudent = (id: number) =>
+  (request({
     url: `/students/${id}`,
     method: 'get',
-    params,
-  });
+  }) as any) as Promise<IStudentEntity>;
 
-export const createStudent = (data: any) =>
-  request({
+export const createStudent = (data: IStudentEntity) =>
+  (request({
     url: '/students',
     method: 'post',
     data,
-  }) as AxiosPromise<IStudent>;
+  }) as any) as Promise<IStudentEntity>;
 
-export const updateStudent = (id: number, data: any) =>
-  request({
+export const updateStudent = (id: number, data: Partial<IStudentEntity>) =>
+  (request({
     url: `/students/${id}`,
     method: 'put',
     data,
-  }) as AxiosPromise<IStudent>;
+  }) as any) as Promise<IStudentEntity>;
 
 export const deleteStudent = (id: number) =>
-  request({
+  (request({
     url: `/students/${id}`,
     method: 'delete',
-  });
+  }) as any) as Promise<void>;
+
+export const getCampaignStudents = (id: number, params: any) =>
+  (request({
+    url: `/campaigns/${id}/students`,
+    method: 'get',
+    params,
+  }) as any) as Promise<PaginateList<IStudentEntity>>;

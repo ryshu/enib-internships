@@ -23,6 +23,7 @@ Key | Type | Optional | Description
 **mode** | String | *no* | published or propositions or self
 **isAbroad** | Number | *no* | Filter to get only abroad internships
 **isValidated** | Number | *no* | Filter to get only validated internships
+**archived** | Boolean | *yes* | Only archived documents
 
 ### 200 - List of internships
 
@@ -104,6 +105,7 @@ Return created internship
     "isValidated": false,
     "isProposition": true,
     "isPublish": false,
+    "state": "waiting",
     "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -146,6 +148,12 @@ Key | Type | Description
 - | - | -
 **id** | String | Internship ID
 
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**archived** | Boolean | *yes* | Only archived document
+
 ### 200 - Internship
 
 ``` json
@@ -164,6 +172,7 @@ Key | Type | Description
     "isValidated": false,
     "isProposition": true,
     "isPublish": false,
+    "state": "waiting",
     "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -252,6 +261,7 @@ Key | Type | Optional | Description | Access
     "isValidated": false,
     "isProposition": true,
     "isPublish": false,
+    "state": "waiting",
     "publishAt": "2019-10-13T16:21:25.000Z",
     "createdAt": "2019-10-13T16:21:25.000Z",
     "updatedAt": "2019-10-13T16:21:25.000Z"

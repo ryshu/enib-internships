@@ -9,7 +9,9 @@ import filesRouter from './routers/files.route';
 import mentoringPropositionsRouter from './routers/mentoring.propositions.route';
 import mentorsRouter from './routers/mentors.route';
 
-import casRouter from './cas/route';
+import casRouter from '../auth/cas/route';
+
+import { getStatistics } from './controllers/statistics.ctrl';
 
 const router = express.Router();
 
@@ -21,6 +23,8 @@ router.use('/students', studentsRouter);
 router.use('/mentors', mentorsRouter);
 router.use('/files', filesRouter);
 router.use('/mentoringPropositions', mentoringPropositionsRouter);
+
+router.get('/statistics', getStatistics);
 
 router.use('/cas', casRouter);
 

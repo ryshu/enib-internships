@@ -17,6 +17,7 @@ Key | Type | Optional | Description
 - | - | - | -
 **limit** | Number | *no* | Page expected (By default 1)
 **page** | Number | *no* | Number of row expected (By default 20)
+**archived** | Boolean | *yes* | Only archived documents
 
 ### 200 - List of campaigns
 
@@ -142,6 +143,12 @@ GET /api/v1/campaigns/:id
 Key | Type | Description
 - | - | -
 **id** | String | Campaign ID
+
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**archived** | Boolean | *yes* | Only archived document
 
 ### 200 - Campaign
 
@@ -288,7 +295,7 @@ Return a status **200** without data when delete succeed
 
 If the API doesn't have any campaign in his database, we return a status **204 - No content**
 
-## Get propositions related to a company by giving his ID
+## Get propositions related to a campaign by giving his ID
 
 ``` sh
 GET /api/v1/campaigns/:id/mentoringPropositions
@@ -398,7 +405,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Get availables internships related to a company by giving his ID
+## Get availables internships related to a campaign by giving his ID
 
 ``` sh
 GET /api/v1/campaigns/:id/availableInternships
@@ -436,6 +443,7 @@ Key | Type | Optional | Description
           "isValidated": false,
           "isProposition": true,
           "isPublish": false,
+          "state": "waiting",
           "publishAt": "2019-10-13T16:21:25.000Z",
           "createdAt": "2019-10-13T16:21:25.000Z",
           "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -526,7 +534,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Get validated internships related to a company by giving his ID
+## Get validated internships related to a campaign by giving his ID
 
 ``` sh
 GET /api/v1/campaigns/:id/validatedInternships
@@ -564,6 +572,7 @@ Key | Type | Optional | Description
             "isValidated": false,
             "isProposition": true,
             "isPublish": false,
+            "state": "waiting",
             "publishAt": "2019-10-13T16:21:25.000Z",
             "createdAt": "2019-10-13T16:21:25.000Z",
             "updatedAt": "2019-10-13T16:21:25.000Z"
@@ -654,7 +663,84 @@ API return **Bad Request** status with 400 code when request validation fail.
 }
 ```
 
-## Get internships types related to a company by giving his ID
+## Get internships related to a campaign by giving his ID
+
+``` sh
+GET /api/v1/campaigns/:id/internships
+```
+
+### Paths variables
+
+Key | Type | Description
+- | - | -
+**id** | String | Campaign ID
+
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**limit** | Number | *no* | Page expected (By default 1)
+**page** | Number | *no* | Number of row expected (By default 20)
+
+### 200 - Internships list
+
+``` json
+{
+    "page": "1",
+    "data": [
+        {
+            "id": 1,
+            "subject": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
+            "description": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
+            "country": "Russian Federation",
+            "city": "New Rocky",
+            "postalCode": "30636-9003",
+            "address": "15486 Genoveva Isle",
+            "additional": "Suite 755",
+            "isInternshipAbroad": false,
+            "isValidated": false,
+            "isProposition": true,
+            "isPublish": false,
+            "state": "waiting",
+            "publishAt": "2019-10-13T16:21:25.000Z",
+            "createdAt": "2019-10-13T16:21:25.000Z",
+            "updatedAt": "2019-10-13T16:21:25.000Z"
+        },
+    ],
+    "length": 1,
+    "max": 1
+}
+```
+
+### 204 - No content
+
+If the API doesn't have any campaign in his database, we return a status **204 - No content**
+
+### 400 - Bad request
+
+API return **Bad Request** status with 400 code when request validation fail.
+
+``` json
+{
+  "code": 11103,
+  "status": 400,
+  "errors": [
+    {
+      "msg": "Identifier must be an integer",
+      "param": "city",
+      "location": "body"
+    },
+    {
+      "msg": "Identifier must be defined",
+      "param": "city",
+      "location": "body"
+    }
+  ],
+  "name": "BAD REQUEST"
+}
+```
+
+## Get internships types related to a campaign by giving his ID
 
 ``` sh
 GET /api/v1/campaigns/:id/internshipTypes

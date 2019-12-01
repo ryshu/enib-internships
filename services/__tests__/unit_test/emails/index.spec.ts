@@ -3,8 +3,8 @@ import { sendWelcome, sendCampaignsCreate } from '../../../src/emails/base';
 // Include database connection
 import dbSetup from '../../../src/configs/setup/database';
 
-import Campaigns from '../../../src/models/Campaigns';
-import InternshipTypes from '../../../src/models/InternshipTypes';
+import Campaigns from '../../../src/models/sequelize/Campaigns';
+import InternshipTypes from '../../../src/models/sequelize/InternshipTypes';
 
 import { defaultCampaigns, defaultInternshipTypes } from '../../../__mocks__/mockData';
 

@@ -1,3 +1,5 @@
+// TODO: Improve documentations
+
 /**
  * Class used to redefined error instance with encoded error
  */
@@ -6,7 +8,7 @@ export class APIError extends Error {
     public status: number;
     public errors: any;
 
-    constructor (err: string, status: number, code: number) {
+    constructor(err: string, status: number, code: number) {
         super(err);
         this.name = err;
         this.status = status;
@@ -14,16 +16,16 @@ export class APIError extends Error {
         this.errors = null;
     }
 
-    public setErrors (errors: any) {
+    public setErrors(errors: any) {
         this.errors = errors;
     }
 
-    public toJSON () {
+    public toJSON() {
         return {
             code: this.code,
             status: this.status,
             errors: this.errors,
-            name: this.name
+            name: this.name,
         };
     }
 }

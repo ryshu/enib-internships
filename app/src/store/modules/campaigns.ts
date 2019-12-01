@@ -7,24 +7,24 @@ import {
 } from 'vuex-module-decorators';
 import store from '@/store';
 
-import { ICampaigns } from '@/api/types';
+import { ICampaignEntity } from '@/declarations';
 import { getCampaigns } from '@/api/campaigns';
 
 @Module({ dynamic: true, store, name: 'campaigns' })
 class Campaigns extends VuexModule {
-  private all: ICampaigns[] = [];
+  private all: ICampaignEntity[] = [];
 
   public get campaigns() {
     return this.all || [];
   }
 
   @Mutation
-  private SET_CAMPAIGNS(data: ICampaigns[]) {
+  private SET_CAMPAIGNS(data: ICampaignEntity[]) {
     this.all = data;
   }
 
   @Mutation
-  private ADD_CAMPAIGN(data: ICampaigns) {
+  private ADD_CAMPAIGN(data: ICampaignEntity) {
     const found = this.all.findIndex(c => c.id === data.id);
     found !== -1 ? this.all.splice(found, 1, data) : this.all.push(data);
   }
@@ -57,7 +57,7 @@ class Campaigns extends VuexModule {
   }
 
   @Action
-  public addCampaign(campaign: ICampaigns) {
+  public addCampaign(campaign: ICampaignEntity) {
     this.ADD_CAMPAIGN(campaign);
   }
 

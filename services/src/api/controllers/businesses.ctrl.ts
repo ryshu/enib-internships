@@ -1,18 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 import httpStatus from 'http-status-codes';
-import sequelize from 'sequelize';
 
-import Businesses from '../../models/Businesses';
-import Internships from '../../models/Internships';
+import BusinessModel from '../../models/business.model';
 
-import { paginate } from '../helpers/pagination.helper';
 import {
     UNPROCESSABLE_ENTITY,
-    checkArrayContent,
     BAD_REQUEST_VALIDATOR,
     checkContent,
 } from '../helpers/global.helper';
+import { generateGetInternships } from '../helpers/internships.helper';
+import { fullCopyInternship } from '../processors/internship.proc';
+
+import { IBusinessEntity } from '../../declarations';
 
 /**
  * GET /businesses
@@ -26,55 +26,12 @@ export const getBusinesses = (req: Request, res: Response, next: NextFunction): 
     }
 
     // Retrive query data
-    const { page = 1, limit = 20, countries, name } = req.query;
+    const { page = 1, limit = 20, countries, name, archived } = req.query;
 
-    // Build query options
-    const findOpts: sequelize.FindOptions = {
-        attributes: {
-            include: [[sequelize.fn('count', sequelize.col(`internships.businessId`)), 'count']],
-        },
-        include: [
-            {
-                model: Internships,
-                as: 'internships',
-                attributes: [],
-                duplicating: false,
-            },
-        ],
-        where: {},
-        group: [sequelize.col(`Businesses.id`)],
-    };
-
-    // Build count query options
-    const countOpts: sequelize.FindOptions = { where: {} };
-
-    if (countries) {
-        // If country list is given, add it to query
-        // Sequelize will translate it by "country in countries"
-        (findOpts.where as any).country = countries;
-        (countOpts.where as any).country = countries;
-    }
-
-    if (name) {
-        // If name filter is given, apply it using substring
-        (findOpts.where as any).name = { [sequelize.Op.substring]: name };
-        (countOpts.where as any).name = { [sequelize.Op.substring]: name };
-    }
-
-    let max: number;
-    Businesses.count(countOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Businesses.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (businesses) => {
-            if (checkArrayContent(businesses, next)) {
-                return res.send({
-                    page,
-                    data: businesses,
-                    length: businesses.length,
-                    max,
-                });
+    BusinessModel.getBusinesses({ name, countries, archived }, { page, limit })
+        .then(async (data) => {
+            if (checkContent(data, next)) {
+                return res.send(data);
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
@@ -98,9 +55,15 @@ export const postBusiness = (req: Request, res: Response, next: NextFunction): v
         postalCode: req.body.postalCode,
         address: req.body.address,
         additional: req.body.additional,
+
+        // Copy internships if provided to also create them in DB
+        internships:
+            req.body.internships && Array.isArray(req.body.internships)
+                ? req.body.internships.map((i: any) => fullCopyInternship(i))
+                : [],
     };
 
-    Businesses.create(business)
+    BusinessModel.createBusiness(business)
         .then((created) => res.send(created))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -116,7 +79,7 @@ export const getBusiness = (req: Request, res: Response, next: NextFunction): vo
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id, { include: [{ model: Internships, as: 'internships' }] })
+    BusinessModel.getBusiness(Number(req.params.id), req.query.archived)
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val);
@@ -136,36 +99,10 @@ export const putBusiness = (req: Request, res: Response, next: NextFunction): vo
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id)
+    BusinessModel.updateBusiness(Number(req.params.id), req.body)
         .then((business) => {
-            if (!checkContent(business, next)) {
-                return undefined;
-            }
-
-            if (req.body.name) {
-                business.set('name', req.body.name);
-            }
-            if (req.body.country) {
-                business.set('country', req.body.country);
-            }
-            if (req.body.city) {
-                business.set('city', req.body.city);
-            }
-            if (req.body.postalCode) {
-                business.set('postalCode', req.body.postalCode);
-            }
-            if (req.body.address) {
-                business.set('address', req.body.address);
-            }
-            if (req.body.additional) {
-                business.set('additional', req.body.additional);
-            }
-
-            return business.save();
-        })
-        .then((updated) => {
-            if (updated) {
-                return res.send(updated);
+            if (checkContent(business, next)) {
+                return res.send(business);
             }
         })
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
@@ -182,8 +119,7 @@ export const deleteBusiness = (req: Request, res: Response, next: NextFunction):
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+    BusinessModel.removeBusiness(Number(req.params.id))
         .then(() => res.sendStatus(httpStatus.OK))
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
@@ -192,36 +128,7 @@ export const deleteBusiness = (req: Request, res: Response, next: NextFunction):
  * GET /businesses/:id/internships
  * Used to get all internships of a business
  */
-export const getBusinessInternships = (req: Request, res: Response, next: NextFunction): void => {
-    // @see validator + router
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return BAD_REQUEST_VALIDATOR(next, errors);
-    }
-
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-
-    const findOpts: sequelize.FindOptions = { where: { businessId: req.params.id } };
-
-    let max: number;
-    Internships.count(findOpts)
-        .then((rowNbr) => {
-            max = rowNbr;
-            return Internships.findAll(paginate({ page, limit }, findOpts));
-        })
-        .then(async (internships) => {
-            if (checkArrayContent(internships, next)) {
-                return res.send({
-                    page,
-                    data: internships,
-                    length: internships.length,
-                    max,
-                });
-            }
-        })
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
-};
+export const getBusinessInternships = generateGetInternships('businessId');
 
 /**
  * GET /businesses/:id/internships/:internship_id/link
@@ -234,12 +141,7 @@ export const linkBusinessInternships = (req: Request, res: Response, next: NextF
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    Businesses.findByPk(req.params.id)
-        .then(async (val) => {
-            if (checkContent(val, next)) {
-                await val.addInternship(Number(req.params.internship_id));
-                return res.sendStatus(httpStatus.OK);
-            }
-        })
+    BusinessModel.linkToInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

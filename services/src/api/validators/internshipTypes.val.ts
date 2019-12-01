@@ -1,14 +1,15 @@
 import { Schema } from 'express-validator';
-import { replaceAllExistByOptional } from './generic.val';
+import { replaceAllExistByOptional, archivedValidator } from './generic.val';
+import { categoryVal, internshipVal, campaignVal } from './generator.val';
+
+export const InternshipTypeList: Schema = {
+    ...archivedValidator,
+};
 
 export const InternshipTypeCreate: Schema = {
-    label: {
-        in: ['body'],
-        isString: { errorMessage: 'Label must be of type string' },
-        exists: { errorMessage: 'Label must be defined' },
-        trim: true,
-        escape: true,
-    },
+    ...categoryVal(),
+    ...replaceAllExistByOptional(internshipVal('internships[*]')),
+    ...replaceAllExistByOptional(campaignVal('campaigns[*]')),
 };
 
 export const InternshipTypeUpdate = replaceAllExistByOptional(InternshipTypeCreate);

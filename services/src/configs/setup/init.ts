@@ -1,12 +1,14 @@
 import * as Sequelize from 'sequelize';
 
-import InternshipTypes from '../../models/InternshipTypes';
+import InternshipTypes from '../../models/sequelize/InternshipTypes';
 
 import logger from '../../utils/logger';
 
 import { defaultCategories } from '../data/categories';
-import Mentors from '../../models/Mentors';
+import Mentors from '../../models/sequelize/Mentors';
 import { adminsEmail, admins } from '../data/admin';
+
+import { setupStatistics } from './statistics';
 
 export default async function() {
     try {
@@ -44,6 +46,7 @@ export default async function() {
             }
         }
         await Promise.all(promises as any);
+        await setupStatistics();
     } catch (error) {
         // Log error and exit
         logger.error(error);

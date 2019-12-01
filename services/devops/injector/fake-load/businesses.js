@@ -2,9 +2,9 @@ const faker = require('faker');
 const chalk = require('chalk');
 
 faker.locale = 'fr';
-const Businesses = require('../../../dist/models/Businesses').default;
+const Businesses = require('../../../dist/models/sequelize/Businesses').default;
 
-async function inject(business) {
+async function inject(business, debug) {
     await Businesses.create(business);
     if (debug) console.info(chalk.white(`Inject businesses "${business.name}" in database`));
 }
@@ -20,7 +20,7 @@ module.exports = async function(quantity = 100, debug = false) {
             address: faker.address.streetAddress(),
             additional: faker.address.secondaryAddress(),
         };
-        promises.push(inject(business));
+        promises.push(inject(business, debug));
     }
 
     await Promise.all(promises);

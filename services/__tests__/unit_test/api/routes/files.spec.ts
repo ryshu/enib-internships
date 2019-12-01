@@ -7,8 +7,8 @@ import app from '../../../../src/app';
 import dbSetup from '../../../../src/configs/setup/database';
 
 // Import model for pre-operation before asserting API methods
-import Files from '../../../../src/models/Files';
-import Internships from '../../../../src/models/Internships';
+import Files from '../../../../src/models/sequelize/Files';
+import Internships from '../../../../src/models/sequelize/Internships';
 
 import { defaultFiles, defaultInternships, getPdfSampleDir } from '../../../../__mocks__/mockData';
 
@@ -46,6 +46,7 @@ describe('GET /files', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             data: [
                 {
+                    id: expect.any(Number),
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
                 },
@@ -209,7 +210,6 @@ describe('GET /files/:id/internships', () => {
         const CREATED = await Files.create(VALID_FILE);
         const RESPONSE = await request(app).get(`${baseURL}/files/${CREATED.id}/internships`);
         expect(RESPONSE.status).toBe(200);
-        expect(RESPONSE.body).toEqual({});
     });
 
     it('Files_200_WithLinkedData', async () => {
@@ -227,6 +227,7 @@ describe('GET /files/:id/internships', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });
@@ -292,6 +293,7 @@ describe('POST /files/:id/internships/:internship_id/link', () => {
         expect(data).toMatchSnapshot({
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
+            id: expect.any(Number),
         });
     });
 });

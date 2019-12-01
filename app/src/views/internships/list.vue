@@ -10,14 +10,12 @@ import { UserModule } from '../../store/modules/user';
 
 import InternshipsStudentList from './student/list.vue';
 import InternshipsMentorList from './mentor/list.vue';
-import InternshipsAdminList from './admin/list.vue';
 
 @Component({
   name: 'InternshipsList',
   components: {
     InternshipsStudentList,
     InternshipsMentorList,
-    InternshipsAdminList,
   },
 })
 export default class extends Vue {
@@ -28,9 +26,7 @@ export default class extends Vue {
   }
 
   changeRole(role: string) {
-    if (role === 'admin') {
-      this.roleView = 'internships-admin-list';
-    } else if (role === 'default') {
+    if (role === 'default') {
       this.roleView = 'internships-mentor-list';
     } else {
       this.roleView = 'internships-student-list';

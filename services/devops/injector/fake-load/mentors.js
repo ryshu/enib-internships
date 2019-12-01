@@ -2,9 +2,9 @@ const faker = require('faker');
 const chalk = require('chalk');
 
 faker.locale = 'fr';
-const Mentors = require('../../../dist/models/Mentors').default;
+const Mentors = require('../../../dist/models/sequelize/Mentors').default;
 
-async function inject(m) {
+async function inject(m, debug) {
     await Mentors.create(m);
     if (debug) console.info(chalk.white(`Inject mentor in database`));
 }
@@ -18,7 +18,7 @@ module.exports = async function(quantity = 100, debug = false) {
             email: faker.internet.email(),
             role: 'default',
         };
-        promises.push(inject(mentor));
+        promises.push(inject(mentor, debug));
     }
 
     await Promise.all(promises);

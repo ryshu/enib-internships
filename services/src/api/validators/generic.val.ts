@@ -46,50 +46,21 @@ export const paginateValidator: Schema = {
     },
 };
 
+export const archivedValidator: Schema = {
+    archived: {
+        in: ['query'],
+        isBoolean: { errorMessage: 'Archived field must be a boolean' },
+        optional: true,
+        toBoolean: true,
+    },
+};
+
 export const contriesValidator: Schema = {
     countries: {
         in: ['query'],
         isArray: { errorMessage: 'Country filter list must be array' },
         optional: true,
         toArray: true,
-    },
-};
-
-export const addressValidator: Schema = {
-    country: {
-        in: ['body'],
-        isString: { errorMessage: 'Country must be of type string' },
-        exists: { errorMessage: 'Country must be defined' },
-        trim: true,
-        escape: true,
-    },
-    city: {
-        in: ['body'],
-        isString: { errorMessage: 'City must be of type string' },
-        exists: { errorMessage: 'City must be defined' },
-        trim: true,
-        escape: true,
-    },
-    postalCode: {
-        in: ['body'],
-        isString: { errorMessage: 'Postal code must be of type string' },
-        exists: { errorMessage: 'Postal code must be defined' },
-        trim: true,
-        escape: true,
-    },
-    address: {
-        in: ['body'],
-        isString: { errorMessage: 'Address must be of type string' },
-        exists: { errorMessage: 'Address must be defined' },
-        trim: true,
-        escape: true,
-    },
-    additional: {
-        in: ['body'],
-        isString: { errorMessage: 'Additional must be of type string' },
-        optional: true,
-        trim: true,
-        escape: true,
     },
 };
 
