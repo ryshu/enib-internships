@@ -225,6 +225,10 @@ export default {
       lastName: 'Nom',
       email: 'Email',
     },
+    mentoringProposition: {
+      title: "Postuler",
+      comment: 'Ajouter un commentaire',
+    },
     publish: 'Publier',
     search: 'Recherche',
     status: 'Status',
@@ -325,6 +329,11 @@ export default {
     placeholder: {
       update: "Editer l'étudiant",
       remove: "Supprimer l'étudiant de cette campaign",
+    },
+  },
+  mentoringProposition: {
+    placeholder: {
+      create: "Postuler",
     },
   },
 };

@@ -71,7 +71,11 @@
     >
       <el-table-column :label="$t('table.internships.subject')" min-width="250px">
         <template slot-scope="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
+          <span>
+            {{
+              row.subject
+            }}
+          </span>
         </template>
       </el-table-column>
 
@@ -101,19 +105,46 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="330"
+        width="100"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-button
-            type="primary"
-            size="small"
-            icon="el-icon-edit"
-            @click="handlePostuler(row)"
-          >{{ $t('table.postuler') }}</el-button>
+          <crud-btn
+            type="success"
+            icon="el-icon-news"
+            :placeholder="$t('mentoringProposition.placeholder.create')"
+            @clicked="handleCreate(row)"
+          />
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+      :title="$t('table.mentoringProposition.title')"
+      :before-close="cancel"
+      :visible.sync="dialogFormVisible"
+      width="80%"
+      top="5vh"
+      @keydown.esc="cancel"
+    >
+      <el-form
+        ref="dataForm"
+        :model="tempMentoringPropositionData"
+        label-position="left"
+        label-width="250px"
+        style="width: 100%; padding: 0 50px;"
+      >
+        <el-form-item :label="$t('table.mentoringProposition.comment')" prop="comment">
+          <el-input v-model="tempMentoringPropositionData.comment" type="textarea" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button
+          type="primary"
+          @click="dialogStatus==='create'?createData():updateData()"
+        >{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
 
     <pagination
       v-show="total > 0"
@@ -122,6 +153,7 @@
       :limit.sync="listQuery.limit"
       @pagination="getList"
     />
+
   </div>
 </template>
 
@@ -131,29 +163,40 @@ import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
 import { cloneDeep } from 'lodash';
 
-import {
-  getInternships,
-  defaultInternshipData,
-} from '../../../api/internships';
-
-import { IInternshipEntity, InternshipOpts } from '../../../declarations';
+import { IInternshipEntity,
+         InternshipOpts,
+         ICampaignEntity,
+         IMentoringPropositionEntity,
+         PropositionsOpts,
+} from '../../../declarations';
 
 import {
   getAvailabletInternshipCampaign,
-  getCampaigns,
+  getCampaign,
 } from '../../../api/campaigns';
+
+import { createMentoringProposition,
+         linkToMentor,
+         linkToCampaign,
+         linkToInternship,
+         defaultMentoringPropositionData,
+} from '../../../api/mentoring.propositions';
+
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
 
 import Pagination from '../../../components/Pagination/index.vue';
+import CrudBtn from '../../../components/CrudBtn/index.vue';
 
 import { CategoriesModule } from '../../../store/modules/categories';
+import { UserModule } from '../../../store/modules/user';
 
 @Component({
   name: 'CampaignsMentorInternships',
   components: {
     Pagination,
+    CrudBtn,
   },
 })
 export default class extends Vue {
@@ -171,6 +214,15 @@ export default class extends Vue {
     isAbroad: false,
   };
 
+  private dialogFormVisible = false;
+  private dialogStatus = '';
+
+  // Available mode to print in edition dialog
+  private textMap = {};
+
+  // Validation rules for edit and update
+  private tempMentoringPropositionData = defaultMentoringPropositionData;
+
   private downloadLoading = false;
 
   private countryList = countryList.getNames();
@@ -181,6 +233,10 @@ export default class extends Vue {
 
   private get id() {
     return Number(this.$route.params.id);
+  }
+
+  private get userId() {
+    return UserModule.id;
   }
 
   public created() {
@@ -200,6 +256,39 @@ export default class extends Vue {
 
   private handleFilter() {
     this.getList();
+  }
+
+  private resetTempMentoringPropositionData() {
+    this.tempMentoringPropositionData = cloneDeep(defaultMentoringPropositionData);
+  }
+
+  private handleCreate() {
+    this.resetTempMentoringPropositionData();
+    this.dialogStatus = 'create';
+    this.dialogFormVisible = true;
+    this.$nextTick(() => {
+      (this.$refs['dataForm'] as Form).clearValidate();
+    });
+  }
+
+  private createData(row: any) {
+    (this.$refs['dataForm'] as Form).validate(async valid => {
+      if (valid) {
+        // TODO: Factorize in 1 function
+        const data = await createMentoringProposition(this.tempMentoringPropositionData);
+        linkToMentor(data.id, this.userId);
+        linkToCampaign(data.id, this.id);
+        linkToInternship(data.id, row.id);
+        this.getList();
+        this.dialogFormVisible = false;
+        this.$notify({
+          title: this.$t('notify.mentors.create.title') as string,
+          message: this.$t('notify.mentors.create.msg') as string,
+          type: 'success',
+          duration: 2000,
+        });
+      }
+    });
   }
 
   private handleDownload() {
@@ -242,4 +331,3 @@ export default class extends Vue {
   width: 100%;
 }
 </style>
-

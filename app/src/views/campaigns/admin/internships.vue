@@ -73,7 +73,7 @@
         <template slot-scope="{ row }">
           <span class="link-type" @click="handleUpdate(row)">
             {{
-            row.subject
+              row.subject
             }}
           </span>
         </template>
@@ -105,10 +105,16 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="100px"
+        width="150"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
+          <crud-btn
+            type="success"
+            icon="el-icon-news"
+            :placeholder="$t('mentoringProposition.placeholder.create')"
+            @clicked="handlePublish(row)"
+          />
           <crud-btn
             type="warning"
             icon="el-icon-edit"
@@ -133,6 +139,7 @@
       @pagination="getList"
     />
     <edit-internship ref="EditInternship" />
+
   </div>
 </template>
 
@@ -149,7 +156,16 @@ import {
   defaultInternshipData,
 } from '../../../api/internships';
 
-import { IInternshipEntity, InternshipOpts } from '../../../declarations';
+import { createMentoringProposition,
+         defaultMentoringPropositionData,
+} from '../../../api/mentoring.propositions';
+
+import { IInternshipEntity,
+         InternshipOpts,
+         ICampaignEntity,
+         IMentoringPropositionEntity,
+         PropositionsOpts,
+} from '../../../declarations';
 
 import {
   getAvailabletInternshipCampaign,
@@ -164,6 +180,7 @@ import CrudBtn from '../../../components/CrudBtn/index.vue';
 import EditInternship from '../../internships/dialog/EditInternship.vue';
 
 import { CategoriesModule } from '../../../store/modules/categories';
+
 
 @Component({
   name: 'CampaignsAdminInternships',
