@@ -183,7 +183,7 @@ export const getMentorPropositions = (req: Request, res: Response, next: NextFun
 };
 
 /**
- * GET /mentors/:id/propositions/:mentoring_proposition_id/link
+ * POST /mentors/:id/propositions/:mentoring_proposition_id/link
  * Used to link a mentor with a campaign
  */
 export const linkMentorProposition = (req: Request, res: Response, next: NextFunction): void => {

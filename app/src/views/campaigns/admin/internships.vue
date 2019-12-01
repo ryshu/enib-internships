@@ -113,7 +113,7 @@
             type="success"
             icon="el-icon-news"
             :placeholder="$t('mentoringProposition.placeholder.create')"
-            @clicked="handlePublish(row)"
+            @clicked="handleCreate(row)"
           />
           <crud-btn
             type="warning"
@@ -130,6 +130,34 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog
+      :title="$t('table.mentoringProposition.title')"
+      :before-close="cancel"
+      :visible.sync="dialogFormPostVisible"
+      width="60%"
+      top="5vh"
+      @keydown.esc="cancel"
+    >
+      <el-form
+        ref="dataFormPost"
+        :model="tempMentoringPropositionData"
+        label-position="left"
+        label-width="250px"
+        style="width: 100%; padding: 0 50px;"
+      >
+        <el-form-item :label="$t('table.mentoringProposition.comment')" prop="comment">
+          <el-input v-model="tempMentoringPropositionData.comment" type="textarea" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormPostVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button
+          type="primary"
+          @click="dialogStatus==='create'?createData():updateData()"
+        >{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
 
     <pagination
       v-show="total > 0"
@@ -154,11 +182,8 @@ import {
   updateInternship,
   deleteInternship,
   defaultInternshipData,
+  linkInternshipPropositions,
 } from '../../../api/internships';
-
-import { createMentoringProposition,
-         defaultMentoringPropositionData,
-} from '../../../api/mentoring.propositions';
 
 import { IInternshipEntity,
          InternshipOpts,
@@ -170,7 +195,14 @@ import { IInternshipEntity,
 import {
   getAvailabletInternshipCampaign,
   getCampaigns,
+  linkCampaignMentoringPropositions,
 } from '../../../api/campaigns';
+
+import { linkMentorProposition } from '../../../api/mentors';
+
+import { createMentoringProposition,
+         defaultMentoringPropositionData,
+} from '../../../api/mentoring.propositions';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
@@ -180,7 +212,7 @@ import CrudBtn from '../../../components/CrudBtn/index.vue';
 import EditInternship from '../../internships/dialog/EditInternship.vue';
 
 import { CategoriesModule } from '../../../store/modules/categories';
-
+import { UserModule } from '../../../store/modules/user';
 
 @Component({
   name: 'CampaignsAdminInternships',
@@ -205,7 +237,20 @@ export default class extends Vue {
     isAbroad: false,
   };
 
+  private resolve: (value?: IMentoringPropositionEntity) => void = () => {};
+
   private downloadLoading = false;
+
+  private dialogFormPostVisible = false;
+  private dialogStatus = '';
+
+  private internshipId = -1;
+
+  // Available mode to print in edition dialog
+  private textMap = {};
+
+  // Validation rules for edit and update
+  private tempMentoringPropositionData = defaultMentoringPropositionData;
 
   private countryList = countryList.getNames();
 
@@ -215,6 +260,10 @@ export default class extends Vue {
 
   private get id() {
     return Number(this.$route.params.id);
+  }
+
+  private get userId() {
+    return UserModule.id;
   }
 
   public created() {
@@ -234,6 +283,41 @@ export default class extends Vue {
 
   private handleFilter() {
     this.getList();
+  }
+
+  private resetTempMentoringPropositionData() {
+    this.tempMentoringPropositionData = cloneDeep(defaultMentoringPropositionData);
+  }
+
+  private handleCreate(row: any) {
+    this.resetTempMentoringPropositionData();
+    this.internshipId = row.id;
+    this.dialogStatus = 'create';
+    this.dialogFormPostVisible = true;
+    this.$nextTick(() => {
+      (this.$refs['dataFormPost'] as Form).clearValidate();
+    });
+  }
+
+  private createData() {
+    (this.$refs['dataFormPost'] as Form).validate(async valid => {
+      if (valid) {
+        // TODO: Factorize in 1 function
+        const data = await createMentoringProposition(this.tempMentoringPropositionData);
+        linkMentorProposition(this.userId, Number(data.id));
+        linkCampaignMentoringPropositions(this.id, Number(data.id));
+        linkInternshipPropositions(this.internshipId, Number(data.id));
+        this.getList();
+        this.dialogFormPostVisible = false;
+        this.internshipId = -1;
+        this.$notify({
+          title: this.$t('notify.mentorPropositions.create.title') as string,
+          message: this.$t('notify.mentorPropositions.create.msg') as string,
+          type: 'success',
+          duration: 2000,
+        });
+      }
+    });
   }
 
   private async handleDelete(row: any, status: string) {
@@ -262,6 +346,11 @@ export default class extends Vue {
           });
         }
       });
+  }
+
+  private cancel() {
+    this.dialogFormPostVisible = false;
+    this.resolve();
   }
 
   private handleDownload() {

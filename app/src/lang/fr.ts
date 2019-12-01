@@ -121,6 +121,20 @@ export default {
         title: "Modification d'un professeur",
       },
     },
+    mentorPropositions: {
+      create: {
+        msg: 'La proposition a bien été créé',
+        title: "Création d'une proposition",
+      },
+      delete: {
+        msg: 'La proposition a bien été supprimé',
+        title: "Suppression d'une proposition",
+      },
+      update: {
+        msg: 'La proposition a bien été modifié',
+        title: "Modification d'une proposition",
+      },
+    },
     students: {
       create: {
         msg: "L'étudiant a bien été créé",

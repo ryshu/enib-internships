@@ -122,7 +122,7 @@
       :title="$t('table.mentoringProposition.title')"
       :before-close="cancel"
       :visible.sync="dialogFormVisible"
-      width="80%"
+      width="60%"
       top="5vh"
       @keydown.esc="cancel"
     >
@@ -173,15 +173,16 @@ import { IInternshipEntity,
 import {
   getAvailabletInternshipCampaign,
   getCampaign,
+  linkCampaignMentoringPropositions,
 } from '../../../api/campaigns';
 
+import { linkMentorProposition } from '../../../api/mentors';
+
+import { linkInternshipPropositions } from '../../../api/internships';
+
 import { createMentoringProposition,
-         linkToMentor,
-         linkToCampaign,
-         linkToInternship,
          defaultMentoringPropositionData,
 } from '../../../api/mentoring.propositions';
-
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
@@ -214,6 +215,8 @@ export default class extends Vue {
     isAbroad: false,
   };
 
+  private resolve: (value?: IMentoringPropositionEntity) => void = () => {};
+
   private dialogFormVisible = false;
   private dialogStatus = '';
 
@@ -222,7 +225,7 @@ export default class extends Vue {
 
   // Validation rules for edit and update
   private tempMentoringPropositionData = defaultMentoringPropositionData;
-
+  private internshipId = -1;
   private downloadLoading = false;
 
   private countryList = countryList.getNames();
@@ -262,8 +265,9 @@ export default class extends Vue {
     this.tempMentoringPropositionData = cloneDeep(defaultMentoringPropositionData);
   }
 
-  private handleCreate() {
+  private handleCreate(row: any) {
     this.resetTempMentoringPropositionData();
+    this.internshipId = row.id;
     this.dialogStatus = 'create';
     this.dialogFormVisible = true;
     this.$nextTick(() => {
@@ -271,24 +275,30 @@ export default class extends Vue {
     });
   }
 
-  private createData(row: any) {
+  private createData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
         // TODO: Factorize in 1 function
         const data = await createMentoringProposition(this.tempMentoringPropositionData);
-        linkToMentor(data.id, this.userId);
-        linkToCampaign(data.id, this.id);
-        linkToInternship(data.id, row.id);
+        linkMentorProposition(this.userId, Number(data.id));
+        linkCampaignMentoringPropositions(this.id, Number(data.id));
+        linkInternshipPropositions(this.internshipId, Number(data.id));
         this.getList();
         this.dialogFormVisible = false;
+        this.internshipId = -1;
         this.$notify({
-          title: this.$t('notify.mentors.create.title') as string,
-          message: this.$t('notify.mentors.create.msg') as string,
+          title: this.$t('notify.mentorPropositions.create.title') as string,
+          message: this.$t('notify.mentorPropositions.create.msg') as string,
           type: 'success',
           duration: 2000,
         });
       }
     });
+  }
+
+  private cancel() {
+    this.dialogFormVisible = false;
+    this.resolve();
   }
 
   private handleDownload() {
@@ -323,6 +333,7 @@ export default class extends Vue {
     ) as string);
     this.downloadLoading = false;
   }
+
 }
 </script>
 

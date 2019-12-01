@@ -41,3 +41,9 @@ export const deleteMentor = (id: number) =>
     url: `/mentors/${id}`,
     method: 'delete',
   }) as any) as Promise<void>;
+
+export const linkMentorProposition = (mentorID: number, mentoringPropositionId: number) =>
+  (request({
+  url: `/mentors/${mentorID}/propositions/${mentoringPropositionId}/link`,
+  method: 'post',
+}) as any) as Promise<IMentorEntity>;
