@@ -50,9 +50,9 @@
 
       <el-row :gutter="20">
         <el-col :span="12">
+          <!-- Is visible is used because we can't use isPublish instead (see translation file) -->
           <el-form-item
             :label="$t('table.campaigns.isVisible')"
-            :data="$t('table.campaigns.isPublish')"
             prop="maxProposition"
           >
             <el-switch
@@ -129,6 +129,7 @@ export default class extends Vue {
   }
 
   public created() {
+    // Prevent error during component creation https://vuejs.org/v2/api/#Vue-nextTick
     this.$nextTick(() => {
       this.setupCampaign();
     });
