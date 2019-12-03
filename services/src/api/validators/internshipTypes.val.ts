@@ -1,6 +1,10 @@
 import { Schema } from 'express-validator';
-import { replaceAllExistByOptional } from './generic.val';
+import { replaceAllExistByOptional, archivedValidator } from './generic.val';
 import { categoryVal, internshipVal, campaignVal } from './generator.val';
+
+export const InternshipTypeList: Schema = {
+    ...archivedValidator,
+};
 
 export const InternshipTypeCreate: Schema = {
     ...categoryVal(),

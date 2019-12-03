@@ -23,6 +23,7 @@ Key | Type | Optional | Description
 **mode** | String | *no* | published or propositions or self
 **isAbroad** | Number | *no* | Filter to get only abroad internships
 **isValidated** | Number | *no* | Filter to get only validated internships
+**archived** | Boolean | *yes* | Only archived documents
 
 ### 200 - List of internships
 
@@ -146,6 +147,12 @@ GET /api/v1/internships/:id
 Key | Type | Description
 - | - | -
 **id** | String | Internship ID
+
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**archived** | Boolean | *yes* | Only archived document
 
 ### 200 - Internship
 

@@ -21,8 +21,15 @@ import { fullCopyCampaign } from '../processors/campaign.proc';
  * GET /internshipTypes
  * Used to GET all internship types
  */
-export const getInternshipTypes = (_req: Request, res: Response, next: NextFunction): void => {
-    InternshipTypeModel.getInternshipTypes()
+export const getInternshipTypes = (req: Request, res: Response, next: NextFunction): void => {
+    // @see validator + router
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return BAD_REQUEST_VALIDATOR(next, errors);
+    }
+
+    const { archived } = req.query;
+    InternshipTypeModel.getInternshipTypes({ archived })
         .then((types) => (checkArrayContent(types, next) ? res.send(types) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -66,7 +73,7 @@ export const getInternshipType = (req: Request, res: Response, next: NextFunctio
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipTypeModel.getInternshipType(Number(req.params.id))
+    InternshipTypeModel.getInternshipType(Number(req.params.id), req.query.archived)
         .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

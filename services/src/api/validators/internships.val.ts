@@ -1,6 +1,13 @@
 import { Schema } from 'express-validator';
 
-import { paginateValidator, replaceAllExistByOptional, contriesValidator, ID } from './generic.val';
+import {
+    paginateValidator,
+    replaceAllExistByOptional,
+    contriesValidator,
+    ID,
+    archivedValidator,
+} from './generic.val';
+
 import {
     internshipVal,
     categoryVal,
@@ -14,9 +21,22 @@ import {
 
 import { InternshipsMode, InternshipsResult } from '../../internship';
 
+// All available associations label for includes filter
+const InternshipAvailableIncludes = [
+    'files',
+    'student',
+    'mentor',
+    'availableCampaign',
+    'validatedCampaign',
+    'propositions',
+    'business',
+    'category',
+];
+
 export const InternshipsList: Schema = {
     ...paginateValidator,
     ...contriesValidator,
+    ...archivedValidator,
     'types': {
         in: ['query'],
         isArray: { errorMessage: 'Category filter list must be array' },
@@ -51,6 +71,24 @@ export const InternshipsList: Schema = {
         isBoolean: { errorMessage: 'Abroad should be of type boolean' },
         optional: true,
         toBoolean: true,
+    },
+    'includes': {
+        in: ['query'],
+        isArray: { errorMessage: 'Internship includes should be provide under array form' },
+        optional: true,
+        toArray: true,
+    },
+    'includes[*]': {
+        in: ['query'],
+        isString: { errorMessage: 'Include should be a string' },
+        isIn: {
+            options: [InternshipAvailableIncludes],
+            errorMessage: `Include should be available in following list: [${InternshipAvailableIncludes.join(
+                ', ',
+            )}]`,
+        },
+        optional: true,
+        trim: true,
     },
 };
 

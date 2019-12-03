@@ -5,6 +5,7 @@ Object {
   "data": Array [
     Object {
       "createdAt": Any<String>,
+      "deletedAt": null,
       "email": "john.doe@enib.fr",
       "firstName": "John",
       "id": Any<Number>,
@@ -14,6 +15,7 @@ Object {
     },
     Object {
       "createdAt": Any<String>,
+      "deletedAt": null,
       "email": "cas.dev@enib.fr",
       "firstName": "undefined",
       "id": Any<Number>,
@@ -32,6 +34,7 @@ exports[`GET /mentors/:id Mentors_200 1`] = `
 Object {
   "campaigns": Array [],
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
   "id": Any<Number>,
@@ -61,6 +64,7 @@ Object {
 exports[`PUT /mentors/:id Mentors_200_NotAnyDataUpdated 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "John",
   "id": Any<Number>,
@@ -73,6 +77,7 @@ Object {
 exports[`PUT /mentors/:id Mentors_200_UpdateAllData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "email": "john.doe@enib.fr",
   "firstName": "250",
   "id": Any<Number>,

@@ -35,7 +35,9 @@ export const getCampaigns = (req: Request, res: Response, next: NextFunction): v
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    CampaignModel.getCampaigns()
+    const { archived } = req.query;
+
+    CampaignModel.getCampaigns({ archived })
         .then((campaigns) => {
             if (checkArrayContent(campaigns, next)) {
                 return res.send(campaigns);
@@ -123,7 +125,7 @@ export const getCampaign = (req: Request, res: Response, next: NextFunction): vo
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    CampaignModel.getCampaign(Number(req.params.id))
+    CampaignModel.getCampaign(Number(req.params.id), req.query.archived)
         .then((val) => {
             if (checkContent(val, next)) {
                 return res.send(val);
@@ -190,7 +192,7 @@ export const getCampaignMentoringPropositions = (
 };
 
 /**
- * GET /campaigns/:id/mentoringPropositions/:mentoring_proposition_id/link
+ * POST /campaigns/:id/mentoringPropositions/:mentoring_proposition_id/link
  * Used to link a mentoring propositions with a campaign
  */
 export const linkCampaignMentoringPropositions = (

@@ -35,9 +35,9 @@ export const getMentors = (req: Request, res: Response, next: NextFunction): voi
 
     // Retrieve all mentors from database
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, archived } = req.query;
 
-    MentorModel.getMentors({}, { page, limit })
+    MentorModel.getMentors({ archived }, { page, limit })
         .then((mentor) => (checkContent(mentor, next) ? res.send(mentor) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -90,7 +90,7 @@ export const getMentor = (req: Request, res: Response, next: NextFunction): void
     }
 
     // Select mentor by ID into database
-    MentorModel.getMentor(Number(req.params.id))
+    MentorModel.getMentor(Number(req.params.id), req.query.archived)
         .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -183,7 +183,7 @@ export const getMentorPropositions = (req: Request, res: Response, next: NextFun
 };
 
 /**
- * GET /mentors/:id/propositions/:mentoring_proposition_id/link
+ * POST /mentors/:id/propositions/:mentoring_proposition_id/link
  * Used to link a mentor with a campaign
  */
 export const linkMentorProposition = (req: Request, res: Response, next: NextFunction): void => {

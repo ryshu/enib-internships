@@ -7,7 +7,7 @@ import Internships from './sequelize/Internships';
 
 import { PaginateList } from './helpers/type';
 import { checkPartialFile, checkPartialInternship } from '../utils/check';
-import { extractCount } from './helpers/options';
+import { extractCount, setFindOptsArchived } from './helpers/options';
 
 import { IFileEntity } from '../declarations';
 
@@ -15,6 +15,9 @@ import { IFileEntity } from '../declarations';
 export interface FileOpts {
     /** @property {number} internshipId Filter files by internship */
     internshipId?: number;
+
+    /** @property {boolean} archived Show only archived files */
+    archived?: boolean;
 }
 
 /**
@@ -94,13 +97,15 @@ class FileModelStruct {
      * @summary Method used to retrieve file by identifier
      * @notice Include internships by default
      * @param {number} id file identifier
+     * @param {boolean | undefined} archived If file is archived
      * @returns {Promise<IFileEntity>} Resolve: found file
      * @returns {Promise<void>} Resolve: no file found
      * @returns {Promise<any>} Reject: database error
      */
-    public getFile(id: number): Promise<IFileEntity> {
+    public getFile(id: number, archived?: boolean): Promise<IFileEntity> {
         return new Promise((resolve, reject) => {
-            Files.findByPk(id, { include: [{ model: Internships, as: 'internship' }] })
+            const opts = { include: [{ model: Internships, as: 'internship' }] };
+            Files.findByPk(id, archived ? setFindOptsArchived(opts) : opts)
                 .then((val: any) => resolve(val as IFileEntity))
                 .catch((e) => reject(e));
         });
@@ -198,10 +203,14 @@ class FileModelStruct {
     }
 
     private _buildFindOpts(opts: FileOpts): FindOptions {
-        const tmp: sequelize.FindOptions = { where: {} };
+        let tmp: sequelize.FindOptions = { where: {} };
 
         if (opts.internshipId !== undefined) {
             (tmp.where as any).internshipId = opts.internshipId;
+        }
+
+        if (opts.archived) {
+            tmp = setFindOptsArchived(tmp);
         }
 
         return tmp;

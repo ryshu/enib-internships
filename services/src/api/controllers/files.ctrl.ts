@@ -28,9 +28,9 @@ export const getFiles = (req: Request, res: Response, next: NextFunction): void 
     }
 
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, archived } = req.query;
 
-    FileModel.getFiles({}, { page, limit })
+    FileModel.getFiles({ archived }, { page, limit })
         .then((data) => {
             if (checkContent(data, next)) {
                 return res.send(data);
@@ -75,7 +75,7 @@ export const getFile = (req: Request, res: Response, next: NextFunction): void =
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    FileModel.getFile(Number(req.params.id))
+    FileModel.getFile(Number(req.params.id), req.query.archived)
         .then((val) => {
             // Check if we have content, and if so return it
             if (checkContent(val, next)) {

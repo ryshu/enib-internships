@@ -50,6 +50,7 @@ describe('GET /campaigns', () => {
         expect(RESPONSE.status).toBe(200);
         expect(Array.isArray(RESPONSE.body)).toBeTruthy();
         expect(RESPONSE.body[0]).toMatchSnapshot({
+            id: expect.any(Number),
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
         });
@@ -77,6 +78,7 @@ describe('POST /campaigns', () => {
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toMatchSnapshot({
             category: {
+                id: expect.any(Number),
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
             },
@@ -846,6 +848,7 @@ describe('POST /campaigns/:id/internshipTypes/:internship_type_id/link', () => {
 
         expect(CREATED_CAMPAIGN.category).toBeTruthy();
         expect(data).toMatchSnapshot({
+            id: expect.any(Number),
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
         });

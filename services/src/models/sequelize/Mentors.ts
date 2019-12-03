@@ -78,6 +78,8 @@ Mentors.init(
     {
         tableName: 'mentors',
         sequelize: database,
+        timestamps: true,
+        paranoid: true,
     },
 );
 

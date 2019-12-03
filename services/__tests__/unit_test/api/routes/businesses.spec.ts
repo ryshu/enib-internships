@@ -50,6 +50,7 @@ describe('GET /businesses', () => {
         expect(RESPONSE.body).toMatchSnapshot({
             data: [
                 {
+                    id: expect.any(Number),
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
                 },

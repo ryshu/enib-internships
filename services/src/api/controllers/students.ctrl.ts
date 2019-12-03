@@ -28,9 +28,9 @@ export const getStudents = (req: Request, res: Response, next: NextFunction): vo
     }
 
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, archived } = req.query;
 
-    StudentModel.getStudents({ page, limit })
+    StudentModel.getStudents({ archived }, { page, limit })
         .then((student) => (checkContent(student, next) ? res.send(student) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -76,7 +76,7 @@ export const getStudent = (req: Request, res: Response, next: NextFunction): voi
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    StudentModel.getStudent(Number(req.params.id))
+    StudentModel.getStudent(Number(req.params.id), req.query.archived)
         .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

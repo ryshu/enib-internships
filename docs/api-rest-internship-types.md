@@ -11,6 +11,12 @@ Details of routes to handle **internshipTypes**
 GET /api/v1/internshipTypes
 ```
 
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**archived** | Boolean | *yes* | Only archived documents
+
 ### 200 - List of internship types
 
 ``` json
@@ -92,6 +98,12 @@ GET /api/v1/internshipTypes/:id
 Key | Type | Description
 - | - | -
 **id** | String | Internship ID
+
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**archived** | Boolean | *yes* | Only archived document
 
 ### 200 - Internship type
 

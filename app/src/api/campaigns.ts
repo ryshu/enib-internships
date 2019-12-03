@@ -68,3 +68,9 @@ export const getCampaignInternships = (id: number, params: InternshipOpts) =>
     method: 'get',
     params,
   }) as any) as Promise<PaginateList<IInternshipEntity>>;
+
+export const linkCampaignMentoringPropositions = (campaignID: number, mentoringPropositionId: number) =>
+(request({
+  url: `/campaigns/${campaignID}/mentoringPropositions/${mentoringPropositionId}/link`,
+  method: 'post',
+}) as any) as Promise<ICampaignEntity>;

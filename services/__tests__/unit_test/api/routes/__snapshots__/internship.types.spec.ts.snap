@@ -4,6 +4,7 @@ exports[`GET /internshipTypes/:id InternshipTypes_200 1`] = `
 Object {
   "campaigns": Array [],
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "internships": Array [],
   "label": "test",
@@ -25,6 +26,7 @@ Object {
 exports[`PUT /internshipTypes/:id InternshipTypes_200_NotAnyDataUpdated 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "label": "test",
   "updatedAt": Any<String>,
@@ -34,6 +36,7 @@ Object {
 exports[`PUT /internshipTypes/:id InternshipTypes_200_UpdateAllData 1`] = `
 Object {
   "createdAt": Any<String>,
+  "deletedAt": null,
   "id": Any<Number>,
   "label": "additional data",
   "updatedAt": Any<String>,

@@ -23,9 +23,9 @@ import { fullCopyInternshipType } from '../processors/internship.type.proc';
 import { fullCopyMentor } from '../processors/mentor.proc';
 import { fullCopyMentoringProposition } from '../processors/mentoring.proposition.proc';
 import { fullCopyStudent } from '../processors/student.proc';
+
 import { APIError } from '../../utils/error';
-import { INTERNSHIP_MODE, INTERNSHIP_RESULT } from 'src/internship';
-import { InternshipHandler } from '../../internship/internship';
+import { INTERNSHIP_MODE, INTERNSHIP_RESULT } from '../../internship';
 
 /**
  * GET /internships
@@ -106,7 +106,11 @@ export const postInternship = async (req: Request, res: Response, next: NextFunc
 
             if (req.body.state === INTERNSHIP_MODE.PUBLISHED && req.session.info.role === 'admin') {
                 // If user is admin and mode need to be set to 'published', we publish this internship offer
-                result = (await new InternshipHandler(result).toPublished()).toJSON();
+                const handler = await InternshipModel.getHandler(created);
+                if (!checkContent(handler, next)) {
+                    return;
+                }
+                result = (await handler.toPublished()).toJSON();
             }
 
             return res.send(result);
@@ -124,7 +128,7 @@ export const getInternship = (req: Request, res: Response, next: NextFunction): 
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipModel.getInternship(Number(req.params.id))
+    InternshipModel.getInternship(Number(req.params.id), req.query.archived)
         .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -217,11 +221,10 @@ export const upadteFSMInternship = async (req: Request, res: Response, next: Nex
     }
 
     try {
-        const internship = await InternshipModel.getInternship(Number(req.params.id));
-        if (!checkContent(internship, next)) {
+        const handler = await InternshipModel.getHandler(Number(req.params.id));
+        if (!checkContent(handler, next)) {
             return;
         }
-        const handler = new InternshipHandler(internship);
 
         switch (query.state) {
             case INTERNSHIP_MODE.ARCHIVED:
@@ -361,8 +364,16 @@ export const linkInternshipStudents = (req: Request, res: Response, next: NextFu
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    InternshipModel.linkToStudent(Number(req.params.id), Number(req.params.student_id))
-        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
+    InternshipModel.getHandler(Number(req.params.id))
+        .then(async (handler) => {
+            if (!checkContent(handler, next)) {
+                return;
+            }
+
+            await handler.toAttributedStudent(Number(req.params.student_id));
+
+            return res.send(handler.toJSON());
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -435,8 +446,16 @@ export const linkAvailableCampaignInternships = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    InternshipModel.linkToAvailableCampaign(Number(req.params.id), Number(req.params.campaign_id))
-        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
+    InternshipModel.getHandler(Number(req.params.id))
+        .then(async (handler) => {
+            if (!checkContent(handler, next)) {
+                return;
+            }
+
+            await handler.toCampaignAvailable(Number(req.params.campaign_id));
+
+            return res.send(handler.toJSON());
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -457,26 +476,6 @@ export const getValidatedInternshipCampaign = (
 
     InternshipModel.getInternship(Number(req.params.id))
         .then((val) => (checkContent(val, next) ? res.send(val.validatedCampaign) : undefined))
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
-};
-
-/**
- * POST /internships/:id/validatedCampaign/:campaign_id/link
- * Used to link internship to a validatedCampaign
- */
-export const linkValidatedCampaignInternships = (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-): void => {
-    // @see validator + router
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return BAD_REQUEST_VALIDATOR(next, errors);
-    }
-
-    InternshipModel.linkToValidatedCampaign(Number(req.params.id), Number(req.params.campaign_id))
-        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -508,7 +507,7 @@ export const getInternshipPropositions = (
 };
 
 /**
- * GET /internships/:id/propositions/:mentoring_proposition_id/link
+ * POST /internships/:id/propositions/:mentoring_proposition_id/link
  * Used to get all propositions of a internships
  */
 export const linkInternshipPropositions = (
@@ -557,7 +556,15 @@ export const linkInternshipMentor = (req: Request, res: Response, next: NextFunc
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    InternshipModel.linkToMentor(Number(req.params.id), Number(req.params.mentor_id))
-        .then((internship) => (checkContent(internship, next) ? res.send(internship) : undefined))
+    InternshipModel.getHandler(Number(req.params.id))
+        .then(async (handler) => {
+            if (!checkContent(handler, next)) {
+                return;
+            }
+
+            await handler.toAttributedMentor(Number(req.params.mentor_id));
+
+            return res.send(handler.toJSON());
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

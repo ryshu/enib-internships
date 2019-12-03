@@ -13,6 +13,7 @@ import { PermissionModule } from './permission';
 import { TagsViewModule } from './tags-view';
 
 export interface IUserState {
+  id: number;
   firstName: string;
   lastName: string;
   role: string;
@@ -21,10 +22,16 @@ export interface IUserState {
 
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements IUserState {
+  public id = -1;
   public firstName = '';
   public lastName = '';
   public role = '';
   public email = '';
+
+  @Mutation
+  private SET_ID(id: number) {
+    this.id = id;
+  }
 
   @Mutation
   private SET_FIRST_NAME(firstName: string) {
@@ -53,11 +60,13 @@ class User extends VuexModule implements IUserState {
     if (!data) {
       throw Error('Verification failed, please Login.');
     }
-    const { role, firstName, lastName, email } = data;
+    const { id, role, firstName, lastName, email } = data;
     // role must be a non-empty array
     if (!role || role.length <= 0) {
       throw Error('GetUserInfo: role must be a non-null array!');
     }
+
+    this.SET_ID(Number(id));
     this.SET_ROLE(role);
     this.SET_FIRST_NAME(firstName);
     this.SET_LAST_NAME(lastName);

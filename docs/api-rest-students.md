@@ -17,6 +17,7 @@ Key | Type | Optional | Description
 - | - | - | -
 **limit** | Number | *no* | Page expected (By default 1)
 **page** | Number | *no* | Number of row expected (By default 20)
+**archived** | Boolean | *yes* | Only archived documents
 
 ### 200 - List of students
 
@@ -115,6 +116,12 @@ GET /api/v1/students/:id
 Key | Type | Description
 - | - | -
 **id** | String | Student ID
+
+### Params
+
+Key | Type | Optional | Description
+- | - | - | -
+**archived** | Boolean | *yes* | Only archived document
 
 ### 200 - Student
 
