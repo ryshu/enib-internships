@@ -43,7 +43,11 @@ describe('LaunchCampaign', () => {
             error: jest.fn(),
         };
 
-        await LaunchCampaign(CREATED, channel);
+        const TODO = await Campaigns.findByPk(CREATED.id, {
+            include: [{ model: InternshipTypes, as: 'category' }],
+        });
+
+        await LaunchCampaign(TODO, channel);
 
         expect(channel.step).toHaveBeenCalled();
         expect(channel.start).toHaveBeenCalledTimes(1);
@@ -58,6 +62,10 @@ describe('LaunchCampaign', () => {
         const category = await InternshipTypes.create(defaultInternshipTypes());
         await CREATED.setCategory(category);
 
-        await LaunchCampaign(CREATED);
+        const TODO = await Campaigns.findByPk(CREATED.id, {
+            include: [{ model: InternshipTypes, as: 'category' }],
+        });
+
+        await LaunchCampaign(TODO);
     });
 });
