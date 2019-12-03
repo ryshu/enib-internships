@@ -73,7 +73,7 @@
         <template slot-scope="{ row }">
           <span>
             {{
-              row.subject
+            row.subject
             }}
           </span>
         </template>
@@ -153,7 +153,6 @@
       :limit.sync="listQuery.limit"
       @pagination="getList"
     />
-
   </div>
 </template>
 
@@ -163,11 +162,13 @@ import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
 import { cloneDeep } from 'lodash';
 
-import { IInternshipEntity,
-         InternshipOpts,
-         ICampaignEntity,
-         IMentoringPropositionEntity,
-         PropositionsOpts,
+import {
+  IInternshipEntity,
+  InternshipOpts,
+  ICampaignEntity,
+  IMentoringPropositionEntity,
+  PropositionsOpts,
+  INTERNSHIP_MODE,
 } from '../../../declarations';
 
 import {
@@ -180,8 +181,9 @@ import { linkMentorProposition } from '../../../api/mentors';
 
 import { linkInternshipPropositions } from '../../../api/internships';
 
-import { createMentoringProposition,
-         defaultMentoringPropositionData,
+import {
+  createMentoringProposition,
+  defaultMentoringPropositionData,
 } from '../../../api/mentoring.propositions';
 
 import { exportJson2Excel } from '../../../utils/excel';
@@ -211,6 +213,7 @@ export default class extends Vue {
     limit: 10,
     subject: undefined,
     countries: [],
+    mode: [INTERNSHIP_MODE.AVAILABLE_CAMPAIGN],
     types: [],
     isAbroad: false,
   };
@@ -262,7 +265,9 @@ export default class extends Vue {
   }
 
   private resetTempMentoringPropositionData() {
-    this.tempMentoringPropositionData = cloneDeep(defaultMentoringPropositionData);
+    this.tempMentoringPropositionData = cloneDeep(
+      defaultMentoringPropositionData
+    );
   }
 
   private handleCreate(row: any) {
@@ -279,7 +284,9 @@ export default class extends Vue {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
         // TODO: Factorize in 1 function
-        const data = await createMentoringProposition(this.tempMentoringPropositionData);
+        const data = await createMentoringProposition(
+          this.tempMentoringPropositionData
+        );
         linkMentorProposition(this.userId, Number(data.id));
         linkCampaignMentoringPropositions(this.id, Number(data.id));
         linkInternshipPropositions(this.internshipId, Number(data.id));
@@ -333,7 +340,6 @@ export default class extends Vue {
     ) as string);
     this.downloadLoading = false;
   }
-
 }
 </script>
 

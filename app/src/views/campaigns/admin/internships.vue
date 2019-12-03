@@ -73,7 +73,7 @@
         <template slot-scope="{ row }">
           <span class="link-type" @click="handleUpdate(row)">
             {{
-              row.subject
+            row.subject
             }}
           </span>
         </template>
@@ -167,7 +167,6 @@
       @pagination="getList"
     />
     <edit-internship ref="EditInternship" />
-
   </div>
 </template>
 
@@ -185,11 +184,13 @@ import {
   linkInternshipPropositions,
 } from '../../../api/internships';
 
-import { IInternshipEntity,
-         InternshipOpts,
-         ICampaignEntity,
-         IMentoringPropositionEntity,
-         PropositionsOpts,
+import {
+  IInternshipEntity,
+  InternshipOpts,
+  ICampaignEntity,
+  IMentoringPropositionEntity,
+  PropositionsOpts,
+  INTERNSHIP_MODE,
 } from '../../../declarations';
 
 import {
@@ -200,8 +201,9 @@ import {
 
 import { linkMentorProposition } from '../../../api/mentors';
 
-import { createMentoringProposition,
-         defaultMentoringPropositionData,
+import {
+  createMentoringProposition,
+  defaultMentoringPropositionData,
 } from '../../../api/mentoring.propositions';
 
 import { exportJson2Excel } from '../../../utils/excel';
@@ -232,6 +234,7 @@ export default class extends Vue {
     page: 1,
     limit: 10,
     subject: undefined,
+    mode: [INTERNSHIP_MODE.AVAILABLE_CAMPAIGN],
     countries: [],
     types: [],
     isAbroad: false,
@@ -286,7 +289,9 @@ export default class extends Vue {
   }
 
   private resetTempMentoringPropositionData() {
-    this.tempMentoringPropositionData = cloneDeep(defaultMentoringPropositionData);
+    this.tempMentoringPropositionData = cloneDeep(
+      defaultMentoringPropositionData
+    );
   }
 
   private handleCreate(row: any) {
@@ -303,7 +308,9 @@ export default class extends Vue {
     (this.$refs['dataFormPost'] as Form).validate(async valid => {
       if (valid) {
         // TODO: Factorize in 1 function
-        const data = await createMentoringProposition(this.tempMentoringPropositionData);
+        const data = await createMentoringProposition(
+          this.tempMentoringPropositionData
+        );
         linkMentorProposition(this.userId, Number(data.id));
         linkCampaignMentoringPropositions(this.id, Number(data.id));
         linkInternshipPropositions(this.internshipId, Number(data.id));
