@@ -30,6 +30,9 @@ export interface PropositionsOpts {
 
     /** @property {boolean} archived Show only archived propositions */
     archived?: boolean;
+
+    /** @property {number} includes includes */
+    includes?: number;
 }
 
 /**
@@ -316,10 +319,6 @@ class MentoringPropositionModelStruct {
 
         if (opts.campaignId !== undefined) {
             (tmp.where as any).campaignId = opts.campaignId;
-        }
-
-        if (opts.archived) {
-            tmp.paranoid = false;
         }
 
         return tmp;
