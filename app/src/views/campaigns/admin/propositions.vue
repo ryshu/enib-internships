@@ -44,35 +44,51 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.propositions.id')" min-width="150px">
+      <el-table-column :label="$t('table.mentoringProposition.student')" min-width="75px">
         <template slot-scope="{ row }">
-          <span>{{ row.id }}</span>
+          <span>{{ row.internship.student.firstName + ' ' + row.internship.student.lastName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.propositions.comment')" min-width="150px">
+      <el-table-column :label="$t('table.mentoringProposition.internship')" min-width="150px">
+        <template slot-scope="{ row }">
+          <span>{{ row.internship.subject }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.mentoringProposition.country')" min-width="50px">
+        <template slot-scope="{ row }">
+          <span>{{ row.internship.country}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.mentoringProposition.mentor')" min-width="75px">
+        <template slot-scope="{ row }">
+          <span>{{ row.mentor.firstName + ' ' + row.mentor.lastName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.mentoringProposition.comment')" min-width="200px">
         <template slot-scope="{ row }">
           <span>{{ row.comment }}</span>
         </template>
       </el-table-column>
+
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="330"
+        width="150"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
-          <el-button
-            type="primary"
-            size="small"
-            icon="el-icon-like"
-            @click="handleUpdate(row)"
-          >{{ $t('table.validate') }}</el-button>
-          <el-button
-            size="small"
+          <crud-btn
+            type="success"
+            icon="el-icon-check"
+            :placeholder="$t('mentoringProposition.placeholder.validate')"
+            @clicked="handlePublish(row)"
+          />
+          <crud-btn
             type="danger"
-            icon="el-icon-remove"
-            @click="handleDelete(row, 'deleted')"
-          >{{ $t('table.delete') }}</el-button>
+            icon="el-icon-close"
+            :placeholder="$t('mentoringProposition.placeholder.delete')"
+            @clicked="handleDelete(row)"
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -131,12 +147,14 @@ import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
 
 import Pagination from '../../../components/Pagination/index.vue';
+import CrudBtn from '../../../components/CrudBtn/index.vue';
 import { MentorOpts } from '../../../declarations/mentor';
 
 @Component({
   name: 'CampaignsAdminPropositions',
   components: {
     Pagination,
+    CrudBtn,
   },
 })
 export default class extends Vue {

@@ -208,7 +208,7 @@ export default {
       startAt: 'Début',
       date: 'Periode de publication',
       isPublish: 'Publier la campagne',
-      isVisible: 'Campagne visible', 
+      isVisible: 'Campagne visible',
     },
     cancel: 'Annuler',
     confirm: 'Confirmer',
@@ -218,9 +218,9 @@ export default {
     delete: 'Supprimer',
     edit: 'Modifier',
     export: 'Exporter',
-    archive : 'Archiver',
+    archive: 'Archiver',
     detail: 'Détail',
-    save : 'Sauvegarder',
+    save: 'Sauvegarder',
     id: 'ID',
     internships: {
       additional: 'Informations complémentaire',
@@ -245,8 +245,13 @@ export default {
       email: 'Email',
     },
     mentoringProposition: {
-      title: "Postuler",
+      title: 'Postuler',
       comment: 'Ajouter un commentaire',
+      student: 'Etudiant',
+      internship: 'Sujet de Stage',
+      business: 'Entreprise',
+      mentor: 'Tuteur',
+      country: 'Pays',
     },
     publish: 'Publier',
     search: 'Recherche',
@@ -352,7 +357,9 @@ export default {
   },
   mentoringProposition: {
     placeholder: {
-      create: "Postuler",
+      create: 'Postuler',
+      validate: 'Valider le tuteur pour ce stage',
+      delete: 'Supprimer la proposition de tutorat',
     },
   },
 };
