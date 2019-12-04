@@ -90,12 +90,18 @@ exports.postCampaign = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
     campaigns_model_1.default.createCampaign(campaign)
         .then((created) => __awaiter(void 0, void 0, void 0, function* () {
-        if (created && !Number.isNaN(Number(categoryId))) {
+        if (global_helper_1.checkContent(created, next)) {
             // If category is given using an id, link internship to category before send reply
             const updated = yield campaigns_model_1.default.linkToCategory(created.id, categoryId);
-            return res.send(updated);
+            if (updated.isPublish) {
+                // If campaign is publish, launch campaign
+                yield campaigns_model_1.default.launchCampaign(updated.id, req.session.socketId);
+                return res.status(http_status_codes_1.default.ACCEPTED).send({ status: http_status_codes_1.default.ACCEPTED });
+            }
+            else {
+                return res.send(updated);
+            }
         }
-        return res.send(created);
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 });

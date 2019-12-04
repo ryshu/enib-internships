@@ -23,6 +23,8 @@ const Internships_1 = __importDefault(require("./sequelize/Internships"));
 const check_1 = require("../utils/check");
 const internship_type_mode_1 = __importDefault(require("./internship.type.mode"));
 const options_1 = require("./helpers/options");
+const campaigns_1 = require("./helpers/campaigns");
+const private_1 = require("../websocket/channels/private");
 /**
  * @interface CampaignModelStruct
  * @class
@@ -344,8 +346,32 @@ class CampaignModelStruct {
             }
         }));
     }
+    launchCampaign(id, userSessionId) {
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const campaign = yield Campaigns_1.default.findByPk(id, {
+                    include: [{ model: InternshipTypes_1.default, as: 'category' }],
+                });
+                if (!campaign || !campaign.category) {
+                    return resolve();
+                }
+                campaign.set('isPublish', true);
+                campaign.set('startAt', moment_1.default().valueOf());
+                yield campaign.save();
+                // Setup new channel to broadcast result
+                const ws = new private_1.ProgressChannel('campaign_create', userSessionId);
+                // Resolve to let API response
+                resolve();
+                // Launch campaign, using helper
+                yield campaigns_1.LaunchCampaign(campaign, ws);
+            }
+            catch (error) {
+                reject(error);
+            }
+        }));
+    }
     _buildFindOpts(opts) {
-        let tmp = {};
+        let tmp = { include: [{ model: InternshipTypes_1.default, as: 'category' }] };
         if (opts.archived) {
             tmp = options_1.setFindOptsArchived(tmp);
         }
