@@ -1,25 +1,29 @@
 import { Schema } from 'express-validator';
 
 import { paginateValidator, replaceAllExistByOptional, archivedValidator } from './generic.val';
+
 import { propositionsVal, campaignVal, mentorVal, internshipVal } from './generator.val';
 
-const mentoringPropositionIncludes = ['internship', 'campaign', 'mentor' ];
+// All available associations label for includes filter
+const mentoringPropositionIncludes = ['internship', 'campaign', 'mentor', 'student'];
 
 export const MentoringPropositionsList: Schema = {
     ...paginateValidator,
     ...archivedValidator,
     'includes': {
         in: ['query'],
-        isArray: { errorMessage: 'Mentoring Proposition includes should be provide under array form' },
+        isArray: { errorMessage: 'Internship includes should be provide under array form' },
         optional: true,
         toArray: true,
     },
     'includes[*]': {
         in: ['query'],
-        isString: { errorMessage: 'Includes should be a string' },
+        isString: { errorMessage: 'Include should be a string' },
         isIn: {
             options: [mentoringPropositionIncludes],
-            errorMessage: `Includes should be in following list : [${mentoringPropositionIncludes.join(', ')}]`,
+            errorMessage: `Include should be available in following list: [${mentoringPropositionIncludes.join(
+                ', ',
+            )}]`,
         },
         optional: true,
         trim: true,

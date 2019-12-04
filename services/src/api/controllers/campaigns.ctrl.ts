@@ -181,10 +181,10 @@ export const getCampaignMentoringPropositions = (
     }
 
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, includes, archived } = req.query;
 
     MentoringPropositionModel.getMentoringPropositions(
-        { campaignId: Number(req.params.id) },
+        { campaignId: Number(req.params.id), includes, archived },
         { page, limit },
     )
         .then(async (mps) => (checkContent(mps, next) ? res.send(mps) : undefined))

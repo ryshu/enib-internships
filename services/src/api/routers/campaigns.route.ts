@@ -13,6 +13,7 @@ import {
 } from '../validators/generic.val';
 import { CampaignUpdate, CampaignCreate, CampaignList } from '../validators/campaigns.val';
 import { InternshipsList } from '../validators/internships.val';
+import { MentoringPropositionsList } from '../validators/mentoringPropositions.val';
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ router.delete('/:id', checkSchema(ID), CampaignsCtrl.deleteCampaign);
 // Campaigns MentoringPropositions
 router.get(
     '/:id/mentoringPropositions',
-    checkSchema(ID),
+    checkSchema(Object.assign({}, ID, MentoringPropositionsList)),
     CampaignsCtrl.getCampaignMentoringPropositions,
 );
 router.post(
