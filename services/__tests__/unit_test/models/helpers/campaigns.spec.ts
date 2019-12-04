@@ -1,18 +1,18 @@
 // Include database connection
-import dbSetup from '../../../src/configs/setup/database';
+import dbSetup from '../../../../src/configs/setup/database';
 
 // Import model for pre-operation before asserting API methods
-import Campaigns from '../../../src/models/sequelize/Campaigns';
-import Internships from '../../../src/models/sequelize/Internships';
-import InternshipTypes from '../../../src/models/sequelize/InternshipTypes';
+import Campaigns from '../../../../src/models/sequelize/Campaigns';
+import Internships from '../../../../src/models/sequelize/Internships';
+import InternshipTypes from '../../../../src/models/sequelize/InternshipTypes';
 
-import { LaunchCampaign } from '../../../src/helpers/campaigns';
+import { LaunchCampaign } from '../../../../src/models/helpers/campaigns';
 
 import {
     defaultCampaigns,
     defaultInternships,
     defaultInternshipTypes,
-} from '../../../__mocks__/mockData';
+} from '../../../../__mocks__/mockData';
 
 jest.setTimeout(30000);
 
@@ -43,7 +43,11 @@ describe('LaunchCampaign', () => {
             error: jest.fn(),
         };
 
-        await LaunchCampaign(CREATED, channel);
+        const TODO = await Campaigns.findByPk(CREATED.id, {
+            include: [{ model: InternshipTypes, as: 'category' }],
+        });
+
+        await LaunchCampaign(TODO, channel);
 
         expect(channel.step).toHaveBeenCalled();
         expect(channel.start).toHaveBeenCalledTimes(1);
@@ -58,6 +62,10 @@ describe('LaunchCampaign', () => {
         const category = await InternshipTypes.create(defaultInternshipTypes());
         await CREATED.setCategory(category);
 
-        await LaunchCampaign(CREATED);
+        const TODO = await Campaigns.findByPk(CREATED.id, {
+            include: [{ model: InternshipTypes, as: 'category' }],
+        });
+
+        await LaunchCampaign(TODO);
     });
 });
