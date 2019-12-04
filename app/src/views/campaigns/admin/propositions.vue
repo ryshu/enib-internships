@@ -54,6 +54,11 @@
           <span>{{ row.internship.subject }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.mentoringProposition.business')" min-width="75px">
+        <template slot-scope="{ row }">
+          <span>{{ row.internship.business.name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.mentoringProposition.country')" min-width="50px">
         <template slot-scope="{ row }">
           <span>{{ row.internship.country}}</span>
@@ -167,7 +172,7 @@ export default class extends Vue {
   private listQuery: MentorOpts = {
     page: 1,
     limit: 10,
-    includes: ['student', 'mentor'],
+    includes: ['student', 'mentor', 'business'],
   };
   private dialogFormVisible = false;
   private dialogStatus = '';

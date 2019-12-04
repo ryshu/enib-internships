@@ -5,6 +5,7 @@ import MentoringPropositions from './sequelize/MentoringPropositions';
 import Internships from './sequelize/Internships';
 import Mentors from './sequelize/Mentors';
 import Students from './sequelize/Students';
+import Businesses from './sequelize/Businesses';
 
 import { IMentoringPropositionEntity } from '../declarations';
 
@@ -335,6 +336,13 @@ class MentoringPropositionModelStruct {
                         model: Internships,
                         as: 'internship',
                         include: [{ model: Students, as: 'student' }],
+                    });
+                }
+                if (inc === 'business') {
+                    tmp.include.push({
+                        model: Internships,
+                        as: 'internship',
+                        include: [{ model: Businesses, as: 'business' }],
                     });
                 } else if (inc === 'internship') {
                     tmp.include.push({ model: Internships, as: 'internship' });

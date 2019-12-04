@@ -5,7 +5,7 @@ import { paginateValidator, replaceAllExistByOptional, archivedValidator } from 
 import { propositionsVal, campaignVal, mentorVal, internshipVal } from './generator.val';
 
 // All available associations label for includes filter
-const mentoringPropositionIncludes = ['internship', 'campaign', 'mentor', 'student'];
+const mentoringPropositionIncludes = ['internship', 'campaign', 'mentor', 'student', 'business'];
 
 export const MentoringPropositionsList: Schema = {
     ...paginateValidator,
