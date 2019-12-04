@@ -15,29 +15,14 @@
       <el-form-item
         :label="$t('table.campaigns.name')"
         prop="name"
-        :rules="[
-          {
-            required: true,
-            message: $t('form.campaigns.name.required'),
-            trigger: 'blur',
-          },
-        ]"
+        :rules="[{ required: true, message: $t('form.campaigns.name.required'), trigger: 'blur' }]"
       >
-        <el-input
-          v-model="campaignData.name"
-          :placeholder="$t('campaigns.placeholder.name')"
-        />
+        <el-input v-model="campaignData.name" :placeholder="$t('campaigns.placeholder.name')" />
       </el-form-item>
       <el-form-item
         :label="$t('table.campaigns.description')"
         prop="description"
-        :rules="[
-          {
-            required: true,
-            message: $t('form.campaigns.description.required'),
-            trigger: 'blur',
-          },
-        ]"
+        :rules="[{ required: true, message: $t('form.campaigns.description.required'), trigger: 'blur' }]"
       >
         <el-input
           type="textarea"
@@ -47,17 +32,11 @@
       </el-form-item>
       <el-form-item
         :label="$t('table.campaigns.category')"
-        prop="category_id"
-        :rules="[
-          {
-            required: true,
-            message: $t('form.campaigns.category.required'),
-            trigger: 'blur',
-          },
-        ]"
+        prop="category.id"
+        :rules="[{ required: true, message: $t('form.campaigns.category.required'), trigger: 'blur' }]"
       >
         <category-select
-          v-model="campaignData.category_id"
+          v-model="campaignData.category.id"
           :placeholder="$t('campaigns.placeholder.category')"
         />
       </el-form-item>
@@ -66,19 +45,14 @@
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item
-            :label="$t('table.campaigns.isPublish')"
-            prop="maxProposition"
-          >
+          <el-form-item :label="$t('table.campaigns.isPublish')" prop="maxProposition">
             <el-switch
               style="padding : 10px;"
               v-model="campaignData.isPublish"
               active-color="#13ce66"
               inactive-color="#ff4949"
             />
-            <span style="padding-left: 20px;">{{
-              $t('campaigns.checkbox.isPublish')
-            }}</span>
+            <span style="padding-left: 20px;">{{ $t('campaigns.checkbox.isPublish') }}</span>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -110,24 +84,15 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item
-            :label="$t('table.campaigns.maxProposition')"
-            prop="maxProposition"
-          >
-            <el-input-number
-              :min="0"
-              :max="50"
-              v-model="campaignData.maxProposition"
-            />
+          <el-form-item :label="$t('table.campaigns.maxProposition')" prop="maxProposition">
+            <el-input-number :min="0" :max="50" v-model="campaignData.maxProposition" />
           </el-form-item>
         </el-col>
       </el-row>
 
       <div class="dialog-footer">
         <el-button @click="reset">{{ $t('table.reset') }}</el-button>
-        <el-button type="primary" @click="agree">{{
-          $t('table.confirm')
-        }}</el-button>
+        <el-button type="primary" @click="agree">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-form>
 
@@ -174,7 +139,7 @@ export default class extends Vue {
     tmp.endAt = '';
     tmp.date = ['', ''];
 
-    tmp.category_id = null;
+    tmp.category = { id: null };
 
     return tmp;
   }
@@ -251,10 +216,13 @@ export default class extends Vue {
       delete tmp.data;
 
       const res: any = await createCampaign(tmp);
-      if (tmp.isPublish) {
+
+      if (tmp.status && tmp.status === 202) {
+        // API is processing new campaign creation, wait for it under websocket
         this.cnt = 0;
         this.max = 1;
       } else {
+        // API doesn't have to publish campaign, all is fine
         (this.$refs.ProgressDialog as any).end(
           this.$t('campaigns.progress.success')
         );
