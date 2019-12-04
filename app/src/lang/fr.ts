@@ -123,15 +123,15 @@ export default {
     },
     mentorPropositions: {
       create: {
-        msg: 'La proposition a bien été créé',
+        msg: 'La proposition a bien été créée',
         title: "Création d'une proposition",
       },
       delete: {
-        msg: 'La proposition a bien été supprimé',
+        msg: 'La proposition a bien été supprimée',
         title: "Suppression d'une proposition",
       },
       update: {
-        msg: 'La proposition a bien été modifié',
+        msg: 'La proposition a bien été modifiée',
         title: "Modification d'une proposition",
       },
     },
