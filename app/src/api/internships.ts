@@ -90,3 +90,9 @@ export const unpublishInternship = (id: number) =>
     method: 'post',
     data: { state: INTERNSHIP_MODE.WAITING },
   }) as any) as Promise<IInternshipEntity>;
+
+export const linkInternshipPropositions = (internshipID: number, mentoringPropositionId: number) =>
+  (request({
+    url: `/internships/${internshipID}/propositions/${mentoringPropositionId}/link`,
+    method: 'post',
+  }) as any) as Promise<IInternshipEntity>;

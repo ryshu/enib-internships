@@ -148,6 +148,7 @@ Available [here](https://ryshu.github.io/enib-internships/)
 ## Contribution
 
 * Oscar MARIE--TAILLEFER <oscar@leeap.cash>
+* André FELIX
 * Adrien Tissier <a5tissie@enib.fr>
 
 ## Licence

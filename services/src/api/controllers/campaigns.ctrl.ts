@@ -197,7 +197,7 @@ export const getCampaignMentoringPropositions = (
 };
 
 /**
- * GET /campaigns/:id/mentoringPropositions/:mentoring_proposition_id/link
+ * POST /campaigns/:id/mentoringPropositions/:mentoring_proposition_id/link
  * Used to link a mentoring propositions with a campaign
  */
 export const linkCampaignMentoringPropositions = (
