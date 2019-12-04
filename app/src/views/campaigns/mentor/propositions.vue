@@ -103,7 +103,7 @@ import {
   createMentoringProposition,
   deleteMentoringProposition,
   defaultMentoringPropositionData,
-} from '../../../api/mentoringPropositions';
+} from '../../../api/mentoring.propositions';
 import { IMentoringPropositionEntity } from '../../../declarations';
 
 import { exportJson2Excel } from '../../../utils/excel';

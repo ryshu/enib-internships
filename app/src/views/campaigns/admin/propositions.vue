@@ -124,13 +124,14 @@ import {
   createMentoringProposition,
   deleteMentoringProposition,
   defaultMentoringPropositionData,
-} from '../../../api/mentoringPropositions';
+} from '../../../api/mentoring.propositions';
 import { IMentoringPropositionEntity } from '../../../declarations';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
 
 import Pagination from '../../../components/Pagination/index.vue';
+import { MentorOpts } from '../../../declarations/mentor';
 
 @Component({
   name: 'CampaignsAdminPropositions',
@@ -145,10 +146,10 @@ export default class extends Vue {
   private listLoading = true;
 
   // Filter for query, this will not be used until we add pagination
-  private listQuery = {
+  private listQuery: MentorOpts = {
     page: 1,
     limit: 10,
-    firstName: undefined,
+    includes: ['student', 'mentor'],
   };
   private dialogFormVisible = false;
   private dialogStatus = '';
@@ -169,11 +170,13 @@ export default class extends Vue {
   }
   private getList() {
     this.listLoading = true;
-    getMentoringPropositionsbyCampaign(this.id, this.listQuery).then((res: any) => {
-      this.list = res ? res.data : [];
-      this.total = res ? res.max : 0;
-      this.listLoading = false;
-    });
+    getMentoringPropositionsbyCampaign(this.id, this.listQuery).then(
+      (res: any) => {
+        this.list = res ? res.data : [];
+        this.total = res ? res.max : 0;
+        this.listLoading = false;
+      }
+    );
   }
 
   public get id() {
@@ -185,7 +188,9 @@ export default class extends Vue {
   }
 
   private resetTempPropositionData() {
-    this.tempMentoringPropositionData = cloneDeep(defaultMentoringPropositionData);
+    this.tempMentoringPropositionData = cloneDeep(
+      defaultMentoringPropositionData
+    );
   }
 
   private async handleDelete(row: any, status: string) {
@@ -211,7 +216,9 @@ export default class extends Vue {
   private createData() {
     (this.$refs['dataForm'] as Form).validate(async valid => {
       if (valid) {
-        const data = await createMentoringProposition(this.tempMentoringPropositionData);
+        const data = await createMentoringProposition(
+          this.tempMentoringPropositionData
+        );
         this.getList();
         this.dialogFormVisible = false;
         this.$notify({
