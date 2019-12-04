@@ -216,6 +216,7 @@ export default class extends Vue {
     mode: [INTERNSHIP_MODE.AVAILABLE_CAMPAIGN],
     types: [],
     isAbroad: false,
+    student: [],
   };
 
   private resolve: (value?: IMentoringPropositionEntity) => void = () => {};

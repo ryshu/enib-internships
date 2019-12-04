@@ -15,7 +15,7 @@ export declare interface IInternshipEntity {
   subject: string;
   description: string;
 
-  // Localisation
+  // Localization
   country: string;
   city: string;
   postalCode?: string;
@@ -47,7 +47,7 @@ export declare interface IInternshipEntity {
   updatedAt?: Date;
 }
 
-/** @interface InternshipOpts Interface of all availables filters for internship list */
+/** @interface InternshipOpts Interface of all available filters for internship list */
 export interface InternshipOpts {
   page: number;
   limit: number;
@@ -66,4 +66,7 @@ export interface InternshipOpts {
 
   /** @property {boolean} isAbroad Select only foreign internships */
   isAbroad?: boolean;
+
+  /** @property {IStudentEntity[]} student Filter internships by student */
+  student?: IStudentEntity[];
 }
