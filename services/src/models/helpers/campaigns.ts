@@ -1,13 +1,15 @@
 import sequelize = require('sequelize');
 
-import Campaigns from '../models/sequelize/Campaigns';
-import Internships from '../models/sequelize/Internships';
-import InternshipTypes from '../models/sequelize/InternshipTypes';
-import Mentors from '../models/sequelize/Mentors';
+import Campaigns from '../../models/sequelize/Campaigns';
+import Internships from '../../models/sequelize/Internships';
+import InternshipTypes from '../../models/sequelize/InternshipTypes';
+import Mentors from '../../models/sequelize/Mentors';
 
-import { ProgressChannel } from '../websocket/channels/private';
-import { sendCampaignsCreate } from '../emails';
-import cache from '../statistics/singleton';
+import { ProgressChannel } from '../../websocket/channels/private';
+import { sendCampaignsCreate } from '../../emails';
+import cache from '../../statistics/singleton';
+import { APIError } from '../../utils/error';
+import httpStatus from 'http-status-codes';
 
 async function internshipInject(
     internship: Internships,
@@ -45,10 +47,25 @@ async function mentorSendMail(mentor: Mentors, campaign: Campaigns, channel?: Pr
     }
 }
 
-export function LaunchCampaign(campaign: Campaigns, channel?: ProgressChannel) {
+/**
+ * @summary Method use to process all launch campaign procedure using socket channel
+ * @param {Campaigns} campaign Campaign to process (must include category)
+ * @param {ProgressChanel} channel Progress channel to give user update about processing
+ * @returns {Promise<void>} Resolve: void
+ * @returns {Promise<any>} Reject: error encountered
+ */
+export function LaunchCampaign(campaign: Campaigns, channel?: ProgressChannel): Promise<void> {
+    // TODO: Add logger for this function
     return new Promise(async (resolve, reject) => {
         try {
-            const category = await campaign.getCategory();
+            if (!campaign.category) {
+                throw new APIError(
+                    `Coulnd't use LaunchCampaign without giving category`,
+                    httpStatus.INTERNAL_SERVER_ERROR,
+                    httpStatus.INTERNAL_SERVER_ERROR,
+                );
+            }
+            const category = campaign.category;
             const promises = [];
 
             // Setup all internships link

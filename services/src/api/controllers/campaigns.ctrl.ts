@@ -104,12 +104,17 @@ export const postCampaign = async (req: Request, res: Response, next: NextFuncti
 
     CampaignModel.createCampaign(campaign)
         .then(async (created) => {
-            if (created && !Number.isNaN(Number(categoryId))) {
+            if (checkContent(created, next)) {
                 // If category is given using an id, link internship to category before send reply
                 const updated = await CampaignModel.linkToCategory(created.id, categoryId);
-                return res.send(updated);
+                if (updated.isPublish) {
+                    // If campaign is publish, launch campaign
+                    await CampaignModel.launchCampaign(updated.id, req.session.socketId);
+                    return res.status(httpStatus.ACCEPTED).send({ status: httpStatus.ACCEPTED });
+                } else {
+                    return res.send(updated);
+                }
             }
-            return res.send(created);
         })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

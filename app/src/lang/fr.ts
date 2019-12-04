@@ -123,15 +123,15 @@ export default {
     },
     mentorPropositions: {
       create: {
-        msg: 'La proposition a bien été créé',
+        msg: 'La proposition a bien été créée',
         title: "Création d'une proposition",
       },
       delete: {
-        msg: 'La proposition a bien été supprimé',
+        msg: 'La proposition a bien été supprimée',
         title: "Suppression d'une proposition",
       },
       update: {
-        msg: 'La proposition a bien été modifié',
+        msg: 'La proposition a bien été modifiée',
         title: "Modification d'une proposition",
       },
     },
@@ -172,6 +172,7 @@ export default {
       propositions: 'Propositions',
       settings: 'Paramètre',
       new: 'Nouvelle campagne',
+      modify: 'Modifier les paramètres de la campagne',
     },
     page404: '404',
     profile: 'Profile',
@@ -207,6 +208,7 @@ export default {
       startAt: 'Début',
       date: 'Periode de publication',
       isPublish: 'Publier la campagne',
+      isVisible: 'Campagne visible', 
     },
     cancel: 'Annuler',
     confirm: 'Confirmer',
@@ -216,7 +218,9 @@ export default {
     delete: 'Supprimer',
     edit: 'Modifier',
     export: 'Exporter',
+    archive : 'Archiver',
     detail: 'Détail',
+    save : 'Sauvegarder',
     id: 'ID',
     internships: {
       additional: 'Informations complémentaire',

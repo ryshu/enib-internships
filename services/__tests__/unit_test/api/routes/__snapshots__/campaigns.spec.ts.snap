@@ -2,6 +2,7 @@
 
 exports[`GET /campaigns Campaigns_200 1`] = `
 Object {
+  "category": null,
   "createdAt": Any<String>,
   "deletedAt": null,
   "description": "A description to test",
