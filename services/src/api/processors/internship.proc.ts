@@ -13,7 +13,7 @@ export function fullCopyInternship(
             subject: data.subject,
             description: data.description,
 
-            // Localisation
+            // Localization
             country: data.country,
             city: data.city,
             postalCode: data.postalCode,

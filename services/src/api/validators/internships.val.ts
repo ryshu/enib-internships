@@ -3,7 +3,7 @@ import { Schema } from 'express-validator';
 import {
     paginateValidator,
     replaceAllExistByOptional,
-    contriesValidator,
+    countriesValidator,
     ID,
     archivedValidator,
 } from './generic.val';
@@ -35,7 +35,7 @@ const InternshipAvailableIncludes = [
 
 export const InternshipsList: Schema = {
     ...paginateValidator,
-    ...contriesValidator,
+    ...countriesValidator,
     ...archivedValidator,
     'types': {
         in: ['query'],

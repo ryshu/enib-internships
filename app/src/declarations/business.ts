@@ -16,7 +16,7 @@ export declare interface IBusinessEntity {
   updatedAt?: Date;
 }
 
-/** @interface BusinessOpts Interface of all availables filters for businesses list */
+/** @interface BusinessOpts Interface of all available filters for businesses list */
 export interface BusinessOpts {
   /** @property {string[]} countries List of selected countries to filter */
   countries?: string[];

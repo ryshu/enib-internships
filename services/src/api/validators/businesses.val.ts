@@ -3,7 +3,7 @@ import { Schema } from 'express-validator';
 import {
     paginateValidator,
     replaceAllExistByOptional,
-    contriesValidator,
+    countriesValidator,
     archivedValidator,
 } from './generic.val';
 
@@ -11,7 +11,7 @@ import { businessVal, internshipVal, categoryVal } from './generator.val';
 
 export const BusinessesList: Schema = {
     ...paginateValidator,
-    ...contriesValidator,
+    ...countriesValidator,
     ...archivedValidator,
     name: {
         in: ['query'],

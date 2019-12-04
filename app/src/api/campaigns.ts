@@ -52,7 +52,7 @@ export const deleteCampaign = (id: number) =>
     method: 'delete',
   }) as any) as Promise<void>;
 
-export const getAvailabletInternshipCampaign = (
+export const getAvailableInternshipCampaign = (
   id: number,
   params: InternshipOpts
 ) =>

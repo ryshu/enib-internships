@@ -27,7 +27,7 @@ export const getStudents = (req: Request, res: Response, next: NextFunction): vo
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20, archived } = req.query;
 
     StudentModel.getStudents({ archived }, { page, limit })
