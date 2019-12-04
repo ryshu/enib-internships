@@ -22,6 +22,8 @@ import {
 
 import InternshipTypeModel from './internship.type.mode';
 import { setFindOptsArchived } from './helpers/options';
+import { LaunchCampaign } from './helpers/campaigns';
+import { ProgressChannel } from '../websocket/channels/private';
 
 /** @interface CampaignOpts Interface of all availables filters for campaigns list */
 export declare interface CampaignOpts {
@@ -394,8 +396,37 @@ class CampaignModelStruct {
         });
     }
 
+    public launchCampaign(id: number, userSessionId: string): Promise<ICampaignEntity> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const campaign = await Campaigns.findByPk(id, {
+                    include: [{ model: InternshipTypes, as: 'category' }],
+                });
+                if (!campaign || !campaign.category) {
+                    return resolve();
+                }
+
+                campaign.set('isPublish', true);
+                campaign.set('startAt', moment().valueOf());
+
+                await campaign.save();
+
+                // Setup new channel to broadcast result
+                const ws = new ProgressChannel('campaign_create', userSessionId);
+
+                // Resolve to let API response
+                resolve();
+
+                // Launch campaign, using helper
+                await LaunchCampaign(campaign, ws);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
     private _buildFindOpts(opts: CampaignOpts): FindOptions {
-        let tmp: FindOptions = {};
+        let tmp: FindOptions = { include: [{ model: InternshipTypes, as: 'category' }] };
 
         if (opts.archived) {
             tmp = setFindOptsArchived(tmp);
