@@ -47,7 +47,7 @@ router.post(
     CampaignsCtrl.linkValidatedCampaignInternships,
 );
 
-// Campaigns Availables Internships
+// Campaigns Available Internships
 router.get(
     '/:id/availableInternships',
     checkSchema(Object.assign({}, ID, InternshipsList)),

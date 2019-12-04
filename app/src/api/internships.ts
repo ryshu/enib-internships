@@ -71,7 +71,7 @@ export const linkInternshipFile = (internshipID: string, fileID: string) =>
     method: 'post',
   }) as any) as Promise<IInternshipEntity>;
 
-export const getAvailabletInternshipCampaign = (id: number) =>
+export const getAvailableInternshipCampaign = (id: number) =>
   (request({
     url: `/internships/${id}/availableCampaign`,
     method: 'get',

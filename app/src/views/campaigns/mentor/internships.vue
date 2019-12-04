@@ -172,7 +172,7 @@ import {
 } from '../../../declarations';
 
 import {
-  getAvailabletInternshipCampaign,
+  getAvailableInternshipCampaign,
   getCampaign,
   linkCampaignMentoringPropositions,
 } from '../../../api/campaigns';
@@ -252,7 +252,7 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getAvailabletInternshipCampaign(this.id, this.listQuery).then(
+    getAvailableInternshipCampaign(this.id, this.listQuery).then(
       (res: any) => {
         this.list = res ? res.data : [];
         this.total = res ? res.max : 0;

@@ -38,7 +38,7 @@ export function generateGetInternships(filterByID?: FilterByID) {
             return BAD_REQUEST_VALIDATOR(next, errors);
         }
 
-        // Retrive query data
+        // Retrieve query data
         const {
             page = 1,
             limit = 20,
