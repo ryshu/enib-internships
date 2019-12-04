@@ -17,7 +17,7 @@ Key | Type | Optional | Description
 - | - | - | -
 **limit** | Number | *yes* | Page expected (By default 1)
 **page** | Number | *yes* | Number of row expected (By default 20)
-**contries** | String[] | *yes* | List of reached countries
+**countries** | String[] | *yes* | List of reached countries
 **archived** | Boolean | *yes* | Only archived documents
 
 ### 200 - List of businesses
@@ -35,7 +35,9 @@ Key | Type | Optional | Description
             "address": "917 Lynch Fort",
             "additional": "Suite 464",
             "createdAt": "2019-09-30T11:24:50.000Z",
-            "updatedAt": "2019-09-30T11:24:50.000Z"
+            "updatedAt": "2019-09-30T11:24:50.000Z",
+            "deletedAt": 3356336364455364,
+            "count": 0
         },
         {
             "id": 2,
@@ -46,7 +48,9 @@ Key | Type | Optional | Description
             "address": "1629 Auer Stream",
             "additional": "Suite 857",
             "createdAt": "2019-09-30T11:24:50.000Z",
-            "updatedAt": "2019-09-30T11:24:50.000Z"
+            "updatedAt": "2019-09-30T11:24:50.000Z",
+            "deletedAt": null,
+            "count": 0
         },
         {
             "id": 3,
@@ -57,7 +61,9 @@ Key | Type | Optional | Description
             "address": "16229 Labadie Dam",
             "additional": "Suite 385",
             "createdAt": "2019-09-30T11:24:50.000Z",
-            "updatedAt": "2019-09-30T11:24:50.000Z"
+            "updatedAt": "2019-09-30T11:24:50.000Z",
+            "deletedAt": null,
+            "count": 0
         }
     ],
     "length": 3,
@@ -105,7 +111,9 @@ Return created business
   "postalCode": "92400",
   "address": "31 Place des Corolles",
   "updatedAt": "2019-09-19T22:21:24.365Z",
-  "createdAt": "2019-09-19T22:21:24.365Z"
+  "createdAt": "2019-09-19T22:21:24.365Z",
+  "deletedAt": null,
+  "count": 0
 }
 ```
 
@@ -163,6 +171,7 @@ Key | Type | Optional | Description
   "address": "31 Place des Corolles",
   "updatedAt": "2019-09-19T22:21:24.365Z",
   "createdAt": "2019-09-19T22:21:24.365Z",
+  "deletedAt": null,
   "internships": [],
 }
 ```

@@ -11,8 +11,8 @@ The API is compound of:
 
 ## REST API
 
-REST API, or representational state transfer API is a software architectural style that defines a set of constraintes to be used for creating Web services.
-In this architecture, you might provide for each data in your application following end-points (or routes) in your API
+REST API, or representational state transfer API is a software architectural style that defines a set of constraints to be used for creating Web services.
+In this architecture, you might provide for each data in your application the following end-points (or routes) in your API
 
 * **GET** all data
 * **POST** Create new data
@@ -20,7 +20,7 @@ In this architecture, you might provide for each data in your application follow
 * **PUT** Update data
 * **DELETE** Remove data
 
-For example, if we have `products` entity in our applications, the we have the following routes on our api:
+For example, if we have `products` entity in our applications, then we have the following routes on our API:
 
 * **GET** '/products' -> list of products
 * **POST** '/products' -> create a new products
