@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const base_1 = require("./base");
 const helper_1 = require("./helper");
+const internship_1 = require("../internship");
 class StatisticsCache {
     constructor() {
         this.statistics = this._defaultStatistics();
@@ -12,11 +12,13 @@ class StatisticsCache {
         if (this._initialized) {
             this.statistics.internships = {
                 total: 0,
-                suggested: 0,
                 waiting: 0,
-                availables: 0,
-                validated: 0,
-                attributed: 0,
+                published: 0,
+                attributed_student: 0,
+                available_campaign: 0,
+                attributed_mentor: 0,
+                running: 0,
+                validation: 0,
                 archived: 0,
             };
             this.statistics.mentors = 0;
@@ -62,10 +64,10 @@ class StatisticsCache {
      * @param {number | undefined} id Campaign id, if internship is link to a campaign
      */
     stateChange(next, prev, id) {
-        if (prev && base_1.isInternshipMode(prev)) {
+        if (prev && internship_1.isInternshipMode(prev)) {
             this._change(prev, -1, id);
         }
-        if (base_1.isInternshipMode(next)) {
+        if (internship_1.isInternshipMode(next)) {
             this._change(next, 1, id);
         }
     }
@@ -76,7 +78,7 @@ class StatisticsCache {
      * @param {number | undefined} id Campaign id, if internship is link to a campaign
      */
     stateAdd(state, q, id) {
-        if (base_1.isInternshipMode(state) && q > 0) {
+        if (internship_1.isInternshipMode(state) && q > 0) {
             this._change(state, q, id);
         }
     }
@@ -87,7 +89,7 @@ class StatisticsCache {
      * @param {number | undefined} id Campaign id, if internship is link to a campaign
      */
     stateRemove(state, q, id) {
-        if (base_1.isInternshipMode(state) && q < 0) {
+        if (internship_1.isInternshipMode(state) && q < 0) {
             this._change(state, q, id);
         }
     }
@@ -97,6 +99,7 @@ class StatisticsCache {
      */
     addMentor() {
         this.statistics.mentors++;
+        this.statistics.internships.total = this.total;
     }
     /**
      * @summary Method used to decrement global mentor counter
@@ -104,6 +107,7 @@ class StatisticsCache {
      */
     removeMentor() {
         this.statistics.mentors--;
+        this.statistics.internships.total = this.total;
     }
     /**
      * @summary Method used to increment mentor campaign counter
@@ -212,35 +216,55 @@ class StatisticsCache {
     isDefined(id) {
         return !!this.campaignStatistics[id];
     }
+    /**
+     * @summary Getter for total of internship
+     */
+    get total() {
+        return (this.statistics.internships.waiting +
+            this.statistics.internships.published +
+            this.statistics.internships.attributed_student +
+            this.statistics.internships.attributed_mentor +
+            this.statistics.internships.available_campaign +
+            this.statistics.internships.running +
+            this.statistics.internships.validation +
+            this.statistics.internships.archived);
+    }
     _change(mode, q, id) {
         switch (mode) {
             case "archived" /* ARCHIVED */:
                 this.statistics.internships.archived += q;
                 break;
-            case "attributed" /* ATTRIBUTED */:
+            case "attributed_mentor" /* ATTRIBUTED_MENTOR */:
                 if (this.isDefined(id)) {
                     this.campaignStatistics[id].internships.attributed += q;
                 }
-                this.statistics.internships.attributed += q;
+                this.statistics.internships.attributed_mentor += q;
                 break;
-            case "available" /* AVAILABLE */:
+            case "attributed_student" /* ATTRIBUTED_STUDENT */:
+                this.statistics.internships.attributed_student += q;
+                break;
+            case "available_campaign" /* AVAILABLE_CAMPAIGN */:
                 if (this.isDefined(id)) {
                     this.campaignStatistics[id].internships.availables += q;
                 }
-                this.statistics.internships.availables += q;
-                break;
-            case "suggest" /* SUGGESTED */:
-                this.statistics.internships.suggested += q;
-                break;
-            case "validated" /* VALIDATED */:
-                this.statistics.internships.validated += q;
+                this.statistics.internships.available_campaign += q;
                 break;
             case "waiting" /* WAITING */:
                 this.statistics.internships.waiting += q;
                 break;
+            case "validation" /* VALIDATION */:
+                this.statistics.internships.validation += q;
+                break;
+            case "running" /* RUNNING */:
+                this.statistics.internships.running += q;
+                break;
+            case "published" /* PUBLISHED */:
+                this.statistics.internships.published += q;
+                break;
             default:
                 break;
         }
+        this.statistics.internships.total = this.total;
     }
     _defIfndef(id, cb, ...args) {
         if (!this.isDefined(id)) {
@@ -254,11 +278,13 @@ class StatisticsCache {
         return {
             internships: {
                 total: 0,
-                suggested: 0,
                 waiting: 0,
-                availables: 0,
-                validated: 0,
-                attributed: 0,
+                published: 0,
+                attributed_student: 0,
+                attributed_mentor: 0,
+                available_campaign: 0,
+                running: 0,
+                validation: 0,
                 archived: 0,
             },
             students: 0,

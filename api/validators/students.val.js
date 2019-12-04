@@ -1,37 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const generic_val_1 = require("./generic.val");
-exports.StudentList = Object.assign({}, generic_val_1.paginateValidator);
-exports.StudentCreate = {
-    firstName: {
-        in: ['body'],
-        isString: { errorMessage: 'First name must be of type string' },
-        exists: { errorMessage: 'First name must be defined' },
-        trim: true,
-        escape: true,
-    },
-    lastName: {
-        in: ['body'],
-        isString: { errorMessage: 'Last name must be of type string' },
-        exists: { errorMessage: 'Last name must be defined' },
-        trim: true,
-        escape: true,
-    },
-    email: {
-        in: ['body'],
-        isString: { errorMessage: 'Email must be of type string' },
-        isEmail: { errorMessage: 'Email must complain to email struct' },
-        exists: { errorMessage: 'Email must be defined' },
-        trim: true,
-        escape: true,
-    },
-    semester: {
-        in: ['body'],
-        isString: { errorMessage: 'Semester must be of type string' },
-        exists: { errorMessage: 'Semester must be defined' },
-        trim: true,
-        escape: true,
-    },
-};
+const generator_val_1 = require("./generator.val");
+exports.StudentList = Object.assign(Object.assign({}, generic_val_1.paginateValidator), generic_val_1.archivedValidator);
+exports.StudentCreate = Object.assign(Object.assign({}, generator_val_1.studentVal()), generic_val_1.replaceAllExistByOptional(generator_val_1.internshipVal('internships[*]')));
 exports.StudentUpdate = generic_val_1.replaceAllExistByOptional(exports.StudentCreate);
 //# sourceMappingURL=students.val.js.map

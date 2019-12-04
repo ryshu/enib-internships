@@ -1,1 +1,1 @@
-{"version":3,"file":"base.js","sourceRoot":"","sources":["../../src/statistics/base.ts"],"names":[],"mappings":";;AAyCa,QAAA,eAAe,GAAsB;;;;;;;CAOjD,CAAC;AAEF,SAAgB,gBAAgB,CAAC,GAAW;IACxC,OAAO,uBAAe,CAAC,QAAQ,CAAC,GAAsB,CAAC,CAAC;AAC5D,CAAC;AAFD,4CAEC"}
+{"version":3,"file":"base.js","sourceRoot":"","sources":["../../src/statistics/base.ts"],"names":[],"mappings":""}

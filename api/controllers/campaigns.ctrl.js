@@ -15,19 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const moment_1 = __importDefault(require("moment"));
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const sequelize_1 = __importDefault(require("sequelize"));
-const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
-const MentoringPropositions_1 = __importDefault(require("../../models/MentoringPropositions"));
-const InternshipTypes_1 = __importDefault(require("../../models/InternshipTypes"));
-const Internships_1 = __importDefault(require("../../models/Internships"));
-const Mentors_1 = __importDefault(require("../../models/Mentors"));
+const campaigns_model_1 = __importDefault(require("../../models/campaigns.model"));
+const mentoring_proposition_model_1 = __importDefault(require("../../models/mentoring.proposition.model"));
+const mentor_model_1 = __importDefault(require("../../models/mentor.model"));
 const global_helper_1 = require("../helpers/global.helper");
-const pagination_helper_1 = require("../helpers/pagination.helper");
 const internships_helper_1 = require("../helpers/internships.helper");
+const internship_type_proc_1 = require("../processors/internship.type.proc");
+const mentoring_proposition_proc_1 = require("../processors/mentoring.proposition.proc");
+const internship_proc_1 = require("../processors/internship.proc");
+const mentor_proc_1 = require("../processors/mentor.proc");
 const error_1 = require("../../utils/error");
-const campaigns_1 = require("../../helpers/campaigns");
-const private_1 = require("../../websocket/channels/private");
-const singleton_1 = __importDefault(require("../../statistics/singleton"));
 /**
  * GET /campaigns
  * Used to GET all campaigns
@@ -38,7 +35,8 @@ exports.getCampaigns = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findAll({ include: [{ model: InternshipTypes_1.default, as: 'category' }] })
+    const { archived } = req.query;
+    campaigns_model_1.default.getCampaigns({ archived })
         .then((campaigns) => {
         if (global_helper_1.checkArrayContent(campaigns, next)) {
             return res.send(campaigns);
@@ -59,41 +57,47 @@ exports.postCampaign = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     const campaign = {
         name: req.body.name,
         description: req.body.description,
+        category: internship_type_proc_1.fullCopyInternshipType(req.body.category),
         semester: req.body.semester,
         maxProposition: req.body.maxProposition ? req.body.maxProposition : 0,
         isPublish: req.body.isPublish,
         startAt: !req.body.startAt ? null : moment_1.default(req.body.startAt).valueOf(),
         endAt: !req.body.endAt ? null : moment_1.default(req.body.endAt).valueOf(),
+        propositions: req.body.propositions && Array.isArray(req.body.propositions)
+            ? req.body.propositions.map((p) => mentoring_proposition_proc_1.fullCopyMentoringProposition(p))
+            : [],
+        availableInternships: req.body.availableInternships && Array.isArray(req.body.availableInternships)
+            ? req.body.availableInternships.map((p) => internship_proc_1.fullCopyInternship(p))
+            : [],
+        validatedInternships: req.body.validatedInternships && Array.isArray(req.body.validatedInternships)
+            ? req.body.validatedInternships.map((p) => internship_proc_1.fullCopyInternship(p))
+            : [],
+        mentors: req.body.mentors && Array.isArray(req.body.mentors)
+            ? req.body.mentors.map((p) => mentor_proc_1.fullCopyMentor(p))
+            : [],
     };
-    try {
-        const category = yield InternshipTypes_1.default.findByPk(req.body.category_id);
-        if (!category) {
-            next(new error_1.APIError(`Couldn't find given category in database`, http_status_codes_1.default.BAD_REQUEST, 11103));
-            return;
-        }
-        // Set category by default
-        const created = yield Campaigns_1.default.create(campaign);
-        yield created.setCategory(category);
-        if (created.isPublish) {
-            // When campaign is directly published, launch campaign
-            // Create new websocket channel, send 202 Accepted and launch link
-            res.sendStatus(http_status_codes_1.default.ACCEPTED);
-            if (req.session.socketId) {
-                const ws = new private_1.ProgressChannel('campaign_create', req.session.socketId);
-                yield campaigns_1.LaunchCampaign(created, ws);
-            }
-            else {
-                yield campaigns_1.LaunchCampaign(created);
-            }
+    let categoryId;
+    if (!campaign.category) {
+        // No category to create, check if we have any category id provide
+        if (req.body.category &&
+            req.body.category.id &&
+            !Number.isNaN(Number(req.body.category.id))) {
+            categoryId = Number(req.body.category.id);
         }
         else {
-            singleton_1.default.newCampain(created.id, {});
-            res.send(created);
+            return next(new error_1.APIError('No category provide, please provide a category', 400, 12000));
         }
     }
-    catch (error) {
-        global_helper_1.UNPROCESSABLE_ENTITY(next, error);
-    }
+    campaigns_model_1.default.createCampaign(campaign)
+        .then((created) => __awaiter(void 0, void 0, void 0, function* () {
+        if (created && !Number.isNaN(Number(categoryId))) {
+            // If category is given using an id, link internship to category before send reply
+            const updated = yield campaigns_model_1.default.linkToCategory(created.id, categoryId);
+            return res.send(updated);
+        }
+        return res.send(created);
+    }))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 });
 /**
  * GET /campaigns/:id
@@ -105,12 +109,7 @@ exports.getCampaign = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id, {
-        include: [
-            { model: MentoringPropositions_1.default, as: 'propositions' },
-            { model: InternshipTypes_1.default, as: 'category' },
-        ],
-    })
+    campaigns_model_1.default.getCampaign(Number(req.params.id), req.query.archived)
         .then((val) => {
         if (global_helper_1.checkContent(val, next)) {
             return res.send(val);
@@ -128,50 +127,9 @@ exports.putCampaign = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id)
-        .then((campaign) => __awaiter(void 0, void 0, void 0, function* () {
-        if (!global_helper_1.checkContent(campaign, next)) {
-            return undefined;
-        }
-        if (req.body.name) {
-            campaign.set('name', req.body.name);
-        }
-        if (req.body.description) {
-            campaign.set('description', req.body.description);
-        }
-        if (req.body.startAt) {
-            campaign.set('startAt', req.body.startAt === 0 ? null : moment_1.default(req.body.startAt).valueOf());
-        }
-        if (req.body.endAt) {
-            campaign.set('endAt', req.body.endAt === 0 ? null : moment_1.default(req.body.endAt).valueOf());
-        }
-        if (req.body.semester) {
-            campaign.set('semester', req.body.semester);
-        }
-        if (req.body.maxProposition !== undefined) {
-            campaign.set('maxProposition', req.body.maxProposition ? req.body.maxProposition : 0);
-        }
-        if (req.body.category_id !== undefined && !Number.isNaN(Number(req.body.category_id))) {
-            try {
-                const category = yield InternshipTypes_1.default.findByPk(req.body.category_id);
-                if (!category) {
-                    return undefined;
-                }
-                yield campaign.setCategory(category);
-            }
-            catch (error) {
-                global_helper_1.UNPROCESSABLE_ENTITY(next, error);
-                return undefined;
-            }
-        }
-        return campaign.save();
-    }))
-        .then((updated) => {
-        if (updated) {
-            return res.send(updated);
-        }
-    })
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
+    campaigns_model_1.default.updateCampaign(Number(req.params.id), req.body)
+        .then((updated) => (global_helper_1.checkContent(updated, next) ? res.send(updated) : undefined))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
  * DELETE /campaigns/:id
@@ -183,10 +141,9 @@ exports.deleteCampaign = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+    campaigns_model_1.default.removeCampaign(Number(req.params.id))
         .then(() => res.sendStatus(http_status_codes_1.default.OK))
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
  * GET /campaigns/:id/mentoringPropositions
@@ -200,23 +157,8 @@ exports.getCampaignMentoringPropositions = (req, res, next) => {
     }
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
-    const findOpts = { where: { campaignId: req.params.id } };
-    let max;
-    MentoringPropositions_1.default.count(findOpts)
-        .then((rowNbr) => {
-        max = rowNbr;
-        return MentoringPropositions_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
-    })
-        .then((mps) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkArrayContent(mps, next)) {
-            return res.send({
-                page,
-                data: mps,
-                length: mps.length,
-                max,
-            });
-        }
-    }))
+    mentoring_proposition_model_1.default.getMentoringPropositions({ campaignId: Number(req.params.id) }, { page, limit })
+        .then((mps) => __awaiter(void 0, void 0, void 0, function* () { return (global_helper_1.checkContent(mps, next) ? res.send(mps) : undefined); }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -229,47 +171,18 @@ exports.linkCampaignMentoringPropositions = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            yield val.addProposition(Number(req.params.mentoring_proposition_id));
-            singleton_1.default.linkProposition(Number(req.params.id));
-            return res.sendStatus(http_status_codes_1.default.OK);
-        }
-    }))
+    campaigns_model_1.default.linkToProposition(Number(req.params.id), Number(req.params.mentoring_proposition_id))
+        .then((campaign) => (global_helper_1.checkContent(campaign, next) ? res.send(campaign) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
  * GET /campaigns/:id/availableInternships
  * Used to get all availableInternships of a campaign
+ *
+ * @notice This controller is generated using generateGetInternships method
+ * which is used to avoid repeat internship code through application
  */
-exports.getAvailableCampaignInternships = (req, res, next) => {
-    // @see validator + router
-    const errors = express_validator_1.validationResult(req);
-    if (!errors.isEmpty()) {
-        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
-    }
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    const findOpts = { where: { availableCampaignId: req.params.id } };
-    let max;
-    Internships_1.default.count(findOpts)
-        .then((rowNbr) => {
-        max = rowNbr;
-        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
-    })
-        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkArrayContent(internships, next)) {
-            return res.send({
-                page,
-                data: internships,
-                length: internships.length,
-                max,
-            });
-        }
-    }))
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
-};
+exports.getAvailableCampaignInternships = internships_helper_1.generateGetInternships('availableCampaignId');
 /**
  * POST /campaigns/:id/availableInternships/:availableInternships_id/link
  * Used to link an internship with an availableCampaign
@@ -280,56 +193,15 @@ exports.linkAvailableCampaignInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            try {
-                const i = yield Internships_1.default.findByPk(Number(req.params.internship_id));
-                if (!global_helper_1.checkContent(i, next)) {
-                    return;
-                }
-                yield val.addAvailableInternship(i);
-                singleton_1.default.stateChange("available" /* AVAILABLE */, i.state, Number(req.params.id));
-                yield internships_helper_1.updateInternshipStatus(i, "available" /* AVAILABLE */);
-                return res.sendStatus(http_status_codes_1.default.OK);
-            }
-            catch (error) {
-                global_helper_1.checkContent(null, next);
-            }
-        }
-    }))
+    campaigns_model_1.default.linkToAvailableInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((campaign) => (global_helper_1.checkContent(campaign, next) ? res.send(campaign) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
  * GET /campaigns/:id/validatedInternships
  * Used to get all validatedInternships of a campaign
  */
-exports.getValidatedCampaignInternships = (req, res, next) => {
-    const errors = express_validator_1.validationResult(req);
-    if (!errors.isEmpty()) {
-        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
-    }
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    const findOpts = { where: { validatedCampaignId: req.params.id } };
-    let max;
-    Internships_1.default.count(findOpts)
-        .then((rowNbr) => {
-        max = rowNbr;
-        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
-    })
-        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkArrayContent(internships, next)) {
-            return res.send({
-                page,
-                data: internships,
-                length: internships.length,
-                max,
-            });
-        }
-    }))
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
-};
+exports.getValidatedCampaignInternships = internships_helper_1.generateGetInternships('validatedCampaignId');
 /**
  * GET /campaigns/:id/validatedCampaigns/:internship_id/link
  * Used to link an internship with a ValidatedCampaign
@@ -340,64 +212,15 @@ exports.linkValidatedCampaignInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            try {
-                const i = yield Internships_1.default.findByPk(Number(req.params.internship_id));
-                if (!global_helper_1.checkContent(i, next)) {
-                    return;
-                }
-                yield val.addValidatedInternship(i);
-                singleton_1.default.stateChange("attributed" /* ATTRIBUTED */, i.state, Number(req.params.id));
-                yield internships_helper_1.updateInternshipStatus(i, "attributed" /* ATTRIBUTED */);
-                return res.sendStatus(http_status_codes_1.default.OK);
-            }
-            catch (error) {
-                global_helper_1.checkContent(null, next);
-            }
-        }
-    }))
+    campaigns_model_1.default.linkToValidatedInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((campaign) => (global_helper_1.checkContent(campaign, next) ? res.send(campaign) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
  * GET /campaigns/:id/internships
  * Used to get all internships of a campaign
  */
-exports.getCampaignInternships = (req, res, next) => {
-    // @see validator + router
-    const errors = express_validator_1.validationResult(req);
-    if (!errors.isEmpty()) {
-        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
-    }
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    const findOpts = {
-        where: {
-            [sequelize_1.default.Op.or]: [
-                { availableCampaignId: req.params.id },
-                { validatedCampaignId: req.params.id },
-            ],
-        },
-    };
-    let max;
-    Internships_1.default.count(findOpts)
-        .then((rowNbr) => {
-        max = rowNbr;
-        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
-    })
-        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkArrayContent(internships, next)) {
-            return res.send({
-                page,
-                data: internships,
-                length: internships.length,
-                max,
-            });
-        }
-    }))
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
-};
+exports.getCampaignInternships = internships_helper_1.generateGetInternships('campaignId');
 /**
  * GET /campaigns/:id/mentors
  * Used to get all mentors of a campaign
@@ -409,26 +232,8 @@ exports.getCampaignMentors = (req, res, next) => {
     }
     // Retrive query data
     const { page = 1, limit = 20 } = req.query;
-    const findOpts = {
-        include: [{ model: Campaigns_1.default, as: 'campaigns', attributes: [], duplicating: false }],
-        where: { '$campaigns.id$': req.params.id },
-    };
-    let max;
-    Mentors_1.default.count(findOpts)
-        .then((rowNbr) => {
-        max = rowNbr;
-        return Mentors_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
-    })
-        .then((mentors) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkArrayContent(mentors, next)) {
-            return res.send({
-                page,
-                data: mentors,
-                length: mentors.length,
-                max,
-            });
-        }
-    }))
+    mentor_model_1.default.getMentors({ campaignId: Number(req.params.id) }, { page, limit })
+        .then((data) => (global_helper_1.checkContent(data, next) ? res.send(data) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -441,19 +246,8 @@ exports.linkCampaignMentor = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            try {
-                yield val.addMentor(Number(req.params.mentor_id));
-                singleton_1.default.linkMentor(Number(req.params.id));
-                return res.sendStatus(http_status_codes_1.default.OK);
-            }
-            catch (error) {
-                global_helper_1.checkContent(null, next);
-            }
-        }
-    }))
+    campaigns_model_1.default.linkToMentor(Number(req.params.id), Number(req.params.mentor_id))
+        .then((campaign) => (global_helper_1.checkContent(campaign, next) ? res.send(campaign) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -466,12 +260,8 @@ exports.getCampaignInternshipType = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id, { include: [{ model: InternshipTypes_1.default, as: 'category' }] })
-        .then((val) => {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.category);
-        }
-    })
+    campaigns_model_1.default.getCampaign(Number(req.params.id))
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val.category) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -484,18 +274,8 @@ exports.linkCampaignInternshipType = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Campaigns_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            try {
-                yield val.setCategory(Number(req.params.internship_type_id));
-                return res.sendStatus(http_status_codes_1.default.OK);
-            }
-            catch (error) {
-                global_helper_1.checkContent(null, next);
-            }
-        }
-    }))
+    campaigns_model_1.default.linkToCategory(Number(req.params.id), Number(req.params.internship_type_id))
+        .then((campaign) => (global_helper_1.checkContent(campaign, next) ? res.send(campaign) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 //# sourceMappingURL=campaigns.ctrl.js.map

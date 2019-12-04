@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,11 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
 // Import files ORM class
-const Files_1 = __importDefault(require("../../models/Files"));
-const Internships_1 = __importDefault(require("../../models/Internships"));
+const files_model_1 = __importDefault(require("../../models/files.model"));
 // Factorization methods to handle errors
 const global_helper_1 = require("../helpers/global.helper");
-const pagination_helper_1 = require("../helpers/pagination.helper");
+const internship_proc_1 = require("../processors/internship.proc");
 /**
  * GET /files
  * Used to GET all files
@@ -31,21 +21,11 @@ exports.getFiles = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    let max;
-    Files_1.default.count()
-        .then((rowNbr) => {
-        max = rowNbr;
-        return Files_1.default.findAll(pagination_helper_1.paginate({ page, limit }));
-    })
-        .then((files) => {
-        if (global_helper_1.checkArrayContent(files, next)) {
-            return res.send({
-                page,
-                data: files,
-                length: files.length,
-                max,
-            });
+    const { page = 1, limit = 20, archived } = req.query;
+    files_model_1.default.getFiles({ archived }, { page, limit })
+        .then((data) => {
+        if (global_helper_1.checkContent(data, next)) {
+            return res.send(data);
         }
     })
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
@@ -65,9 +45,10 @@ exports.postFile = (req, res, next) => {
         name: req.body.name,
         type: req.body.type,
         path: req.file.destination,
+        internship: internship_proc_1.fullCopyInternship(req.body.internship),
     };
     // Insert file in database
-    Files_1.default.create(file)
+    files_model_1.default.createFile(file)
         .then((created) => res.send(created))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
@@ -81,7 +62,7 @@ exports.getFile = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Files_1.default.findByPk(req.params.id, { include: [{ model: Internships_1.default, as: 'internship' }] })
+    files_model_1.default.getFile(Number(req.params.id), req.query.archived)
         .then((val) => {
         // Check if we have content, and if so return it
         if (global_helper_1.checkContent(val, next)) {
@@ -100,28 +81,13 @@ exports.putFile = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Files_1.default.findByPk(req.params.id)
-        .then((file) => {
-        if (!global_helper_1.checkContent(file, next)) {
-            return undefined;
-        }
-        if (req.body.name) {
-            file.set('name', req.body.name);
-        }
-        if (req.body.type) {
-            file.set('type', req.body.type);
-        }
-        if (req.body.path) {
-            file.set('path', req.body.path);
-        }
-        return file.save();
-    })
+    files_model_1.default.updateFile(Number(req.params.id), req.body)
         .then((updated) => {
-        if (updated) {
+        if (global_helper_1.checkContent(updated, next)) {
             return res.send(updated);
         }
     })
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
  * DELETE /files/:id
@@ -133,8 +99,7 @@ exports.deleteFile = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Files_1.default.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined)) // Call destroy on selected file
+    files_model_1.default.removeFile(Number(req.params.id))
         .then(() => res.sendStatus(http_status_codes_1.default.OK)) // Return OK status
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
@@ -148,7 +113,7 @@ exports.getFileInternship = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Files_1.default.findByPk(req.params.id, { include: [{ model: Internships_1.default, as: 'internship' }] })
+    files_model_1.default.getFile(Number(req.params.id))
         .then((val) => {
         if (global_helper_1.checkContent(val, next)) {
             return res.send(val.internship);
@@ -166,18 +131,8 @@ exports.linkFilesInternship = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Files_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            try {
-                yield val.setInternship(Number(req.params.internship_id));
-                return res.sendStatus(http_status_codes_1.default.OK);
-            }
-            catch (error) {
-                global_helper_1.checkContent(null, next);
-            }
-        }
-    }))
+    files_model_1.default.linkToInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 //# sourceMappingURL=files.ctrl.js.map

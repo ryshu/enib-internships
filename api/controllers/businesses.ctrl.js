@@ -14,11 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const sequelize_1 = __importDefault(require("sequelize"));
-const Businesses_1 = __importDefault(require("../../models/Businesses"));
-const Internships_1 = __importDefault(require("../../models/Internships"));
-const pagination_helper_1 = require("../helpers/pagination.helper");
+const business_model_1 = __importDefault(require("../../models/business.model"));
 const global_helper_1 = require("../helpers/global.helper");
+const internships_helper_1 = require("../helpers/internships.helper");
+const internship_proc_1 = require("../processors/internship.proc");
 /**
  * GET /businesses
  * Used to GET all businesses
@@ -30,50 +29,11 @@ exports.getBusinesses = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     // Retrive query data
-    const { page = 1, limit = 20, countries, name } = req.query;
-    // Build query options
-    const findOpts = {
-        attributes: {
-            include: [[sequelize_1.default.fn('count', sequelize_1.default.col(`internships.businessId`)), 'count']],
-        },
-        include: [
-            {
-                model: Internships_1.default,
-                as: 'internships',
-                attributes: [],
-                duplicating: false,
-            },
-        ],
-        where: {},
-        group: [sequelize_1.default.col(`Businesses.id`)],
-    };
-    // Build count query options
-    const countOpts = { where: {} };
-    if (countries) {
-        // If country list is given, add it to query
-        // Sequelize will translate it by "country in countries"
-        findOpts.where.country = countries;
-        countOpts.where.country = countries;
-    }
-    if (name) {
-        // If name filter is given, apply it using substring
-        findOpts.where.name = { [sequelize_1.default.Op.substring]: name };
-        countOpts.where.name = { [sequelize_1.default.Op.substring]: name };
-    }
-    let max;
-    Businesses_1.default.count(countOpts)
-        .then((rowNbr) => {
-        max = rowNbr;
-        return Businesses_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
-    })
-        .then((businesses) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkArrayContent(businesses, next)) {
-            return res.send({
-                page,
-                data: businesses,
-                length: businesses.length,
-                max,
-            });
+    const { page = 1, limit = 20, countries, name, archived } = req.query;
+    business_model_1.default.getBusinesses({ name, countries, archived }, { page, limit })
+        .then((data) => __awaiter(void 0, void 0, void 0, function* () {
+        if (global_helper_1.checkContent(data, next)) {
+            return res.send(data);
         }
     }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
@@ -95,8 +55,12 @@ exports.postBusiness = (req, res, next) => {
         postalCode: req.body.postalCode,
         address: req.body.address,
         additional: req.body.additional,
+        // Copy internships if provided to also create them in DB
+        internships: req.body.internships && Array.isArray(req.body.internships)
+            ? req.body.internships.map((i) => internship_proc_1.fullCopyInternship(i))
+            : [],
     };
-    Businesses_1.default.create(business)
+    business_model_1.default.createBusiness(business)
         .then((created) => res.send(created))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
@@ -110,7 +74,7 @@ exports.getBusiness = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Businesses_1.default.findByPk(req.params.id, { include: [{ model: Internships_1.default, as: 'internships' }] })
+    business_model_1.default.getBusiness(Number(req.params.id), req.query.archived)
         .then((val) => {
         if (global_helper_1.checkContent(val, next)) {
             return res.send(val);
@@ -128,34 +92,10 @@ exports.putBusiness = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Businesses_1.default.findByPk(req.params.id)
+    business_model_1.default.updateBusiness(Number(req.params.id), req.body)
         .then((business) => {
-        if (!global_helper_1.checkContent(business, next)) {
-            return undefined;
-        }
-        if (req.body.name) {
-            business.set('name', req.body.name);
-        }
-        if (req.body.country) {
-            business.set('country', req.body.country);
-        }
-        if (req.body.city) {
-            business.set('city', req.body.city);
-        }
-        if (req.body.postalCode) {
-            business.set('postalCode', req.body.postalCode);
-        }
-        if (req.body.address) {
-            business.set('address', req.body.address);
-        }
-        if (req.body.additional) {
-            business.set('additional', req.body.additional);
-        }
-        return business.save();
-    })
-        .then((updated) => {
-        if (updated) {
-            return res.send(updated);
+        if (global_helper_1.checkContent(business, next)) {
+            return res.send(business);
         }
     })
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
@@ -170,8 +110,7 @@ exports.deleteBusiness = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Businesses_1.default.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+    business_model_1.default.removeBusiness(Number(req.params.id))
         .then(() => res.sendStatus(http_status_codes_1.default.OK))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
@@ -179,33 +118,7 @@ exports.deleteBusiness = (req, res, next) => {
  * GET /businesses/:id/internships
  * Used to get all internships of a business
  */
-exports.getBusinessInternships = (req, res, next) => {
-    // @see validator + router
-    const errors = express_validator_1.validationResult(req);
-    if (!errors.isEmpty()) {
-        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
-    }
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    const findOpts = { where: { businessId: req.params.id } };
-    let max;
-    Internships_1.default.count(findOpts)
-        .then((rowNbr) => {
-        max = rowNbr;
-        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
-    })
-        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkArrayContent(internships, next)) {
-            return res.send({
-                page,
-                data: internships,
-                length: internships.length,
-                max,
-            });
-        }
-    }))
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
-};
+exports.getBusinessInternships = internships_helper_1.generateGetInternships('businessId');
 /**
  * GET /businesses/:id/internships/:internship_id/link
  * Used to get all internships of a business
@@ -216,13 +129,8 @@ exports.linkBusinessInternships = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    Businesses_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            yield val.addInternship(Number(req.params.internship_id));
-            return res.sendStatus(http_status_codes_1.default.OK);
-        }
-    }))
+    business_model_1.default.linkToInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 //# sourceMappingURL=businesses.ctrl.js.map

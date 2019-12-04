@@ -1,41 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const generic_val_1 = require("./generic.val");
-const type_1 = require("../../utils/type");
-exports.MentorList = Object.assign({}, generic_val_1.paginateValidator);
-exports.MentorCreate = {
-    firstName: {
-        in: ['body'],
-        isString: { errorMessage: 'First name must be of type string' },
-        exists: { errorMessage: 'First name must be defined' },
-        trim: true,
-        escape: true,
-    },
-    lastName: {
-        in: ['body'],
-        isString: { errorMessage: 'Last name must be of type string' },
-        exists: { errorMessage: 'Last name must be defined' },
-        trim: true,
-        escape: true,
-    },
-    email: {
-        in: ['body'],
-        isString: { errorMessage: 'Email must be of type string' },
-        isEmail: { errorMessage: 'Email must complain to email struct' },
-        exists: { errorMessage: 'Email must be defined' },
-        trim: true,
-        escape: true,
-    },
-    role: {
-        in: ['body'],
-        isString: { errorMessage: 'Role must be of type string' },
-        isIn: {
-            options: [type_1.mentorRoles],
-            errorMessage: `Role must be in [${type_1.mentorRoles.join(', ')}]`,
-        },
-        optional: true,
-        trim: true,
-    },
-};
+const generator_val_1 = require("./generator.val");
+exports.MentorList = Object.assign(Object.assign({}, generic_val_1.paginateValidator), generic_val_1.archivedValidator);
+exports.MentorCreate = Object.assign(Object.assign(Object.assign(Object.assign({}, generator_val_1.mentorVal()), generic_val_1.replaceAllExistByOptional(generator_val_1.campaignVal('campaigns[*]'))), generic_val_1.replaceAllExistByOptional(generator_val_1.internshipVal('internships[*]'))), generic_val_1.replaceAllExistByOptional(generator_val_1.propositionsVal('propositions[*]')));
 exports.MentorUpdate = generic_val_1.replaceAllExistByOptional(exports.MentorCreate);
 //# sourceMappingURL=mentors.val.js.map

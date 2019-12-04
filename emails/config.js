@@ -26,6 +26,6 @@ exports.email = new email_templates_1.default({
         defaultLocale: 'fr',
     },
     // Change default template link "emails" for "templates"
-    views: { path: path_1.default.join(__dirname, 'templates') },
+    views: { root: path_1.default.join(__dirname, 'templates') },
 });
 //# sourceMappingURL=config.js.map

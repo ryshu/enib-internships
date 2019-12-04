@@ -23,7 +23,7 @@ const cas_1 = __importDefault(require("./configs/setup/cas"));
 require("./configs/instances/database"); // Only import to setup
 require("./configs/setup/database"); // Only import to setup
 const express_session_1 = __importDefault(require("express-session"));
-const handle_1 = require("./api/cas/handle");
+const handle_1 = require("./auth/cas/handle");
 // Create Express server
 const app = express_1.default();
 exports.session = express_session_1.default({

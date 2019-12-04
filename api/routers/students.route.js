@@ -15,6 +15,7 @@ const express_validator_1 = require("express-validator");
 const StudentsCtrl = __importStar(require("../controllers/students.ctrl"));
 const generic_val_1 = require("../validators/generic.val");
 const students_val_1 = require("../validators/students.val");
+const internships_val_1 = require("../validators/internships.val");
 const router = express_1.default.Router();
 // Students
 router.get('', express_validator_1.checkSchema(students_val_1.StudentList), StudentsCtrl.getStudents);
@@ -23,7 +24,7 @@ router.get('/:id', express_validator_1.checkSchema(generic_val_1.ID), StudentsCt
 router.put('/:id', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, students_val_1.StudentUpdate)), StudentsCtrl.putStudent);
 router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), StudentsCtrl.deleteStudent);
 // Students internships
-router.get('/:id/internships', express_validator_1.checkSchema(generic_val_1.ID), StudentsCtrl.getStudentInternships);
+router.get('/:id/internships', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, internships_val_1.InternshipsList)), StudentsCtrl.getStudentInternships);
 router.post('/:id/internships/:internship_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipID)), StudentsCtrl.linkStudentInternships);
 exports.default = router;
 //# sourceMappingURL=students.route.js.map

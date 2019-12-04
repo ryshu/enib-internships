@@ -1,59 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const generic_val_1 = require("./generic.val");
-exports.CampaignList = {};
-exports.CampaignCreate = {
-    name: {
-        in: ['body'],
-        isString: { errorMessage: 'Name must be of type string' },
-        exists: { errorMessage: 'Name must be defined' },
-        trim: true,
-        escape: true,
-    },
-    description: {
-        in: ['body'],
-        isString: { errorMessage: 'Description must be of type string' },
-        exists: { errorMessage: 'Description must be defined' },
-        trim: true,
-        escape: true,
-    },
-    semester: {
-        in: ['body'],
-        isString: { errorMessage: 'Semester must be of type string' },
-        exists: { errorMessage: 'Semester must be defined' },
-        trim: true,
-        escape: true,
-    },
-    maxProposition: {
-        in: ['body'],
-        isInt: { errorMessage: 'maxProposition must be an integer >= 0', options: { min: 0 } },
-        optional: true,
-        toInt: true,
-    },
-    isPublish: {
-        in: ['body'],
-        isBoolean: { errorMessage: 'Publish must be of type boolean' },
-        optional: true,
-        toBoolean: true,
-    },
-    startAt: {
-        in: ['body'],
-        isInt: { errorMessage: 'Start At must be of type timestamp', options: { min: 0 } },
-        optional: true,
-        toInt: true,
-    },
-    endAt: {
-        in: ['body'],
-        isInt: { errorMessage: 'End At must be of type timestamp', options: { min: 0 } },
-        optional: true,
-        toInt: true,
-    },
-    category_id: {
-        in: ['body'],
-        isInt: { errorMessage: 'Category ID should be integer > 0', options: { min: 1 } },
-        exists: { errorMessage: 'Category ID should be defined' },
-        toInt: true,
-    },
-};
+const generator_val_1 = require("./generator.val");
+exports.CampaignList = Object.assign({}, generic_val_1.archivedValidator);
+exports.CampaignCreate = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, generator_val_1.campaignVal()), generic_val_1.replaceAllExistByOptional(generator_val_1.categoryVal('category'))), generic_val_1.replaceAllExistByOptional(generator_val_1.propositionsVal('propositions[*]'))), generic_val_1.replaceAllExistByOptional(generator_val_1.mentorVal('mentors[*]'))), generic_val_1.replaceAllExistByOptional(generator_val_1.internshipVal('validatedInternships[*]'))), generic_val_1.replaceAllExistByOptional(generator_val_1.internshipVal('availableInternships[*]')));
 exports.CampaignUpdate = generic_val_1.replaceAllExistByOptional(exports.CampaignCreate);
 //# sourceMappingURL=campaigns.val.js.map

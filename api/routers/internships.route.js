@@ -22,6 +22,8 @@ router.post('', express_validator_1.checkSchema(internships_val_1.InternshipCrea
 router.get('/:id', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.getInternship);
 router.put('/:id', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, internships_val_1.InternshipUpdate)), InternshipsCtrl.putInternship);
 router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.deleteInternship);
+// FSM
+router.post('/:id/fsm', express_validator_1.checkSchema(internships_val_1.InternshipFSM), InternshipsCtrl.upadteFSMInternship);
 // Routes for internships-businesses association
 router.get('/:id/businesses', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.getInternshipBusiness);
 router.post('/:id/businesses/:business_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.BusinessID)), InternshipsCtrl.linkInternshipBusinesses);
@@ -39,7 +41,6 @@ router.get('/:id/availableCampaigns', express_validator_1.checkSchema(generic_va
 router.post('/:id/availableCampaigns/:campaign_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.CampaignID)), InternshipsCtrl.linkAvailableCampaignInternships);
 // Internships Validated Campaign
 router.get('/:id/validatedCampaigns', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.getValidatedInternshipCampaign);
-router.post('/:id/validatedCampaigns/:campaign_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.CampaignID)), InternshipsCtrl.linkValidatedCampaignInternships);
 // Internships Propositions
 router.get('/:id/propositions', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.getInternshipPropositions);
 router.post('/:id/propositions/:mentoring_proposition_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.MentoringPropositionID)), InternshipsCtrl.linkInternshipPropositions);

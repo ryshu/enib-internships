@@ -14,6 +14,7 @@ const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
 const PropositionsCtrl = __importStar(require("../controllers/mentoring.propositions.ctrl"));
 const generic_val_1 = require("../validators/generic.val");
+const internships_val_1 = require("../validators/internships.val");
 const mentoringPropositions_val_1 = require("../validators/mentoringPropositions.val");
 const router = express_1.default.Router();
 // Mentoring propositions
@@ -27,7 +28,7 @@ router.get('/:id/campaigns', express_validator_1.checkSchema(generic_val_1.ID), 
 router.post('/:id/campaigns/:campaign_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.CampaignID)), PropositionsCtrl.linkMentoringPropositionCampaign);
 router.get('/:id/mentors', express_validator_1.checkSchema(generic_val_1.ID), PropositionsCtrl.getMentoringPropositionMentor);
 router.post('/:id/mentors/:mentor_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.MentorID)), PropositionsCtrl.linkMentoringPropositionMentor);
-router.get('/:id/internships', express_validator_1.checkSchema(generic_val_1.ID), PropositionsCtrl.getMentoringPropositionInternship);
+router.get('/:id/internships', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, internships_val_1.InternshipsList)), PropositionsCtrl.getMentoringPropositionInternship);
 router.post('/:id/internships/:internship_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipID)), PropositionsCtrl.linkMentoringPropositionInternship);
 exports.default = router;
 //# sourceMappingURL=mentoring.propositions.route.js.map

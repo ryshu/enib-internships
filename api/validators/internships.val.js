@@ -1,90 +1,103 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const generic_val_1 = require("./generic.val");
-const modes = ['published', 'propositions', 'self'];
-exports.InternshipsList = Object.assign(Object.assign(Object.assign({}, generic_val_1.paginateValidator), generic_val_1.contriesValidator), { types: {
+const generator_val_1 = require("./generator.val");
+const internship_1 = require("../../internship");
+// All available associations label for includes filter
+const InternshipAvailableIncludes = [
+    'files',
+    'student',
+    'mentor',
+    'availableCampaign',
+    'validatedCampaign',
+    'propositions',
+    'business',
+    'category',
+];
+exports.InternshipsList = Object.assign(Object.assign(Object.assign(Object.assign({}, generic_val_1.paginateValidator), generic_val_1.contriesValidator), generic_val_1.archivedValidator), { 'types': {
         in: ['query'],
         isArray: { errorMessage: 'Category filter list must be array' },
         optional: true,
         toArray: true,
-    }, subject: {
+    }, 'subject': {
         in: ['query'],
         isString: { errorMessage: 'Subject should be of type string' },
         optional: true,
         trim: true,
         escape: true,
-    }, mode: {
+    }, 'mode': {
+        in: ['query'],
+        isArray: { errorMessage: 'Internship mode should be provide under array form' },
+        optional: true,
+        toArray: true,
+    }, 'mode[*]': {
         in: ['query'],
         isString: { errorMessage: 'Mode should be a string' },
         isIn: {
-            options: [modes],
-            errorMessage: `Mode should be included in [${modes.join(', ')}]`,
+            options: [internship_1.InternshipsMode],
+            errorMessage: `Mode should be included in [${internship_1.InternshipsMode.join(', ')}]`,
         },
         optional: true,
         trim: true,
-    }, isAbroad: {
+    }, 'isAbroad': {
         in: ['query'],
         isBoolean: { errorMessage: 'Abroad should be of type boolean' },
         optional: true,
         toBoolean: true,
-    }, isValidated: {
+    }, 'includes': {
         in: ['query'],
-        isBoolean: { errorMessage: 'Validated should be of type boolean' },
+        isArray: { errorMessage: 'Internship includes should be provide under array form' },
         optional: true,
-        toBoolean: true,
+        toArray: true,
+    }, 'includes[*]': {
+        in: ['query'],
+        isString: { errorMessage: 'Include should be a string' },
+        isIn: {
+            options: [InternshipAvailableIncludes],
+            errorMessage: `Include should be available in following list: [${InternshipAvailableIncludes.join(', ')}]`,
+        },
+        optional: true,
+        trim: true,
     } });
-exports.InternshipCreate = Object.assign(Object.assign({ subject: {
+exports.InternshipCreate = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, generator_val_1.internshipVal()), generic_val_1.replaceAllExistByOptional(generator_val_1.categoryVal('category'))), generic_val_1.replaceAllExistByOptional(generator_val_1.studentVal('student'))), generic_val_1.replaceAllExistByOptional(generator_val_1.fileVal('files[*]'))), generic_val_1.replaceAllExistByOptional(generator_val_1.mentorVal('mentor'))), generic_val_1.replaceAllExistByOptional(generator_val_1.businessVal('business'))), generic_val_1.replaceAllExistByOptional(generator_val_1.propositionsVal('propositions[*]'))), generic_val_1.replaceAllExistByOptional(generator_val_1.campaignVal('validatedCampaign'))), generic_val_1.replaceAllExistByOptional(generator_val_1.campaignVal('availableCampaign')));
+exports.InternshipUpdate = generic_val_1.replaceAllExistByOptional(exports.InternshipCreate);
+exports.InternshipFSM = Object.assign(Object.assign({}, generic_val_1.ID), { state: {
         in: ['body'],
-        isString: { errorMessage: 'Subject must be of type string' },
-        exists: { errorMessage: 'Subject must be defined' },
+        isString: { errorMessage: 'State should be a string' },
+        isIn: {
+            options: [internship_1.InternshipsMode],
+            errorMessage: `State should be included in [${internship_1.InternshipsMode.join(', ')}]`,
+        },
+        exists: { errorMessage: 'Should should be defined' },
         trim: true,
-        escape: true,
-    }, description: {
+    }, campaignId: {
         in: ['body'],
-        isString: { errorMessage: 'Description must be of type string' },
-        exists: { errorMessage: 'Description must be defined' },
+        isInt: { errorMessage: `Campaign identifier must be an integer` },
+        optional: true,
+        toInt: true,
+    }, mentorId: {
+        in: ['body'],
+        isInt: { errorMessage: `Mentor identifier must be an integer` },
+        optional: true,
+        toInt: true,
+    }, studentId: {
+        in: ['body'],
+        isInt: { errorMessage: `Student must be an integer` },
+        optional: true,
+        toInt: true,
+    }, result: {
+        in: ['body'],
+        isString: { errorMessage: 'Result should be a string' },
+        isIn: {
+            options: [internship_1.InternshipsResult],
+            errorMessage: `Result should be included in [${internship_1.InternshipsResult.join(', ')}]`,
+        },
+        optional: true,
         trim: true,
-        escape: true,
-    }, category: {
-        in: ['body'],
-        isInt: { options: { min: 0 }, errorMessage: 'Category ID should be an integer' },
-        exists: { errorMessage: 'Category ID should be provide' },
-        toInt: true,
-    } }, generic_val_1.addressValidator), { isInternshipAbroad: {
-        in: ['body'],
-        isBoolean: { errorMessage: 'Internship abroad must be of type boolean' },
-        optional: true,
-        toBoolean: true,
-    }, isValidated: {
-        in: ['body'],
-        isBoolean: { errorMessage: 'Validated must be of type boolean' },
-        optional: true,
-        toBoolean: true,
-    }, isProposition: {
-        in: ['body'],
-        isBoolean: { errorMessage: 'Proposition must be of type boolean' },
-        optional: true,
-        toBoolean: true,
-    }, isPublish: {
-        in: ['body'],
-        isBoolean: { errorMessage: 'Publish must be of type boolean' },
-        optional: true,
-        toBoolean: true,
-    }, publishAt: {
-        in: ['body'],
-        isInt: { errorMessage: 'Publish at must be a timestamp', options: { min: 0 } },
-        optional: true,
-        toInt: true,
-    }, startAt: {
-        in: ['body'],
-        isInt: { errorMessage: 'Start at must be a timestamp', options: { min: 0 } },
-        optional: true,
-        toInt: true,
     }, endAt: {
         in: ['body'],
-        isInt: { errorMessage: 'End at must be a timestamp', options: { min: 0 } },
+        isInt: { errorMessage: `End at must be an integer` },
         optional: true,
         toInt: true,
     } });
-exports.InternshipUpdate = generic_val_1.replaceAllExistByOptional(exports.InternshipCreate);
 //# sourceMappingURL=internships.val.js.map

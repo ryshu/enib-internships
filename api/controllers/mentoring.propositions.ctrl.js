@@ -1,26 +1,15 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const MentoringPropositions_1 = __importDefault(require("../../models/MentoringPropositions"));
-const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
-const Mentors_1 = __importDefault(require("../../models/Mentors"));
-const Internships_1 = __importDefault(require("../../models/Internships"));
-const pagination_helper_1 = require("../helpers/pagination.helper");
 const global_helper_1 = require("../helpers/global.helper");
-const singleton_1 = __importDefault(require("../../statistics/singleton"));
+const mentoring_proposition_model_1 = __importDefault(require("../../models/mentoring.proposition.model"));
+const internship_proc_1 = require("../processors/internship.proc");
+const campaign_proc_1 = require("../processors/campaign.proc");
+const mentor_proc_1 = require("../processors/mentor.proc");
 /**
  * GET /mentoringPropositions
  * Used to GET all mentoringPropositions
@@ -31,24 +20,9 @@ exports.getMentoringPropositions = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    let max;
-    MentoringPropositions_1.default.count()
-        .then((rowNbr) => {
-        max = rowNbr;
-        return MentoringPropositions_1.default.findAll(pagination_helper_1.paginate({ page, limit }));
-    })
-        .then((mentoringPropositions) => {
-        if (global_helper_1.checkArrayContent(mentoringPropositions, next)) {
-            return res.send({
-                page,
-                data: mentoringPropositions,
-                length: mentoringPropositions.length,
-                max,
-            });
-        }
-    })
+    const { page = 1, limit = 20, archived } = req.query;
+    mentoring_proposition_model_1.default.getMentoringPropositions({ archived }, { page, limit })
+        .then((propositions) => global_helper_1.checkContent(propositions, next) ? res.send(propositions) : undefined)
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -63,12 +37,12 @@ exports.postMentoringProposition = (req, res, next) => {
     }
     const mentoringProposition = {
         comment: req.body.comment,
+        internship: internship_proc_1.fullCopyInternship(req.body.internship),
+        campaign: campaign_proc_1.fullCopyCampaign(req.body.campaign),
+        mentor: mentor_proc_1.fullCopyMentor(req.body.mentor),
     };
-    MentoringPropositions_1.default.create(mentoringProposition)
-        .then((created) => {
-        singleton_1.default.addProposition();
-        return res.send(created);
-    })
+    mentoring_proposition_model_1.default.createMentoringProposition(mentoringProposition)
+        .then((created) => res.send(created))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -81,14 +55,8 @@ exports.getMentoringProposition = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    MentoringPropositions_1.default.findByPk(req.params.id, {
-        include: [{ model: Campaigns_1.default, as: 'campaign' }],
-    })
-        .then((val) => {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val);
-        }
-    })
+    mentoring_proposition_model_1.default.getMentoringProposition(Number(req.params.id), req.query.archived)
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -101,22 +69,9 @@ exports.putMentoringProposition = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    MentoringPropositions_1.default.findByPk(req.params.id)
-        .then((mentoringProposition) => {
-        if (!global_helper_1.checkContent(mentoringProposition, next)) {
-            return undefined;
-        }
-        if (req.body.comment) {
-            mentoringProposition.set('comment', req.body.comment);
-        }
-        return mentoringProposition.save();
-    })
-        .then((updated) => {
-        if (updated) {
-            return res.send(updated);
-        }
-    })
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
+    mentoring_proposition_model_1.default.updateMentoringProposition(Number(req.params.id), req.body)
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
+        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
  * DELETE /mentoringPropositions/:id
@@ -128,14 +83,7 @@ exports.deleteMentoringProposition = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    MentoringPropositions_1.default.findByPk(req.params.id)
-        .then((val) => {
-        if (val) {
-            singleton_1.default.removeProposition(val.campaign || undefined);
-            return val.destroy();
-        }
-        return undefined;
-    })
+    mentoring_proposition_model_1.default.removeMentoringProposition(Number(req.params.id))
         .then(() => res.sendStatus(http_status_codes_1.default.OK))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
@@ -149,14 +97,8 @@ exports.getMentoringPropositionCampaigns = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    MentoringPropositions_1.default.findByPk(req.params.id, {
-        include: [{ model: Campaigns_1.default, as: 'campaign' }],
-    })
-        .then((val) => {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.campaign);
-        }
-    })
+    mentoring_proposition_model_1.default.getMentoringProposition(Number(req.params.id))
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val.campaign) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -169,19 +111,8 @@ exports.linkMentoringPropositionCampaign = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    MentoringPropositions_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            try {
-                yield val.setCampaign(Number(req.params.campaign_id));
-                singleton_1.default.linkProposition(Number(req.params.campaign_id));
-                return res.sendStatus(http_status_codes_1.default.OK);
-            }
-            catch (error) {
-                global_helper_1.checkContent(null, next);
-            }
-        }
-    }))
+    mentoring_proposition_model_1.default.linkToCampaign(Number(req.params.id), Number(req.params.campaign_id))
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -194,14 +125,8 @@ exports.getMentoringPropositionMentor = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    MentoringPropositions_1.default.findByPk(req.params.id, {
-        include: [{ model: Mentors_1.default, as: 'mentor' }],
-    })
-        .then((val) => {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.mentor);
-        }
-    })
+    mentoring_proposition_model_1.default.getMentoringProposition(Number(req.params.id))
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val.mentor) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -214,18 +139,8 @@ exports.linkMentoringPropositionMentor = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    MentoringPropositions_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            try {
-                yield val.setMentor(Number(req.params.mentor_id));
-                return res.sendStatus(http_status_codes_1.default.OK);
-            }
-            catch (error) {
-                global_helper_1.checkContent(null, next);
-            }
-        }
-    }))
+    mentoring_proposition_model_1.default.linkToMentor(Number(req.params.id), Number(req.params.mentor_id))
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -238,14 +153,8 @@ exports.getMentoringPropositionInternship = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    MentoringPropositions_1.default.findByPk(req.params.id, {
-        include: [{ model: Internships_1.default, as: 'internship' }],
-    })
-        .then((val) => {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val.internship);
-        }
-    })
+    mentoring_proposition_model_1.default.getMentoringProposition(Number(req.params.id))
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val.internship) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -258,18 +167,8 @@ exports.linkMentoringPropositionInternship = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    MentoringPropositions_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            try {
-                yield val.setInternship(Number(req.params.internship_id));
-                return res.sendStatus(http_status_codes_1.default.OK);
-            }
-            catch (error) {
-                global_helper_1.checkContent(null, next);
-            }
-        }
-    }))
+    mentoring_proposition_model_1.default.linkToInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 //# sourceMappingURL=mentoring.propositions.ctrl.js.map

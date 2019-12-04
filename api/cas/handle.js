@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./utils");
 const logger_1 = __importDefault(require("../../utils/logger"));
-const Mentors_1 = __importDefault(require("../../models/Mentors"));
-const Students_1 = __importDefault(require("../../models/Students"));
+const Mentors_1 = __importDefault(require("../../models/sequelize/Mentors"));
+const Students_1 = __importDefault(require("../../models/sequelize/Students"));
 const admin_1 = require("../../configs/data/admin");
 const emails_1 = require("../../emails");
 const handled = [];

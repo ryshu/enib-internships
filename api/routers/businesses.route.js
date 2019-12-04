@@ -15,6 +15,7 @@ const express_validator_1 = require("express-validator");
 const BusinessesCtrl = __importStar(require("../controllers/businesses.ctrl"));
 const generic_val_1 = require("../validators/generic.val");
 const businesses_val_1 = require("../validators/businesses.val");
+const internships_val_1 = require("../validators/internships.val");
 const router = express_1.default.Router();
 // Businesses
 router.get('', express_validator_1.checkSchema(businesses_val_1.BusinessesList), BusinessesCtrl.getBusinesses);
@@ -23,7 +24,7 @@ router.get('/:id', express_validator_1.checkSchema(generic_val_1.ID), Businesses
 router.put('/:id', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, businesses_val_1.BusinessUpdate)), BusinessesCtrl.putBusiness);
 router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), BusinessesCtrl.deleteBusiness);
 // Businesses internships
-router.get('/:id/internships', express_validator_1.checkSchema(generic_val_1.ID), BusinessesCtrl.getBusinessInternships);
+router.get('/:id/internships', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, internships_val_1.InternshipsList)), BusinessesCtrl.getBusinessInternships);
 router.post('/:id/internships/:internship_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipID)), BusinessesCtrl.linkBusinessInternships);
 exports.default = router;
 //# sourceMappingURL=businesses.route.js.map

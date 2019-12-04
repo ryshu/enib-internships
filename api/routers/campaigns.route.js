@@ -16,6 +16,7 @@ const CampaignsCtrl = __importStar(require("../controllers/campaigns.ctrl"));
 const statistics_ctrl_1 = require("../controllers/statistics.ctrl");
 const generic_val_1 = require("../validators/generic.val");
 const campaigns_val_1 = require("../validators/campaigns.val");
+const internships_val_1 = require("../validators/internships.val");
 const router = express_1.default.Router();
 // Campaigns
 router.get('', express_validator_1.checkSchema(campaigns_val_1.CampaignList), CampaignsCtrl.getCampaigns);
@@ -27,13 +28,13 @@ router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), Campaig
 router.get('/:id/mentoringPropositions', express_validator_1.checkSchema(generic_val_1.ID), CampaignsCtrl.getCampaignMentoringPropositions);
 router.post('/:id/mentoringPropositions/:mentoring_proposition_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.MentoringPropositionID)), CampaignsCtrl.linkCampaignMentoringPropositions);
 // Campaigns Validated internships
-router.get('/:id/validatedInternships', express_validator_1.checkSchema(generic_val_1.ID), CampaignsCtrl.getValidatedCampaignInternships);
+router.get('/:id/validatedInternships', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, internships_val_1.InternshipsList)), CampaignsCtrl.getValidatedCampaignInternships);
 router.post('/:id/validatedInternships/:internship_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipID)), CampaignsCtrl.linkValidatedCampaignInternships);
 // Campaigns Availables Internships
-router.get('/:id/availableInternships', express_validator_1.checkSchema(generic_val_1.ID), CampaignsCtrl.getAvailableCampaignInternships);
+router.get('/:id/availableInternships', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, internships_val_1.InternshipsList)), CampaignsCtrl.getAvailableCampaignInternships);
 router.post('/:id/availableInternships/:internship_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.InternshipID)), CampaignsCtrl.linkAvailableCampaignInternships);
 // Campaigns all internships
-router.get('/:id/internships', express_validator_1.checkSchema(generic_val_1.ID), CampaignsCtrl.getCampaignInternships);
+router.get('/:id/internships', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, internships_val_1.InternshipsList)), CampaignsCtrl.getCampaignInternships);
 // Campaigns Mentors
 router.get('/:id/mentors', express_validator_1.checkSchema(generic_val_1.ID), CampaignsCtrl.getCampaignMentors);
 router.post('/:id/mentors/:mentor_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.MentorID)), CampaignsCtrl.linkCampaignMentor);

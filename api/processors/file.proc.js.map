@@ -1,0 +1,1 @@
+{"version":3,"file":"file.proc.js","sourceRoot":"","sources":["../../../src/api/processors/file.proc.ts"],"names":[],"mappings":";;AAEA,6CAAqD;AAErD,SAAgB,YAAY,CAAC,IAA0B;IACnD,IAAI,wBAAgB,CAAC,IAAI,CAAC,EAAE;QACxB,OAAO;YACH,IAAI,EAAE,IAAI,CAAC,IAAI;YACf,IAAI,EAAE,IAAI,CAAC,IAAI;YACf,IAAI,EAAE,IAAI,CAAC,IAAI;SAClB,CAAC;KACL;SAAM;QACH,OAAO,SAAS,CAAC;KACpB;AACL,CAAC;AAVD,oCAUC"}

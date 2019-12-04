@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize = require("sequelize");
-const Campaigns_1 = __importDefault(require("../models/Campaigns"));
-const Internships_1 = __importDefault(require("../models/Internships"));
-const InternshipTypes_1 = __importDefault(require("../models/InternshipTypes"));
-const Mentors_1 = __importDefault(require("../models/Mentors"));
+const Campaigns_1 = __importDefault(require("../models/sequelize/Campaigns"));
+const Internships_1 = __importDefault(require("../models/sequelize/Internships"));
+const InternshipTypes_1 = __importDefault(require("../models/sequelize/InternshipTypes"));
+const Mentors_1 = __importDefault(require("../models/sequelize/Mentors"));
 const emails_1 = require("../emails");
 const singleton_1 = __importDefault(require("../statistics/singleton"));
 function internshipInject(internship, campaign, channel) {

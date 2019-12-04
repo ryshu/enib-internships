@@ -15,11 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const logger_1 = __importDefault(require("../../utils/logger"));
 const singleton_1 = __importDefault(require("../../statistics/singleton"));
-const Internships_1 = __importDefault(require("../../models/Internships"));
-const Students_1 = __importDefault(require("../../models/Students"));
-const Mentors_1 = __importDefault(require("../../models/Mentors"));
-const MentoringPropositions_1 = __importDefault(require("../../models/MentoringPropositions"));
-const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
+const Internships_1 = __importDefault(require("../../models/sequelize/Internships"));
+const Students_1 = __importDefault(require("../../models/sequelize/Students"));
+const Mentors_1 = __importDefault(require("../../models/sequelize/Mentors"));
+const MentoringPropositions_1 = __importDefault(require("../../models/sequelize/MentoringPropositions"));
+const Campaigns_1 = __importDefault(require("../../models/sequelize/Campaigns"));
 function setupStatistics() {
     return __awaiter(this, void 0, void 0, function* () {
         function _searchCampaign(c) {
@@ -45,11 +45,13 @@ function setupStatistics() {
         const global = {
             internships: {
                 total: yield Internships_1.default.count(),
-                suggested: yield Internships_1.default.count({ where: { state: 'suggest' } }),
                 waiting: yield Internships_1.default.count({ where: { state: 'waiting' } }),
-                availables: yield Internships_1.default.count({ where: { state: 'available' } }),
-                validated: yield Internships_1.default.count({ where: { state: 'validated' } }),
-                attributed: yield Internships_1.default.count({ where: { state: 'attributed' } }),
+                published: yield Internships_1.default.count({ where: { state: 'published' } }),
+                attributed_mentor: yield Internships_1.default.count({ where: { state: 'attributed_mentor' } }),
+                attributed_student: yield Internships_1.default.count({ where: { state: 'attributed_student' } }),
+                available_campaign: yield Internships_1.default.count({ where: { state: 'available_campaign' } }),
+                running: yield Internships_1.default.count({ where: { state: 'running' } }),
+                validation: yield Internships_1.default.count({ where: { state: 'validation' } }),
                 archived: yield Internships_1.default.count({ where: { state: 'archived' } }),
             },
             students: yield Students_1.default.count(),
@@ -60,8 +62,8 @@ function setupStatistics() {
         const stats = yield Promise.all(campaigns.map((c) => _searchCampaign(c)));
         singleton_1.default.reset();
         singleton_1.default.init(global, ...stats);
-        logger_1.default.info(`STATISTICS - ${JSON.stringify(global, null, 4)}`);
-        stats.forEach((s) => logger_1.default.info(`STATISTICS - ${JSON.stringify(s, null, 4)}`));
+        logger_1.default.info(`STATISTICS - Global (internships: ${global.internships.total},students: ${global.students}, mentors: ${global.mentors}, propositions: ${global.propositions})`);
+        stats.forEach((s) => logger_1.default.info(`STATISTICS - Campaign n°${s.campaign} (internships: ${s.internships.total}, students: ${s.students}, propositions: ${s.propositions}, mentors: ${s.mentors})`));
     });
 }
 exports.setupStatistics = setupStatistics;

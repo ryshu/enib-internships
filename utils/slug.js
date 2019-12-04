@@ -1,4 +1,5 @@
 "use strict";
+// TODO: Documentation
 Object.defineProperty(exports, "__esModule", { value: true });
 function slugify(string) {
     const a = 'àáäâãåăæąçćčđďèéěėëêęğǵḧìíïîįłḿǹńňñòóöôœøṕŕřßşśšșťțùúüûǘůűūųẃẍÿýźžż·/_,:;';

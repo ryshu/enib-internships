@@ -1,35 +1,28 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
-const InternshipTypes_1 = __importDefault(require("../../models/InternshipTypes"));
-const Internships_1 = __importDefault(require("../../models/Internships"));
-const Campaigns_1 = __importDefault(require("../../models/Campaigns"));
+const internship_type_mode_1 = __importDefault(require("../../models/internship.type.mode"));
 const global_helper_1 = require("../helpers/global.helper");
-const pagination_helper_1 = require("../helpers/pagination.helper");
+const internships_helper_1 = require("../helpers/internships.helper");
+const internship_proc_1 = require("../processors/internship.proc");
+const campaign_proc_1 = require("../processors/campaign.proc");
 /**
  * GET /internshipTypes
  * Used to GET all internship types
  */
 exports.getInternshipTypes = (req, res, next) => {
-    InternshipTypes_1.default.findAll()
-        .then((it) => {
-        if (global_helper_1.checkArrayContent(it, next)) {
-            return res.send(it);
-        }
-    })
+    // @see validator + router
+    const errors = express_validator_1.validationResult(req);
+    if (!errors.isEmpty()) {
+        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
+    }
+    const { archived } = req.query;
+    internship_type_mode_1.default.getInternshipTypes({ archived })
+        .then((types) => (global_helper_1.checkArrayContent(types, next) ? res.send(types) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -42,10 +35,16 @@ exports.postInternshipType = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    const internship = {
+    const type = {
         label: req.body.label,
+        campaigns: req.body.campaigns && Array.isArray(req.body.campaigns)
+            ? req.body.campaigns.map((i) => campaign_proc_1.fullCopyCampaign(i))
+            : [],
+        internships: req.body.internships && Array.isArray(req.body.internships)
+            ? req.body.internships.map((i) => internship_proc_1.fullCopyInternship(i))
+            : [],
     };
-    InternshipTypes_1.default.create(internship)
+    internship_type_mode_1.default.createInternshipType(type)
         .then((created) => res.send(created))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
@@ -59,12 +58,8 @@ exports.getInternshipType = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipTypes_1.default.findByPk(req.params.id)
-        .then((val) => {
-        if (global_helper_1.checkContent(val, next)) {
-            return res.send(val);
-        }
-    })
+    internship_type_mode_1.default.getInternshipType(Number(req.params.id), req.query.archived)
+        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -77,21 +72,8 @@ exports.putInternshipType = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipTypes_1.default.findByPk(req.params.id)
-        .then((it) => {
-        if (!global_helper_1.checkContent(it, next)) {
-            return undefined;
-        }
-        if (req.body.label) {
-            it.set('label', req.body.label);
-        }
-        return it.save();
-    })
-        .then((updated) => {
-        if (updated) {
-            return res.send(updated);
-        }
-    })
+    internship_type_mode_1.default.updateInternshipType(Number(req.params.id), req.body)
+        .then((updated) => (global_helper_1.checkContent(updated, next) ? res.send(updated) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
 /**
@@ -104,8 +86,7 @@ exports.deleteInternshipType = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipTypes_1.default.findByPk(req.params.id)
-        .then((val) => (val ? val.destroy() : undefined))
+    internship_type_mode_1.default.removeInternshipType(Number(req.params.id))
         .then(() => res.sendStatus(http_status_codes_1.default.OK))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
@@ -113,33 +94,7 @@ exports.deleteInternshipType = (req, res, next) => {
  * GET /internshipTypes/:id/internships
  * Used to select an internships type by ID and return list of internships link to it
  */
-exports.getInternshipTypeInternships = (req, res, next) => {
-    // @see validator + router
-    const errors = express_validator_1.validationResult(req);
-    if (!errors.isEmpty()) {
-        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
-    }
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    const findOpts = { where: { categoryId: req.params.id } };
-    let max;
-    Internships_1.default.count(findOpts)
-        .then((rowNbr) => {
-        max = rowNbr;
-        return Internships_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
-    })
-        .then((internships) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkArrayContent(internships, next)) {
-            return res.send({
-                page,
-                data: internships,
-                length: internships.length,
-                max,
-            });
-        }
-    }))
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
-};
+exports.getInternshipTypeInternships = internships_helper_1.generateGetInternships('categoryId');
 /**
  * POST /internshipTypes/:id/internships/:internship_id/link
  * Used to link internship types to internships
@@ -150,13 +105,8 @@ exports.linkInternshipTypeInternship = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipTypes_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            yield val.addInternship(Number(req.params.internship_id));
-            return res.sendStatus(http_status_codes_1.default.OK);
-        }
-    }))
+    internship_type_mode_1.default.linkToInternship(Number(req.params.id), Number(req.params.internship_id))
+        .then((type) => (global_helper_1.checkContent(type, next) ? res.send(type) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -169,25 +119,8 @@ exports.getInternshipTypeCampaigns = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    const findOpts = { where: { categoryId: req.params.id } };
-    let max;
-    Campaigns_1.default.count(findOpts)
-        .then((rowNbr) => {
-        max = rowNbr;
-        return Campaigns_1.default.findAll(pagination_helper_1.paginate({ page, limit }, findOpts));
-    })
-        .then((campaigns) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkArrayContent(campaigns, next)) {
-            return res.send({
-                page,
-                data: campaigns,
-                length: campaigns.length,
-                max,
-            });
-        }
-    }))
+    internship_type_mode_1.default.getInternshipType(Number(req.params.id))
+        .then((data) => (global_helper_1.checkContent(data, next) ? res.send(data.campaigns) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -200,13 +133,8 @@ exports.linkInternshipTypeCampaign = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    InternshipTypes_1.default.findByPk(req.params.id)
-        .then((val) => __awaiter(void 0, void 0, void 0, function* () {
-        if (global_helper_1.checkContent(val, next)) {
-            yield val.addCampaign(Number(req.params.campaign_id));
-            return res.sendStatus(http_status_codes_1.default.OK);
-        }
-    }))
+    internship_type_mode_1.default.linkToCampaign(Number(req.params.id), Number(req.params.campaign_id))
+        .then((type) => (global_helper_1.checkContent(type, next) ? res.send(type) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 //# sourceMappingURL=internship.types.ctrl.js.map

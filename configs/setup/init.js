@@ -20,10 +20,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Sequelize = __importStar(require("sequelize"));
-const InternshipTypes_1 = __importDefault(require("../../models/InternshipTypes"));
+const InternshipTypes_1 = __importDefault(require("../../models/sequelize/InternshipTypes"));
 const logger_1 = __importDefault(require("../../utils/logger"));
 const categories_1 = require("../data/categories");
-const Mentors_1 = __importDefault(require("../../models/Mentors"));
+const Mentors_1 = __importDefault(require("../../models/sequelize/Mentors"));
 const admin_1 = require("../data/admin");
 const statistics_1 = require("./statistics");
 function default_1() {

@@ -1,4 +1,5 @@
 "use strict";
+// TODO: Improve documentations
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Class used to redefined error instance with encoded error
@@ -19,7 +20,7 @@ class APIError extends Error {
             code: this.code,
             status: this.status,
             errors: this.errors,
-            name: this.name
+            name: this.name,
         };
     }
 }
