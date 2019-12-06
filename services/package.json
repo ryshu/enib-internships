@@ -72,7 +72,7 @@
     "@types/nodemailer": "^6.2.2",
     "@types/pug": "^2.0.4",
     "@types/request-promise-native": "^1.0.17",
-    "@types/sequelize": "^4.28.7",
+    "@types/sequelize": "^4.28.8",
     "@types/socket.io": "^2.1.4",
     "@types/supertest": "^2.0.7",
     "chai": "^4.2.0",
