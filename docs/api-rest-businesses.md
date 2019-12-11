@@ -371,7 +371,7 @@ API return **Bad Request** status with 400 code when request validation fail.
 ## Link internship to business
 
 ``` sh
-GET /api/v1/businesses/:id/internships/:internship_id/link
+POST /api/v1/businesses/:id/internships/:internship_id/link
 ```
 
 ### Paths variables

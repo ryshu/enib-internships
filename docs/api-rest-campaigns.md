@@ -22,29 +22,28 @@ Key | Type | Optional | Description
 ### 200 - List of campaigns
 
 ``` json
-{
-    "page": "1",
-    "data": [
-        {
+[
+    {
+        "id": 1,
+        "name": "fbdfb",
+        "description": "gngfj",
+        "semester": "",
+        "maxProposition": 2,
+        "isPublish": false,
+        "startAt": 1576018800000,
+        "endAt": 1576710000000,
+        "createdAt": "2019-12-04T15:57:27.000Z",
+        "updatedAt": "2019-12-04T15:57:27.000Z",
+        "deletedAt": null,
+        "category": {
             "id": 1,
-            "maxProposition": 2,
-            "description": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
-            "category": {
-              "id": 1,
-              "label": "Stage ouvrier"
-            },
-            "name": "test",
-            "semester": "S5",
-            "isPublish": false,
-            "startAt": 0,
-            "endAt": 0,
-            "updatedAt": "2019-09-19T22:21:24.365Z",
-            "createdAt": "2019-09-19T22:21:24.365Z"
+            "label": "Stage ouvrier",
+            "createdAt": "2019-12-04T15:56:21.000Z",
+            "updatedAt": "2019-12-04T15:56:21.000Z",
+            "deletedAt": null
         }
-    ],
-    "length": 1,
-    "max": 1
-}
+    }
+]
 ```
 
 ### 204 - Not content
@@ -90,22 +89,28 @@ Key | Type | Optional | Description
 Return created campaign
 
 ``` json
-{
-  "id": 1,
-  "name": "test",
-  "maxProposition": 2,
-  "description": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
-  "category": {
-    "id": 1,
-    "label": "Stage ouvrier"
-  },
-  "semester": "S5",
-  "isPublish": false,
-  "startAt": 0,
-  "endAt": 0,
-  "updatedAt": "2019-09-19T22:21:24.365Z",
-  "createdAt": "2019-09-19T22:21:24.365Z"
-}
+[
+    {
+        "id": 1,
+        "name": "test",
+        "description": "test",
+        "semester": "",
+        "maxProposition": 2,
+        "isPublish": false,
+        "startAt": 1576018800000,
+        "endAt": 1576710000000,
+        "createdAt": "2019-12-04T15:57:27.000Z",
+        "updatedAt": "2019-12-04T15:57:27.000Z",
+        "deletedAt": null,
+        "category": {
+            "id": 1,
+            "label": "Stage ouvrier",
+            "createdAt": "2019-12-04T15:56:21.000Z",
+            "updatedAt": "2019-12-04T15:56:21.000Z",
+            "deletedAt": null
+        }
+    }
+]
 ```
 
 ### 400 - Bad request
@@ -153,25 +158,29 @@ Key | Type | Optional | Description
 ### 200 - Campaign
 
 ``` json
-{
-  "id": 1,
-  "name": "test",
-  "maxProposition": 2,
-  "description": "Sed quaerat culpa saepe fuga velit distinctio ea deleniti.",
-  "category": {
-    "id": 1,
-    "label": "Stage ouvrier"
-  },
-  "semester": "S5",
-  "isPublish": false,
-  "startAt": 0,
-  "endAt": 0,
-  "propositions": [],
-  "updatedAt": "2019-09-19T22:21:24.365Z",
-  "createdAt": "2019-09-19T22:21:24.365Z"
-}
+[
+    {
+        "id": 1,
+        "name": "test",
+        "description": "test",
+        "semester": "",
+        "maxProposition": 2,
+        "isPublish": false,
+        "startAt": 1576018800000,
+        "endAt": 1576710000000,
+        "createdAt": "2019-12-04T15:57:27.000Z",
+        "updatedAt": "2019-12-04T15:57:27.000Z",
+        "deletedAt": null,
+        "category": {
+            "id": 1,
+            "label": "Stage ouvrier",
+            "createdAt": "2019-12-04T15:56:21.000Z",
+            "updatedAt": "2019-12-04T15:56:21.000Z",
+            "deletedAt": null
+        }
+    }
+]
 ```
-
 ### 204 - No content
 
 If the API doesn't have any campaign in his database, we return a status **204 - No content**
@@ -317,7 +326,8 @@ Key | Type | Description
             "id": 1,
             "comment": "Atque officia consectetur. Eum molestiae rerum qui et. Nostrum fuga molestiae voluptate. Eius omnis nihil non eveniet sed ut. Voluptate provident et voluptate provident illo voluptatem enim ea et. Voluptatem qui reiciendis molestiae rerum blanditiis rem. Ut qui dolor nostrum consequatur accusantium ex esse mollitia atque.",
             "createdAt": "2019-10-13T16:21:25.000Z",
-            "updatedAt": "2019-10-13T16:21:25.000Z"
+            "updatedAt": "2019-10-13T16:21:25.000Z",
+            "deletedAt": null
         },
     ],
     "length": 1,
