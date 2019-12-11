@@ -387,7 +387,7 @@ export const getInternshipFiles = (req: Request, res: Response, next: NextFuncti
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20 } = req.query;
 
     FileModel.getFiles({ internshipId: Number(req.params.id) }, { page, limit })
@@ -493,7 +493,7 @@ export const getInternshipPropositions = (
     if (!errors.isEmpty()) {
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20 } = req.query;
 
     MentoringPropositionModel.getMentoringPropositions(

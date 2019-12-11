@@ -266,6 +266,7 @@ export default {
     search: 'Recherche',
     status: 'Status',
     students: {
+      student: 'Étudiant(e)',
       email: 'Adresse mail',
       firstName: 'Prénom',
       lastName: 'Nom',
