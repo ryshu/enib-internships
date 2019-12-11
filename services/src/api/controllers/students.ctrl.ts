@@ -93,7 +93,12 @@ export const putStudent = (req: Request, res: Response, next: NextFunction): voi
     }
 
     StudentModel.updateStudent(Number(req.params.id), req.body)
-        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
+        .then((val) => {
+            if (checkContent(val, next)) {
+                req.session.info = val;
+                res.send(val);
+            }
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
