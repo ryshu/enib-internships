@@ -3,7 +3,7 @@ import { IStudentEntity } from './student';
 import { IMentorEntity } from './mentor';
 import { IMentoringPropositionEntity } from './mentoring.proposition';
 import { ICampaignEntity } from './campaign';
-import { IBusinessEntity } from './businness';
+import { IBusinessEntity } from './business';
 import { IInternshipTypeEntity } from './internship.type';
 
 import { INTERNSHIP_MODE, INTERNSHIP_RESULT } from '../internship';

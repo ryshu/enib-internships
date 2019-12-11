@@ -16,7 +16,7 @@ import { generateGetInternships } from '../helpers/internships.helper';
 
 import { IInternshipEntity } from '../../declarations/internship';
 
-import { fullCopyBusiness } from '../processors/businesse.proc';
+import { fullCopyBusiness } from '../processors/businesses.proc';
 import { fullCopyCampaign } from '../processors/campaign.proc';
 import { fullCopyFile } from '../processors/file.proc';
 import { fullCopyInternshipType } from '../processors/internship.type.proc';
@@ -169,7 +169,7 @@ export const deleteInternship = (req: Request, res: Response, next: NextFunction
  * POST /internship/:id/fsm
  * Used to update an internship status
  */
-export const upadteFSMInternship = async (req: Request, res: Response, next: NextFunction) => {
+export const updateFSMInternship = async (req: Request, res: Response, next: NextFunction) => {
     // @see validator + router
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -415,7 +415,7 @@ export const linkInternshipFiles = (req: Request, res: Response, next: NextFunct
  * GET /internship/:id/availableCampaign
  * Used to select a internship by ID and return his availableCampaign
  */
-export const getAvailabletInternshipCampaign = (
+export const getAvailableInternshipCampaign = (
     req: Request,
     res: Response,
     next: NextFunction,

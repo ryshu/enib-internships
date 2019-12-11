@@ -121,7 +121,7 @@ export const deleteFile = (req: Request, res: Response, next: NextFunction): voi
         .catch((e) => UNPROCESSABLE_ENTITY(e, next));
 };
 /**
- * GET /files/:id/interships
+ * GET /files/:id/internships
  * Used to select a file by ID and return his internship
  */
 export const getFileInternship = (req: Request, res: Response, next: NextFunction): void => {

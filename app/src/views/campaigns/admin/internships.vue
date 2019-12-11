@@ -84,6 +84,7 @@
         </template>
       </el-table-column>
 
+
       <el-table-column :label="$t('table.internships.country')" min-width="70px">
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
@@ -199,7 +200,7 @@ import {
 } from '../../../declarations';
 
 import {
-  getAvailabletInternshipCampaign,
+  getAvailableInternshipCampaign,
   getCampaigns,
   linkCampaignMentoringPropositions,
 } from '../../../api/campaigns';
@@ -281,7 +282,7 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getAvailabletInternshipCampaign(this.id, this.listQuery).then(
+    getAvailableInternshipCampaign(this.id, this.listQuery).then(
       (res: any) => {
         this.list = res ? res.data : [];
         this.total = res ? res.max : 0;
