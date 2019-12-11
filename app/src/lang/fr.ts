@@ -121,6 +121,20 @@ export default {
         title: "Modification d'un professeur",
       },
     },
+    mentorPropositions: {
+      create: {
+        msg: 'La proposition a bien été créée',
+        title: "Création d'une proposition",
+      },
+      delete: {
+        msg: 'La proposition a bien été supprimée',
+        title: "Suppression d'une proposition",
+      },
+      update: {
+        msg: 'La proposition a bien été modifiée',
+        title: "Modification d'une proposition",
+      },
+    },
     students: {
       create: {
         msg: "L'étudiant a bien été créé",
@@ -158,6 +172,7 @@ export default {
       propositions: 'Propositions',
       settings: 'Paramètre',
       new: 'Nouvelle campagne',
+      modify: 'Modifier les paramètres de la campagne',
     },
     page404: '404',
     profile: 'Profile',
@@ -193,6 +208,7 @@ export default {
       startAt: 'Début',
       date: 'Periode de publication',
       isPublish: 'Publier la campagne',
+      isVisible: 'Campagne visible', 
     },
     cancel: 'Annuler',
     confirm: 'Confirmer',
@@ -201,7 +217,9 @@ export default {
     delete: 'Supprimer',
     edit: 'Modifier',
     export: 'Exporter',
+    archive : 'Archiver',
     detail: 'Détail',
+    save : 'Sauvegarder',
     id: 'ID',
     internships: {
       additional: 'Informations complémentaire',
@@ -224,6 +242,10 @@ export default {
       firstName: 'Prénom',
       lastName: 'Nom',
       email: 'Email',
+    },
+    mentoringProposition: {
+      title: "Postuler",
+      comment: 'Ajouter un commentaire',
     },
     publish: 'Publier',
     search: 'Recherche',
@@ -325,6 +347,11 @@ export default {
     placeholder: {
       update: "Editer l'étudiant",
       remove: "Supprimer l'étudiant de cette campaign",
+    },
+  },
+  mentoringProposition: {
+    placeholder: {
+      create: "Postuler",
     },
   },
 };
