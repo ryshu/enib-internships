@@ -47,7 +47,7 @@ export const getCampaigns = (req: Request, res: Response, next: NextFunction): v
 };
 
 /**
- * POST /campaignss
+ * POST /campaigns
  * Used to create a new campaign entry
  */
 export const postCampaign = async (req: Request, res: Response, next: NextFunction) => {
@@ -270,7 +270,7 @@ export const getCampaignMentors = (req: Request, res: Response, next: NextFuncti
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20 } = req.query;
 
     MentorModel.getMentors({ campaignId: Number(req.params.id) }, { page, limit })

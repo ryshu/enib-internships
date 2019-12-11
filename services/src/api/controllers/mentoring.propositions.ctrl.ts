@@ -113,7 +113,7 @@ export const deleteMentoringProposition = (
 };
 
 /**
- * GET /mentoringPropostions/:id/campaigns
+ * GET /mentoringPropositions/:id/campaigns
  * Used to select a mentoring propositions by ID and return his campaign
  */
 export const getMentoringPropositionCampaigns = (
@@ -132,7 +132,7 @@ export const getMentoringPropositionCampaigns = (
 };
 
 /**
- * POST /mentoringPropostions/:id/campaigns/:campaign_id/link
+ * POST /mentoringPropositions/:id/campaigns/:campaign_id/link
  * Used to create a link between mentoring propositions and campaign
  */
 export const linkMentoringPropositionCampaign = (
@@ -152,7 +152,7 @@ export const linkMentoringPropositionCampaign = (
 };
 
 /**
- * GET /mentoringPropostions/:id/mentors
+ * GET /mentoringPropositions/:id/mentors
  * Used to select a mentoring propositions by ID and return his mentor
  */
 export const getMentoringPropositionMentor = (
@@ -172,7 +172,7 @@ export const getMentoringPropositionMentor = (
 };
 
 /**
- * POST /mentoringPropostions/:id/mentors/:mentor_id/link
+ * POST /mentoringPropositions/:id/mentors/:mentor_id/link
  * Used to create a link between mentoring propositions and mentor
  */
 export const linkMentoringPropositionMentor = (
@@ -192,7 +192,7 @@ export const linkMentoringPropositionMentor = (
 };
 
 /**
- * GET /mentoringPropostions/:id/internship
+ * GET /mentoringPropositions/:id/internship
  * Used to select a mentoring propositions by ID and return his internship
  */
 export const getMentoringPropositionInternship = (
@@ -212,7 +212,7 @@ export const getMentoringPropositionInternship = (
 };
 
 /**
- * POST /mentoringPropostions/:id/internships/:internship_id/link
+ * POST /mentoringPropositions/:id/internships/:internship_id/link
  * Used to create a link between mentoring propositions and internship
  */
 export const linkMentoringPropositionInternship = (

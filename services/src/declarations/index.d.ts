@@ -1,4 +1,4 @@
-export * from './businness';
+export * from './business';
 export * from './campaign';
 export * from './file';
 export * from './internship';

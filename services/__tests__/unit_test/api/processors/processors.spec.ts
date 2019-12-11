@@ -1,4 +1,4 @@
-import { fullCopyBusiness } from '../../../../src/api/processors/businesse.proc';
+import { fullCopyBusiness } from '../../../../src/api/processors/businesses.proc';
 import { fullCopyCampaign } from '../../../../src/api/processors/campaign.proc';
 import { fullCopyFile } from '../../../../src/api/processors/file.proc';
 import { fullCopyInternship } from '../../../../src/api/processors/internship.proc';

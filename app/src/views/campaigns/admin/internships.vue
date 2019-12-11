@@ -69,7 +69,7 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.internships.subject')" min-width="250px">
+      <el-table-column :label="$t('table.internships.subject')" min-width="220px">
         <template slot-scope="{ row }">
           <span class="link-type" @click="handleUpdate(row)">
             {{
@@ -78,6 +78,12 @@
           </span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.students.student')" min-width="100px">
+        <template slot-scope="{ row }">
+          <span>{{ row.student.firstName + ' ' + row.student.lastName }}</span>
+        </template>
+      </el-table-column>
+
 
       <el-table-column :label="$t('table.internships.country')" min-width="70px">
         <template slot-scope="{ row }">
@@ -194,7 +200,7 @@ import {
 } from '../../../declarations';
 
 import {
-  getAvailabletInternshipCampaign,
+  getAvailableInternshipCampaign,
   getCampaigns,
   linkCampaignMentoringPropositions,
 } from '../../../api/campaigns';
@@ -276,7 +282,7 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getAvailabletInternshipCampaign(this.id, this.listQuery).then(
+    getAvailableInternshipCampaign(this.id, this.listQuery).then(
       (res: any) => {
         this.list = res ? res.data : [];
         this.total = res ? res.max : 0;
