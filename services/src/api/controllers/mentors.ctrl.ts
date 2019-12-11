@@ -34,7 +34,7 @@ export const getMentors = (req: Request, res: Response, next: NextFunction): voi
     }
 
     // Retrieve all mentors from database
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20, archived } = req.query;
 
     MentorModel.getMentors({ archived }, { page, limit })
@@ -169,7 +169,7 @@ export const getMentorPropositions = (req: Request, res: Response, next: NextFun
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20 } = req.query;
 
     MentoringPropositionModel.getMentoringPropositions(

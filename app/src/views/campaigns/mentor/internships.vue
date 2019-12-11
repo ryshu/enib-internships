@@ -78,7 +78,11 @@
           </span>
         </template>
       </el-table-column>
-
+      <el-table-column :label="$t('table.students.student')" min-width="100px">
+        <template slot-scope="{ row }">
+          <span>{{ row.student.firstName + ' ' + row.student.lastName }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.internships.country')" min-width="70px">
         <template slot-scope="{ row }">
           <span>{{ row.country }}</span>
@@ -216,7 +220,7 @@ export default class extends Vue {
     mode: [INTERNSHIP_MODE.AVAILABLE_CAMPAIGN],
     types: [],
     isAbroad: false,
-    student: [],
+    includes: ['student'],
   };
 
   private resolve: (value?: IMentoringPropositionEntity) => void = () => {};

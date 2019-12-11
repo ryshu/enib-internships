@@ -67,6 +67,5 @@ export interface InternshipOpts {
   /** @property {boolean} isAbroad Select only foreign internships */
   isAbroad?: boolean;
 
-  /** @property {IStudentEntity[]} student Filter internships by student */
-  student?: IStudentEntity[];
+  includes?: string[];
 }

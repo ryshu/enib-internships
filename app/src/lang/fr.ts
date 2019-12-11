@@ -208,7 +208,7 @@ export default {
       startAt: 'Début',
       date: 'Periode de publication',
       isPublish: 'Publier la campagne',
-      isVisible: 'Campagne visible', 
+      isVisible: 'Campagne visible',
     },
     cancel: 'Annuler',
     confirm: 'Confirmer',
@@ -251,6 +251,7 @@ export default {
     search: 'Recherche',
     status: 'Status',
     students: {
+      student: 'Étudiant(e)',
       email: 'Adresse mail',
       firstName: 'Prénom',
       lastName: 'Nom',

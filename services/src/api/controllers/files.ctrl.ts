@@ -27,7 +27,7 @@ export const getFiles = (req: Request, res: Response, next: NextFunction): void 
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20, archived } = req.query;
 
     FileModel.getFiles({ archived }, { page, limit })
