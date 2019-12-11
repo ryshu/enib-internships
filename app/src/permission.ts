@@ -21,7 +21,6 @@ const getPageTitle = (key: string) => {
 router.beforeEach(async (to: Route, _: Route, next: any) => {
   // Start progress bar
   NProgress.start();
-
   // Check whether the user has obtained his permission role
   if (!UserModule.role) {
     try {
@@ -40,6 +39,12 @@ router.beforeEach(async (to: Route, _: Route, next: any) => {
       next(`/500?redirect=${to.path}`);
       NProgress.done();
     }
+  } else if (
+    (UserModule.firstName === 'undefined' ||
+      UserModule.lastName === 'undefined') &&
+    to.name !== 'first_connexion'
+  ) {
+    next('/first_connexion');
   } else {
     next();
   }
