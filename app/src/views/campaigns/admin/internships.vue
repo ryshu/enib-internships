@@ -244,7 +244,6 @@ export default class extends Vue {
     types: [],
     includes: ['student'],
     isAbroad: false,
-    includes: ['student'],
   };
 
   private resolve: (value?: IMentoringPropositionEntity) => void = () => {};
