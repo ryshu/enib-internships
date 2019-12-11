@@ -35,6 +35,7 @@ export async function setupStatistics() {
     const global: Statistics = {
         internships: {
             total: await Internships.count(),
+            abroad: await Internships.count({ where: { isInternshipAbroad: true } }),
             waiting: await Internships.count({ where: { state: 'waiting' } }),
             published: await Internships.count({ where: { state: 'published' } }),
             attributed_mentor: await Internships.count({ where: { state: 'attributed_mentor' } }),

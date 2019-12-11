@@ -20,6 +20,7 @@ class StatisticsCache {
     public reset() {
         if (this._initialized) {
             this.statistics.internships = {
+                abroad: 0,
                 total: 0,
                 waiting: 0,
                 published: 0,
@@ -289,6 +290,15 @@ class StatisticsCache {
         );
     }
 
+    public incAbroad() {
+        this.statistics.internships.abroad++;
+    }
+
+    public decAbroad() {
+        this.statistics.internships.abroad =
+            this.statistics.internships.abroad === 0 ? this.statistics.internships.abroad - 1 : 0;
+    }
+
     private _change(mode: INTERNSHIP_MODE, q: number, id?: number) {
         switch (mode) {
             case INTERNSHIP_MODE.ARCHIVED:
@@ -345,6 +355,7 @@ class StatisticsCache {
     private _defaultStatistics(): Statistics {
         return {
             internships: {
+                abroad: 0,
                 total: 0,
                 waiting: 0,
                 published: 0,

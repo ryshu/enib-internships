@@ -237,6 +237,14 @@ export class InternshipHandler {
                 this._internship.result = isInternshipResult(result)
                     ? INTERNSHIP_RESULT.VALIDATED
                     : INTERNSHIP_RESULT.UNKNOWN;
+
+                if (
+                    this._internship.isInternshipAbroad &&
+                    isInternshipResult(result) &&
+                    result !== INTERNSHIP_RESULT.UNKNOWN
+                ) {
+                    cache.incAbroad();
+                }
                 await this.save();
 
                 this._updateStatistics(prev, INTERNSHIP_MODE.ARCHIVED);

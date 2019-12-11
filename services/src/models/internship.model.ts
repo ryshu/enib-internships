@@ -579,9 +579,6 @@ class InternshipModelStruct {
                 if (inc === 'business') {
                     tmp.include.push({ model: Businesses, association: 'business' });
                 }
-                if (inc === 'category') {
-                    tmp.include.push({ model: InternshipTypes, association: 'category' });
-                }
             }
         }
 
