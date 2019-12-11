@@ -134,6 +134,10 @@ export default {
         msg: 'La proposition a bien été modifiée',
         title: "Modification d'une proposition",
       },
+      attributed: {
+        msg: 'Le stage a été attribué au tuteur',
+        title: 'Proposition validée',
+      },
     },
     students: {
       create: {

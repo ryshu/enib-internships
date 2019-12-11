@@ -86,7 +86,7 @@
             type="success"
             icon="el-icon-check"
             :placeholder="$t('mentoringProposition.placeholder.validate')"
-            @clicked="handlePublish(row)"
+            @clicked="handleLinkMentorToInternship(row.id)"
           />
           <crud-btn
             type="danger"
@@ -146,7 +146,14 @@ import {
   deleteMentoringProposition,
   defaultMentoringPropositionData,
 } from '../../../api/mentoring.propositions';
-import { IMentoringPropositionEntity } from '../../../declarations';
+import {
+  IMentoringPropositionEntity,
+  IInternshipEntity,
+  INTERNSHIP_MODE,
+  INTERNSHIP_RESULT,
+} from '../../../declarations';
+
+import { attributeInternshipToMentor } from '../../../api/internships';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
@@ -292,6 +299,27 @@ export default class extends Vue {
       'export.propositions.fileName'
     ) as string);
     this.downloadLoading = false;
+  }
+
+  private handleLinkMentorToInternship(id: number) {
+    const found = this.list.findIndex(mp => mp.id === id);
+    if (found !== -1) {
+      attributeInternshipToMentor(
+        this.list[found].internship!.student!.id!, // if student not included, just this.list[found].internship.student
+        this.list[found].mentor!.id! // if mentor not included, just this.list[found].mentor
+      ).then(async res => {
+        if (res) {
+          await deleteMentoringProposition(id);
+          this.getList();
+        }
+        this.$notify({
+          title: this.$t('notify.propositions.attributed.title') as string,
+          message: this.$t('notify.propositions.attributed.msg') as string,
+          type: 'success',
+          duration: 2000,
+        });
+      });
+    }
   }
 }
 </script>

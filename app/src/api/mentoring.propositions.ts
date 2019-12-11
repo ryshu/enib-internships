@@ -4,6 +4,8 @@ import {
   PaginateList,
   IMentoringPropositionEntity,
   PropositionsOpts,
+  INTERNSHIP_MODE,
+  INTERNSHIP_RESULT,
 } from '../declarations';
 
 export const defaultMentoringPropositionData: IMentoringPropositionEntity = {
@@ -70,3 +72,13 @@ export const getMentoringPropositionsbyCampaign = (id: number, params: any) =>
     method: 'get',
     params,
   }) as any) as Promise<PaginateList<IMentoringPropositionEntity>>;
+
+export const linkMentorToInternship = (
+  mentorID: number,
+  internshipId: number
+) =>
+  (request({
+    url: `/mentors/${mentorID}/internships/${internshipId}/link`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.ATTRIBUTED_MENTOR },
+  }) as any) as Promise<any>;

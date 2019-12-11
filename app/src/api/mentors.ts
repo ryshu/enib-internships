@@ -16,7 +16,7 @@ export const getMentors = (params: MentorOpts) =>
     params,
   }) as any) as Promise<PaginateList<IMentorEntity>>;
 
-export const getMentorsByCampaign = (id:number, params: any) =>
+export const getMentorsByCampaign = (id: number, params: any) =>
   request({
     url: `/campaigns/${id}/mentors`,
     method: 'get',
@@ -49,8 +49,11 @@ export const deleteMentor = (id: number) =>
     method: 'delete',
   }) as any) as Promise<void>;
 
-export const linkMentorProposition = (mentorID: number, mentoringPropositionId: number) =>
+export const linkMentorProposition = (
+  mentorID: number,
+  mentoringPropositionId: number
+) =>
   (request({
-  url: `/mentors/${mentorID}/propositions/${mentoringPropositionId}/link`,
-  method: 'post',
-}) as any) as Promise<IMentorEntity>;
+    url: `/mentors/${mentorID}/propositions/${mentoringPropositionId}/link`,
+    method: 'post',
+  }) as any) as Promise<IMentorEntity>;
