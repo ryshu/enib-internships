@@ -121,6 +121,20 @@ export default {
         title: "Modification d'un professeur",
       },
     },
+    mentorPropositions: {
+      create: {
+        msg: 'La proposition a bien été créée',
+        title: "Création d'une proposition",
+      },
+      delete: {
+        msg: 'La proposition a bien été supprimée',
+        title: "Suppression d'une proposition",
+      },
+      update: {
+        msg: 'La proposition a bien été modifiée',
+        title: "Modification d'une proposition",
+      },
+    },
     students: {
       create: {
         msg: "L'étudiant a bien été créé",
@@ -229,6 +243,10 @@ export default {
       lastName: 'Nom',
       email: 'Email',
     },
+    mentoringProposition: {
+      title: "Postuler",
+      comment: 'Ajouter un commentaire',
+    },
     publish: 'Publier',
     search: 'Recherche',
     status: 'Status',
@@ -329,6 +347,11 @@ export default {
     placeholder: {
       update: "Editer l'étudiant",
       remove: "Supprimer l'étudiant de cette campaign",
+    },
+  },
+  mentoringProposition: {
+    placeholder: {
+      create: "Postuler",
     },
   },
 };

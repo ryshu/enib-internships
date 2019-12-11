@@ -507,7 +507,7 @@ export const getInternshipPropositions = (
 };
 
 /**
- * GET /internships/:id/propositions/:mentoring_proposition_id/link
+ * POST /internships/:id/propositions/:mentoring_proposition_id/link
  * Used to get all propositions of a internships
  */
 export const linkInternshipPropositions = (
