@@ -244,7 +244,7 @@ Object {
   "publishAt": null,
   "result": "unknown",
   "startAt": null,
-  "state": "archived",
+  "state": "validation",
   "student": null,
   "subject": "test",
   "updatedAt": Any<String>,

@@ -38,6 +38,7 @@ GET /api/v1/campaigns/:id/statistics
 ``` json
 {
   "internships": {
+    "abroad": 0,
     "archived": 0,
     "attributed": 0,
     "availables": 0,

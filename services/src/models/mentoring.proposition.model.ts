@@ -20,6 +20,8 @@ import { PaginateList } from './helpers/type';
 import { PaginateOpts, paginate } from './helpers/pagination';
 import { extractCount, setFindOptsArchived } from './helpers/options';
 
+import cache from '../statistics/singleton';
+
 /** @interface PropositionsOpts Interface of all availables filters for propositions list */
 export interface PropositionsOpts {
     /** @property {number} internshipId Filter propositions by internship */
@@ -109,6 +111,14 @@ class MentoringPropositionModelStruct {
                     proposition,
                     this._buildCreateOpts(proposition),
                 );
+
+                const campaignId = created.campaign
+                    ? typeof created.campaign === 'number'
+                        ? created.campaign
+                        : (created.campaign as Campaigns).id
+                    : undefined;
+                cache.addProposition(campaignId);
+
                 // TODO: emit creation on websocket
 
                 return resolve(created.toJSON() as IMentoringPropositionEntity);
@@ -196,10 +206,11 @@ class MentoringPropositionModelStruct {
             try {
                 const proposition = await MentoringPropositions.findByPk(id);
                 if (proposition) {
+                    cache.removeProposition((proposition.campaign as number) || undefined);
                     await proposition.destroy();
                 }
 
-                // TODO: emit file destruction
+                // TODO: emit proposition destruction
                 // TODO: add option to remove linked campaigns
                 // TODO: add option to remove linked internships
 
@@ -267,6 +278,8 @@ class MentoringPropositionModelStruct {
                 }
 
                 await proposition.setCampaign(campaign);
+                cache.linkProposition(campaign.id);
+
                 // TODO: Emit update on socket
 
                 return resolve(await this.getMentoringProposition(proposition.id));

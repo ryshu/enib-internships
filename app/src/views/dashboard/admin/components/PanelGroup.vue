@@ -54,10 +54,10 @@
           <svg-icon name="international" class="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">Professeurs</div>
+          <div class="card-panel-text">Etudiants ayant effectué un stage à l'étranger</div>
           <count-to
             :start-val="0"
-            :end-val="stats.mentors"
+            :end-val="stats.internships.abroad"
             :duration="3600"
             class="card-panel-num"
           />

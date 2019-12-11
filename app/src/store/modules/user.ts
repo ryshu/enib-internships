@@ -85,6 +85,11 @@ class User extends VuexModule implements IUserState {
     // Reset visited views and cached views
     TagsViewModule.delAllViews();
   }
+
+  @Action
+  public async refresh() {
+    this.GetUserInfo();
+  }
 }
 
 export const UserModule = getModule(User);

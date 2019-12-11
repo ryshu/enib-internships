@@ -20,6 +20,7 @@ class StatisticsCache {
     public reset() {
         if (this._initialized) {
             this.statistics.internships = {
+                abroad: 0,
                 total: 0,
                 waiting: 0,
                 published: 0,
@@ -241,6 +242,30 @@ class StatisticsCache {
     }
 
     /**
+     * @summary Method used to remove a campaign
+     * @param {number} id Campaign id
+     */
+    public removeCampaign(id: number) {
+        if (this.isDefined(id)) {
+            // Substract campaign stats from internships
+            this.statistics.propositions -= this.campaignStatistics[id].propositions;
+            this.statistics.students -= this.campaignStatistics[id].students;
+            this.statistics.mentors -= this.campaignStatistics[id].mentors;
+            this.statistics.internships.total -= this.campaignStatistics[id].internships.total;
+            this.statistics.internships.attributed_mentor -= this.campaignStatistics[
+                id
+            ].internships.attributed;
+            this.statistics.internships.available_campaign -= this.campaignStatistics[
+                id
+            ].internships.availables;
+            this.statistics.internships.total -= this.campaignStatistics[id].internships.total;
+
+            // Remove
+            delete this.campaignStatistics[id];
+        }
+    }
+
+    /**
      * @summary Method used to check if campaign is defined
      * @param {number} id campaign id
      * @returns {boolean} is defined ?
@@ -263,6 +288,15 @@ class StatisticsCache {
             this.statistics.internships.validation +
             this.statistics.internships.archived
         );
+    }
+
+    public incAbroad() {
+        this.statistics.internships.abroad++;
+    }
+
+    public decAbroad() {
+        this.statistics.internships.abroad =
+            this.statistics.internships.abroad === 0 ? this.statistics.internships.abroad - 1 : 0;
     }
 
     private _change(mode: INTERNSHIP_MODE, q: number, id?: number) {
@@ -321,6 +355,7 @@ class StatisticsCache {
     private _defaultStatistics(): Statistics {
         return {
             internships: {
+                abroad: 0,
                 total: 0,
                 waiting: 0,
                 published: 0,

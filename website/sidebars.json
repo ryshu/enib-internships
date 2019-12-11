@@ -17,7 +17,7 @@
       "api-statistics",
       "api-students"
     ],
-    "Services API": [ "api-services-emails", "api-services-statistics" ]
+    "Services API": [ "api-services-fsm", "api-services-emails", "api-services-statistics" ]
   },
   "tuto": {
     "Complete": ["tuto-mentors", "tuto-students", "tuto-setup-associations"]

@@ -5,6 +5,7 @@ import { INTERNSHIP_MODE } from '../../../src/internship';
 
 const DEFAULT_STATISTICS: Statistics = {
     internships: {
+        abroad: 0,
         total: 250,
         waiting: 30,
         published: 120,

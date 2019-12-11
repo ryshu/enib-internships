@@ -48,6 +48,10 @@ export default {
           "La date de fin de la campagne doit être après aujourd'hui",
       },
     },
+    firstConnexion: {
+      lastName: { required: "Le nom de l'étudiant est requis" },
+      firstName: { required: "Le prénom de l'étudiant est requis" },
+    },
   },
   navbar: {
     dashboard: 'Tableau de bord',
@@ -181,9 +185,20 @@ export default {
     page404: '404',
     profile: 'Profile',
     users: {
+      first: 'Bienvenue sur le gestionnaire des stages',
       title: 'Utilisateurs',
       students: 'Etudiants',
       mentors: 'Professeurs',
+    },
+    firstConnexion: {
+      title: 'Première connexion',
+      description:
+        "Il s'agit de votre première connexion, veuillez renseigner les champs suivants",
+      warning:
+        'Ces informations seront utilisés pour vos documents administratifs ',
+      firstName: 'Prénom',
+      lastName: 'Nom',
+      semester: 'Semestre',
     },
   },
   status: { no: 'Non', yes: 'Oui' },
@@ -336,6 +351,14 @@ export default {
       step_1: 'Initialization de la campagne',
       error: 'Erreur durant la création de la campagne',
       success: 'La campagne a bien été publier',
+    },
+  },
+  firstConnexion: {
+    placeholder: {
+      firstName: 'Entrer votre prénom',
+      lastName: 'Entrer votre nom',
+      email: 'Saisissez votre adresse mail',
+      semester: 'Veuillez saisir votre semestre actuel',
     },
   },
   propositions: {
