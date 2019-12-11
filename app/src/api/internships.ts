@@ -91,8 +91,18 @@ export const unpublishInternship = (id: number) =>
     data: { state: INTERNSHIP_MODE.WAITING },
   }) as any) as Promise<IInternshipEntity>;
 
-export const linkInternshipPropositions = (internshipID: number, mentoringPropositionId: number) =>
+export const linkInternshipPropositions = (
+  internshipID: number,
+  mentoringPropositionId: number
+) =>
   (request({
     url: `/internships/${internshipID}/propositions/${mentoringPropositionId}/link`,
     method: 'post',
+  }) as any) as Promise<IInternshipEntity>;
+
+export const attributeInternshipToMentor = (id: number, mentorId: number) =>
+  (request({
+    url: `/internships/${id}/fsm`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.PUBLISHED, mentorId },
   }) as any) as Promise<IInternshipEntity>;

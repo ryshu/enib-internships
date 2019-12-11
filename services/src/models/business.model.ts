@@ -91,7 +91,7 @@ class BusinessModelStruct {
                 const created = await Businesses.create(business, this._buildCreateOpts(business));
 
                 // TODO: Add socket chanel + emit create
-                // TODO: Add to stats
+
                 resolve(created.toJSON() as IBusinessEntity);
             } catch (error) {
                 reject(error);
@@ -181,11 +181,9 @@ class BusinessModelStruct {
      * @returns {Promise<any>} Reject: database error
      */
     public removeBusiness(id: number): Promise<void> {
-        // TODO: Setup archives
         // TODO: Add archives function for internships on availables modes
 
         // TODO: Add socket remove + emit;
-        // TODO: Update counter for this remove;
         return new Promise((resolve, reject) => {
             Businesses.findByPk(id!)
                 .then((val) => (val ? val.destroy() : undefined))

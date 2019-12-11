@@ -60,6 +60,15 @@ export const constantRoutes: RouteConfig[] = [
     meta: { hidden: true },
   },
   {
+    path: '/first_connexion',
+    name: 'first_connexion',
+    component: () =>
+      import(
+        /* webpackChunkName: "first_connexion" */ '@/views/error-page/first_connexion.vue'
+      ),
+    meta: { hidden: true },
+  },
+  {
     path: '/',
     component: Layout,
     redirect: '/dashboard',

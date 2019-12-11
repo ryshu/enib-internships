@@ -7,6 +7,7 @@ export function getCleanStatistics(stats: Partial<Statistics>): Statistics {
     return {
         internships: tmp.internships
             ? {
+                  abroad: tmp.internships.abroad || 0,
                   total: tmp.internships.total || 0,
                   waiting: tmp.internships.waiting || 0,
                   published: tmp.internships.published || 0,
@@ -18,6 +19,7 @@ export function getCleanStatistics(stats: Partial<Statistics>): Statistics {
                   archived: tmp.internships.archived || 0,
               }
             : {
+                  abroad: 0,
                   total: 0,
                   waiting: 0,
                   published: 0,

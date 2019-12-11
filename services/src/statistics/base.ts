@@ -1,7 +1,7 @@
 import { INTERNSHIP_MODE } from '../internship';
 
 export declare interface Statistics {
-    internships: Record<INTERNSHIP_MODE | 'total', number>;
+    internships: Record<INTERNSHIP_MODE | 'abroad' | 'total', number>;
 
     students: number;
     mentors: number;

@@ -38,6 +38,9 @@
       "api-services-emails": {
         "title": "Emails"
       },
+      "api-services-fsm": {
+        "title": "Internships"
+      },
       "api-services-statistics": {
         "title": "Statistics"
       },

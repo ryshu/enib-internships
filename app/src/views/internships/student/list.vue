@@ -9,6 +9,13 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
+      <el-input
+        v-model="listQuery.subject"
+        placeholder="Entreprise"
+        style="width: 200px; margin-left: 10px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      />
       <el-select
         v-model="listQuery.countries"
         filterable
@@ -98,7 +105,7 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="100px"
+        width="150px"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
@@ -108,6 +115,13 @@
             circle
             @click="toogleFavourites(row)"
           />
+          <el-button
+            type="primary"
+            icon="el-icon-edit-outline"
+            circle
+            @click="toogleFavourites(row)"
+          />
+          <el-button type="primary" icon="el-icon-document" circle @click="toogleFavourites(row)" />
         </template>
       </el-table-column>
     </el-table>

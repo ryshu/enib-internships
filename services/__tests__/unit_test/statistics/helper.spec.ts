@@ -5,6 +5,7 @@ describe('getCleanStatistics', () => {
     it('getCleanStatistics_partial_complete', () => {
         expect(getCleanStatistics({ students: 10 })).toEqual({
             internships: {
+                abroad: 0,
                 total: 0,
                 waiting: 0,
                 published: 0,
@@ -24,6 +25,7 @@ describe('getCleanStatistics', () => {
     it('getCleanStatistics_empty_complete', () => {
         expect(getCleanStatistics({})).toEqual({
             internships: {
+              abroad: 0,
                 total: 0,
                 waiting: 0,
                 published: 0,
@@ -43,6 +45,7 @@ describe('getCleanStatistics', () => {
     it('getCleanStatistics_full_same', () => {
         const VALID_COMPLET: Statistics = {
             internships: {
+                abroad: 0,
                 total: 250,
                 waiting: 30,
                 published: 120,

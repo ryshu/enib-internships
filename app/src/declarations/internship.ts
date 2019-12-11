@@ -67,5 +67,6 @@ export interface InternshipOpts {
   /** @property {boolean} isAbroad Select only foreign internships */
   isAbroad?: boolean;
 
+  /** @property {string[]} includes Include and populate associations */
   includes?: string[];
 }

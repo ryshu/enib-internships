@@ -61,7 +61,7 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="100px"
+        width="150px"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
@@ -71,6 +71,13 @@
             circle
             @click="toogleFavourites(row)"
           />
+          <el-button
+            type="primary"
+            icon="el-icon-edit-outline"
+            circle
+            @click="toogleFavourites(row)"
+          />
+          <el-button type="primary" icon="el-icon-document" circle @click="toogleFavourites(row)" />
         </template>
       </el-table-column>
     </el-table>

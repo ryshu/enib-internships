@@ -15,6 +15,8 @@ import Internships from '../../../../src/models/sequelize/Internships';
 
 import { ICampaignEntity } from '../../../../src/declarations/campaign';
 
+import { INTERNSHIP_MODE } from '../../../../src/internship';
+
 import {
     defaultCampaigns,
     defaultMentoringPropositions,
@@ -445,6 +447,7 @@ describe('POST /campaigns/:id/availableInternships/:internship_id/link', () => {
     it('Campaigns_200_WithInternship', async () => {
         const VALID_CAMPAIGN = defaultCampaigns();
         const VALID_INTERNSHIP = defaultInternships();
+        VALID_INTERNSHIP.state = INTERNSHIP_MODE.ATTRIBUTED_STUDENT;
 
         let CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
         const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
@@ -519,67 +522,6 @@ describe('GET /campaigns/:id/validatedInternships', () => {
         );
         expect(RESPONSE.status).toBe(200);
         expect(RESPONSE.body).toHaveLength(1);
-    });
-});
-
-describe('POST /campaigns/:id/validatedInternships/:internship_id/link', () => {
-    beforeEach(async () => {
-        // Remove all
-        await Campaigns.destroy({ where: {} });
-    });
-
-    it('NoCampaign_204', async () => {
-        const RESPONSE = await request(app).post(
-            `${baseURL}/campaigns/10/validatedInternships/20/link`,
-        );
-        expect(RESPONSE.status).toBe(204);
-    });
-
-    it('BadRequest_400_WrongID', async () => {
-        const RESPONSE = await request(app).post(
-            `${baseURL}/campaigns/{falseEncoding}/validatedInternships/10/link`,
-        );
-        expect(RESPONSE.status).toBe(400);
-    });
-
-    it('BadRequest_400_WrongInternshipID', async () => {
-        const RESPONSE = await request(app).post(
-            `${baseURL}/campaigns/10/validatedInternships/{falseEncoding}/link`,
-        );
-        expect(RESPONSE.status).toBe(400);
-    });
-
-    it('Campaigns_204_NoInternship', async () => {
-        // In this case, we check if link a existing Bussiness and an unexisting internships work
-        const VALID_CAMPAIGN = defaultCampaigns();
-
-        const CREATED = await Campaigns.create(VALID_CAMPAIGN);
-        const RESPONSE = await request(app).post(
-            `${baseURL}/campaigns/${CREATED.id}/validatedInternships/20/link`,
-        );
-        expect(RESPONSE.status).toBe(204);
-    });
-
-    it('Campaigns_200_WithInternship', async () => {
-        const VALID_CAMPAIGN = defaultCampaigns();
-        const VALID_INTERNSHIP = defaultInternships();
-
-        let CREATED_CAMPAIGN = await Campaigns.create(VALID_CAMPAIGN);
-        const CREATED_INTERNSHIP = await Internships.create(VALID_INTERNSHIP);
-
-        const RESPONSE = await request(app).post(
-            `${baseURL}/campaigns/${CREATED_CAMPAIGN.id}/validatedInternships/${CREATED_INTERNSHIP.id}/link`,
-        );
-
-        // Should answer 200
-        expect(RESPONSE.status).toBe(200);
-
-        // check if business and internship are linked
-        CREATED_CAMPAIGN = await Campaigns.findByPk(CREATED_CAMPAIGN.id);
-
-        const validatedInternships = await CREATED_CAMPAIGN.getValidatedInternships();
-        expect(validatedInternships).toHaveLength(1);
-        expect(validatedInternships[0].id).toBe(CREATED_INTERNSHIP.id);
     });
 });
 
