@@ -1,13 +1,13 @@
 import sequelize, { CreateOptions, FindOptions } from 'sequelize';
 
-import { paginate, PaginateOpts } from './helpers/pagination';
-
 import Files from './sequelize/Files';
 import Internships from './sequelize/Internships';
 
 import { PaginateList } from './helpers/type';
-import { checkPartialFile, checkPartialInternship } from '../utils/check';
+import { paginate, PaginateOpts } from './helpers/pagination';
 import { extractCount, setFindOptsArchived } from './helpers/options';
+
+import { checkPartialFile, checkPartialInternship } from '../utils/check';
 
 import { IFileEntity } from '../declarations';
 

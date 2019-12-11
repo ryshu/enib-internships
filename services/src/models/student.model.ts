@@ -10,6 +10,8 @@ import { PaginateList } from './helpers/type';
 import { PaginateOpts, paginate } from './helpers/pagination';
 import { extractCount } from './helpers/options';
 
+import cache from '../statistics/singleton';
+
 /** @interface StudentOpts Interface of all availables filters for students list */
 export declare interface StudentOpts {
     /** @property {boolean} archived Show only archived students */
@@ -77,7 +79,10 @@ class StudentModelStruct {
                     }
                 }
 
+                // TODO: If create also create sub-entities, manage their creation in stats and websocket
                 const created = await Students.create(student, this._buildCreateOpts(student));
+                cache.addStudent();
+
                 // TODO: emit creation on websocket
 
                 return resolve(created.toJSON() as IStudentEntity);
@@ -162,9 +167,10 @@ class StudentModelStruct {
                 const student = await Students.findByPk(id);
                 if (student) {
                     await student.destroy();
+                    cache.removeStudent();
                 }
 
-                // TODO: emit file destruction
+                // TODO: emit internship destruction
                 // TODO: add option to remove linked internships
 
                 resolve();

@@ -237,6 +237,7 @@ export default class extends Vue {
     mode: [INTERNSHIP_MODE.AVAILABLE_CAMPAIGN],
     countries: [],
     types: [],
+    includes: ['student'],
     isAbroad: false,
   };
 

@@ -41,11 +41,6 @@ router.get(
     checkSchema(Object.assign({}, ID, InternshipsList)),
     CampaignsCtrl.getValidatedCampaignInternships,
 );
-router.post(
-    '/:id/validatedInternships/:internship_id/link',
-    checkSchema(Object.assign({}, ID, InternshipID)),
-    CampaignsCtrl.linkValidatedCampaignInternships,
-);
 
 // Campaigns Availables Internships
 router.get(

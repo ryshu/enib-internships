@@ -5,6 +5,7 @@ import InternshipTypes from './sequelize/InternshipTypes';
 import Internships from './sequelize/Internships';
 
 import { IInternshipTypeEntity } from '../declarations';
+
 import { setFindOptsArchived } from './helpers/options';
 
 import {
@@ -66,6 +67,7 @@ class InternshipTypeModelStruct {
                 }
 
                 const created = await InternshipTypes.create(type, this._buildCreateOpts(type));
+
                 // TODO: emit creation on websocket
 
                 return resolve(created.toJSON() as IInternshipTypeEntity);
