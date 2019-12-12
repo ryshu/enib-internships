@@ -3,8 +3,8 @@
     <!-- Filter -->
     <div class="filter-container">
       <el-input
-        v-model="listQuery.firstName"
-        :placeholder="$t('table.mentors.firstName')"
+        v-model="listQuery.name"
+        :placeholder="$t('table.mentors.fullName')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -22,7 +22,7 @@
         style="margin-left: 10px;"
         type="primary"
         icon="el-icon-edit"
-        @click="handleCreate"
+        @click="handleAdd"
       >{{ $t('table.add') }}</el-button>
       <el-button
         v-waves
@@ -90,30 +90,55 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="$t('dialog.title.edit')" :visible.sync="dialogUpdateMentor">
       <el-form
-        ref="dataForm"
-        :model="tempMentorData"
+        ref="updateForm"
+        :model="tmpMentorData"
         label-position="left"
         label-width="250px"
         style="width: 100%; padding: 0 50px;"
       >
         <el-form-item :label="$t('table.mentors.firstName')" prop="firstName">
-          <el-input v-model="tempMentorData.firstName" />
+          <el-input v-model="tmpMentorData.firstName" />
         </el-form-item>
         <el-form-item :label="$t('table.mentors.lastName')" prop="lastName">
-          <el-input v-model="tempMentorData.lastName" />
+          <el-input v-model="tmpMentorData.lastName" />
         </el-form-item>
         <el-form-item :label="$t('table.mentors.email')" prop="email">
-          <el-input v-model="tempMentorData.email" />
+          <el-input v-model="tmpMentorData.email" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus==='create'?createData():updateData()"
-        >{{ $t('table.confirm') }}</el-button>
+        <el-button type="primary" @click="dialogStatus===updateData()">{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog :title="this.$t('dialog.title.import')" :visible.sync="dialogAddMentor">
+      <el-form
+        ref="addForm"
+        :model="addMentorData"
+        label-position="left"
+        label-width="250px"
+        style="width: 100%; padding: 0 50px;"
+      >
+        <el-form-item :label="$t('table.mentors.fullName')" prop="id">
+          <el-select
+            v-model="addMentorData.id"
+            filterable
+            remote
+            reserve-keyword
+            :remote-method="searchMentor"
+            :loading="loadingMentor"
+            :placeholder="$t('mentors.placeholder.includeMentor')"
+          >
+            <el-option v-for="c in mentors" :key="c.id" :label="c.fullName" :value="c.id" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddMentor = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="handleAddMentor()">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -132,7 +157,9 @@ import {
   deleteMentor,
   defaultMentorData,
 } from '../../../api/mentors';
-import { IMentorEntity } from '../../../declarations';
+import { linkCampaignMentor } from '../../../api/campaigns';
+
+import { IMentorEntity, MentorOpts } from '../../../declarations';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
@@ -157,15 +184,26 @@ export default class extends Vue {
     limit: 10,
     firstName: undefined,
   };
-  private dialogFormVisible = false;
-  private dialogStatus = '';
+
+  private dialogUpdateMentor = false;
+  private dialogAddMentor = false;
+
+  // Mentors dynamique query
+  private mentors: IMentorEntity[] = [];
+  private mentorQuery: MentorOpts = {
+    page: 1,
+    limit: 10,
+    name: undefined,
+  };
+  private loadingMentor = true;
 
   // Available mode to print in edition dialog
   private textMap = {};
 
   // Validation rules for edit and update
   private downloadLoading = false;
-  private tempMentorData = defaultMentorData;
+  private tmpMentorData = defaultMentorData;
+  private addMentorData: { id?: number } = { id: undefined };
 
   public created() {
     this.textMap = {
@@ -193,11 +231,11 @@ export default class extends Vue {
   }
 
   private resetTempMentorData() {
-    this.tempMentorData = cloneDeep(defaultMentorData);
+    this.tmpMentorData = cloneDeep(defaultMentorData);
   }
 
   private async handleDelete(row: any, status: string) {
-    await deleteMentor(row.id!);
+    await deleteMentor(row.id!); // TODO: unlink, not delete
     this.getList();
     this.$notify({
       title: this.$t('notify.mentors.delete.title') as string,
@@ -207,24 +245,39 @@ export default class extends Vue {
     });
   }
 
-  private handleCreate() {
-    this.resetTempMentorData();
-    this.dialogStatus = 'create';
-    this.dialogFormVisible = true;
+  private searchMentor(query: string) {
+    if (query !== '') {
+      this.loadingMentor = true;
+      this.mentorQuery.name = query;
+    }
+    getMentors(this.mentorQuery)
+      .then(res => {
+        this.loadingMentor = false;
+        this.mentors = res ? res.data : [];
+      })
+      .catch(() => (this.mentors = []));
+  }
+
+  private handleAdd() {
+    this.addMentorData = { id: undefined };
+    this.dialogAddMentor = true;
     this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
+      (this.$refs['addForm'] as Form).clearValidate();
     });
   }
 
-  private createData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
+  private handleAddMentor() {
+    (this.$refs['addForm'] as Form).validate(async valid => {
       if (valid) {
-        const data = await createMentor(this.tempMentorData);
+        await linkCampaignMentor(
+          Number(this.$route.params.id!),
+          this.addMentorData.id!
+        );
         this.getList();
-        this.dialogFormVisible = false;
+        this.dialogAddMentor = false;
         this.$notify({
-          title: this.$t('notify.mentors.create.title') as string,
-          message: this.$t('notify.mentors.create.msg') as string,
+          title: this.$t('notify.mentors.import.title') as string,
+          message: this.$t('notify.mentors.import.msg') as string,
           type: 'success',
           duration: 2000,
         });
@@ -233,21 +286,20 @@ export default class extends Vue {
   }
 
   private handleUpdate(row: any) {
-    this.tempMentorData = Object.assign({}, row);
-    this.dialogStatus = 'update';
-    this.dialogFormVisible = true;
+    this.tmpMentorData = Object.assign({}, row);
+    this.dialogUpdateMentor = true;
     this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
+      (this.$refs['updateForm'] as Form).clearValidate();
     });
   }
 
   private updateData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
+    (this.$refs['updateForm'] as Form).validate(async valid => {
       if (valid) {
-        const tempData = Object.assign({}, this.tempMentorData);
-        await updateMentor(tempData.id!, tempData);
+        const tmpData = Object.assign({}, this.tmpMentorData);
+        await updateMentor(tmpData.id!, tmpData);
         this.getList();
-        this.dialogFormVisible = false;
+        this.dialogUpdateMentor = false;
         this.$notify({
           title: this.$t('notify.mentors.update.title') as string,
           message: this.$t('notify.mentors.update.msg') as string,
@@ -274,3 +326,14 @@ export default class extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scope>
+.dialog-footer {
+  padding: 0 !important;
+  padding-bottom: 40px !important;
+  margin: auto;
+
+  display: flex;
+  justify-content: center;
+}
+</style>

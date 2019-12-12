@@ -18,13 +18,6 @@
         @click="handleFilter"
       >{{ $t('table.search') }}</el-button>
       <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >{{ $t('table.add') }}</el-button>
-      <el-button
         v-waves
         :loading="downloadLoading"
         class="filter-item"
@@ -46,7 +39,7 @@
     >
       <el-table-column :label="$t('table.mentoringProposition.student')" min-width="75px">
         <template slot-scope="{ row }">
-          <span>{{ row.internship.student.firstName + ' ' + row.internship.student.lastName }}</span>
+          <span>{{ row.internship.student.fullName }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.mentoringProposition.internship')" min-width="150px">
@@ -56,17 +49,17 @@
       </el-table-column>
       <el-table-column :label="$t('table.mentoringProposition.business')" min-width="75px">
         <template slot-scope="{ row }">
-          <span>{{ row.internship.business.name }}</span>
+          <span>{{ row.internship.business ? row.internship.business.name : '' }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.mentoringProposition.country')" min-width="50px">
         <template slot-scope="{ row }">
-          <span>{{ row.internship.country}}</span>
+          <span>{{ row.internship.country }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.mentoringProposition.mentor')" min-width="75px">
         <template slot-scope="{ row }">
-          <span>{{ row.mentor.firstName + ' ' + row.mentor.lastName }}</span>
+          <span>{{ row.mentor.fullName }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.mentoringProposition.comment')" min-width="200px">
@@ -114,11 +107,11 @@
         label-width="250px"
         style="width: 100%; padding: 0 50px;"
       >
-        <el-form-item :label="$t('table.propositions.id')" prop="firstName">
+        <el-form-item :label="$t('table.propositions.id')" prop="id">
           <el-input v-model="tempMentoringPropositionData.id" />
         </el-form-item>
-        <el-form-item :label="$t('table.propositions.comment')" prop="lastName">
-          <el-input v-model="tempMentoringPropositionData.id" />
+        <el-form-item :label="$t('table.propositions.comment')" prop="comment">
+          <el-input v-model="tempMentoringPropositionData.comment" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -219,7 +212,9 @@ export default class extends Vue {
 
   private resetTempPropositionData() {
     this.tempMentoringPropositionData = cloneDeep(
-      defaultMentoringPropositionData
+      Object.assign({}, defaultMentoringPropositionData, {
+        mentorId: undefined,
+      })
     );
   }
 
@@ -231,33 +226,6 @@ export default class extends Vue {
       message: this.$t('notify.propositions.delete.msg') as string,
       type: 'success',
       duration: 2000,
-    });
-  }
-
-  private handleCreate() {
-    this.resetTempPropositionData();
-    this.dialogStatus = 'create';
-    this.dialogFormVisible = true;
-    this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
-    });
-  }
-
-  private createData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
-      if (valid) {
-        const data = await createMentoringProposition(
-          this.tempMentoringPropositionData
-        );
-        this.getList();
-        this.dialogFormVisible = false;
-        this.$notify({
-          title: this.$t('notify.propositions.create.title') as string,
-          message: this.$t('notify.propositions.create.msg') as string,
-          type: 'success',
-          duration: 2000,
-        });
-      }
     });
   }
 
@@ -305,7 +273,7 @@ export default class extends Vue {
     const found = this.list.findIndex(mp => mp.id === id);
     if (found !== -1) {
       attributeInternshipToMentor(
-        this.list[found].internship!.student!.id!, // if student not included, just this.list[found].internship.student
+        this.list[found].internship!.id!, // if student not included, just this.list[found].internship.student
         this.list[found].mentor!.id! // if mentor not included, just this.list[found].mentor
       ).then(async res => {
         if (res) {
@@ -323,3 +291,14 @@ export default class extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scope>
+.dialog-footer {
+  padding: 0 !important;
+  padding-bottom: 40px !important;
+  margin: auto;
+
+  display: flex;
+  justify-content: center;
+}
+</style>
