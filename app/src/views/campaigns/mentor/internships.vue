@@ -71,16 +71,12 @@
     >
       <el-table-column :label="$t('table.internships.subject')" min-width="250px">
         <template slot-scope="{ row }">
-          <span>
-            {{
-            row.subject
-            }}
-          </span>
+          <span>{{ row.subject }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.students.student')" min-width="100px">
         <template slot-scope="{ row }">
-          <span>{{ row.student.firstName + ' ' + row.student.lastName }}</span>
+          <span>{{ row.student.fullName }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.internships.country')" min-width="70px">
@@ -256,13 +252,11 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getAvailableInternshipCampaign(this.id, this.listQuery).then(
-      (res: any) => {
-        this.list = res ? res.data : [];
-        this.total = res ? res.max : 0;
-        this.listLoading = false;
-      }
-    );
+    getAvailableInternshipCampaign(this.id, this.listQuery).then((res: any) => {
+      this.list = res ? res.data : [];
+      this.total = res ? res.max : 0;
+      this.listLoading = false;
+    });
   }
 
   private handleFilter() {

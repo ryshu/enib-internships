@@ -3,8 +3,8 @@
     <!-- Filter -->
     <div class="filter-container">
       <el-input
-        v-model="listQuery.firstName"
-        :placeholder="$t('table.propositions.firstName')"
+        v-model="listQuery.subject"
+        :placeholder="$t('table.internships.subject')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -17,13 +17,6 @@
         icon="el-icon-search"
         @click="handleFilter"
       >{{ $t('table.search') }}</el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >{{ $t('table.add') }}</el-button>
       <el-button
         v-waves
         :loading="downloadLoading"
@@ -44,12 +37,27 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.propositions.id')" min-width="150px">
+      <el-table-column :label="$t('table.mentoringProposition.student')" min-width="75px">
         <template slot-scope="{ row }">
-          <span>{{ row.id }}</span>
+          <span>{{ row.internship.student.fullName }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.propositions.comment')" min-width="150px">
+      <el-table-column :label="$t('table.mentoringProposition.internship')" min-width="150px">
+        <template slot-scope="{ row }">
+          <span>{{ row.internship.subject }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.mentoringProposition.business')" min-width="75px">
+        <template slot-scope="{ row }">
+          <span>{{ row.internship.business ? row.internship.business.name : '' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.mentoringProposition.country')" min-width="50px">
+        <template slot-scope="{ row }">
+          <span>{{ row.internship.country }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.mentoringProposition.comment')" min-width="200px">
         <template slot-scope="{ row }">
           <span>{{ row.comment }}</span>
         </template>
@@ -63,53 +71,21 @@
       :limit.sync="listQuery.limit"
       @pagination="getList"
     />
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :model="tempMentoringPropositionData"
-        label-position="left"
-        label-width="250px"
-        style="width: 100%; padding: 0 50px;"
-      >
-        <el-form-item :label="$t('table.propositions.id')" prop="id">
-          <el-input v-model="tempMentoringPropositionData.id" />
-        </el-form-item>
-        <el-form-item :label="$t('table.propositions.comment')" prop="comment">
-          <el-input v-model="tempMentoringPropositionData.id" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus==='create'?createData():updateData()"
-        >{{ $t('table.confirm') }}</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Form } from 'element-ui';
-import { cloneDeep } from 'lodash';
 
-import {
-  getMentoringPropositions,
-  getMentoringProposition,
-  getMentoringPropositionsbyCampaign,
-  updateMentoringProposition,
-  createMentoringProposition,
-  deleteMentoringProposition,
-  defaultMentoringPropositionData,
-} from '../../../api/mentoring.propositions';
+import { getMentoringPropositionsbyCampaign } from '../../../api/mentoring.propositions';
 import { IMentoringPropositionEntity } from '../../../declarations';
 
 import { exportJson2Excel } from '../../../utils/excel';
 import { formatJson } from '../../../utils';
 
 import Pagination from '../../../components/Pagination/index.vue';
+import { UserModule } from '../../../store/modules/user';
 
 @Component({
   name: 'CampaignsMentorPropositions',
@@ -127,32 +103,27 @@ export default class extends Vue {
   private listQuery = {
     page: 1,
     limit: 10,
-    firstName: undefined,
+    subject: undefined,
+    includes: ['student', 'mentor', 'business'],
+    mentorId: UserModule.id!,
   };
-  private dialogFormVisible = false;
-  private dialogStatus = '';
-
-  // Available mode to print in edition dialog
-  private textMap = {};
 
   // Validation rules for edit and update
   private downloadLoading = false;
-  private tempMentoringPropositionData = defaultMentoringPropositionData;
 
   public created() {
-    this.textMap = {
-      update: this.$t('dialog.title.edit'),
-      create: this.$t('dialog.title.create'),
-    };
     this.getList();
   }
+
   private getList() {
     this.listLoading = true;
-    getMentoringPropositionsbyCampaign(this.id, this.listQuery).then((res: any) => {
-      this.list = res ? res.data : [];
-      this.total = res ? res.max : 0;
-      this.listLoading = false;
-    });
+    getMentoringPropositionsbyCampaign(this.id, this.listQuery).then(
+      (res: any) => {
+        this.list = res ? res.data : [];
+        this.total = res ? res.max : 0;
+        this.listLoading = false;
+      }
+    );
   }
 
   public get id() {
@@ -161,72 +132,6 @@ export default class extends Vue {
 
   private handleFilter() {
     this.getList();
-  }
-
-  private resetTempPropositionData() {
-    this.tempMentoringPropositionData = cloneDeep(defaultMentoringPropositionData);
-  }
-
-  private async handleDelete(row: any, status: string) {
-    await deleteMentoringProposition(row.id!);
-    this.getList();
-    this.$notify({
-      title: this.$t('notify.propositions.delete.title') as string,
-      message: this.$t('notify.propositions.delete.msg') as string,
-      type: 'success',
-      duration: 2000,
-    });
-  }
-
-  private handleCreate() {
-    this.resetTempPropositionData();
-    this.dialogStatus = 'create';
-    this.dialogFormVisible = true;
-    this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
-    });
-  }
-
-  private createData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
-      if (valid) {
-        const data = await createMentoringProposition(this.tempMentoringPropositionData);
-        this.getList();
-        this.dialogFormVisible = false;
-        this.$notify({
-          title: this.$t('notify.propositions.create.title') as string,
-          message: this.$t('notify.propositions.create.msg') as string,
-          type: 'success',
-          duration: 2000,
-        });
-      }
-    });
-  }
-
-  private handleUpdate(row: any) {
-    this.tempMentoringPropositionData = Object.assign({}, row);
-    this.dialogStatus = 'update';
-    this.dialogFormVisible = true;
-    this.$nextTick(() => {
-      (this.$refs['dataForm'] as Form).clearValidate();
-    });
-  }
-
-  private updateData() {
-    (this.$refs['dataForm'] as Form).validate(async valid => {
-      if (valid) {
-        const tempData = Object.assign({}, this.tempMentoringPropositionData);
-        await updateMentoringProposition(tempData.id!, tempData);
-        this.getList();
-        this.dialogFormVisible = false;
-        this.$notify({
-          title: this.$t('notify.propositions.update.title') as string,
-          message: this.$t('notify.propositions.update.msg') as string,
-          type: 'success',
-          duration: 2000,
-        });
-      }
-    });
   }
 
   private handleDownload() {
