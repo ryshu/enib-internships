@@ -150,6 +150,7 @@ Available [here](https://ryshu.github.io/enib-internships/)
 * Oscar MARIE--TAILLEFER <oscar@leeap.cash>
 * André FELIX
 * Adrien Tissier <a5tissie@enib.fr>
+* Océane Cloarec <o3cloare@enib.fr>
 
 ## Licence
 

@@ -2,8 +2,8 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.title"
-        :placeholder="$t('table.students.lastName')"
+        v-model="listQuery.name"
+        :placeholder="$t('table.students.name')"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -16,13 +16,6 @@
         icon="el-icon-search"
         @click="handleFilter"
       >{{ $t('table.search') }}</el-button>
-      <el-button
-        class="filter-item"
-        style="margin-left: 10px;"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >{{ $t('table.add') }}</el-button>
       <el-button
         v-waves
         :loading="downloadLoading"
@@ -159,7 +152,7 @@ export default class extends Vue {
   private listQuery = {
     page: 1,
     limit: 10,
-    title: undefined,
+    name: undefined,
   };
   private showReviewer = false;
   private dialogFormVisible = false;

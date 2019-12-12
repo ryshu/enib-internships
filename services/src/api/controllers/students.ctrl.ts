@@ -28,9 +28,9 @@ export const getStudents = (req: Request, res: Response, next: NextFunction): vo
     }
 
     // Retrieve query data
-    const { page = 1, limit = 20, archived } = req.query;
+    const { page = 1, limit = 20, archived, name } = req.query;
 
-    StudentModel.getStudents({ archived }, { page, limit })
+    StudentModel.getStudents({ archived, name }, { page, limit })
         .then((student) => (checkContent(student, next) ? res.send(student) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -50,6 +50,7 @@ export const postStudent = (req: Request, res: Response, next: NextFunction): vo
     const student: IStudentEntity = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        fullName: undefined,
         email: req.body.email,
         semester: req.body.semester,
 

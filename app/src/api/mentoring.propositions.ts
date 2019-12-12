@@ -4,6 +4,8 @@ import {
   PaginateList,
   IMentoringPropositionEntity,
   PropositionsOpts,
+  INTERNSHIP_MODE,
+  INTERNSHIP_RESULT,
 } from '../declarations';
 
 export const defaultMentoringPropositionData: IMentoringPropositionEntity = {
@@ -30,16 +32,15 @@ export const createMentoringProposition = (data: IMentoringPropositionEntity) =>
     data,
   }) as any) as Promise<IMentoringPropositionEntity>;
 
-
 export const updateMentoringProposition = (
-    id: number,
-    data: Partial<IMentoringPropositionEntity>
-  ) =>
-    (request({
-      url: `/mentoringPropositions/${id}`,
-      method: 'put',
-      data,
-    }) as any) as Promise<IMentoringPropositionEntity>;
+  id: number,
+  data: Partial<IMentoringPropositionEntity>
+) =>
+  (request({
+    url: `/mentoringPropositions/${id}`,
+    method: 'put',
+    data,
+  }) as any) as Promise<IMentoringPropositionEntity>;
 
 export const deleteMentoringProposition = (id: number) =>
   (request({
@@ -59,11 +60,25 @@ export const linkToCampaign = (propositionId: number, campaignId: number) =>
     method: 'post',
   }) as any) as Promise<IMentoringPropositionEntity>;
 
-  export const linkToInternship = (propositionId: number, internshipId: number) =>
+export const linkToInternship = (propositionId: number, internshipId: number) =>
   (request({
     url: `/mentoringPropositions/${propositionId}/files/${internshipId}/link`,
     method: 'post',
   }) as any) as Promise<IMentoringPropositionEntity>;
 
+export const getMentoringPropositionsbyCampaign = (id: number, params: any) =>
+  (request({
+    url: `/campaigns/${id}/mentoringPropositions`,
+    method: 'get',
+    params,
+  }) as any) as Promise<PaginateList<IMentoringPropositionEntity>>;
 
-
+export const linkMentorToInternship = (
+  mentorID: number,
+  internshipId: number
+) =>
+  (request({
+    url: `/mentors/${mentorID}/internships/${internshipId}/link`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.ATTRIBUTED_MENTOR },
+  }) as any) as Promise<any>;

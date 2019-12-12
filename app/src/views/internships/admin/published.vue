@@ -113,21 +113,27 @@
       <el-table-column
         :label="$t('table.actions')"
         align="center"
-        width="150"
+        width="200"
         class-name="fixed-width"
       >
         <template slot-scope="{ row }">
           <crud-btn
             type="success"
-            icon="el-icon-download"
-            :placeholder="$t('internships.placeholder.unpublish')"
-            @clicked="handleUnpublish(row)"
+            icon="el-icon-user"
+            :placeholder="$t('internships.placeholder.attribute')"
+            @clicked="handleAttribute(row)"
           />
           <crud-btn
             type="warning"
             icon="el-icon-edit"
             :placeholder="$t('internships.placeholder.update')"
             @clicked="handleUpdate(row)"
+          />
+          <crud-btn
+            type="danger"
+            icon="el-icon-download"
+            :placeholder="$t('internships.placeholder.unpublish')"
+            @clicked="handleUnpublish(row)"
           />
           <crud-btn
             type="danger"
@@ -147,6 +153,34 @@
       @pagination="getList"
     />
 
+    <el-dialog :title="this.$t('dialog.title.import')" :visible.sync="dialogAttributeStudent">
+      <el-form
+        ref="addForm"
+        :model="addStudentData"
+        label-position="left"
+        label-width="250px"
+        style="width: 100%; padding: 0 50px;"
+      >
+        <el-form-item :label="$t('table.students.fullName')" prop="id">
+          <el-select
+            v-model="addStudentData.id"
+            filterable
+            remote
+            reserve-keyword
+            :remote-method="searchStudent"
+            :loading="loadingStudent"
+            :placeholder="$t('students.placeholder.includeStudent')"
+          >
+            <el-option v-for="c in students" :key="c.id" :label="c.fullName" :value="c.id" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAttributeStudent = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="handleAttributeStudent()">{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
     <edit-internship ref="EditInternship" />
   </div>
 </template>
@@ -164,12 +198,15 @@ import {
   deleteInternship,
   defaultInternshipData,
   unpublishInternship,
+  attributeStudent,
 } from '../../../api/internships';
+import { getStudents } from '../../../api/students';
 
 import {
   IInternshipEntity,
   InternshipOpts,
   INTERNSHIP_MODE,
+  IStudentEntity,
 } from '../../../declarations';
 
 import { exportJson2Excel } from '../../../utils/excel';
@@ -209,6 +246,19 @@ export default class extends Vue {
 
   private countryList = countryList.getNames();
 
+  private dialogAttributeStudent = false;
+  // Students dynamique query
+  private students: IStudentEntity[] = [];
+  private studentQuery = {
+    page: 1,
+    limit: 10,
+    name: undefined,
+  };
+  private loadingStudent = true;
+  private addStudentData: { id?: number; internshipId?: number } = {
+    id: undefined,
+  };
+
   private get types() {
     return CategoriesModule.categories;
   }
@@ -242,6 +292,46 @@ export default class extends Vue {
       message: this.$t('notify.internships.unpublish.msg') as string,
       type: 'success',
       duration: 2000,
+    });
+  }
+
+  private searchStudent(query: string) {
+    if (query !== '') {
+      this.loadingStudent = true;
+      (this.studentQuery as any).name = query;
+    }
+    getStudents(this.studentQuery)
+      .then(res => {
+        this.loadingStudent = false;
+        this.students = res ? res.data : [];
+      })
+      .catch(() => (this.students = []));
+  }
+
+  private handleAttribute(row: IInternshipEntity) {
+    this.addStudentData = { id: undefined, internshipId: row.id! };
+    this.dialogAttributeStudent = true;
+    this.$nextTick(() => {
+      (this.$refs['addForm'] as Form).clearValidate();
+    });
+  }
+
+  private handleAttributeStudent() {
+    (this.$refs['addForm'] as Form).validate(async valid => {
+      if (valid) {
+        await attributeStudent(
+          this.addStudentData.internshipId!,
+          this.addStudentData.id!
+        );
+        this.getList();
+        this.dialogAttributeStudent = false;
+        this.$notify({
+          title: this.$t('notify.students.attribute.title') as string,
+          message: this.$t('notify.students.attribute.msg') as string,
+          type: 'success',
+          duration: 2000,
+        });
+      }
     });
   }
 

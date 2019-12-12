@@ -27,9 +27,9 @@ export const getMentoringPropositions = (req: Request, res: Response, next: Next
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    const { page = 1, limit = 20, archived } = req.query;
+    const { page = 1, limit = 20 , includes, archived} = req.query;
 
-    MentoringPropositionModel.getMentoringPropositions({ archived }, { page, limit })
+    MentoringPropositionModel.getMentoringPropositions({includes, archived}, { page, limit })
         .then((propositions) =>
             checkContent(propositions, next) ? res.send(propositions) : undefined,
         )

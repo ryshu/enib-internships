@@ -18,6 +18,7 @@ module.exports = async function(quantity = 100, debug = false) {
             email: faker.internet.email(),
             role: 'default',
         };
+        mentor.fullName = mentor.firstName + ' ' + mentor.lastName;
         promises.push(inject(mentor, debug));
     }
 

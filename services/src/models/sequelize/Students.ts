@@ -14,6 +14,7 @@ class Students extends Sequelize.Model {
 
     public firstName: string;
     public lastName: string;
+    public fullName: string;
     public email: string;
     public semester: string;
 
@@ -45,6 +46,10 @@ Students.init(
         },
         lastName: {
             type: new Sequelize.DataTypes.STRING(128),
+            allowNull: false,
+        },
+        fullName: {
+            type: new Sequelize.DataTypes.STRING(256),
             allowNull: false,
         },
         email: {

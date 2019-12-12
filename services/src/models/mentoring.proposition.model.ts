@@ -4,6 +4,8 @@ import Campaigns from './sequelize/Campaigns';
 import MentoringPropositions from './sequelize/MentoringPropositions';
 import Internships from './sequelize/Internships';
 import Mentors from './sequelize/Mentors';
+import Students from './sequelize/Students';
+import Businesses from './sequelize/Businesses';
 
 import { IMentoringPropositionEntity } from '../declarations';
 
@@ -13,9 +15,10 @@ import {
     checkPartialCampaign,
     checkPartialMentor,
 } from '../utils/check';
+
 import { PaginateList } from './helpers/type';
 import { PaginateOpts, paginate } from './helpers/pagination';
-import { extractCount } from './helpers/options';
+import { extractCount, setFindOptsArchived } from './helpers/options';
 
 import cache from '../statistics/singleton';
 
@@ -32,6 +35,9 @@ export interface PropositionsOpts {
 
     /** @property {boolean} archived Show only archived propositions */
     archived?: boolean;
+
+    /** @property {string[]} includes Filter to include and populate given associations */
+    includes?: string[];
 }
 
 /**
@@ -317,7 +323,7 @@ class MentoringPropositionModelStruct {
     }
 
     private _buildFindOpts(opts: PropositionsOpts): FindOptions {
-        const tmp: sequelize.FindOptions = { where: {} };
+        let tmp: sequelize.FindOptions = { where: {}, include: [] };
 
         if (opts.internshipId !== undefined) {
             (tmp.where as any).internshipId = opts.internshipId;
@@ -330,9 +336,35 @@ class MentoringPropositionModelStruct {
         if (opts.campaignId !== undefined) {
             (tmp.where as any).campaignId = opts.campaignId;
         }
+        if (opts.includes !== undefined) {
+            for (const inc of opts.includes) {
+                if (inc === 'mentor') {
+                    tmp.include.push({ model: Mentors, as: 'mentor' });
+                }
+                if (inc === 'campaign') {
+                    tmp.include.push({ model: Campaigns, as: 'campaign' });
+                }
+                if (inc === 'student') {
+                    tmp.include.push({
+                        model: Internships,
+                        as: 'internship',
+                        include: [{ model: Students, as: 'student' }],
+                    });
+                }
+                if (inc === 'business') {
+                    tmp.include.push({
+                        model: Internships,
+                        as: 'internship',
+                        include: [{ model: Businesses, as: 'business' }],
+                    });
+                } else if (inc === 'internship') {
+                    tmp.include.push({ model: Internships, as: 'internship' });
+                }
+            }
+        }
 
         if (opts.archived) {
-            tmp.paranoid = false;
+            tmp = setFindOptsArchived(tmp);
         }
 
         return tmp;

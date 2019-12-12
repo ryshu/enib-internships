@@ -23,10 +23,7 @@
           },
         ]"
       >
-        <el-input
-          v-model="tmpData.name"
-          :placeholder="$t('campaigns.placeholder.name')"
-        />
+        <el-input v-model="tmpData.name" :placeholder="$t('campaigns.placeholder.name')" />
       </el-form-item>
       <el-form-item
         :label="$t('table.campaigns.description')"
@@ -41,20 +38,18 @@
       >
         <el-input
           type="textarea"
+          autosize
           v-model="tmpData.description"
           :placeholder="$t('campaigns.placeholder.description')"
         />
       </el-form-item>
-      
+
       <h2>Paramètres</h2>
 
       <el-row :gutter="20">
         <el-col :span="12">
           <!-- Is visible is used because we can't use isPublish instead (see translation file) -->
-          <el-form-item
-            :label="$t('table.campaigns.isVisible')"
-            prop="maxProposition"
-          >
+          <el-form-item :label="$t('table.campaigns.isVisible')" prop="maxProposition">
             <el-switch
               style="padding : 10px;"
               v-model="tmpData.isPublish"
@@ -72,25 +67,14 @@
               { validator: dateValidator, trigger: 'blur' },
             ]"
           >
-            <el-date-picker
-              v-model="tmpData.endAt"
-              placeholder="Date de fin"
-              type="date"
-            />
+            <el-date-picker v-model="tmpData.endAt" placeholder="Date de fin" type="date" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item
-            :label="$t('table.campaigns.maxProposition')"
-            prop="maxProposition"
-          >
-            <el-input-number
-              :min="0"
-              :max="50"
-              v-model="tmpData.maxProposition"
-            />
+          <el-form-item :label="$t('table.campaigns.maxProposition')" prop="maxProposition">
+            <el-input-number :min="0" :max="50" v-model="tmpData.maxProposition" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -104,26 +88,29 @@
   </div>
 </template>
 <script lang="ts">
-
 import moment from 'moment';
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { cloneDeep } from 'lodash';
 import { Form } from 'element-ui';
 
-import { defaultCampaignData, createCampaign, deleteCampaign, getCampaign, updateCampaign } from '../../api/campaigns';
+import {
+  defaultCampaignData,
+  createCampaign,
+  deleteCampaign,
+  getCampaign,
+  updateCampaign,
+} from '../../api/campaigns';
 import { CampaignsModule } from '../../store/modules/campaigns';
 
-
-@Component({ 
-  name: 'CampaignsSettings' ,
+@Component({
+  name: 'CampaignsSettings',
 })
-
 export default class extends Vue {
-  private tmpData: any = defaultCampaignData; 
-  
+  private tmpData: any = defaultCampaignData;
+
   private cnt: number = 0;
   private max: number = 1;
- 
+
   public get id() {
     return Number(this.$route.params.id);
   }
@@ -138,7 +125,7 @@ export default class extends Vue {
   @Watch('id')
   public async setupCampaign() {
     let tmp: any;
-    if(this.id) {
+    if (this.id) {
       tmp = await CampaignsModule.getCampaign(this.id);
     }
     tmp = cloneDeep(tmp || defaultCampaignData);
@@ -147,36 +134,36 @@ export default class extends Vue {
   }
 
   private updateData() {
-     (this.$refs['dataForm'] as Form).validate(async valid => {
-       if (valid) {
-         const tmp = cloneDeep(this.tmpData);
+    (this.$refs['dataForm'] as Form).validate(async valid => {
+      if (valid) {
+        const tmp = cloneDeep(this.tmpData);
 
-         tmp.endAt = tmp.endAt ? moment(tmp.endAt).valueOf() : 0;
-         delete tmp.startAt;
+        tmp.endAt = tmp.endAt ? moment(tmp.endAt).valueOf() : 0;
+        delete tmp.startAt;
 
-         await updateCampaign(tmp.id!, tmp);
+        await updateCampaign(tmp.id!, tmp);
         this.$notify({
           title: this.$t('notify.campaigns.update.title') as string,
           message: this.$t('notify.campaigns.update.msg') as string,
           type: 'success',
           duration: 2000,
         });
-        this.$router.push(`/campaigns/dashboard/${this.id}`); 
+        this.$router.push(`/campaigns/dashboard/${this.id}`);
       }
-   });
+    });
   }
-  private async archive(){
-    const res: any= await getCampaign(this.id); 
+  private async archive() {
+    const res: any = await getCampaign(this.id);
     await deleteCampaign(this.id!);
     CampaignsModule.removeCampaign(res);
-  
+
     this.$notify({
       title: this.$t('notify.campaigns.delete.title') as string,
       message: this.$t('notify.campaigns.delete.msg') as string,
       type: 'success',
       duration: 2000,
     });
-    this.$router.push(`/`); 
+    this.$router.push(`/`);
   }
   private reset() {
     this.setupCampaign();
@@ -187,19 +174,15 @@ export default class extends Vue {
   }
 
   public dateValidator(rule: any, value: any, cb: any) {
-    
-      if (!this.tmpData.endAt) {
-        cb(new Error(this.$t('form.campaigns.date.required') as string));
-      } else if (
-        moment(this.tmpData.endAt).valueOf() < moment().valueOf()
-      ) {
-        cb(new Error(this.$t('form.campaigns.date.end_to_early') as string));
-      } else {
-        cb();
-      }
-  } 
+    if (!this.tmpData.endAt) {
+      cb(new Error(this.$t('form.campaigns.date.required') as string));
+    } else if (moment(this.tmpData.endAt).valueOf() < moment().valueOf()) {
+      cb(new Error(this.$t('form.campaigns.date.end_to_early') as string));
+    } else {
+      cb();
+    }
+  }
 }
-
 </script>
 
 <style lang="scss">

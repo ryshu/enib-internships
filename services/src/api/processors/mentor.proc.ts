@@ -6,6 +6,7 @@ export function fullCopyMentor(data: Partial<IMentorEntity>): IMentorEntity | un
         return {
             firstName: data.firstName,
             lastName: data.lastName,
+            fullName: data.fullName,
             email: data.email,
             role: data.role,
         };

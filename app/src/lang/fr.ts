@@ -1,5 +1,5 @@
 export default {
-  dialog: { title: { create: 'Créer', edit: 'Modifier' } },
+  dialog: { title: { create: 'Créer', edit: 'Modifier', import: 'Importer' } },
   export: {
     additional: 'Additionelle',
     address: 'Adresse',
@@ -124,6 +124,10 @@ export default {
         msg: 'Le professeur a bien été modifié',
         title: "Modification d'un professeur",
       },
+      import: {
+        msg: 'Le professeur a bien été ajouté à la campagne',
+        title: "Importation d'un professeur",
+      },
     },
     mentorPropositions: {
       create: {
@@ -138,6 +142,10 @@ export default {
         msg: 'La proposition a bien été modifiée',
         title: "Modification d'une proposition",
       },
+      attributed: {
+        msg: 'Le stage a été attribué au tuteur',
+        title: 'Proposition validée',
+      },
     },
     students: {
       create: {
@@ -151,6 +159,10 @@ export default {
       update: {
         msg: "L'étudiant a bien été modifié",
         title: "Modification d'un étudiant",
+      },
+      attribute: {
+        msg: "L'étudiant a bien été attribué",
+        title: "Attributation d'une offre",
       },
     },
   },
@@ -227,6 +239,7 @@ export default {
     },
     cancel: 'Annuler',
     confirm: 'Confirmer',
+    validate: 'Valider',
     create: 'Créer',
     date: 'Date',
     delete: 'Supprimer',
@@ -250,17 +263,25 @@ export default {
       postalCode: 'Code postal',
       subject: 'Sujets',
       publishAt: 'Date de publication',
+      result: 'Résultat',
       date: 'Dates de stage',
+      student: 'Etudiant',
       isPublish: 'Publié ?',
     },
     mentors: {
       firstName: 'Prénom',
       lastName: 'Nom',
+      fullName: 'Nom',
       email: 'Email',
     },
     mentoringProposition: {
       title: 'Postuler',
       comment: 'Ajouter un commentaire',
+      student: 'Etudiant',
+      internship: 'Sujet de Stage',
+      business: 'Entreprise',
+      mentor: 'Tuteur',
+      country: 'Pays',
     },
     publish: 'Publier',
     search: 'Recherche',
@@ -270,6 +291,7 @@ export default {
       email: 'Adresse mail',
       firstName: 'Prénom',
       lastName: 'Nom',
+      fullName: 'Nom',
       semester: 'Semester',
     },
     checkbox: {
@@ -365,17 +387,26 @@ export default {
       unpublish: "Dépublier l'offre",
       update: "Editer l'offre",
       remove: "Supprimer l'offre",
+      attribute: "Attribuer l'offre",
     },
   },
   students: {
     placeholder: {
       update: "Editer l'étudiant",
       remove: "Supprimer l'étudiant de cette campaign",
+      includeStudent: "Nom de l'étudiant pour l'attribution",
+    },
+  },
+  mentors: {
+    placeholder: {
+      includeMentor: "Entrer une partie du nom de l'utilsateur pour le trouver",
     },
   },
   mentoringProposition: {
     placeholder: {
       create: 'Postuler',
+      validate: 'Valider le tuteur pour ce stage',
+      delete: 'Supprimer la proposition de tutorat',
     },
   },
 };

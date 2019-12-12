@@ -15,12 +15,12 @@ const campaignsRouter = {
   children: [
     {
       path: 'dashboard/:id(\\w+)',
-      component: () => import('@/views/campaigns/dashboard.vue'),
+      component: () => import('@/views/campaigns/admin/dashboard.vue'),
       name: `campaigns.dashboard`,
       meta: {
         title: 'campaigns.dashboard',
         noCache: true,
-        roles: ['default', 'admin'],
+        roles: ['admin'],
       },
     },
     {
@@ -34,18 +34,8 @@ const campaignsRouter = {
       },
     },
     {
-      path: 'students/:id(\\w+)',
-      component: () => import('@/views/campaigns/students.vue'),
-      name: `campaigns.students`,
-      meta: {
-        title: 'campaigns.students',
-        noCache: true,
-        roles: ['default', 'admin'],
-      },
-    },
-    {
       path: 'mentors/:id(\\w+)',
-      component: () => import('@/views/campaigns/mentors.vue'),
+      component: () => import('@/views/campaigns/admin/mentors.vue'),
       name: `campaigns.mentors`,
       meta: { title: 'campaigns.mentors', noCache: true, roles: ['admin'] },
     },

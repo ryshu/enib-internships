@@ -185,11 +185,11 @@ export const getCampaignMentoringPropositions = (
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrieve query data
-    const { page = 1, limit = 20 } = req.query;
+    // Retrive query data
+    const { page = 1, limit = 20, includes, archived } = req.query;
 
     MentoringPropositionModel.getMentoringPropositions(
-        { campaignId: Number(req.params.id) },
+        { campaignId: Number(req.params.id), includes, archived },
         { page, limit },
     )
         .then(async (mps) => (checkContent(mps, next) ? res.send(mps) : undefined))
@@ -271,9 +271,9 @@ export const getCampaignMentors = (req: Request, res: Response, next: NextFuncti
     }
 
     // Retrieve query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, archived, name } = req.query;
 
-    MentorModel.getMentors({ campaignId: Number(req.params.id) }, { page, limit })
+    MentorModel.getMentors({ campaignId: Number(req.params.id), archived, name }, { page, limit })
         .then((data) => (checkContent(data, next) ? res.send(data) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

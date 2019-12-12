@@ -104,5 +104,19 @@ export const attributeInternshipToMentor = (id: number, mentorId: number) =>
   (request({
     url: `/internships/${id}/fsm`,
     method: 'post',
-    data: { state: INTERNSHIP_MODE.PUBLISHED, mentorId },
+    data: { state: INTERNSHIP_MODE.ATTRIBUTED_MENTOR, mentorId },
+  }) as any) as Promise<IInternshipEntity>;
+
+export const attributeStudent = (id: number, studentId: number) =>
+  (request({
+    url: `/internships/${id}/fsm`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.ATTRIBUTED_STUDENT, studentId },
+  }) as any) as Promise<IInternshipEntity>;
+
+export const attributeInternshipToCampaign = (id: number, campaignId: number) =>
+  (request({
+    url: `/internships/${id}/fsm`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.AVAILABLE_CAMPAIGN, campaignId },
   }) as any) as Promise<IInternshipEntity>;

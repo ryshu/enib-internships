@@ -29,7 +29,7 @@ export default class extends Vue {
     'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3';
 
   get fullName() {
-    return `${UserModule.firstName} ${UserModule.lastName}`;
+    return UserModule.fullName;
   }
 
   get role() {

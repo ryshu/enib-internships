@@ -9,6 +9,8 @@ export declare interface IMentorEntity {
 
   firstName: string;
   lastName: string;
+  fullName: string;
+
   email: string;
   role: MentorRole;
 
@@ -22,6 +24,16 @@ export declare interface IMentorEntity {
 
 /** @interface MentorOpts Interface of all availables filters for mentors list */
 export interface MentorOpts {
-  /** @property {number} campaignId Filter list with categoryId */
-  campaignId?: number;
+  page?: number;
+
+  limit?: number;
+
+  /** @property {string} name Filter by mentor name */
+  name?: string;
+
+  /** @property {boolean} archived Show only archived propositions */
+  archived?: boolean;
+
+  /** @property {string[]} includes Filter to include and populate given associations */
+  includes?: string[];
 }
