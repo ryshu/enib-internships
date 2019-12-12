@@ -271,9 +271,9 @@ export const getCampaignMentors = (req: Request, res: Response, next: NextFuncti
     }
 
     // Retrieve query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, archived, name } = req.query;
 
-    MentorModel.getMentors({ campaignId: Number(req.params.id) }, { page, limit })
+    MentorModel.getMentors({ campaignId: Number(req.params.id), archived, name }, { page, limit })
         .then((data) => (checkContent(data, next) ? res.send(data) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };

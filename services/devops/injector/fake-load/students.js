@@ -30,6 +30,7 @@ module.exports = async function(quantity = 100, debug = false) {
                 'S10',
             ]),
         };
+        student.fullName = student.firstName + ' ' + student.lastName;
         promises.push(inject(student, debug));
     }
 

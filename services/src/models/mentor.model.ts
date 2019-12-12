@@ -1,4 +1,4 @@
-import { CreateOptions, FindOptions, IncludeOptions } from 'sequelize';
+import sequelize, { CreateOptions, FindOptions, IncludeOptions } from 'sequelize';
 
 import Campaigns from './sequelize/Campaigns';
 import Mentors from './sequelize/Mentors';
@@ -19,6 +19,7 @@ import {
 import { PaginateList } from './helpers/type';
 import { PaginateOpts, paginate } from './helpers/pagination';
 import { extractCount, setFindOptsArchived } from './helpers/options';
+import { buildName } from './helpers/processor';
 
 import cache from '../statistics/singleton';
 
@@ -26,6 +27,9 @@ import cache from '../statistics/singleton';
 export interface MentorOpts {
     /** @property {number} campaignId Filter list with categoryId */
     campaignId?: number;
+
+    /** @property {string} name Filter by mentor name */
+    name?: string;
 
     /** @property {boolean} archived Show only archived mentors */
     archived?: boolean;
@@ -92,6 +96,7 @@ class MentorModelStruct {
                     }
                 }
 
+                mentor.fullName = buildName(mentor.firstName, mentor.lastName);
                 const created = await Mentors.create(mentor, this._buildCreateOpts(mentor));
                 cache.addMentor();
 
@@ -159,6 +164,8 @@ class MentorModelStruct {
                 if (next.email) {
                     mentor.set('email', next.email);
                 }
+
+                mentor.set('fullName', buildName(mentor.firstName, mentor.lastName));
                 const updated = await mentor.save();
                 // TODO: emit updated mentor on websocket
 
@@ -293,6 +300,10 @@ class MentorModelStruct {
                 duplicating: false,
             });
             (tmp.where as any)['$campaigns.id$'] = opts.campaignId;
+        }
+
+        if (opts.name) {
+            (tmp.where as any).fullName = { [sequelize.Op.substring]: opts.name };
         }
 
         if (opts.archived) {

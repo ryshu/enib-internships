@@ -72,6 +72,12 @@ export const InternshipsList: Schema = {
         optional: true,
         toBoolean: true,
     },
+    'mentorId': {
+        in: ['query'],
+        isInt: { errorMessage: `Mentor identifier must be an integer` },
+        optional: true,
+        toInt: true,
+    },
     'includes': {
         in: ['query'],
         isArray: { errorMessage: 'Internship includes should be provide under array form' },

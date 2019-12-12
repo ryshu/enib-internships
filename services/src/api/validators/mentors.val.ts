@@ -6,6 +6,13 @@ import { mentorVal, campaignVal, internshipVal, propositionsVal } from './genera
 export const MentorList: Schema = {
     ...paginateValidator,
     ...archivedValidator,
+    name: {
+        in: ['query'],
+        isString: { errorMessage: 'Name query param should be a string' },
+        optional: true,
+        trim: true,
+        escape: true,
+    },
 };
 
 export const MentorCreate: Schema = {

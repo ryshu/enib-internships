@@ -7,6 +7,7 @@ export function fullCopyStudent(data: Partial<IStudentEntity>): IStudentEntity |
         return {
             firstName: data.firstName,
             lastName: data.lastName,
+            fullName: data.fullName,
             email: data.email,
             semester: data.semester,
         };
