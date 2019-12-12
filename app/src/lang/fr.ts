@@ -1,5 +1,5 @@
 export default {
-  dialog: { title: { create: 'Créer', edit: 'Modifier' } },
+  dialog: { title: { create: 'Créer', edit: 'Modifier', import: 'Importer' } },
   export: {
     additional: 'Additionelle',
     address: 'Adresse',
@@ -124,6 +124,10 @@ export default {
         msg: 'Le professeur a bien été modifié',
         title: "Modification d'un professeur",
       },
+      import: {
+        msg: 'Le professeur a bien été ajouté à la campagne',
+        title: "Importation d'un professeur",
+      },
     },
     mentorPropositions: {
       create: {
@@ -155,6 +159,10 @@ export default {
       update: {
         msg: "L'étudiant a bien été modifié",
         title: "Modification d'un étudiant",
+      },
+      attribute: {
+        msg: "L'étudiant a bien été attribué",
+        title: "Attributation d'une offre",
       },
     },
   },
@@ -255,12 +263,15 @@ export default {
       postalCode: 'Code postal',
       subject: 'Sujets',
       publishAt: 'Date de publication',
+      result: 'Résultat',
       date: 'Dates de stage',
+      student: 'Etudiant',
       isPublish: 'Publié ?',
     },
     mentors: {
       firstName: 'Prénom',
       lastName: 'Nom',
+      fullName: 'Nom',
       email: 'Email',
     },
     mentoringProposition: {
@@ -280,6 +291,7 @@ export default {
       email: 'Adresse mail',
       firstName: 'Prénom',
       lastName: 'Nom',
+      fullName: 'Nom',
       semester: 'Semester',
     },
     checkbox: {
@@ -375,12 +387,19 @@ export default {
       unpublish: "Dépublier l'offre",
       update: "Editer l'offre",
       remove: "Supprimer l'offre",
+      attribute: "Attribuer l'offre",
     },
   },
   students: {
     placeholder: {
       update: "Editer l'étudiant",
       remove: "Supprimer l'étudiant de cette campaign",
+      includeStudent: "Nom de l'étudiant pour l'attribution",
+    },
+  },
+  mentors: {
+    placeholder: {
+      includeMentor: "Entrer une partie du nom de l'utilsateur pour le trouver",
     },
   },
   mentoringProposition: {

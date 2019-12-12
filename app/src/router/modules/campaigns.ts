@@ -15,12 +15,12 @@ const campaignsRouter = {
   children: [
     {
       path: 'dashboard/:id(\\w+)',
-      component: () => import('@/views/campaigns/dashboard.vue'),
+      component: () => import('@/views/campaigns/admin/dashboard.vue'),
       name: `campaigns.dashboard`,
       meta: {
         title: 'campaigns.dashboard',
         noCache: true,
-        roles: ['default', 'admin'],
+        roles: ['admin'],
       },
     },
     {
@@ -29,16 +29,6 @@ const campaignsRouter = {
       name: `campaigns.internships`,
       meta: {
         title: 'campaigns.internships',
-        noCache: true,
-        roles: ['default', 'admin'],
-      },
-    },
-    {
-      path: 'students/:id(\\w+)',
-      component: () => import('@/views/campaigns/students.vue'),
-      name: `campaigns.students`,
-      meta: {
-        title: 'campaigns.students',
         noCache: true,
         roles: ['default', 'admin'],
       },

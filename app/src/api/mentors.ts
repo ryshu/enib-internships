@@ -5,6 +5,7 @@ import { IMentorEntity, PaginateList, MentorOpts } from '../declarations';
 export const defaultMentorData: IMentorEntity = {
   firstName: '',
   lastName: '',
+  fullName: '',
   email: '',
   role: 'default',
 };
