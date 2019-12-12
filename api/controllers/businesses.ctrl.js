@@ -28,7 +28,7 @@ exports.getBusinesses = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20, countries, name, archived } = req.query;
     business_model_1.default.getBusinesses({ name, countries, archived }, { page, limit })
         .then((data) => __awaiter(void 0, void 0, void 0, function* () {

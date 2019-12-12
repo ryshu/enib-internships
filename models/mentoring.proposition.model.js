@@ -16,9 +16,12 @@ const Campaigns_1 = __importDefault(require("./sequelize/Campaigns"));
 const MentoringPropositions_1 = __importDefault(require("./sequelize/MentoringPropositions"));
 const Internships_1 = __importDefault(require("./sequelize/Internships"));
 const Mentors_1 = __importDefault(require("./sequelize/Mentors"));
+const Students_1 = __importDefault(require("./sequelize/Students"));
+const Businesses_1 = __importDefault(require("./sequelize/Businesses"));
 const check_1 = require("../utils/check");
 const pagination_1 = require("./helpers/pagination");
 const options_1 = require("./helpers/options");
+const singleton_1 = __importDefault(require("../statistics/singleton"));
 /**
  * @interface MentoringPropositionModelStruct API to handle mentoring propostions in database
  * @class
@@ -75,6 +78,12 @@ class MentoringPropositionModelStruct {
                     }
                 }
                 const created = yield MentoringPropositions_1.default.create(proposition, this._buildCreateOpts(proposition));
+                const campaignId = created.campaign
+                    ? typeof created.campaign === 'number'
+                        ? created.campaign
+                        : created.campaign.id
+                    : undefined;
+                singleton_1.default.addProposition(campaignId);
                 // TODO: emit creation on websocket
                 return resolve(created.toJSON());
             }
@@ -150,9 +159,10 @@ class MentoringPropositionModelStruct {
             try {
                 const proposition = yield MentoringPropositions_1.default.findByPk(id);
                 if (proposition) {
+                    singleton_1.default.removeProposition(proposition.campaign || undefined);
                     yield proposition.destroy();
                 }
-                // TODO: emit file destruction
+                // TODO: emit proposition destruction
                 // TODO: add option to remove linked campaigns
                 // TODO: add option to remove linked internships
                 resolve();
@@ -210,6 +220,7 @@ class MentoringPropositionModelStruct {
                     return resolve();
                 }
                 yield proposition.setCampaign(campaign);
+                singleton_1.default.linkProposition(campaign.id);
                 // TODO: Emit update on socket
                 return resolve(yield this.getMentoringProposition(proposition.id));
             }
@@ -247,7 +258,7 @@ class MentoringPropositionModelStruct {
         }));
     }
     _buildFindOpts(opts) {
-        const tmp = { where: {} };
+        let tmp = { where: {}, include: [] };
         if (opts.internshipId !== undefined) {
             tmp.where.internshipId = opts.internshipId;
         }
@@ -257,8 +268,35 @@ class MentoringPropositionModelStruct {
         if (opts.campaignId !== undefined) {
             tmp.where.campaignId = opts.campaignId;
         }
+        if (opts.includes !== undefined) {
+            for (const inc of opts.includes) {
+                if (inc === 'mentor') {
+                    tmp.include.push({ model: Mentors_1.default, as: 'mentor' });
+                }
+                if (inc === 'campaign') {
+                    tmp.include.push({ model: Campaigns_1.default, as: 'campaign' });
+                }
+                if (inc === 'student') {
+                    tmp.include.push({
+                        model: Internships_1.default,
+                        as: 'internship',
+                        include: [{ model: Students_1.default, as: 'student' }],
+                    });
+                }
+                if (inc === 'business') {
+                    tmp.include.push({
+                        model: Internships_1.default,
+                        as: 'internship',
+                        include: [{ model: Businesses_1.default, as: 'business' }],
+                    });
+                }
+                else if (inc === 'internship') {
+                    tmp.include.push({ model: Internships_1.default, as: 'internship' });
+                }
+            }
+        }
         if (opts.archived) {
-            tmp.paranoid = false;
+            tmp = options_1.setFindOptsArchived(tmp);
         }
         return tmp;
     }

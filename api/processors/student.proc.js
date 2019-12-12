@@ -6,6 +6,7 @@ function fullCopyStudent(data) {
         return {
             firstName: data.firstName,
             lastName: data.lastName,
+            fullName: data.fullName,
             email: data.email,
             semester: data.semester,
         };

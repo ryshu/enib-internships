@@ -20,7 +20,7 @@ exports.getFiles = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20, archived } = req.query;
     files_model_1.default.getFiles({ archived }, { page, limit })
         .then((data) => {
@@ -104,7 +104,7 @@ exports.deleteFile = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
 /**
- * GET /files/:id/interships
+ * GET /files/:id/internships
  * Used to select a file by ID and return his internship
  */
 exports.getFileInternship = (req, res, next) => {

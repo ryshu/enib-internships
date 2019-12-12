@@ -21,10 +21,12 @@ const Mentors_1 = __importDefault(require("./sequelize/Mentors"));
 const Internships_1 = __importDefault(require("./sequelize/Internships"));
 // Validator helpers
 const check_1 = require("../utils/check");
-const internship_type_mode_1 = __importDefault(require("./internship.type.mode"));
 const options_1 = require("./helpers/options");
 const campaigns_1 = require("./helpers/campaigns");
 const private_1 = require("../websocket/channels/private");
+const internship_type_mode_1 = __importDefault(require("./internship.type.mode"));
+const internship_model_1 = __importDefault(require("./internship.model"));
+const singleton_1 = __importDefault(require("../statistics/singleton"));
 /**
  * @interface CampaignModelStruct
  * @class
@@ -70,9 +72,20 @@ class CampaignModelStruct {
                 }
                 // Else, create new campaign
                 const created = yield Campaigns_1.default.create(campaign, this._buildCreateOpts(campaign));
+                singleton_1.default.newCampain(created.id, {
+                    internships: {
+                        total: created.availableInternships.length +
+                            created.validatedInternships.length || 0,
+                        availables: created.availableInternships.length || 0,
+                        attributed: created.validatedInternships.length || 0,
+                    },
+                    students: created.availableInternships.length + created.validatedInternships.length ||
+                        0,
+                    mentors: created.mentors.length || 0,
+                    propositions: created.propositions.length || 0,
+                });
                 // TODO: Add socket channel + create emit
-                // TODO: Update counter for this create;
-                resolve(created);
+                resolve(created.toJSON());
             }
             catch (error) {
                 reject(error);
@@ -167,7 +180,6 @@ class CampaignModelStruct {
                     }
                 }
                 // TODO: Add socket edit + emit
-                // TODO: Update counter for this update;
                 const updated = yield campaign.save();
                 resolve(updated);
             }
@@ -192,12 +204,14 @@ class CampaignModelStruct {
                 }
                 // Remove all propositions linked
                 const propositions = yield campaign.getPropositions();
-                yield Promise.all(propositions.map((p) => p.destroy()));
-                // TODO: Change this to map destory + socket destroy emit + counter
-                // TODO: Setup archives
+                yield Promise.all(propositions.map((p) => {
+                    singleton_1.default.removeProposition(campaign.id);
+                    return p.destroy();
+                }));
+                // TODO: Change this to map destory + socket destroy emit
+                singleton_1.default.removeCampaign(campaign.id);
                 // TODO: Add archives function for internships
                 // TODO: Add socket remove + emit;
-                // TODO: Update counter for this remove;
                 yield campaign.destroy();
                 resolve();
             }
@@ -254,6 +268,7 @@ class CampaignModelStruct {
                     return resolve();
                 }
                 yield campaign.addMentor(mentor);
+                singleton_1.default.linkMentor(campaign.id);
                 // TODO: Emit update on socket
                 return resolve(yield this.getCampaign(campaign.id));
             }
@@ -282,6 +297,7 @@ class CampaignModelStruct {
                     return resolve();
                 }
                 yield campaign.addProposition(proposition);
+                singleton_1.default.linkProposition(campaign.id);
                 // TODO: Emit update on socket
                 return resolve(yield this.getCampaign(campaign.id));
             }
@@ -301,45 +317,13 @@ class CampaignModelStruct {
     linkToAvailableInternship(campaignId, availableInternshipId) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const campaign = yield Campaigns_1.default.findByPk(campaignId);
-                if (!campaign) {
+                const handler = yield internship_model_1.default.getHandler(availableInternshipId);
+                if (!handler) {
                     return resolve();
                 }
-                const availableInternship = yield Internships_1.default.findByPk(availableInternshipId);
-                if (!availableInternship) {
-                    return resolve();
-                }
-                yield campaign.addAvailableInternship(availableInternship);
-                // TODO: Emit update on socket
-                return resolve(yield this.getCampaign(campaign.id));
-            }
-            catch (error) {
-                reject(error);
-            }
-        }));
-    }
-    /**
-     * @summary Method used to setup link between campaign and his validatedInternship
-     * @param {number} campaignId campaign identifier
-     * @param {number} validatedInternshipId validatedInternship identifier
-     * @returns {Promise<ICampaignEntity>} Resolve: ICampaignEntity
-     * @returns {Promise<void>} Resolve: void if something hasn't been found
-     * @returns {Promise<any>} Reject: database error
-     */
-    linkToValidatedInternship(campaignId, validatedInternshipId) {
-        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-            try {
-                const campaign = yield Campaigns_1.default.findByPk(campaignId);
-                if (!campaign) {
-                    return resolve();
-                }
-                const validatedInternship = yield Internships_1.default.findByPk(validatedInternshipId);
-                if (!validatedInternship) {
-                    return resolve();
-                }
-                yield campaign.addValidatedInternship(validatedInternship);
-                // TODO: Emit update on socket
-                return resolve(yield this.getCampaign(campaign.id));
+                // Use handler to setup to campaign available state
+                yield handler.toCampaignAvailable(campaignId);
+                return resolve(yield this.getCampaign(campaignId));
             }
             catch (error) {
                 reject(error);

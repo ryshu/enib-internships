@@ -12,11 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const pagination_1 = require("./helpers/pagination");
 const Files_1 = __importDefault(require("./sequelize/Files"));
 const Internships_1 = __importDefault(require("./sequelize/Internships"));
-const check_1 = require("../utils/check");
+const pagination_1 = require("./helpers/pagination");
 const options_1 = require("./helpers/options");
+const check_1 = require("../utils/check");
 /**
  * @class FileModelStruct
  *

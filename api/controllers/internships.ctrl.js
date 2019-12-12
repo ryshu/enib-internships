@@ -20,7 +20,7 @@ const files_model_1 = __importDefault(require("../../models/files.model"));
 const mentoring_proposition_model_1 = __importDefault(require("../../models/mentoring.proposition.model"));
 const global_helper_1 = require("../helpers/global.helper");
 const internships_helper_1 = require("../helpers/internships.helper");
-const businesse_proc_1 = require("../processors/businesse.proc");
+const businesses_proc_1 = require("../processors/businesses.proc");
 const campaign_proc_1 = require("../processors/campaign.proc");
 const file_proc_1 = require("../processors/file.proc");
 const internship_type_proc_1 = require("../processors/internship.type.proc");
@@ -59,7 +59,7 @@ exports.postInternship = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             : moment_1.default(req.body.publishAt).valueOf(),
         startAt: !req.body.startAt ? null : moment_1.default(req.body.startAt).valueOf(),
         endAt: !req.body.endAt ? null : moment_1.default(req.body.endAt).valueOf(),
-        business: businesse_proc_1.fullCopyBusiness(req.body.business),
+        business: businesses_proc_1.fullCopyBusiness(req.body.business),
         category: internship_type_proc_1.fullCopyInternshipType(req.body.category),
         mentor: mentor_proc_1.fullCopyMentor(req.body.mentor),
         student: student_proc_1.fullCopyStudent(req.body.student),
@@ -149,7 +149,7 @@ exports.deleteInternship = (req, res, next) => {
  * POST /internship/:id/fsm
  * Used to update an internship status
  */
-exports.upadteFSMInternship = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.updateFSMInternship = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     // @see validator + router
     const errors = express_validator_1.validationResult(req);
     if (!errors.isEmpty()) {
@@ -320,7 +320,7 @@ exports.getInternshipFiles = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20 } = req.query;
     files_model_1.default.getFiles({ internshipId: Number(req.params.id) }, { page, limit })
         .then((files) => (global_helper_1.checkContent(files, next) ? res.send(files) : undefined))
@@ -344,7 +344,7 @@ exports.linkInternshipFiles = (req, res, next) => {
  * GET /internship/:id/availableCampaign
  * Used to select a internship by ID and return his availableCampaign
  */
-exports.getAvailabletInternshipCampaign = (req, res, next) => {
+exports.getAvailableInternshipCampaign = (req, res, next) => {
     // @see validator + router
     const errors = express_validator_1.validationResult(req);
     if (!errors.isEmpty()) {
@@ -398,14 +398,14 @@ exports.getInternshipPropositions = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20 } = req.query;
     mentoring_proposition_model_1.default.getMentoringPropositions({ internshipId: Number(req.params.id) }, { page, limit })
         .then((propositions) => global_helper_1.checkContent(propositions, next) ? res.send(propositions) : undefined)
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * GET /internships/:id/propositions/:mentoring_proposition_id/link
+ * POST /internships/:id/propositions/:mentoring_proposition_id/link
  * Used to get all propositions of a internships
  */
 exports.linkInternshipPropositions = (req, res, next) => {

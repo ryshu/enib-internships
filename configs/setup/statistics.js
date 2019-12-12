@@ -45,6 +45,7 @@ function setupStatistics() {
         const global = {
             internships: {
                 total: yield Internships_1.default.count(),
+                abroad: yield Internships_1.default.count({ where: { isInternshipAbroad: true } }),
                 waiting: yield Internships_1.default.count({ where: { state: 'waiting' } }),
                 published: yield Internships_1.default.count({ where: { state: 'published' } }),
                 attributed_mentor: yield Internships_1.default.count({ where: { state: 'attributed_mentor' } }),

@@ -49,7 +49,7 @@ exports.archivedValidator = {
         toBoolean: true,
     },
 };
-exports.contriesValidator = {
+exports.countriesValidator = {
     countries: {
         in: ['query'],
         isArray: { errorMessage: 'Country filter list must be array' },

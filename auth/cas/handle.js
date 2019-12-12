@@ -61,6 +61,7 @@ function handleConnection(req) {
                 const newUser = {
                     firstName: 'undefined',
                     lastName: 'undefined',
+                    fullName: 'Undefined UNDEFINED',
                     email,
                     semester: 'S1',
                 };
@@ -71,6 +72,7 @@ function handleConnection(req) {
                 const newUser = {
                     firstName: 'undefined',
                     lastName: 'undefined',
+                    fullName: 'Undefined UNDEFINED',
                     email,
                     role: 'default',
                 };

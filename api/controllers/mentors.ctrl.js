@@ -25,9 +25,9 @@ exports.getMentors = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     // Retrieve all mentors from database
-    // Retrive query data
-    const { page = 1, limit = 20, archived } = req.query;
-    mentor_model_1.default.getMentors({ archived }, { page, limit })
+    // Retrieve query data
+    const { page = 1, limit = 20, archived, name } = req.query;
+    mentor_model_1.default.getMentors({ archived, name }, { page, limit })
         .then((mentor) => (global_helper_1.checkContent(mentor, next) ? res.send(mentor) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
@@ -45,6 +45,7 @@ exports.postMentor = (req, res, next) => {
     const mentor = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        fullName: undefined,
         email: req.body.email,
         role: req.body.role && type_1.isMentorRole(req.body.role) ? req.body.role : 'default',
         campaigns: req.body.campaigns && Array.isArray(req.body.campaigns)
@@ -87,7 +88,12 @@ exports.putMentor = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     mentor_model_1.default.updateMentor(Number(req.params.id), req.body)
-        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
+        .then((val) => {
+        if (global_helper_1.checkContent(val, next)) {
+            req.session.info = val;
+            res.send(val);
+        }
+    })
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
@@ -142,14 +148,14 @@ exports.getMentorPropositions = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20 } = req.query;
     mentoring_proposition_model_1.default.getMentoringPropositions({ mentorId: Number(req.params.id) }, { page, limit })
         .then((propositions) => global_helper_1.checkContent(propositions, next) ? res.send(propositions) : undefined)
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * GET /mentors/:id/propositions/:mentoring_proposition_id/link
+ * POST /mentors/:id/propositions/:mentoring_proposition_id/link
  * Used to link a mentor with a campaign
  */
 exports.linkMentorProposition = (req, res, next) => {

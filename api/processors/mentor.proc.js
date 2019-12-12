@@ -6,6 +6,7 @@ function fullCopyMentor(data) {
         return {
             firstName: data.firstName,
             lastName: data.lastName,
+            fullName: data.fullName,
             email: data.email,
             role: data.role,
         };

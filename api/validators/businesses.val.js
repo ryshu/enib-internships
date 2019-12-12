@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const generic_val_1 = require("./generic.val");
 const generator_val_1 = require("./generator.val");
-exports.BusinessesList = Object.assign(Object.assign(Object.assign(Object.assign({}, generic_val_1.paginateValidator), generic_val_1.contriesValidator), generic_val_1.archivedValidator), { name: {
+exports.BusinessesList = Object.assign(Object.assign(Object.assign(Object.assign({}, generic_val_1.paginateValidator), generic_val_1.countriesValidator), generic_val_1.archivedValidator), { name: {
         in: ['query'],
         isString: { errorMessage: 'Name filter must be of type string' },
         optional: true,

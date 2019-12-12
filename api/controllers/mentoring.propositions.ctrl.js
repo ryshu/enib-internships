@@ -20,8 +20,8 @@ exports.getMentoringPropositions = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    const { page = 1, limit = 20, archived } = req.query;
-    mentoring_proposition_model_1.default.getMentoringPropositions({ archived }, { page, limit })
+    const { page = 1, limit = 20, includes, archived } = req.query;
+    mentoring_proposition_model_1.default.getMentoringPropositions({ includes, archived }, { page, limit })
         .then((propositions) => global_helper_1.checkContent(propositions, next) ? res.send(propositions) : undefined)
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
@@ -88,7 +88,7 @@ exports.deleteMentoringProposition = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(e, next));
 };
 /**
- * GET /mentoringPropostions/:id/campaigns
+ * GET /mentoringPropositions/:id/campaigns
  * Used to select a mentoring propositions by ID and return his campaign
  */
 exports.getMentoringPropositionCampaigns = (req, res, next) => {
@@ -102,7 +102,7 @@ exports.getMentoringPropositionCampaigns = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * POST /mentoringPropostions/:id/campaigns/:campaign_id/link
+ * POST /mentoringPropositions/:id/campaigns/:campaign_id/link
  * Used to create a link between mentoring propositions and campaign
  */
 exports.linkMentoringPropositionCampaign = (req, res, next) => {
@@ -116,7 +116,7 @@ exports.linkMentoringPropositionCampaign = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * GET /mentoringPropostions/:id/mentors
+ * GET /mentoringPropositions/:id/mentors
  * Used to select a mentoring propositions by ID and return his mentor
  */
 exports.getMentoringPropositionMentor = (req, res, next) => {
@@ -130,7 +130,7 @@ exports.getMentoringPropositionMentor = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * POST /mentoringPropostions/:id/mentors/:mentor_id/link
+ * POST /mentoringPropositions/:id/mentors/:mentor_id/link
  * Used to create a link between mentoring propositions and mentor
  */
 exports.linkMentoringPropositionMentor = (req, res, next) => {
@@ -144,7 +144,7 @@ exports.linkMentoringPropositionMentor = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * GET /mentoringPropostions/:id/internship
+ * GET /mentoringPropositions/:id/internship
  * Used to select a mentoring propositions by ID and return his internship
  */
 exports.getMentoringPropositionInternship = (req, res, next) => {
@@ -158,7 +158,7 @@ exports.getMentoringPropositionInternship = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * POST /mentoringPropostions/:id/internships/:internship_id/link
+ * POST /mentoringPropositions/:id/internships/:internship_id/link
  * Used to create a link between mentoring propositions and internship
  */
 exports.linkMentoringPropositionInternship = (req, res, next) => {

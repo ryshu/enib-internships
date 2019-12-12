@@ -12,13 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize_1 = __importDefault(require("sequelize"));
 const Campaigns_1 = __importDefault(require("./sequelize/Campaigns"));
 const Mentors_1 = __importDefault(require("./sequelize/Mentors"));
 const Internships_1 = __importDefault(require("./sequelize/Internships"));
 const MentoringPropositions_1 = __importDefault(require("./sequelize/MentoringPropositions"));
+const internship_model_1 = __importDefault(require("./internship.model"));
 const check_1 = require("../utils/check");
 const pagination_1 = require("./helpers/pagination");
 const options_1 = require("./helpers/options");
+const processor_1 = require("./helpers/processor");
+const singleton_1 = __importDefault(require("../statistics/singleton"));
 /**
  * @interface MentorModelStruct API to handle mentors in database
  * @class
@@ -74,7 +78,9 @@ class MentorModelStruct {
                         }
                     }
                 }
+                mentor.fullName = processor_1.buildName(mentor.firstName, mentor.lastName);
                 const created = yield Mentors_1.default.create(mentor, this._buildCreateOpts(mentor));
+                singleton_1.default.addMentor();
                 // TODO: emit creation on websocket
                 return resolve(created.toJSON());
             }
@@ -136,6 +142,7 @@ class MentorModelStruct {
                 if (next.email) {
                     mentor.set('email', next.email);
                 }
+                mentor.set('fullName', processor_1.buildName(mentor.firstName, mentor.lastName));
                 const updated = yield mentor.save();
                 // TODO: emit updated mentor on websocket
                 return resolve(updated.toJSON());
@@ -157,8 +164,9 @@ class MentorModelStruct {
                 const mentor = yield Mentors_1.default.findByPk(id);
                 if (mentor) {
                     yield mentor.destroy();
+                    singleton_1.default.removeMentor();
                 }
-                // TODO: emit file destruction
+                // TODO: emit mentor destruction
                 // TODO: add option to remove linked campaigns
                 // TODO: add option to remove linked internships
                 resolve();
@@ -179,17 +187,12 @@ class MentorModelStruct {
     linkToInternship(mentorId, internshipId) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const mentor = yield Mentors_1.default.findByPk(mentorId);
-                if (!mentor) {
+                const handler = yield internship_model_1.default.getHandler(internshipId);
+                if (!handler) {
                     return resolve();
                 }
-                const internship = yield Internships_1.default.findByPk(internshipId);
-                if (!internship) {
-                    return resolve();
-                }
-                yield mentor.addInternship(internship);
-                // TODO: Emit update on socket
-                return resolve(yield this.getMentor(mentor.id));
+                yield handler.toAttributedMentor(mentorId);
+                return resolve(yield this.getMentor(mentorId));
             }
             catch (error) {
                 reject(error);
@@ -216,6 +219,7 @@ class MentorModelStruct {
                     return resolve();
                 }
                 yield mentor.addCampaign(campaign);
+                singleton_1.default.linkMentor(campaign.id);
                 // TODO: Emit update on socket
                 return resolve(yield this.getMentor(mentor.id));
             }
@@ -262,6 +266,9 @@ class MentorModelStruct {
                 duplicating: false,
             });
             tmp.where['$campaigns.id$'] = opts.campaignId;
+        }
+        if (opts.name) {
+            tmp.where.fullName = { [sequelize_1.default.Op.substring]: opts.name };
         }
         if (opts.archived) {
             tmp = options_1.setFindOptsArchived(tmp);

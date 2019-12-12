@@ -12,11 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize_1 = __importDefault(require("sequelize"));
 const Students_1 = __importDefault(require("./sequelize/Students"));
 const Internships_1 = __importDefault(require("./sequelize/Internships"));
 const check_1 = require("../utils/check");
 const pagination_1 = require("./helpers/pagination");
 const options_1 = require("./helpers/options");
+const processor_1 = require("./helpers/processor");
+const singleton_1 = __importDefault(require("../statistics/singleton"));
 /**
  * @interface StudentModelStruct API to handle students in database
  * @class
@@ -72,7 +75,10 @@ class StudentModelStruct {
                         }
                     }
                 }
+                // TODO: If create also create sub-entities, manage their creation in stats and websocket
+                student.fullName = processor_1.buildName(student.firstName, student.lastName);
                 const created = yield Students_1.default.create(student, this._buildCreateOpts(student));
+                singleton_1.default.addStudent();
                 // TODO: emit creation on websocket
                 return resolve(created.toJSON());
             }
@@ -130,6 +136,7 @@ class StudentModelStruct {
                 if (next.email) {
                     student.set('email', next.email);
                 }
+                student.set('fullName', processor_1.buildName(student.firstName, student.lastName));
                 const updated = yield student.save();
                 // TODO: emit updated student on websocket
                 return resolve(updated.toJSON());
@@ -151,8 +158,9 @@ class StudentModelStruct {
                 const student = yield Students_1.default.findByPk(id);
                 if (student) {
                     yield student.destroy();
+                    singleton_1.default.removeStudent();
                 }
-                // TODO: emit file destruction
+                // TODO: emit internship destruction
                 // TODO: add option to remove linked internships
                 resolve();
             }
@@ -190,7 +198,10 @@ class StudentModelStruct {
         }));
     }
     _buildFindOpts(opts) {
-        const tmp = {};
+        const tmp = { where: {} };
+        if (opts.name) {
+            tmp.where.fullName = { [sequelize_1.default.Op.substring]: opts.name };
+        }
         if (opts.archived) {
             tmp.paranoid = false;
         }

@@ -11,6 +11,7 @@ class StatisticsCache {
     reset() {
         if (this._initialized) {
             this.statistics.internships = {
+                abroad: 0,
                 total: 0,
                 waiting: 0,
                 published: 0,
@@ -209,6 +210,24 @@ class StatisticsCache {
         this.campaignStatistics[id].campaign = id;
     }
     /**
+     * @summary Method used to remove a campaign
+     * @param {number} id Campaign id
+     */
+    removeCampaign(id) {
+        if (this.isDefined(id)) {
+            // Substract campaign stats from internships
+            this.statistics.propositions -= this.campaignStatistics[id].propositions;
+            this.statistics.students -= this.campaignStatistics[id].students;
+            this.statistics.mentors -= this.campaignStatistics[id].mentors;
+            this.statistics.internships.total -= this.campaignStatistics[id].internships.total;
+            this.statistics.internships.attributed_mentor -= this.campaignStatistics[id].internships.attributed;
+            this.statistics.internships.available_campaign -= this.campaignStatistics[id].internships.availables;
+            this.statistics.internships.total -= this.campaignStatistics[id].internships.total;
+            // Remove
+            delete this.campaignStatistics[id];
+        }
+    }
+    /**
      * @summary Method used to check if campaign is defined
      * @param {number} id campaign id
      * @returns {boolean} is defined ?
@@ -228,6 +247,13 @@ class StatisticsCache {
             this.statistics.internships.running +
             this.statistics.internships.validation +
             this.statistics.internships.archived);
+    }
+    incAbroad() {
+        this.statistics.internships.abroad++;
+    }
+    decAbroad() {
+        this.statistics.internships.abroad =
+            this.statistics.internships.abroad === 0 ? this.statistics.internships.abroad - 1 : 0;
     }
     _change(mode, q, id) {
         switch (mode) {
@@ -277,6 +303,7 @@ class StatisticsCache {
     _defaultStatistics() {
         return {
             internships: {
+                abroad: 0,
                 total: 0,
                 waiting: 0,
                 published: 0,

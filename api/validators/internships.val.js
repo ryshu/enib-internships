@@ -14,7 +14,7 @@ const InternshipAvailableIncludes = [
     'business',
     'category',
 ];
-exports.InternshipsList = Object.assign(Object.assign(Object.assign(Object.assign({}, generic_val_1.paginateValidator), generic_val_1.contriesValidator), generic_val_1.archivedValidator), { 'types': {
+exports.InternshipsList = Object.assign(Object.assign(Object.assign(Object.assign({}, generic_val_1.paginateValidator), generic_val_1.countriesValidator), generic_val_1.archivedValidator), { 'types': {
         in: ['query'],
         isArray: { errorMessage: 'Category filter list must be array' },
         optional: true,
@@ -44,6 +44,11 @@ exports.InternshipsList = Object.assign(Object.assign(Object.assign(Object.assig
         isBoolean: { errorMessage: 'Abroad should be of type boolean' },
         optional: true,
         toBoolean: true,
+    }, 'mentorId': {
+        in: ['query'],
+        isInt: { errorMessage: `Mentor identifier must be an integer` },
+        optional: true,
+        toInt: true,
     }, 'includes': {
         in: ['query'],
         isArray: { errorMessage: 'Internship includes should be provide under array form' },

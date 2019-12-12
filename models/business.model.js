@@ -78,7 +78,6 @@ class BusinessModelStruct {
                 // Else, create new business
                 const created = yield Businesses_1.default.create(business, this._buildCreateOpts(business));
                 // TODO: Add socket chanel + emit create
-                // TODO: Add to stats
                 resolve(created.toJSON());
             }
             catch (error) {
@@ -162,10 +161,8 @@ class BusinessModelStruct {
      * @returns {Promise<any>} Reject: database error
      */
     removeBusiness(id) {
-        // TODO: Setup archives
         // TODO: Add archives function for internships on availables modes
         // TODO: Add socket remove + emit;
-        // TODO: Update counter for this remove;
         return new Promise((resolve, reject) => {
             Businesses_1.default.findByPk(id)
                 .then((val) => (val ? val.destroy() : undefined))

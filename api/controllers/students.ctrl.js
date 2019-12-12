@@ -20,9 +20,9 @@ exports.getStudents = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
-    const { page = 1, limit = 20, archived } = req.query;
-    student_model_1.default.getStudents({ archived }, { page, limit })
+    // Retrieve query data
+    const { page = 1, limit = 20, archived, name } = req.query;
+    student_model_1.default.getStudents({ archived, name }, { page, limit })
         .then((student) => (global_helper_1.checkContent(student, next) ? res.send(student) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
@@ -40,6 +40,7 @@ exports.postStudent = (req, res, next) => {
     const student = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        fullName: undefined,
         email: req.body.email,
         semester: req.body.semester,
         internships: req.body.internships && Array.isArray(req.body.internships)
@@ -76,7 +77,12 @@ exports.putStudent = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     student_model_1.default.updateStudent(Number(req.params.id), req.body)
-        .then((val) => (global_helper_1.checkContent(val, next) ? res.send(val) : undefined))
+        .then((val) => {
+        if (global_helper_1.checkContent(val, next)) {
+            req.session.info = val;
+            res.send(val);
+        }
+    })
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**

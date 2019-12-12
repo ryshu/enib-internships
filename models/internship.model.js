@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const moment_1 = __importDefault(require("moment"));
 const sequelize_1 = __importDefault(require("sequelize"));
 const Internships_1 = __importDefault(require("./sequelize/Internships"));
@@ -23,12 +24,12 @@ const MentoringPropositions_1 = __importDefault(require("./sequelize/MentoringPr
 const Students_1 = __importDefault(require("./sequelize/Students"));
 const Files_1 = __importDefault(require("./sequelize/Files"));
 const options_1 = require("./helpers/options");
-const check_1 = require("../utils/check");
 const pagination_1 = require("./helpers/pagination");
+const check_1 = require("../utils/check");
+const error_1 = require("../utils/error");
 const internship_type_mode_1 = __importDefault(require("./internship.type.mode"));
 const internship_1 = require("../internship/internship");
-const error_1 = require("../utils/error");
-const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const singleton_1 = __importDefault(require("../statistics/singleton"));
 /**
  * @interface InternshipModelStruct
  * @class
@@ -90,6 +91,7 @@ class InternshipModelStruct {
                     }
                 }
                 const created = yield Internships_1.default.create(internship, this._buildCreateOpts(internship));
+                singleton_1.default.stateAdd(created.state, 1);
                 // TODO: Emit on socket new data
                 return resolve(created.toJSON());
             }
@@ -221,15 +223,34 @@ class InternshipModelStruct {
      * @returns {Promise<any>} Reject: database error
      */
     removeInternship(id) {
-        return new Promise((resolve, reject) => {
-            // TODO: Remove also files
-            // TODO: Remove also propositions
-            // TODO: Update cache
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const internship = yield Internships_1.default.findByPk(id, {
+                    include: [
+                        { model: Files_1.default, as: 'files' },
+                        { model: MentoringPropositions_1.default, as: 'propositions' },
+                    ],
+                });
+                if (!internship) {
+                    return resolve();
+                }
+                yield Promise.all(internship.files.map((f) => f.destroy()));
+                yield Promise.all(internship.propositions.map((p) => {
+                    singleton_1.default.removeProposition(p.campaign);
+                    return p.destroy();
+                }));
+                singleton_1.default.stateRemove(internship.state, 1, (internship.availableCampaign || internship.validatedCampaign));
+                yield internship.destroy();
+                resolve();
+            }
+            catch (error) {
+                reject(error);
+            }
             Internships_1.default.findByPk(id)
                 .then((val) => (val ? val.destroy() : undefined))
                 .then(() => resolve())
                 .catch((e) => reject(e));
-        });
+        }));
     }
     /**
      * @summary Method used to link internship and file
@@ -442,9 +463,6 @@ class InternshipModelStruct {
                 }
                 if (inc === 'business') {
                     tmp.include.push({ model: Businesses_1.default, association: 'business' });
-                }
-                if (inc === 'category') {
-                    tmp.include.push({ model: InternshipTypes_1.default, association: 'category' });
                 }
             }
         }

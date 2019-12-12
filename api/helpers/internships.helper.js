@@ -26,14 +26,15 @@ function generateGetInternships(filterByID) {
         if (!errors.isEmpty()) {
             return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
         }
-        // Retrive query data
-        const { page = 1, limit = 20, countries, types, subject, mode = ["published" /* PUBLISHED */], isAbroad, includes, archived, } = req.query;
+        // Retrieve query data
+        const { page = 1, limit = 20, countries, types, subject, mode = ["published" /* PUBLISHED */], isAbroad, mentorId, includes, archived, } = req.query;
         const opts = {
             countries,
             types,
             subject,
             mode,
             isAbroad,
+            mentorId,
             includes,
             archived,
         };

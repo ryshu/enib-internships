@@ -45,7 +45,7 @@ exports.getCampaigns = (req, res, next) => {
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * POST /campaignss
+ * POST /campaigns
  * Used to create a new campaign entry
  */
 exports.postCampaign = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -162,13 +162,13 @@ exports.getCampaignMentoringPropositions = (req, res, next) => {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    mentoring_proposition_model_1.default.getMentoringPropositions({ campaignId: Number(req.params.id) }, { page, limit })
+    const { page = 1, limit = 20, includes, archived } = req.query;
+    mentoring_proposition_model_1.default.getMentoringPropositions({ campaignId: Number(req.params.id), includes, archived }, { page, limit })
         .then((mps) => __awaiter(void 0, void 0, void 0, function* () { return (global_helper_1.checkContent(mps, next) ? res.send(mps) : undefined); }))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * GET /campaigns/:id/mentoringPropositions/:mentoring_proposition_id/link
+ * POST /campaigns/:id/mentoringPropositions/:mentoring_proposition_id/link
  * Used to link a mentoring propositions with a campaign
  */
 exports.linkCampaignMentoringPropositions = (req, res, next) => {
@@ -209,20 +209,6 @@ exports.linkAvailableCampaignInternships = (req, res, next) => {
  */
 exports.getValidatedCampaignInternships = internships_helper_1.generateGetInternships('validatedCampaignId');
 /**
- * GET /campaigns/:id/validatedCampaigns/:internship_id/link
- * Used to link an internship with a ValidatedCampaign
- */
-exports.linkValidatedCampaignInternships = (req, res, next) => {
-    // @see validator + router
-    const errors = express_validator_1.validationResult(req);
-    if (!errors.isEmpty()) {
-        return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
-    }
-    campaigns_model_1.default.linkToValidatedInternship(Number(req.params.id), Number(req.params.internship_id))
-        .then((campaign) => (global_helper_1.checkContent(campaign, next) ? res.send(campaign) : undefined))
-        .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
-};
-/**
  * GET /campaigns/:id/internships
  * Used to get all internships of a campaign
  */
@@ -236,14 +222,14 @@ exports.getCampaignMentors = (req, res, next) => {
     if (!errors.isEmpty()) {
         return global_helper_1.BAD_REQUEST_VALIDATOR(next, errors);
     }
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
-    mentor_model_1.default.getMentors({ campaignId: Number(req.params.id) }, { page, limit })
+    // Retrieve query data
+    const { page = 1, limit = 20, archived, name } = req.query;
+    mentor_model_1.default.getMentors({ campaignId: Number(req.params.id), archived, name }, { page, limit })
         .then((data) => (global_helper_1.checkContent(data, next) ? res.send(data) : undefined))
         .catch((e) => global_helper_1.UNPROCESSABLE_ENTITY(next, e));
 };
 /**
- * GET /campaigns/:id/mentors/:mentor_id/link
+ * POST /campaigns/:id/mentors/:mentor_id/link
  * Used to link a mentor with a campaign
  */
 exports.linkCampaignMentor = (req, res, next) => {

@@ -24,6 +24,7 @@ const Mentors_1 = __importDefault(require("../models/sequelize/Mentors"));
 const MentoringPropositions_1 = __importDefault(require("../models/sequelize/MentoringPropositions"));
 const Files_1 = __importDefault(require("../models/sequelize/Files"));
 const error_1 = require("../utils/error");
+const singleton_1 = __importDefault(require("../statistics/singleton"));
 function isInt(t) {
     return t && !Number.isNaN(Number(t));
 }
@@ -40,6 +41,7 @@ class InternshipHandler {
                 this._internship.publishAt = 0;
                 this._internship.state = "waiting" /* WAITING */;
                 yield this.save();
+                this._updateStatistics("published" /* PUBLISHED */, "waiting" /* WAITING */);
                 resolve(this);
             }
             catch (error) {
@@ -55,6 +57,7 @@ class InternshipHandler {
                 }
                 this._internship.publishAt = moment_1.default().valueOf();
                 this._internship.state = "published" /* PUBLISHED */;
+                this._updateStatistics("waiting" /* WAITING */, "published" /* PUBLISHED */);
                 yield this.save();
                 resolve(this);
             }
@@ -80,6 +83,7 @@ class InternshipHandler {
                 yield this._internship.setStudent(student);
                 this._internship.state = "attributed_student" /* ATTRIBUTED_STUDENT */;
                 yield this.save();
+                this._updateStatistics("published" /* PUBLISHED */, "attributed_student" /* ATTRIBUTED_STUDENT */);
                 resolve(this);
             }
             catch (error) {
@@ -99,7 +103,7 @@ class InternshipHandler {
                 }
                 const campaign = yield Campaigns_1.default.findByPk(campaignId);
                 if (!campaign) {
-                    return resolve();
+                    return resolve(this);
                 }
                 if (this._internship.validatedCampaign) {
                     yield campaign.removeValidatedInternships(this._internship);
@@ -107,6 +111,7 @@ class InternshipHandler {
                 yield campaign.addAvailableInternship(this._internship);
                 this._internship.state = "available_campaign" /* AVAILABLE_CAMPAIGN */;
                 yield this.save();
+                this._updateStatistics("attributed_student" /* ATTRIBUTED_STUDENT */, "available_campaign" /* AVAILABLE_CAMPAIGN */);
                 resolve();
             }
             catch (error) {
@@ -139,6 +144,7 @@ class InternshipHandler {
                 yield campaign.addValidatedInternship(this._internship);
                 this._internship.state = "attributed_mentor" /* ATTRIBUTED_MENTOR */;
                 yield this.save();
+                this._updateStatistics("available_campaign" /* AVAILABLE_CAMPAIGN */, "attributed_mentor" /* ATTRIBUTED_MENTOR */);
                 resolve(this);
             }
             catch (error) {
@@ -159,6 +165,7 @@ class InternshipHandler {
                     this._internship.endAt = moment_1.default(endAt).valueOf();
                 }
                 yield this.save();
+                this._updateStatistics("attributed_mentor" /* ATTRIBUTED_MENTOR */, "running" /* RUNNING */);
                 resolve(this);
             }
             catch (error) {
@@ -172,8 +179,9 @@ class InternshipHandler {
                 if (this.state !== "running" /* RUNNING */) {
                     throw this._buildForbiddenError("validation" /* VALIDATION */);
                 }
-                this._internship.state = "archived" /* ARCHIVED */;
+                this._internship.state = "validation" /* VALIDATION */;
                 yield this.save();
+                this._updateStatistics("running" /* RUNNING */, "validation" /* VALIDATION */);
                 resolve(this);
             }
             catch (error) {
@@ -184,11 +192,18 @@ class InternshipHandler {
     archive(result) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             try {
+                const prev = this._internship.state;
                 this._internship.state = "archived" /* ARCHIVED */;
                 this._internship.result = internship_result_1.isInternshipResult(result)
                     ? "validated" /* VALIDATED */
                     : "unknown" /* UNKNOWN */;
+                if (this._internship.isInternshipAbroad &&
+                    internship_result_1.isInternshipResult(result) &&
+                    result !== "unknown" /* UNKNOWN */) {
+                    singleton_1.default.incAbroad();
+                }
                 yield this.save();
+                this._updateStatistics(prev, "archived" /* ARCHIVED */);
                 resolve(this);
             }
             catch (error) {
@@ -267,6 +282,22 @@ class InternshipHandler {
     }
     _buildForbiddenError(next) {
         return new error_1.APIError(`Couldn't change internship from '${this.state}' to '${internship_mode_1.isInternshipMode(next) ? next : 'unknown_mode'}', expected next mode is '${this.nextState}'`, 400, 12000);
+    }
+    _updateStatistics(prev, next) {
+        let campaignId;
+        if (this._internship.availableCampaign) {
+            campaignId =
+                typeof this._internship.availableCampaign === 'string'
+                    ? this._internship.availableCampaign
+                    : this._internship.availableCampaign.id;
+        }
+        else if (this._internship.validatedCampaign) {
+            campaignId =
+                typeof this._internship.validatedCampaign === 'string'
+                    ? this._internship.validatedCampaign
+                    : this._internship.validatedCampaign.id;
+        }
+        singleton_1.default.stateChange(next, prev, campaignId);
     }
 }
 exports.InternshipHandler = InternshipHandler;

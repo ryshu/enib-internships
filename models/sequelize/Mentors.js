@@ -28,6 +28,10 @@ Mentors.init({
         type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,
     },
+    fullName: {
+        type: new Sequelize.DataTypes.STRING(256),
+        allowNull: false,
+    },
     email: {
         type: new Sequelize.DataTypes.STRING(128),
         allowNull: false,

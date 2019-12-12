@@ -23,7 +23,7 @@ router.get('/:id', express_validator_1.checkSchema(generic_val_1.ID), Internship
 router.put('/:id', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, internships_val_1.InternshipUpdate)), InternshipsCtrl.putInternship);
 router.delete('/:id', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.deleteInternship);
 // FSM
-router.post('/:id/fsm', express_validator_1.checkSchema(internships_val_1.InternshipFSM), InternshipsCtrl.upadteFSMInternship);
+router.post('/:id/fsm', express_validator_1.checkSchema(internships_val_1.InternshipFSM), InternshipsCtrl.updateFSMInternship);
 // Routes for internships-businesses association
 router.get('/:id/businesses', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.getInternshipBusiness);
 router.post('/:id/businesses/:business_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.BusinessID)), InternshipsCtrl.linkInternshipBusinesses);
@@ -37,7 +37,7 @@ router.post('/:id/students/:student_id/link', express_validator_1.checkSchema(Ob
 router.get('/:id/files', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.getInternshipFiles);
 router.post('/:id/files/:file_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.FileID)), InternshipsCtrl.linkInternshipFiles);
 // Internships Available Campaign
-router.get('/:id/availableCampaigns', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.getAvailabletInternshipCampaign);
+router.get('/:id/availableCampaigns', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.getAvailableInternshipCampaign);
 router.post('/:id/availableCampaigns/:campaign_id/link', express_validator_1.checkSchema(Object.assign({}, generic_val_1.ID, generic_val_1.CampaignID)), InternshipsCtrl.linkAvailableCampaignInternships);
 // Internships Validated Campaign
 router.get('/:id/validatedCampaigns', express_validator_1.checkSchema(generic_val_1.ID), InternshipsCtrl.getValidatedInternshipCampaign);
