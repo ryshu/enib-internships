@@ -80,7 +80,7 @@
     "@types/supertest": "^2.0.7",
     "chai": "^4.2.0",
     "commander": "^4.0.1",
-    "concurrently": "^5.0.1",
+    "concurrently": "^5.0.2",
     "faker": "^4.1.0",
     "jest": "^24.7.1",
     "node-sass": "^4.13.0",
