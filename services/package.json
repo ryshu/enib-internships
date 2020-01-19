@@ -83,7 +83,7 @@
     "concurrently": "^5.0.2",
     "faker": "^4.1.0",
     "jest": "^24.7.1",
-    "node-sass": "^4.13.0",
+    "node-sass": "^4.13.1",
     "nodemon": "^1.19.4",
     "supertest": "^4.0.2",
     "ts-jest": "^24.2.0",
