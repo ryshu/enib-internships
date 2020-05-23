@@ -55,6 +55,7 @@ export function defaultStudents() {
     const VALID_STUDENT: IStudentEntity = {
         firstName: 'John',
         lastName: 'Doe',
+        fullName: 'John DOE',
         email: 'john.doe@enib.fr',
         semester: 'S10',
     };
@@ -65,6 +66,7 @@ export function defaultMentors() {
     const VALID_MENTOR: IMentorEntity = {
         firstName: 'John',
         lastName: 'Doe',
+        fullName: 'John DOE',
         email: 'john.doe@enib.fr',
         role: 'default',
     };

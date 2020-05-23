@@ -9,6 +9,8 @@ declare interface IMentorEntity {
 
     firstName: string;
     lastName: string;
+    fullName: string;
+
     email: string;
     role: MentorRole;
 

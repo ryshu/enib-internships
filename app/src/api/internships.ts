@@ -71,7 +71,7 @@ export const linkInternshipFile = (internshipID: string, fileID: string) =>
     method: 'post',
   }) as any) as Promise<IInternshipEntity>;
 
-export const getAvailabletInternshipCampaign = (id: number) =>
+export const getAvailableInternshipCampaign = (id: number) =>
   (request({
     url: `/internships/${id}/availableCampaign`,
     method: 'get',
@@ -91,8 +91,32 @@ export const unpublishInternship = (id: number) =>
     data: { state: INTERNSHIP_MODE.WAITING },
   }) as any) as Promise<IInternshipEntity>;
 
-export const linkInternshipPropositions = (internshipID: number, mentoringPropositionId: number) =>
+export const linkInternshipPropositions = (
+  internshipID: number,
+  mentoringPropositionId: number
+) =>
   (request({
     url: `/internships/${internshipID}/propositions/${mentoringPropositionId}/link`,
     method: 'post',
+  }) as any) as Promise<IInternshipEntity>;
+
+export const attributeInternshipToMentor = (id: number, mentorId: number) =>
+  (request({
+    url: `/internships/${id}/fsm`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.ATTRIBUTED_MENTOR, mentorId },
+  }) as any) as Promise<IInternshipEntity>;
+
+export const attributeStudent = (id: number, studentId: number) =>
+  (request({
+    url: `/internships/${id}/fsm`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.ATTRIBUTED_STUDENT, studentId },
+  }) as any) as Promise<IInternshipEntity>;
+
+export const attributeInternshipToCampaign = (id: number, campaignId: number) =>
+  (request({
+    url: `/internships/${id}/fsm`,
+    method: 'post',
+    data: { state: INTERNSHIP_MODE.AVAILABLE_CAMPAIGN, campaignId },
   }) as any) as Promise<IInternshipEntity>;

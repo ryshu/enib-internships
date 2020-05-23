@@ -45,6 +45,16 @@
           <span>{{ row.city }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.internships.student')" min-width="70px">
+        <template slot-scope="{ row }">
+          <span>{{ row.student.fullName }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.businesses.name')" min-width="70px">
+        <template slot-scope="{ row }">
+          <span>{{ row.business ? row.business.name : '' }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column
         :label="$t('table.internships.isInternshipAbroad')"
@@ -56,6 +66,11 @@
             :type="row.isInternshipAbroad ? 'success' : 'danger'"
             effect="dark"
           >{{ $t(row.isInternshipAbroad ? 'status.yes' : 'status.no') }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.internships.result')" min-width="70px">
+        <template slot-scope="{ row }">
+          <span>{{ row.result }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -103,6 +118,7 @@ export default class extends Vue {
       INTERNSHIP_MODE.RUNNING,
       INTERNSHIP_MODE.VALIDATION,
     ],
+    includes: ['student', 'business'],
   };
 
   public created() {

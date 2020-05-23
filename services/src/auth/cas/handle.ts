@@ -61,6 +61,7 @@ export async function handleConnection(req: Request) {
             const newUser: IStudentEntity = {
                 firstName: 'undefined',
                 lastName: 'undefined',
+                fullName: 'Undefined UNDEFINED',
                 email,
                 semester: 'S1',
             };
@@ -71,6 +72,7 @@ export async function handleConnection(req: Request) {
             const newUser: IMentorEntity = {
                 firstName: 'undefined',
                 lastName: 'undefined',
+                fullName: 'Undefined UNDEFINED',
                 email,
                 role: 'default',
             };

@@ -4,6 +4,7 @@ import { IStudentEntity, PaginateList } from '../declarations';
 export const defaultStudentData: IStudentEntity = {
   firstName: '',
   lastName: '',
+  fullName: '',
   email: '',
   semester: 'S1',
 };

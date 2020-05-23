@@ -5,6 +5,8 @@ declare interface IStudentEntity {
 
     firstName: string;
     lastName: string;
+    fullName: string;
+
     email: string;
     semester: string;
 

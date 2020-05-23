@@ -34,14 +34,6 @@
             <span slot="title">{{ $t('route.campaigns.internships') }}</span>
           </el-menu-item>
         </sidebar-item-link>
-        <sidebar-item-link :to="resolvePath('students', campaign.id)">
-          <el-menu-item
-            :index="resolvePath('students', campaign.id)"
-            class="submenu-title-noDropdown"
-          >
-            <span slot="title">{{ $t('route.campaigns.students') }}</span>
-          </el-menu-item>
-        </sidebar-item-link>
         <sidebar-item-link
           v-if="checkPermission(['admin'])"
           :to="resolvePath('mentors', campaign.id)"

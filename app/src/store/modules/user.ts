@@ -16,6 +16,7 @@ export interface IUserState {
   id: number;
   firstName: string;
   lastName: string;
+  fullName: string;
   role: string;
   email: string;
 }
@@ -25,6 +26,7 @@ class User extends VuexModule implements IUserState {
   public id = -1;
   public firstName = '';
   public lastName = '';
+  public fullName = '';
   public role = '';
   public email = '';
 
@@ -44,6 +46,11 @@ class User extends VuexModule implements IUserState {
   }
 
   @Mutation
+  private SET_FULL_NAME(fullName: string) {
+    this.fullName = fullName;
+  }
+
+  @Mutation
   private SET_ROLE(role: string) {
     this.role = role;
   }
@@ -60,7 +67,7 @@ class User extends VuexModule implements IUserState {
     if (!data) {
       throw Error('Verification failed, please Login.');
     }
-    const { id, role, firstName, lastName, email } = data;
+    const { id, role, firstName, lastName, fullName, email } = data;
     // role must be a non-empty array
     if (!role || role.length <= 0) {
       throw Error('GetUserInfo: role must be a non-null array!');
@@ -70,6 +77,7 @@ class User extends VuexModule implements IUserState {
     this.SET_ROLE(role);
     this.SET_FIRST_NAME(firstName);
     this.SET_LAST_NAME(lastName);
+    this.SET_FULL_NAME(fullName);
     this.SET_EMAIL(email);
   }
 
@@ -84,6 +92,11 @@ class User extends VuexModule implements IUserState {
     router.addRoutes(PermissionModule.dynamicRoutes);
     // Reset visited views and cached views
     TagsViewModule.delAllViews();
+  }
+
+  @Action
+  public async refresh() {
+    this.GetUserInfo();
   }
 }
 

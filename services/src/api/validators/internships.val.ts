@@ -3,7 +3,7 @@ import { Schema } from 'express-validator';
 import {
     paginateValidator,
     replaceAllExistByOptional,
-    contriesValidator,
+    countriesValidator,
     ID,
     archivedValidator,
 } from './generic.val';
@@ -35,7 +35,7 @@ const InternshipAvailableIncludes = [
 
 export const InternshipsList: Schema = {
     ...paginateValidator,
-    ...contriesValidator,
+    ...countriesValidator,
     ...archivedValidator,
     'types': {
         in: ['query'],
@@ -71,6 +71,12 @@ export const InternshipsList: Schema = {
         isBoolean: { errorMessage: 'Abroad should be of type boolean' },
         optional: true,
         toBoolean: true,
+    },
+    'mentorId': {
+        in: ['query'],
+        isInt: { errorMessage: `Mentor identifier must be an integer` },
+        optional: true,
+        toInt: true,
     },
     'includes': {
         in: ['query'],

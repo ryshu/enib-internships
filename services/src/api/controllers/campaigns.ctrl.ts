@@ -47,7 +47,7 @@ export const getCampaigns = (req: Request, res: Response, next: NextFunction): v
 };
 
 /**
- * POST /campaignss
+ * POST /campaigns
  * Used to create a new campaign entry
  */
 export const postCampaign = async (req: Request, res: Response, next: NextFunction) => {
@@ -186,10 +186,10 @@ export const getCampaignMentoringPropositions = (
     }
 
     // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+    const { page = 1, limit = 20, includes, archived } = req.query;
 
     MentoringPropositionModel.getMentoringPropositions(
-        { campaignId: Number(req.params.id) },
+        { campaignId: Number(req.params.id), includes, archived },
         { page, limit },
     )
         .then(async (mps) => (checkContent(mps, next) ? res.send(mps) : undefined))
@@ -255,26 +255,6 @@ export const linkAvailableCampaignInternships = (
 export const getValidatedCampaignInternships = generateGetInternships('validatedCampaignId');
 
 /**
- * GET /campaigns/:id/validatedCampaigns/:internship_id/link
- * Used to link an internship with a ValidatedCampaign
- */
-export const linkValidatedCampaignInternships = (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-): void => {
-    // @see validator + router
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return BAD_REQUEST_VALIDATOR(next, errors);
-    }
-
-    CampaignModel.linkToValidatedInternship(Number(req.params.id), Number(req.params.internship_id))
-        .then((campaign) => (checkContent(campaign, next) ? res.send(campaign) : undefined))
-        .catch((e) => UNPROCESSABLE_ENTITY(next, e));
-};
-
-/**
  * GET /campaigns/:id/internships
  * Used to get all internships of a campaign
  */
@@ -290,16 +270,16 @@ export const getCampaignMentors = (req: Request, res: Response, next: NextFuncti
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
-    const { page = 1, limit = 20 } = req.query;
+    // Retrieve query data
+    const { page = 1, limit = 20, archived, name } = req.query;
 
-    MentorModel.getMentors({ campaignId: Number(req.params.id) }, { page, limit })
+    MentorModel.getMentors({ campaignId: Number(req.params.id), archived, name }, { page, limit })
         .then((data) => (checkContent(data, next) ? res.send(data) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
 /**
- * GET /campaigns/:id/mentors/:mentor_id/link
+ * POST /campaigns/:id/mentors/:mentor_id/link
  * Used to link a mentor with a campaign
  */
 export const linkCampaignMentor = (req: Request, res: Response, next: NextFunction): void => {

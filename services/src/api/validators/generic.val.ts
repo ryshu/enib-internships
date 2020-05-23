@@ -55,7 +55,7 @@ export const archivedValidator: Schema = {
     },
 };
 
-export const contriesValidator: Schema = {
+export const countriesValidator: Schema = {
     countries: {
         in: ['query'],
         isArray: { errorMessage: 'Country filter list must be array' },

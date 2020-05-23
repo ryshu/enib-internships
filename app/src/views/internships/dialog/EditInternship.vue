@@ -15,7 +15,7 @@
       status-icon
       style="width: 100%; padding: 0 50px;"
     >
-      <h2 style="padding-bottom: 20px;">{{ $t('suggest.subTitle.description')}}</h2>
+      <h2 style="padding-bottom: 20px;">{{ $t('suggest.subTitle.description') }}</h2>
 
       <el-form-item
         :label="$t('table.internships.subject')"
@@ -30,9 +30,9 @@
         :rules="[{ required: true, message: $t('form.internships.description.required'), trigger: 'blur' }]"
       >
         <el-input
+          v-model="internData.description"
           type="textarea"
           :autosize="true"
-          v-model="internData.description"
           :placeholder="$t('suggest.placeholder.description')"
         />
       </el-form-item>
@@ -48,7 +48,7 @@
         />
       </el-form-item>
 
-      <h2 style="padding-bottom: 20px;">{{ $t('suggest.subTitle.location')}}</h2>
+      <h2 style="padding-bottom: 20px;">{{ $t('suggest.subTitle.location') }}</h2>
 
       <el-row :gutter="20">
         <el-col :span="12">
@@ -111,7 +111,7 @@
         </el-col>
       </el-row>
 
-      <h2 style="padding-bottom: 20px;">{{ $t('suggest.subTitle.settings')}}</h2>
+      <h2 style="padding-bottom: 20px;">{{ $t('suggest.subTitle.settings') }}</h2>
 
       <el-row :gutter="20">
         <el-col :span="12">
@@ -132,13 +132,16 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item :label="$t('table.internships.isInternshipAbroad')" prop="isAbroad">
+          <el-form-item
+            :label="$t('table.internships.isInternshipAbroad')"
+            prop="isInternshipAbroad"
+          >
             <el-switch
-              v-model="internData.isAbroad"
+              v-model="internData.isInternshipAbroad"
               active-color="#13ce66"
               inactive-color="#ff4949"
             />
-            <span style="padding-left: 10px;">{{ $t('suggest.checkbox.abroad')}}</span>
+            <span style="padding-left: 10px;">{{ $t('suggest.checkbox.abroad') }}</span>
           </el-form-item>
         </el-col>
       </el-row>

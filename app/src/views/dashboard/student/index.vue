@@ -2,7 +2,7 @@
   <div class="dashboard-editor-container">
     <div class="clearfix">
       <div class="info-container">
-        <span class="display_name">{{ fullName }}</span>
+        <span class="display_name">{{ name }}</span>
         <span style="font-size:20px;padding-top:20px;display:inline-block;">Student's Dashboard</span>
       </div>
     </div>
@@ -28,8 +28,8 @@ export default class extends Vue {
   private emptyGif =
     'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3';
 
-  get fullName() {
-    return `${UserModule.firstName} ${UserModule.lastName}`;
+  get name() {
+    return UserModule.fullName;
   }
 
   get role() {

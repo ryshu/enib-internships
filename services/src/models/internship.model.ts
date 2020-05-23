@@ -1,3 +1,4 @@
+import httpStatus from 'http-status-codes';
 import moment from 'moment';
 import sequelize, { CreateOptions, FindOptions } from 'sequelize';
 
@@ -14,6 +15,8 @@ import Files from './sequelize/Files';
 
 import { PaginateList } from './helpers/type';
 import { extractCount, setFindOptsArchived } from './helpers/options';
+import { PaginateOpts, paginate } from './helpers/pagination';
+
 import {
     checkPartialBusiness,
     checkPartialCampaign,
@@ -24,14 +27,14 @@ import {
     checkPartialProposition,
     checkPartialStudent,
 } from '../utils/check';
-import { PaginateOpts, paginate } from './helpers/pagination';
+import { APIError } from '../utils/error';
 
 import InternshipTypeModel from './internship.type.mode';
 import { INTERNSHIP_MODE } from '../internship';
+
 import { InternshipHandler } from '../internship/internship';
 
-import { APIError } from '../utils/error';
-import httpStatus from 'http-status-codes';
+import cache from '../statistics/singleton';
 
 /** @interface InternshipOpts Interface of all availables filters for internship list */
 export interface InternshipOpts {
@@ -149,6 +152,8 @@ class InternshipModelStruct {
                     internship,
                     this._buildCreateOpts(internship),
                 );
+                cache.stateAdd(created.state, 1);
+
                 // TODO: Emit on socket new data
 
                 return resolve(created.toJSON() as IInternshipEntity);
@@ -302,11 +307,37 @@ class InternshipModelStruct {
      * @returns {Promise<any>} Reject: database error
      */
     public removeInternship(id: number): Promise<void> {
-        return new Promise((resolve, reject) => {
-            // TODO: Remove also files
-            // TODO: Remove also propositions
+        return new Promise(async (resolve, reject) => {
+            try {
+                const internship = await Internships.findByPk(id, {
+                    include: [
+                        { model: Files, as: 'files' },
+                        { model: MentoringPropositions, as: 'propositions' },
+                    ],
+                });
+                if (!internship) {
+                    return resolve();
+                }
 
-            // TODO: Update cache
+                await Promise.all(internship.files.map((f) => f.destroy()));
+                await Promise.all(
+                    internship.propositions.map((p) => {
+                        cache.removeProposition(p.campaign as number);
+                        return p.destroy();
+                    }),
+                );
+
+                cache.stateRemove(
+                    internship.state,
+                    1,
+                    (internship.availableCampaign || internship.validatedCampaign) as number,
+                );
+                await internship.destroy();
+
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
             Internships.findByPk(id)
                 .then((val) => (val ? val.destroy() : undefined))
                 .then(() => resolve())
@@ -547,9 +578,6 @@ class InternshipModelStruct {
                 }
                 if (inc === 'business') {
                     tmp.include.push({ model: Businesses, association: 'business' });
-                }
-                if (inc === 'category') {
-                    tmp.include.push({ model: InternshipTypes, association: 'category' });
                 }
             }
         }

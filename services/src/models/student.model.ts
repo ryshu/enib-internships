@@ -1,4 +1,4 @@
-import { CreateOptions, FindOptions } from 'sequelize';
+import sequelize, { CreateOptions, FindOptions } from 'sequelize';
 
 import Students from './sequelize/Students';
 import Internships from './sequelize/Internships';
@@ -9,9 +9,15 @@ import { checkPartialStudent, checkPartialInternship } from '../utils/check';
 import { PaginateList } from './helpers/type';
 import { PaginateOpts, paginate } from './helpers/pagination';
 import { extractCount } from './helpers/options';
+import { buildName } from './helpers/processor';
+
+import cache from '../statistics/singleton';
 
 /** @interface StudentOpts Interface of all availables filters for students list */
 export declare interface StudentOpts {
+    /** @property {string} name Filter by student part of name */
+    name?: string;
+
     /** @property {boolean} archived Show only archived students */
     archived?: boolean;
 }
@@ -77,7 +83,11 @@ class StudentModelStruct {
                     }
                 }
 
+                // TODO: If create also create sub-entities, manage their creation in stats and websocket
+                student.fullName = buildName(student.firstName, student.lastName);
                 const created = await Students.create(student, this._buildCreateOpts(student));
+                cache.addStudent();
+
                 // TODO: emit creation on websocket
 
                 return resolve(created.toJSON() as IStudentEntity);
@@ -140,6 +150,8 @@ class StudentModelStruct {
                 if (next.email) {
                     student.set('email', next.email);
                 }
+
+                student.set('fullName', buildName(student.firstName, student.lastName));
                 const updated = await student.save();
                 // TODO: emit updated student on websocket
 
@@ -162,9 +174,10 @@ class StudentModelStruct {
                 const student = await Students.findByPk(id);
                 if (student) {
                     await student.destroy();
+                    cache.removeStudent();
                 }
 
-                // TODO: emit file destruction
+                // TODO: emit internship destruction
                 // TODO: add option to remove linked internships
 
                 resolve();
@@ -205,7 +218,11 @@ class StudentModelStruct {
     }
 
     private _buildFindOpts(opts: StudentOpts): FindOptions {
-        const tmp: FindOptions = {};
+        const tmp: FindOptions = { where: {} };
+
+        if (opts.name) {
+            (tmp.where as any).fullName = { [sequelize.Op.substring]: opts.name };
+        }
 
         if (opts.archived) {
             tmp.paranoid = false;

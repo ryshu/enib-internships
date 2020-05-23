@@ -52,7 +52,7 @@ export const deleteCampaign = (id: number) =>
     method: 'delete',
   }) as any) as Promise<void>;
 
-export const getAvailabletInternshipCampaign = (
+export const getAvailableInternshipCampaign = (
   id: number,
   params: InternshipOpts
 ) =>
@@ -69,8 +69,17 @@ export const getCampaignInternships = (id: number, params: InternshipOpts) =>
     params,
   }) as any) as Promise<PaginateList<IInternshipEntity>>;
 
-export const linkCampaignMentoringPropositions = (campaignID: number, mentoringPropositionId: number) =>
-(request({
-  url: `/campaigns/${campaignID}/mentoringPropositions/${mentoringPropositionId}/link`,
-  method: 'post',
-}) as any) as Promise<ICampaignEntity>;
+export const linkCampaignMentor = (campaignID: number, mentorId: number) =>
+  (request({
+    url: `/campaigns/${campaignID}/mentors/${mentorId}/link`,
+    method: 'post',
+  }) as any) as Promise<ICampaignEntity>;
+
+export const linkCampaignMentoringPropositions = (
+  campaignID: number,
+  mentoringPropositionId: number
+) =>
+  (request({
+    url: `/campaigns/${campaignID}/mentoringPropositions/${mentoringPropositionId}/link`,
+    method: 'post',
+  }) as any) as Promise<ICampaignEntity>;

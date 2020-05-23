@@ -1,9 +1,11 @@
-import { CreateOptions, FindOptions, IncludeOptions } from 'sequelize';
+import sequelize, { CreateOptions, FindOptions, IncludeOptions } from 'sequelize';
 
 import Campaigns from './sequelize/Campaigns';
 import Mentors from './sequelize/Mentors';
 import Internships from './sequelize/Internships';
 import MentoringPropositions from './sequelize/MentoringPropositions';
+
+import InternshipModel from './internship.model';
 
 import { IMentorEntity } from '../declarations';
 
@@ -17,11 +19,17 @@ import {
 import { PaginateList } from './helpers/type';
 import { PaginateOpts, paginate } from './helpers/pagination';
 import { extractCount, setFindOptsArchived } from './helpers/options';
+import { buildName } from './helpers/processor';
+
+import cache from '../statistics/singleton';
 
 /** @interface MentorOpts Interface of all availables filters for mentors list */
 export interface MentorOpts {
     /** @property {number} campaignId Filter list with categoryId */
     campaignId?: number;
+
+    /** @property {string} name Filter by mentor name */
+    name?: string;
 
     /** @property {boolean} archived Show only archived mentors */
     archived?: boolean;
@@ -88,7 +96,10 @@ class MentorModelStruct {
                     }
                 }
 
+                mentor.fullName = buildName(mentor.firstName, mentor.lastName);
                 const created = await Mentors.create(mentor, this._buildCreateOpts(mentor));
+                cache.addMentor();
+
                 // TODO: emit creation on websocket
 
                 return resolve(created.toJSON() as IMentorEntity);
@@ -153,6 +164,8 @@ class MentorModelStruct {
                 if (next.email) {
                     mentor.set('email', next.email);
                 }
+
+                mentor.set('fullName', buildName(mentor.firstName, mentor.lastName));
                 const updated = await mentor.save();
                 // TODO: emit updated mentor on websocket
 
@@ -175,9 +188,10 @@ class MentorModelStruct {
                 const mentor = await Mentors.findByPk(id);
                 if (mentor) {
                     await mentor.destroy();
+                    cache.removeMentor();
                 }
 
-                // TODO: emit file destruction
+                // TODO: emit mentor destruction
                 // TODO: add option to remove linked campaigns
                 // TODO: add option to remove linked internships
 
@@ -199,19 +213,14 @@ class MentorModelStruct {
     public linkToInternship(mentorId: number, internshipId: number): Promise<IMentorEntity> {
         return new Promise(async (resolve, reject) => {
             try {
-                const mentor = await Mentors.findByPk(mentorId);
-                if (!mentor) {
-                    return resolve();
-                }
-                const internship = await Internships.findByPk(internshipId);
-                if (!internship) {
+                const handler = await InternshipModel.getHandler(internshipId);
+                if (!handler) {
                     return resolve();
                 }
 
-                await mentor.addInternship(internship);
-                // TODO: Emit update on socket
+                await handler.toAttributedMentor(mentorId);
 
-                return resolve(await this.getMentor(mentor.id));
+                return resolve(await this.getMentor(mentorId));
             } catch (error) {
                 reject(error);
             }
@@ -239,6 +248,8 @@ class MentorModelStruct {
                 }
 
                 await mentor.addCampaign(campaign);
+                cache.linkMentor(campaign.id);
+
                 // TODO: Emit update on socket
 
                 return resolve(await this.getMentor(mentor.id));
@@ -289,6 +300,10 @@ class MentorModelStruct {
                 duplicating: false,
             });
             (tmp.where as any)['$campaigns.id$'] = opts.campaignId;
+        }
+
+        if (opts.name) {
+            (tmp.where as any).fullName = { [sequelize.Op.substring]: opts.name };
         }
 
         if (opts.archived) {

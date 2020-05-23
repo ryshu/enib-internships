@@ -38,7 +38,7 @@ export function generateGetInternships(filterByID?: FilterByID) {
             return BAD_REQUEST_VALIDATOR(next, errors);
         }
 
-        // Retrive query data
+        // Retrieve query data
         const {
             page = 1,
             limit = 20,
@@ -47,6 +47,7 @@ export function generateGetInternships(filterByID?: FilterByID) {
             subject,
             mode = [INTERNSHIP_MODE.PUBLISHED],
             isAbroad,
+            mentorId,
             includes,
             archived,
         } = req.query;
@@ -57,6 +58,7 @@ export function generateGetInternships(filterByID?: FilterByID) {
             subject,
             mode,
             isAbroad,
+            mentorId,
             includes,
             archived,
         };

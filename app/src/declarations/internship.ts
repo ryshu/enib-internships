@@ -3,7 +3,7 @@ import { IStudentEntity } from './student';
 import { IMentorEntity } from './mentor';
 import { IMentoringPropositionEntity } from './mentoring.proposition';
 import { ICampaignEntity } from './campaign';
-import { IBusinessEntity } from './businness';
+import { IBusinessEntity } from './business';
 import { IInternshipTypeEntity } from './internship.type';
 
 import { INTERNSHIP_MODE, INTERNSHIP_RESULT } from './internship.enum';
@@ -15,7 +15,7 @@ export declare interface IInternshipEntity {
   subject: string;
   description: string;
 
-  // Localisation
+  // Localization
   country: string;
   city: string;
   postalCode?: string;
@@ -47,7 +47,7 @@ export declare interface IInternshipEntity {
   updatedAt?: Date;
 }
 
-/** @interface InternshipOpts Interface of all availables filters for internship list */
+/** @interface InternshipOpts Interface of all available filters for internship list */
 export interface InternshipOpts {
   page: number;
   limit: number;
@@ -66,4 +66,7 @@ export interface InternshipOpts {
 
   /** @property {boolean} isAbroad Select only foreign internships */
   isAbroad?: boolean;
+
+  /** @property {string[]} includes Include and populate associations */
+  includes?: string[];
 }

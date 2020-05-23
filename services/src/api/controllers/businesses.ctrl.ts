@@ -25,7 +25,7 @@ export const getBusinesses = (req: Request, res: Response, next: NextFunction): 
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20, countries, name, archived } = req.query;
 
     BusinessModel.getBusinesses({ name, countries, archived }, { page, limit })

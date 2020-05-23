@@ -34,10 +34,10 @@ export const getMentors = (req: Request, res: Response, next: NextFunction): voi
     }
 
     // Retrieve all mentors from database
-    // Retrive query data
-    const { page = 1, limit = 20, archived } = req.query;
+    // Retrieve query data
+    const { page = 1, limit = 20, archived, name } = req.query;
 
-    MentorModel.getMentors({ archived }, { page, limit })
+    MentorModel.getMentors({ archived, name }, { page, limit })
         .then((mentor) => (checkContent(mentor, next) ? res.send(mentor) : undefined))
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
@@ -56,6 +56,7 @@ export const postMentor = (req: Request, res: Response, next: NextFunction): voi
     const mentor: IMentorEntity = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        fullName: undefined,
         email: req.body.email,
         role: req.body.role && isMentorRole(req.body.role) ? req.body.role : 'default',
 
@@ -106,7 +107,12 @@ export const putMentor = (req: Request, res: Response, next: NextFunction): void
     }
 
     MentorModel.updateMentor(Number(req.params.id), req.body)
-        .then((val) => (checkContent(val, next) ? res.send(val) : undefined))
+        .then((val) => {
+            if (checkContent(val, next)) {
+                req.session.info = val;
+                res.send(val);
+            }
+        })
         .catch((e) => UNPROCESSABLE_ENTITY(next, e));
 };
 
@@ -169,7 +175,7 @@ export const getMentorPropositions = (req: Request, res: Response, next: NextFun
         return BAD_REQUEST_VALIDATOR(next, errors);
     }
 
-    // Retrive query data
+    // Retrieve query data
     const { page = 1, limit = 20 } = req.query;
 
     MentoringPropositionModel.getMentoringPropositions(

@@ -42,6 +42,13 @@
         @click="handleFilter"
       >{{ $t('table.search') }}</el-button>
       <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleAttribute"
+      >{{ $t('table.add') }}</el-button>
+      <el-button
         v-waves
         :loading="downloadLoading"
         class="filter-item"
@@ -69,13 +76,14 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table.internships.subject')" min-width="250px">
+      <el-table-column :label="$t('table.internships.subject')" min-width="220px">
         <template slot-scope="{ row }">
-          <span class="link-type" @click="handleUpdate(row)">
-            {{
-            row.subject
-            }}
-          </span>
+          <span class="link-type" @click="handleUpdate(row)">{{ row.subject }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.students.student')" min-width="100px">
+        <template slot-scope="{ row }">
+          <span>{{ row.student.fullName }}</span>
         </template>
       </el-table-column>
 
@@ -136,7 +144,6 @@
       :before-close="cancel"
       :visible.sync="dialogFormPostVisible"
       width="60%"
-      top="5vh"
       @keydown.esc="cancel"
     >
       <el-form
@@ -152,10 +159,35 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormPostVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button
-          type="primary"
-          @click="dialogStatus==='create'?createData():updateData()"
-        >{{ $t('table.confirm') }}</el-button>
+        <el-button type="primary" @click="createData()">{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog :title="this.$t('dialog.title.import')" :visible.sync="dialogImportInternship">
+      <el-form
+        ref="addForm"
+        :model="importInternshipData"
+        label-position="left"
+        label-width="250px"
+        style="width: 100%; padding: 0 50px;"
+      >
+        <el-form-item :label="$t('table.internships.subject')" prop="id">
+          <el-select
+            v-model="importInternshipData.id"
+            filterable
+            remote
+            reserve-keyword
+            :remote-method="searchInternship"
+            :loading="loadingInternship"
+            :placeholder="$t('internships.placeholder.includeInternship')"
+          >
+            <el-option v-for="c in internships" :key="c.id" :label="c.subject" :value="c.id" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogImportInternship = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="handleAttributeInternship()">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -182,6 +214,7 @@ import {
   deleteInternship,
   defaultInternshipData,
   linkInternshipPropositions,
+  attributeInternshipToCampaign,
 } from '../../../api/internships';
 
 import {
@@ -194,7 +227,7 @@ import {
 } from '../../../declarations';
 
 import {
-  getAvailabletInternshipCampaign,
+  getAvailableInternshipCampaign,
   getCampaigns,
   linkCampaignMentoringPropositions,
 } from '../../../api/campaigns';
@@ -237,7 +270,22 @@ export default class extends Vue {
     mode: [INTERNSHIP_MODE.AVAILABLE_CAMPAIGN],
     countries: [],
     types: [],
+    includes: ['student'],
     isAbroad: false,
+  };
+
+  private dialogImportInternship = false;
+  // Internships dynamique query
+  private internships: IInternshipEntity[] = [];
+  private internshipQuery: InternshipOpts = {
+    page: 1,
+    limit: 10,
+    mode: [INTERNSHIP_MODE.ATTRIBUTED_STUDENT],
+    subject: undefined,
+  };
+  private loadingInternship = true;
+  private importInternshipData: { id?: number } = {
+    id: undefined,
   };
 
   private resolve: (value?: IMentoringPropositionEntity) => void = () => {};
@@ -275,13 +323,11 @@ export default class extends Vue {
 
   private getList() {
     this.listLoading = true;
-    getAvailabletInternshipCampaign(this.id, this.listQuery).then(
-      (res: any) => {
-        this.list = res ? res.data : [];
-        this.total = res ? res.max : 0;
-        this.listLoading = false;
-      }
-    );
+    getAvailableInternshipCampaign(this.id, this.listQuery).then((res: any) => {
+      this.list = res ? res.data : [];
+      this.total = res ? res.max : 0;
+      this.listLoading = false;
+    });
   }
 
   private handleFilter() {
@@ -292,6 +338,46 @@ export default class extends Vue {
     this.tempMentoringPropositionData = cloneDeep(
       defaultMentoringPropositionData
     );
+  }
+
+  private searchInternship(query: string) {
+    if (query !== '') {
+      this.loadingInternship = true;
+      (this.internshipQuery as any).name = query;
+    }
+    getInternships(this.internshipQuery)
+      .then(res => {
+        this.loadingInternship = false;
+        this.internships = res ? res.data : [];
+      })
+      .catch(() => (this.internships = []));
+  }
+
+  private handleAttribute(row: IInternshipEntity) {
+    this.importInternshipData = { id: undefined };
+    this.dialogImportInternship = true;
+    this.$nextTick(() => {
+      (this.$refs['addForm'] as Form).clearValidate();
+    });
+  }
+
+  private handleAttributeInternship() {
+    (this.$refs['addForm'] as Form).validate(async valid => {
+      if (valid) {
+        await attributeInternshipToCampaign(
+          this.importInternshipData.id!,
+          this.id
+        );
+        this.getList();
+        this.dialogImportInternship = false;
+        this.$notify({
+          title: this.$t('notify.campaigns.importStudent.title') as string,
+          message: this.$t('notify.campaigns.importStudent.msg') as string,
+          type: 'success',
+          duration: 2000,
+        });
+      }
+    });
   }
 
   private handleCreate(row: any) {
@@ -398,5 +484,16 @@ export default class extends Vue {
 <style lang="scss">
 .el-form-item .el-select {
   width: 100%;
+}
+</style>
+
+<style lang="scss" scope>
+.dialog-footer {
+  padding: 0 !important;
+  padding-bottom: 40px !important;
+  margin: auto;
+
+  display: flex;
+  justify-content: center;
 }
 </style>

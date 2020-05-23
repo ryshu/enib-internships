@@ -1,5 +1,5 @@
 export default {
-  dialog: { title: { create: 'Créer', edit: 'Modifier' } },
+  dialog: { title: { create: 'Créer', edit: 'Modifier', import: 'Importer' } },
   export: {
     additional: 'Additionelle',
     address: 'Adresse',
@@ -47,6 +47,10 @@ export default {
         end_to_early:
           "La date de fin de la campagne doit être après aujourd'hui",
       },
+    },
+    firstConnexion: {
+      lastName: { required: "Le nom de l'étudiant est requis" },
+      firstName: { required: "Le prénom de l'étudiant est requis" },
     },
   },
   navbar: {
@@ -120,6 +124,10 @@ export default {
         msg: 'Le professeur a bien été modifié',
         title: "Modification d'un professeur",
       },
+      import: {
+        msg: 'Le professeur a bien été ajouté à la campagne',
+        title: "Importation d'un professeur",
+      },
     },
     mentorPropositions: {
       create: {
@@ -134,6 +142,10 @@ export default {
         msg: 'La proposition a bien été modifiée',
         title: "Modification d'une proposition",
       },
+      attributed: {
+        msg: 'Le stage a été attribué au tuteur',
+        title: 'Proposition validée',
+      },
     },
     students: {
       create: {
@@ -147,6 +159,10 @@ export default {
       update: {
         msg: "L'étudiant a bien été modifié",
         title: "Modification d'un étudiant",
+      },
+      attribute: {
+        msg: "L'étudiant a bien été attribué",
+        title: "Attributation d'une offre",
       },
     },
   },
@@ -177,9 +193,20 @@ export default {
     page404: '404',
     profile: 'Profile',
     users: {
+      first: 'Bienvenue sur le gestionnaire des stages',
       title: 'Utilisateurs',
       students: 'Etudiants',
       mentors: 'Professeurs',
+    },
+    firstConnexion: {
+      title: 'Première connexion',
+      description:
+        "Il s'agit de votre première connexion, veuillez renseigner les champs suivants",
+      warning:
+        'Ces informations seront utilisés pour vos documents administratifs ',
+      firstName: 'Prénom',
+      lastName: 'Nom',
+      semester: 'Semestre',
     },
   },
   status: { no: 'Non', yes: 'Oui' },
@@ -208,18 +235,19 @@ export default {
       startAt: 'Début',
       date: 'Periode de publication',
       isPublish: 'Publier la campagne',
-      isVisible: 'Campagne visible', 
+      isVisible: 'Campagne visible',
     },
     cancel: 'Annuler',
     confirm: 'Confirmer',
+    validate: 'Valider',
     create: 'Créer',
     date: 'Date',
     delete: 'Supprimer',
     edit: 'Modifier',
     export: 'Exporter',
-    archive : 'Archiver',
+    archive: 'Archiver',
     detail: 'Détail',
-    save : 'Sauvegarder',
+    save: 'Sauvegarder',
     id: 'ID',
     internships: {
       additional: 'Informations complémentaire',
@@ -235,25 +263,35 @@ export default {
       postalCode: 'Code postal',
       subject: 'Sujets',
       publishAt: 'Date de publication',
+      result: 'Résultat',
       date: 'Dates de stage',
+      student: 'Etudiant',
       isPublish: 'Publié ?',
     },
     mentors: {
       firstName: 'Prénom',
       lastName: 'Nom',
+      fullName: 'Nom',
       email: 'Email',
     },
     mentoringProposition: {
-      title: "Postuler",
+      title: 'Postuler',
       comment: 'Ajouter un commentaire',
+      student: 'Etudiant',
+      internship: 'Sujet de Stage',
+      business: 'Entreprise',
+      mentor: 'Tuteur',
+      country: 'Pays',
     },
     publish: 'Publier',
     search: 'Recherche',
     status: 'Status',
     students: {
+      student: 'Étudiant(e)',
       email: 'Adresse mail',
       firstName: 'Prénom',
       lastName: 'Nom',
+      fullName: 'Nom',
       semester: 'Semester',
     },
     checkbox: {
@@ -328,6 +366,14 @@ export default {
       success: 'La campagne a bien été publier',
     },
   },
+  firstConnexion: {
+    placeholder: {
+      firstName: 'Entrer votre prénom',
+      lastName: 'Entrer votre nom',
+      email: 'Saisissez votre adresse mail',
+      semester: 'Veuillez saisir votre semestre actuel',
+    },
+  },
   propositions: {
     placeholder: {
       add: "Accepter l'offre",
@@ -341,17 +387,26 @@ export default {
       unpublish: "Dépublier l'offre",
       update: "Editer l'offre",
       remove: "Supprimer l'offre",
+      attribute: "Attribuer l'offre",
     },
   },
   students: {
     placeholder: {
       update: "Editer l'étudiant",
       remove: "Supprimer l'étudiant de cette campaign",
+      includeStudent: "Nom de l'étudiant pour l'attribution",
+    },
+  },
+  mentors: {
+    placeholder: {
+      includeMentor: "Entrer une partie du nom de l'utilsateur pour le trouver",
     },
   },
   mentoringProposition: {
     placeholder: {
-      create: "Postuler",
+      create: 'Postuler',
+      validate: 'Valider le tuteur pour ce stage',
+      delete: 'Supprimer la proposition de tutorat',
     },
   },
 };

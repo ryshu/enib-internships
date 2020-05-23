@@ -34,7 +34,7 @@ router.put(
 router.delete('/:id', checkSchema(ID), InternshipsCtrl.deleteInternship);
 
 // FSM
-router.post('/:id/fsm', checkSchema(InternshipFSM), InternshipsCtrl.upadteFSMInternship);
+router.post('/:id/fsm', checkSchema(InternshipFSM), InternshipsCtrl.updateFSMInternship);
 
 // Routes for internships-businesses association
 router.get('/:id/businesses', checkSchema(ID), InternshipsCtrl.getInternshipBusiness);
@@ -72,7 +72,7 @@ router.post(
 router.get(
     '/:id/availableCampaigns',
     checkSchema(ID),
-    InternshipsCtrl.getAvailabletInternshipCampaign,
+    InternshipsCtrl.getAvailableInternshipCampaign,
 );
 router.post(
     '/:id/availableCampaigns/:campaign_id/link',
