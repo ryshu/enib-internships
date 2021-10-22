@@ -18,7 +18,7 @@
     "debug": "npm run build && npm run watch-debug",
     "serve-debug": "nodemon --inspect dist/server.js",
     "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\"",
-    "snyk-protect": "snyk protect",
+    "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
   "dependencies": {
@@ -50,7 +50,7 @@
     "shelljs": "^0.8.3",
     "socket.io": "^2.3.0",
     "winston": "^3.2.1",
-    "snyk": "^1.278.1"
+    "@snyk/protect": "latest"
   },
   "devDependencies": {
     "@types/bcrypt-nodejs": "0.0.30",
